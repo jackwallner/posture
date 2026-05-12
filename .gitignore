@@ -1,0 +1,20 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserdatad/
+*.xcuserstate
+xcuserdata/
+*.xcscheme
+!default.xcscheme
+
+# XcodeGen-generated project (regenerate locally with `xcodegen generate`)
+Posture.xcodeproj/
+
+# macOS
+.DS_Store
+
+# Swift PM
+.build/
+Packages/
+Package.resolved
+.swiftpm/

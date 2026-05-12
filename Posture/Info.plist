@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Posture</string>
+	<key>CFBundleDisplayName</key>
+	<string>Posture</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Posture uses the front camera during calibration and posture sessions to measure how your head is oriented. Frames never leave your device.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Posture reads head-motion data from supported AirPods and your iPhone to detect when you slouch.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Posture reads your head and wrist orientation to detect slouching and provide real-time posture coaching.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Posture saves short posture-monitoring workouts to Apple Health so it can track your wrist position in the background.</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

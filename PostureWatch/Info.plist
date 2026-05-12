@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Posture</string>
+	<key>CFBundleDisplayName</key>
+	<string>Posture</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSMotionUsageDescription</key>
+	<string>Posture reads wrist motion to detect when you slouch and gently nudge you with a haptic.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Posture reads your wrist orientation to detect slouching and provide real-time posture nudges throughout the day.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Posture saves short posture-monitoring workouts to Apple Health so it can track your wrist position in the background.</string>
+	<key>WKApplication</key>
+	<true/>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>com.jackwallner.posture</string>
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>self-care</string>
+		<string>workout-processing</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,92 @@
+{
+  "identifier" : "Posture",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "79.99",
+      "familyShareable" : false,
+      "internalID" : "P-LIFETIME",
+      "localizations" : [
+        {
+          "description" : "All Posture Pro features forever.",
+          "displayName" : "Posture Pro Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.jackwallner.posture.pro.lifetime",
+      "referenceName" : "Posture Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "0",
+    "_developerTeamID" : "YXG4MP6W39",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "PG-PRO",
+      "localizations" : [],
+      "name" : "Posture Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "P-MONTHLY",
+          "introductoryOffer" : {
+            "internalID" : "P-MONTHLY-FT",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "All Posture Pro features, billed monthly.",
+              "displayName" : "Posture Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.jackwallner.posture.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Posture Pro Monthly",
+          "subscriptionGroupID" : "PG-PRO",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "29.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "P-YEARLY",
+          "introductoryOffer" : {
+            "internalID" : "P-YEARLY-FT",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "All Posture Pro features, billed yearly.",
+              "displayName" : "Posture Pro Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.jackwallner.posture.pro.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Posture Pro Yearly",
+          "subscriptionGroupID" : "PG-PRO",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
