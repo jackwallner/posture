@@ -19,12 +19,11 @@ struct PostureApp: App {
 }
 
 struct RootView: View {
-    @Environment(GoalSettings.self) private var settings
 
     var body: some View {
-        if !settings.hasCompletedOnboarding {
+        if !GoalSettings.shared.hasCompletedOnboarding {
             OnboardingView()
-        } else if !settings.hasCalibrated {
+        } else if !GoalSettings.shared.hasCalibrated {
             CalibrationView()
         } else {
             MainTabView()

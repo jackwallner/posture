@@ -64,12 +64,12 @@ struct CalibrationView: View {
     private var introStep: some View {
         VStack(spacing: 24) {
             Spacer()
-            Image(systemName: "person.crop.rectangle")
+            Image(systemName: "airpodspro")
                 .font(.system(size: 72, weight: .light))
                 .foregroundStyle(Theme.brandGradient)
-            Text("Calibrate your posture")
+            Text("Calibrate with AirPods")
                 .font(Theme.bigNumber(28))
-            Text("Two quick captures: one upright, one slouched. Prop your phone up roughly at eye level.")
+            Text("Pop in your AirPods — Posture tracks you hands-free.\nWe'll also capture a camera reference for fallback. Prop your phone up at eye level for two quick captures.")
                 .font(.body)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
@@ -125,10 +125,24 @@ struct CalibrationView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "airpodspro")
                         .foregroundStyle(Theme.brandPrimary)
-                    Text("AirPods baseline being captured too")
+                    Text("AirPods connected — capturing baseline")
+                        .font(.caption)
+                        .foregroundStyle(Theme.good)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Theme.good.opacity(0.1), in: .rect(cornerRadius: 8))
+            } else {
+                HStack(spacing: 6) {
+                    Image(systemName: "airpodspro")
+                        .foregroundStyle(Theme.textSecondary)
+                    Text("AirPods not connected — pop them in for hands-free tracking")
                         .font(.caption)
                         .foregroundStyle(Theme.textSecondary)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Theme.textSecondary.opacity(0.1), in: .rect(cornerRadius: 8))
             }
 
             if capturing {
@@ -164,7 +178,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.good)
             Text("You're calibrated")
                 .font(Theme.bigNumber(28))
-            Text("Posture knows what your good and slouched poses look like.")
+            Text("Posture tracks your AirPods head motion for hands-free sessions. Your phone camera stays as a backup when AirPods are off.")
                 .font(.body)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
