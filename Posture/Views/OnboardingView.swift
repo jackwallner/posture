@@ -14,7 +14,7 @@ struct OnboardingView: View {
                 .font(Theme.bigNumber(34))
                 .multilineTextAlignment(.center)
 
-            Text("Posture builds a daily habit of better posture using your iPhone, AirPods, and Apple Watch — Duolingo-style streaks included.")
+            Text("Posture builds a daily habit of better posture using your iPhone, AirPods, and Apple Watch.")
                 .font(.body)
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
