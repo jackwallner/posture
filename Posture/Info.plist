@@ -32,6 +32,10 @@
 	<string>Posture reads your head and wrist orientation to detect slouching and provide real-time posture coaching.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Posture saves short posture-monitoring workouts to Apple Health so it can track your wrist position in the background.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

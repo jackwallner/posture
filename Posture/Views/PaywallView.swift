@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(RevenueCat)
+import RevenueCat
+#endif
 #if canImport(RevenueCatUI)
 import RevenueCatUI
 #endif
@@ -7,11 +10,22 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var subscriptions = SubscriptionService.shared
     @State private var restoreAttempted: Bool = false
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String?
+
+    private var priceText: String {
+        guard subscriptions.isConfigured else {
+            return "$4.99 / month · $29.99 / year · $79.99 lifetime"
+        }
+        // In production, pull from RevenueCat offerings
+        return "Monthly or annual — cancel anytime"
+    }
 
     var body: some View {
         #if canImport(RevenueCatUI)
         if subscriptions.isConfigured {
             RevenueCatUI.PaywallView(displayCloseButton: true)
+                .onAppear { AnalyticsService.paywallShown() }
                 .onPurchaseCompleted { _ in
                     Task { await subscriptions.refresh() }
                     dismiss()
@@ -62,15 +76,41 @@ struct PaywallView: View {
                 }
                 .padding(.horizontal, 24)
 
-                VStack(spacing: 8) {
-                    Text("$4.99 / month · $29.99 / year · $79.99 lifetime")
+                if let error = purchaseError {
+                    Text(error)
                         .font(.caption)
-                        .foregroundStyle(Theme.textTertiary)
+                        .foregroundStyle(Theme.bad)
+                        .padding(.horizontal, 32)
                 }
+
+                purchaseButton("Subscribe Monthly · $4.99") {
+                    await purchaseMonthly()
+                }
+                .padding(.horizontal, 32)
+
+                purchaseButton("Subscribe Yearly · $29.99") {
+                    await purchaseYearly()
+                }
+                .padding(.horizontal, 32)
+
+                Text("Free trial included with annual. Cancel anytime.")
+                    .font(.caption2)
+                    .foregroundStyle(Theme.textTertiary)
+                    .padding(.horizontal, 32)
 
                 Button {
                     restoreAttempted = true
-                    Task { await subscriptions.refresh() }
+                    purchaseError = nil
+                    Task {
+                        do {
+                            #if canImport(RevenueCat)
+                            try await Purchases.shared.restorePurchases()
+                            await subscriptions.refresh()
+                            #endif
+                        } catch {
+                            purchaseError = "Could not restore purchases. Please try again."
+                        }
+                    }
                 } label: {
                     Text("Restore Purchases")
                         .font(.headline)
@@ -90,18 +130,89 @@ struct PaywallView: View {
                 Button {
                     dismiss()
                 } label: {
-                    Text("Close")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Theme.cardSurface, in: .rect(cornerRadius: 14))
-                        .foregroundStyle(Theme.textPrimary)
+                    Text("Maybe Later")
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.textSecondary)
                 }
-                .padding(.horizontal, 32)
                 .padding(.bottom, 32)
             }
         }
         .background(Theme.background.ignoresSafeArea())
+        .onAppear { AnalyticsService.paywallShown() }
+    }
+
+    private func purchaseButton(_ label: String, action: @escaping () async -> Void) -> some View {
+        Button {
+            guard !isPurchasing else { return }
+            isPurchasing = true
+            purchaseError = nil
+            Task {
+                await action()
+                isPurchasing = false
+            }
+        } label: {
+            HStack {
+                if isPurchasing {
+                    ProgressView()
+                        .tint(.white)
+                }
+                Text(label)
+                    .font(.headline)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
+            .foregroundStyle(.white)
+        }
+        .disabled(isPurchasing)
+    }
+
+    private func purchaseMonthly() async {
+        AnalyticsService.purchaseAttempted(plan: "monthly")
+        #if canImport(RevenueCat)
+        do {
+            guard let offerings = try? await Purchases.shared.offerings(),
+                  let monthly = offerings.current?.monthly
+            else {
+                purchaseError = "Subscription plans aren't available right now. Try again later."
+                return
+            }
+            let result = try await Purchases.shared.purchase(package: monthly)
+            if result.userCancelled {
+                purchaseError = nil
+                return
+            }
+            AnalyticsService.purchaseCompleted(plan: "monthly")
+            await subscriptions.refresh()
+            dismiss()
+        } catch {
+            purchaseError = "Purchase didn't complete. Please try again."
+        }
+        #endif
+    }
+
+    private func purchaseYearly() async {
+        AnalyticsService.purchaseAttempted(plan: "yearly")
+        #if canImport(RevenueCat)
+        do {
+            guard let offerings = try? await Purchases.shared.offerings(),
+                  let yearly = offerings.current?.annual
+            else {
+                purchaseError = "Subscription plans aren't available right now. Try again later."
+                return
+            }
+            let result = try await Purchases.shared.purchase(package: yearly)
+            if result.userCancelled {
+                purchaseError = nil
+                return
+            }
+            AnalyticsService.purchaseCompleted(plan: "yearly")
+            await subscriptions.refresh()
+            dismiss()
+        } catch {
+            purchaseError = "Purchase didn't complete. Please try again."
+        }
+        #endif
     }
 }
 

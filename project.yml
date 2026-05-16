@@ -98,9 +98,8 @@ targets:
         INFOPLIST_FILE: PostureWatchWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: PostureWatchWidget/PostureWatchWidget.entitlements
         WATCHOS_DEPLOYMENT_TARGET: "10.0"
-    dependencies:
-      - package: RevenueCat
-        product: RevenueCat
+    # RevenueCat intentionally omitted — the widget uses no paywall/purchase code.
+    # The #if canImport(RevenueCat) guards in Shared files handle this gracefully.
 
   PostureWidget:
     type: app-extension
@@ -113,9 +112,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.jackwallner.posture.widget
         INFOPLIST_FILE: PostureWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: PostureWidget/PostureWidget.entitlements
-    dependencies:
-      - package: RevenueCat
-        product: RevenueCat
+    # RevenueCat intentionally omitted — the widget uses no paywall/purchase code.
+    # The #if canImport(RevenueCat) guards in Shared files handle this gracefully.
 
   PostureTests:
     type: bundle.unit-test

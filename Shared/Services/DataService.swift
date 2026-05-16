@@ -15,6 +15,7 @@ enum DataService {
             Calibration.self,
             StreakState.self,
             BeforeAfterPhoto.self,
+            AcknowledgmentRecord.self,
         ])
         let url = containerURL
 

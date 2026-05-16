@@ -18,5 +18,7 @@ struct StreakFlame: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
         .background(Theme.cardSurface, in: .capsule)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(streak) day streak")
     }
 }

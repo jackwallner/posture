@@ -24,9 +24,63 @@ final class StreakService {
     @discardableResult
     func recordSessionCompleted(at date: Date = .now) -> StreakState {
         let state = currentState()
+        StreakService.refillFreezesIfNeeded(state, at: date)
         StreakService.applySession(to: state, at: date)
+        StreakService.awardMilestoneFreezes(state, at: date)
         try? context.save()
         return state
+    }
+
+    /// Call after the user acknowledges a posture reminder (camera scan or manual).
+    /// Counts as a streak day if this is the first acknowledgment today.
+    @discardableResult
+    func recordAcknowledgment(at date: Date = .now) -> StreakState {
+        let state = currentState()
+        StreakService.refillFreezesIfNeeded(state, at: date)
+        StreakService.applySession(to: state, at: date)
+        StreakService.awardMilestoneFreezes(state, at: date)
+        try? context.save()
+        return state
+    }
+
+    /// Compute the user's acknowledgment response rate for a given date.
+    /// This is a best-effort estimate — we can't always count total reminders
+    /// that were sent vs acknowledged, so we use the app's scheduled count.
+    nonisolated static func responseRate(
+        for date: Date,
+        acknowledgments: [AcknowledgmentRecord],
+        scheduledCount: Int
+    ) -> Double {
+        let dayStart = DateHelpers.startOfDay(date)
+        let dayEnd = Calendar.current.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
+        let todaysAcks = acknowledgments.filter {
+            $0.timestamp >= dayStart && $0.timestamp < dayEnd
+        }
+        guard scheduledCount > 0 else { return 1.0 }
+        let ackCount = todaysAcks.count
+        return min(Double(ackCount) / Double(scheduledCount), 1.0)
+    }
+
+    /// Weekly freeze refill — resets to 2 available freezes every 7 days.
+    nonisolated static func refillFreezesIfNeeded(_ state: StreakState, at date: Date) {
+        let maxFreezes = 2
+        guard state.freezesAvailable < maxFreezes else { return }
+        guard let lastRefill = state.lastFreezeRefill else {
+            state.lastFreezeRefill = date
+            state.freezesAvailable = maxFreezes
+            return
+        }
+        let daysSince = DateHelpers.daysBetween(DateHelpers.startOfDay(lastRefill), DateHelpers.startOfDay(date))
+        guard daysSince >= 7 else { return }
+        state.lastFreezeRefill = date
+        state.freezesAvailable = maxFreezes
+    }
+
+    /// Bonus freeze at streak milestones: 7, 14, 30, 60, 100 days.
+    private nonisolated static let milestoneDays: Set<Int> = [7, 14, 30, 60, 100]
+    nonisolated static func awardMilestoneFreezes(_ state: StreakState, at date: Date) {
+        guard milestoneDays.contains(state.currentStreak) else { return }
+        state.freezesAvailable += 1
     }
 
     /// Pure side-effect-free helper for testing.

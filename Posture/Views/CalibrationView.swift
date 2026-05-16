@@ -2,8 +2,22 @@ import SwiftData
 import SwiftUI
 
 struct CalibrationView: View {
+    enum Mode {
+        /// Full onboarding flow — starts with AirPods question.
+        case onboarding
+        /// Quick recalibrate — skips AirPods question, goes straight to capture.
+        case quickRecalibrate
+    }
+
+    let mode: Mode
+
+    init(mode: Mode = .onboarding) {
+        self.mode = mode
+    }
+
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
 
     @State private var step: Step = .airpodsQuestion
     @State private var hasAirpods: Bool?
@@ -34,6 +48,9 @@ struct CalibrationView: View {
         }
         .background(Theme.background.ignoresSafeArea())
         .task {
+            if mode == .quickRecalibrate, step == .airpodsQuestion {
+                step = .captureBaseline
+            }
             if step == .captureBaseline { await face.start() }
             airpods.start()
         }
@@ -199,9 +216,13 @@ struct CalibrationView: View {
             }
             Spacer()
             Button {
-                settings.hasCalibrated = true
+                if mode == .quickRecalibrate {
+                    dismiss()
+                } else {
+                    settings.hasCalibrated = true
+                }
             } label: {
-                Text("Start using Posture")
+                Text(mode == .quickRecalibrate ? "Done" : "Start using Posture")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
@@ -216,6 +237,7 @@ struct CalibrationView: View {
     private func runCountdown() {
         capturing = true
         countdown = 5
+        AnalyticsService.calibrateStarted(mode: mode == .quickRecalibrate ? "quick" : "full")
         countdownTask?.cancel()
         countdownTask = Task {
             defer {
@@ -269,6 +291,7 @@ struct CalibrationView: View {
             airpodsYaw: capturedAirpodsBaseYaw
         )
         CalibrationService(context: context).save(cal)
+        AnalyticsService.calibrateCompleted()
         face.stop()
         airpods.stop()
     }

@@ -56,6 +56,14 @@ Phase 4: Premium — always-on watch background monitoring (`HKWorkoutSession`).
 Phase 5: Before/after photos.
 Phase 6: Widgets, App Store polish.
 
+## Scripts
+
+- `scripts/testflight.sh` — push to TestFlight / ship a build
+- `scripts/pull-appstore-metadata.sh` — snapshots `fastlane/metadata/` to `metadata.bak.<timestamp>/`, then runs `fastlane deliver download_metadata`. ALWAYS run before editing `fastlane/metadata/*.txt`; diff against the snapshot to confirm what changed remotely.
+- `scripts/upload-appstore-metadata.sh` — `fastlane upload_metadata` (screenshots + listing copy, no binary, no submit-for-review).
+
+ASC API key (shared across apps): `~/.baseball_credentials` (`ASC_API_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`).
+
 ## Gotchas
 
 - Free dev account can't build to device (App Group entitlement). Use simulator.

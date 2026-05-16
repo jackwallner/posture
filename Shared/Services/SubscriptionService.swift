@@ -19,6 +19,10 @@ final class SubscriptionService {
     private(set) var isProSubscriber: Bool = false
     private(set) var isConfigured: Bool = false
 
+    private var sharedDefaults: UserDefaults? {
+        UserDefaults(suiteName: postureAppGroupID)
+    }
+
     func configure() {
         #if canImport(RevenueCat)
         guard !isConfigured else { return }
@@ -26,6 +30,8 @@ final class SubscriptionService {
         isConfigured = true
         Task { await refresh() }
         #endif
+        // Always sync from shared defaults on launch
+        isProSubscriber = sharedDefaults?.bool(forKey: "isProSubscriber") ?? false
     }
 
     func refresh() async {
@@ -34,9 +40,13 @@ final class SubscriptionService {
         do {
             let info = try await Purchases.shared.customerInfo()
             isProSubscriber = info.entitlements[Self.proEntitlement]?.isActive == true
+            sharedDefaults?.set(isProSubscriber, forKey: "isProSubscriber")
         } catch {
             // Network errors leave previous state intact.
         }
+        #else
+        // On watch, read from shared defaults written by iOS
+        isProSubscriber = sharedDefaults?.bool(forKey: "isProSubscriber") ?? false
         #endif
     }
 
@@ -44,5 +54,6 @@ final class SubscriptionService {
     /// SDK key isn't set yet or you're iterating on the paywall UX.
     func setLocalOverride(isPro: Bool) {
         isProSubscriber = isPro
+        sharedDefaults?.set(isPro, forKey: "isProSubscriber")
     }
 }

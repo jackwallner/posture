@@ -1,12 +1,27 @@
 import SwiftData
 import SwiftUI
 
-/// 24-hour heatmap showing when the watch logged slouch events. Pro feature.
+/// 24-hour heatmap showing when slouch events were detected from watch or AirPods. Pro feature.
 struct PassiveTimelineView: View {
-    @Query(sort: \PosturePassiveSample.timestamp, order: .reverse) private var samples: [PosturePassiveSample]
+    @Query private var samples: [PosturePassiveSample]
 
-    private var todaysSamples: [PosturePassiveSample] {
-        samples.filter { Calendar.current.isDateInToday($0.timestamp) }
+    init() {
+        let today = DateHelpers.startOfDay()
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        let predicate = #Predicate<PosturePassiveSample> { sample in
+            sample.timestamp >= today && sample.timestamp < tomorrow
+        }
+        _samples = Query(filter: predicate, sort: \PosturePassiveSample.timestamp, order: .reverse)
+    }
+
+    private var todaysSamples: [PosturePassiveSample] { samples }
+
+    private var airpodsSamples: [PosturePassiveSample] {
+        todaysSamples.filter { $0.source == .airpods }
+    }
+
+    private var watchSamples: [PosturePassiveSample] {
+        todaysSamples.filter { $0.source == .watch }
     }
 
     private var hourBuckets: [Int: Int] {
@@ -27,6 +42,34 @@ struct PassiveTimelineView: View {
                     .foregroundStyle(Theme.bad)
             }
 
+            // Source breakdown
+            HStack(spacing: 16) {
+                if !airpodsSamples.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "airpodspro")
+                            .font(.caption2)
+                        Text("\(airpodsSamples.count) from AirPods")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(Theme.bad)
+                }
+                if !watchSamples.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "applewatch")
+                            .font(.caption2)
+                        Text("\(watchSamples.count) from Watch")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(Theme.brandPrimary)
+                }
+                if todaysSamples.isEmpty {
+                    Text("No slouches detected — great posture!")
+                        .font(.caption)
+                        .foregroundStyle(Theme.good)
+                }
+            }
+
+            // Heatmap
             HStack(alignment: .bottom, spacing: 3) {
                 ForEach(0..<24, id: \.self) { hour in
                     let count = hourBuckets[hour] ?? 0

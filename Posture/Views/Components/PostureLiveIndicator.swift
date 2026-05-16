@@ -31,5 +31,6 @@ struct PostureLiveIndicator: View {
         .padding(.vertical, 12)
         .background(Theme.qualityColor(quality), in: .capsule)
         .animation(.easeOut(duration: 0.25), value: quality)
+        .accessibilityLabel("Posture: \(label)")
     }
 }

@@ -24,7 +24,7 @@ struct PostureWatchProvider: TimelineProvider {
     }
 
     static func load() -> PostureWatchWidgetEntry {
-        let schema = Schema([PostureSession.self, StreakState.self, Calibration.self, PosturePassiveSample.self, BeforeAfterPhoto.self])
+        let schema = Schema([PostureSession.self, StreakState.self, Calibration.self, PosturePassiveSample.self, BeforeAfterPhoto.self, AcknowledgmentRecord.self])
         let url = (FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: postureAppGroupID)
             ?? FileManager.default.temporaryDirectory).appendingPathComponent("Posture.store")
         let config = ModelConfiguration("Posture", schema: schema, url: url, cloudKitDatabase: .none)
@@ -118,11 +118,14 @@ struct PostureWatchWidget: Widget {
         }
         .configurationDisplayName("Posture Streak")
         .description("Your current streak and today's posture score.")
-        .supportedFamilies([
-            .accessoryCircular,
-            .accessoryCorner,
-            .accessoryInline,
-            .accessoryRectangular,
-        ])
+        .supportedFamilies(Self.supportedWidgetFamilies)
+    }
+
+    private static var supportedWidgetFamilies: [WidgetFamily] {
+        var families: [WidgetFamily] = [.accessoryCircular, .accessoryInline, .accessoryRectangular]
+        #if os(watchOS)
+        families.append(.accessoryCorner)
+        #endif
+        return families
     }
 }

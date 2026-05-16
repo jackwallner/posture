@@ -21,8 +21,8 @@ struct OnboardingView: View {
                 .padding(.horizontal, 32)
 
             FeatureRow(icon: "camera.viewfinder", title: "Calibrate once", detail: "We learn what your good posture looks like.")
-            FeatureRow(icon: "timer", title: "1-minute daily session", detail: "Short, focused, and grows with your streak.")
-            FeatureRow(icon: "flame.fill", title: "Build a streak", detail: "Don't break the chain. Earn freezes for off days.")
+            FeatureRow(icon: "timer", title: "Periodic reminders", detail: "We'll nudge you throughout the day to check in.")
+            FeatureRow(icon: "bell.badge.waveform", title: "Quick check-ins", detail: "Tap or scan your posture in seconds.")
 
             Spacer()
 

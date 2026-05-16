@@ -34,5 +34,16 @@ struct PostureRing: View {
             }
         }
         .frame(width: size, height: size)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Posture score: \(score) out of 100")
+        .accessibilityValue(qualityLabel)
+    }
+
+    private var qualityLabel: String {
+        switch score {
+        case 80...: return "Good"
+        case 50..<80: return "Fair"
+        default: return "Needs improvement"
+        }
     }
 }

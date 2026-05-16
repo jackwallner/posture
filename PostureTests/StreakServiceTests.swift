@@ -72,4 +72,73 @@ final class StreakServiceTests: XCTestCase {
         XCTAssertEqual(StreakService.dailyGoalSeconds(forStreak: 9), 150)
         XCTAssertEqual(StreakService.dailyGoalSeconds(forStreak: 100), 300)
     }
+
+    // MARK: - Freeze refill
+
+    func testRefillWhenEmptyAndNoRefillDateSetsTo2() {
+        let s = StreakState(freezesAvailable: 0)
+        StreakService.refillFreezesIfNeeded(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 2)
+        XCTAssertEqual(s.lastFreezeRefill, day(2026, 5, 11))
+    }
+
+    func testRefillDoesNotReduceExistingFreezes() {
+        let s = StreakState(freezesAvailable: 1)
+        s.lastFreezeRefill = day(2026, 5, 4) // 7 days ago
+        StreakService.refillFreezesIfNeeded(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 2)
+    }
+
+    func testRefillWithinWeekDoesNotChange() {
+        let s = StreakState(freezesAvailable: 0)
+        s.lastFreezeRefill = day(2026, 5, 10)
+        StreakService.refillFreezesIfNeeded(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 0)
+    }
+
+    func testRefillAtExactly7Days() {
+        let s = StreakState(freezesAvailable: 0)
+        s.lastFreezeRefill = day(2026, 5, 4) // 7 days before May 11
+        StreakService.refillFreezesIfNeeded(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 2)
+    }
+
+    func testRefillCapsAt2() {
+        let s = StreakState(freezesAvailable: 5)
+        s.lastFreezeRefill = day(2026, 5, 4)
+        StreakService.refillFreezesIfNeeded(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 5) // already above max, no change
+    }
+
+    // MARK: - Milestone freezes
+
+    func testMilestoneAwardedAt7Days() {
+        let s = StreakState(currentStreak: 7, freezesAvailable: 2)
+        StreakService.awardMilestoneFreezes(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 3)
+    }
+
+    func testMilestoneAwardedAt14Days() {
+        let s = StreakState(currentStreak: 14, freezesAvailable: 0)
+        StreakService.awardMilestoneFreezes(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 1)
+    }
+
+    func testMilestoneAwardedAt30Days() {
+        let s = StreakState(currentStreak: 30, freezesAvailable: 0)
+        StreakService.awardMilestoneFreezes(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 1)
+    }
+
+    func testNonMilestoneDoesNotAward() {
+        let s = StreakState(currentStreak: 5, freezesAvailable: 0)
+        StreakService.awardMilestoneFreezes(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 0)
+    }
+
+    func testNonMilestoneDoesNotAwardAt8() {
+        let s = StreakState(currentStreak: 8, freezesAvailable: 0)
+        StreakService.awardMilestoneFreezes(s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.freezesAvailable, 0)
+    }
 }

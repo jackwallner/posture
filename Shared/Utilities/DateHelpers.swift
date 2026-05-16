@@ -35,4 +35,11 @@ enum DateHelpers {
 
     static func mediumDate(_ date: Date) -> String { mediumFormatter.string(from: date) }
     static func dayOfWeek(_ date: Date) -> String { dayOfWeekFormatter.string(from: date) }
+
+    private static let mediumDateTimeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.setLocalizedDateFormatFromTemplate("MMMdjm")
+        return f
+    }()
+    static func mediumDateTime(_ date: Date) -> String { mediumDateTimeFormatter.string(from: date) }
 }

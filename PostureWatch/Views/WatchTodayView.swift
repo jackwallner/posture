@@ -3,14 +3,9 @@ import SwiftUI
 
 struct WatchTodayView: View {
     @Environment(\.modelContext) private var context
-    @Query(sort: \PostureSession.startedAt, order: .reverse) private var sessions: [PostureSession]
     @Query private var streaks: [StreakState]
 
     @State private var showingSession = false
-
-    private var todaySession: PostureSession? {
-        sessions.first { Calendar.current.isDateInToday($0.startedAt) }
-    }
 
     private var streak: StreakState {
         if let s = streaks.first { return s }
@@ -18,10 +13,6 @@ struct WatchTodayView: View {
         context.insert(fresh)
         try? context.save()
         return fresh
-    }
-
-    private var dailyGoal: Int {
-        StreakService.dailyGoalSeconds(forStreak: streak.currentStreak)
     }
 
     var body: some View {
@@ -35,27 +26,13 @@ struct WatchTodayView: View {
                             .font(.headline)
                     }
 
-                    PostureRingCompact(score: todaySession?.score ?? 0)
+                    // Posture ring showing today's best check-in quality
+                    // (watch reads from shared App Group SwiftData)
+                    PostureRingCompact(score: bestTodayScore)
 
-                    if let s = todaySession {
-                        Text("Today: \(s.score)")
-                            .font(.subheadline)
-                            .foregroundStyle(Theme.good)
-                    } else {
-                        Text("\(dailyGoal)s session")
-                            .font(.subheadline)
-                            .foregroundStyle(Theme.textSecondary)
-                    }
-
-                    Button {
-                        showingSession = true
-                    } label: {
-                        Label("Start", systemImage: "play.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Theme.brandPrimary)
+                    Text(bestTodayScore > 0 ? "Today: \(bestTodayScore)" : "Check in on your iPhone")
+                        .font(.subheadline)
+                        .foregroundStyle(bestTodayScore > 0 ? Theme.good : Theme.textSecondary)
 
                     NavigationLink {
                         WatchSettingsView()
@@ -68,9 +45,37 @@ struct WatchTodayView: View {
                 .padding(.horizontal, 4)
             }
             .navigationTitle("Posture")
-            .fullScreenCover(isPresented: $showingSession) {
-                WatchSessionView(targetSeconds: dailyGoal)
-            }
+        }
+    }
+
+    /// Best quality score from today's camera acknowledgments or sessions.
+    private var bestTodayScore: Int {
+        let today = Calendar.current.startOfDay(for: .now)
+
+        // Check AcknowledgmentRecords (camera-based) for today
+        let ackPredicate = #Predicate<AcknowledgmentRecord> { record in
+            record.methodRaw == "camera" && record.qualityRaw != nil
+        }
+        let todayAcks = (try? context.fetch(FetchDescriptor<AcknowledgmentRecord>(predicate: ackPredicate))) ?? []
+        let todayAcksFiltered = todayAcks.filter { $0.timestamp >= today }
+
+        if let bestAck = todayAcksFiltered.compactMap({ $0.quality }).map({ qualityToScore($0) }).max() {
+            return bestAck
+        }
+
+        // Fallback to PostureSession
+        let sessionPredicate = #Predicate<PostureSession> { session in
+            session.startedAt >= today
+        }
+        let todaySessions = (try? context.fetch(FetchDescriptor<PostureSession>(predicate: sessionPredicate))) ?? []
+        return todaySessions.map(\.score).max() ?? 0
+    }
+
+    private func qualityToScore(_ quality: PostureQuality) -> Int {
+        switch quality {
+        case .good: return 85
+        case .borderline: return 55
+        case .bad: return 25
         }
     }
 }
