@@ -149,13 +149,14 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
 // MARK: - Root View
 
 struct RootView: View {
+    @Environment(GoalSettings.self) private var settings
     @State private var didMigrate = false
 
     var body: some View {
         Group {
-            if !GoalSettings.shared.hasCompletedOnboarding {
+            if !settings.hasCompletedOnboarding {
                 OnboardingView()
-            } else if !GoalSettings.shared.hasCalibrated {
+            } else if !settings.hasCalibrated {
                 CalibrationView()
             } else {
                 MainTabView()
@@ -163,11 +164,11 @@ struct RootView: View {
         }
         .task {
             guard !didMigrate else { return }
-            GoalSettings.shared.migrateFromDeprecatedKeys()
+            settings.migrateFromDeprecatedKeys()
             didMigrate = true
             // Hold the iOS notification prompt until after onboarding so
             // the user reads "a few nudges a day" before the system asks.
-            if GoalSettings.shared.hasCompletedOnboarding {
+            if settings.hasCompletedOnboarding {
                 await ReminderScheduler.reschedule()
             }
         }
