@@ -3,9 +3,9 @@ import SwiftUI
 import SwiftData
 import UIKit
 
-/// A 3-second posture scan using the front camera. Routes to error states
-/// (permission denied / no face seen) instead of silently recording a
-/// fake "good" reading when the camera can't produce data.
+/// A 3-second posture scan. Full-bleed camera with an oval head guide.
+/// Routes to Daylight error states (permission denied / no face) instead
+/// of fabricating a "good" reading when the camera can't produce data.
 struct QuickScanView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
@@ -13,10 +13,10 @@ struct QuickScanView: View {
     let scheduledAt: Date
     let onComplete: (PostureQuality) -> Void
     let onFallback: () -> Void
+    let onClose: () -> Void
 
     @State private var face = FaceTrackingService()
     @State private var samples: [Double] = []
-    @State private var currentQuality: PostureQuality = .good
     @State private var scanComplete = false
     @State private var elapsedSeconds = 0
     @State private var countdownTask: Task<Void, Never>?
@@ -36,9 +36,23 @@ struct QuickScanView: View {
             case .checkingPermission, .scanning:
                 scanView
             case .permissionDenied:
-                permissionDeniedView
+                messageView(
+                    title: "Camera access denied.",
+                    message: "Posture needs the front camera for a quick scan. Manual check-ins still work.",
+                    primaryLabel: "open settings",
+                    primary: {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                )
             case .noFaceDetected:
-                noFaceView
+                messageView(
+                    title: "Couldn't see your face.",
+                    message: "Make sure your face is inside the oval and try again, or just check in by hand.",
+                    primaryLabel: "try again",
+                    primary: { resetAndScan() }
+                )
             }
         }
         .task { await begin() }
@@ -48,108 +62,102 @@ struct QuickScanView: View {
         }
     }
 
-    // MARK: - Scan UI
+    // MARK: - Scan
 
     private var scanView: some View {
-        VStack(spacing: 16) {
-            Text("Hold still…")
-                .font(.headline)
-                .foregroundStyle(Theme.textSecondary)
-
+        ZStack {
+            Color.black.ignoresSafeArea()
             CameraPreview(session: face.session)
-                .aspectRatio(3 / 4, contentMode: .fit)
-                .clipShape(.rect(cornerRadius: 20))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 20).stroke(Theme.brandPrimary, lineWidth: 2)
-                }
-                .overlay(alignment: .bottom) {
-                    PostureLiveIndicator(quality: currentQuality)
-                        .padding(.bottom, 12)
+                .ignoresSafeArea()
+
+            GeometryReader { geo in
+                Ellipse()
+                    .stroke(style: StrokeStyle(lineWidth: 1.2, dash: [4, 4]))
+                    .foregroundStyle(.white.opacity(0.45))
+                    .frame(width: geo.size.width * 0.56,
+                           height: geo.size.width * 0.56 / 0.72)
+                    .position(x: geo.size.width / 2, y: geo.size.height * 0.44)
+            }
+            .ignoresSafeArea()
+
+            VStack {
+                HStack {
+                    Spacer()
+                    Button { onClose() } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Close")
                 }
                 .padding(.horizontal, 24)
+                .padding(.top, 8)
 
-            Text("\(3 - elapsedSeconds)…")
-                .font(.title2.monospacedDigit())
-                .foregroundStyle(Theme.textSecondary)
-                .contentTransition(.numericText())
-                .animation(.default, value: elapsedSeconds)
+                Spacer()
 
-            if !scanComplete {
-                ProgressView()
-                    .tint(Theme.brandPrimary)
+                Text("\(max(0, 3 - elapsedSeconds))")
+                    .font(Theme.displaySerif(72))
+                    .foregroundStyle(.white.opacity(0.95))
+                    .contentTransition(.numericText())
+                    .animation(.default, value: elapsedSeconds)
+
+                Spacer()
+
+                facePill
+                    .padding(.bottom, 8)
+                Text("hold still. look straight ahead.")
+                    .font(.system(.callout, design: .serif).italic())
+                    .foregroundStyle(.white.opacity(0.7))
+                    .padding(.bottom, 28)
             }
         }
-        .frame(maxHeight: 360)
     }
 
-    private var permissionDeniedView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "camera.fill.badge.ellipsis")
-                .font(.system(size: 56))
-                .foregroundStyle(Theme.textSecondary)
-            Text("Camera access needed")
-                .font(.title3.bold())
-            Text("To check your posture with a camera scan, Posture needs permission to use the front camera. Enable it in Settings, or use a manual check-in instead.")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+    private var facePill: some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(face.faceDetected ? Theme.sage : Theme.clay)
+                .frame(width: 6, height: 6)
+            Text(face.faceDetected ? "head centered" : "find your face")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
+        .background(.ultraThinMaterial, in: .capsule)
+    }
 
-            Button {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
+    private func messageView(
+        title: String,
+        message: String,
+        primaryLabel: String,
+        primary: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                Spacer()
+                Button { onClose() } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(Theme.ink3)
                 }
-            } label: {
-                Text("Open Settings")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.white)
+                .buttonStyle(.plain)
+                .accessibilityLabel("Close")
             }
-            .padding(.horizontal, 32)
-
-            Button { onFallback() } label: {
-                Text("Use manual check-in instead")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.brandPrimary)
-            }
-            .padding(.bottom, 8)
+            Spacer()
+            PostureBanner(tone: .error, title: title, message: message)
+            Button { primary() } label: { Text(primaryLabel) }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
+            Button { onFallback() } label: { Text("check in by hand →") }
+                .buttonStyle(.plain)
+                .daylightCTA(.ghost)
+            Spacer()
         }
-        .padding(.vertical, 12)
-    }
-
-    private var noFaceView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "face.dashed")
-                .font(.system(size: 56))
-                .foregroundStyle(Theme.textSecondary)
-            Text("Couldn't see your face")
-                .font(.title3.bold())
-            Text("Make sure your face is visible in the camera and try again, or use a manual check-in.")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-
-            Button { resetAndScan() } label: {
-                Text("Try again")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.white)
-            }
-            .padding(.horizontal, 32)
-
-            Button { onFallback() } label: {
-                Text("Use manual check-in instead")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.brandPrimary)
-            }
-            .padding(.bottom, 8)
-        }
-        .padding(.vertical, 12)
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Theme.paper.ignoresSafeArea())
     }
 
     // MARK: - Lifecycle
@@ -177,7 +185,6 @@ struct QuickScanView: View {
     private func resetAndScan() {
         countdownTask?.cancel()
         samples = []
-        currentQuality = .good
         scanComplete = false
         elapsedSeconds = 0
         faceEverDetected = false
@@ -203,15 +210,6 @@ struct QuickScanView: View {
                     }
                     try? await Task.sleep(nanoseconds: 200_000_000)
                 }
-                let calibration = CalibrationService(context: context).current()
-                let baseline = calibration?.basePitch ?? 0
-                let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
-                let deviation = (samples.last ?? 0) - baseline
-                currentQuality = PostureScoring.quality(
-                    deviation: deviation,
-                    slouchDelta: slouchDelta,
-                    sensitivity: settings.sensitivity
-                )
                 elapsedSeconds = second + 1
             }
 
@@ -246,10 +244,4 @@ struct QuickScanView: View {
             onComplete(finalQuality)
         }
     }
-}
-
-#Preview {
-    QuickScanView(scheduledAt: .now, onComplete: { _ in }, onFallback: {})
-        .padding()
-        .background(Theme.background)
 }

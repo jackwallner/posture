@@ -2,9 +2,9 @@ import SwiftData
 import SwiftUI
 import UserNotifications
 
-/// Full-screen view shown after a posture reminder notification tap
-/// (or manually from TodayView). Offers a quick camera scan or a
-/// manual acknowledgment, then records it and displays a posture tip.
+/// Full-screen check-in shown after a posture reminder tap (or manually
+/// from TodayView). Daylight: one decision, always an escape hatch, a
+/// reward moment that observes rather than scolds.
 struct AcknowledgmentView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
@@ -13,35 +13,25 @@ struct AcknowledgmentView: View {
     /// The time this reminder was scheduled for. Defaults to .now for manual check-ins.
     let scheduledAt: Date
 
-    /// Optional — if this was triggered by a notification tap, the notification's index
-    /// so we can remove it from the delivered list.
+    /// Optional — notification index, so we can clear the delivered notification.
     let notificationIndex: Int?
 
     @State private var phase: Phase = .choice
     @State private var recordedQuality: PostureQuality?
     @State private var currentTip: PostureTip?
 
-    enum Phase {
-        case choice
-        case scanning
-        case done
-    }
+    enum Phase { case choice, scanning, done }
 
     var body: some View {
-        VStack(spacing: 0) {
+        Group {
             switch phase {
-            case .choice:
-                choiceView
-            case .scanning:
-                scanningView
-            case .done:
-                doneView
+            case .choice: choiceView
+            case .scanning: scanningView
+            case .done: doneView
             }
         }
-        .background(Theme.background.ignoresSafeArea())
         .onAppear {
             currentTip = PostureTipService.randomTip()
-            // Remove the delivered notification if triggered by one
             if let idx = notificationIndex {
                 UNUserNotificationCenter.current().removeDeliveredNotifications(
                     withIdentifiers: ["posture.reminder.\(idx)"]
@@ -50,189 +40,189 @@ struct AcknowledgmentView: View {
         }
     }
 
-    // MARK: - Choice View
+    // MARK: - Choice
 
     private var choiceView: some View {
-        VStack(spacing: 24) {
-            Spacer()
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(eyebrow(scheduledAt))
+                    .font(.caption.weight(.semibold))
+                    .tracking(2)
+                    .foregroundStyle(Theme.ink3)
+                Spacer()
+                closeButton
+            }
+            .padding(.top, 12)
+            .padding(.bottom, 40)
 
-            Image(systemName: "figure.stand")
-                .font(.system(size: 64, weight: .light))
-                .foregroundStyle(Theme.brandGradient)
+            Text("how's your posture\nright now?")
+                .font(Theme.displaySerif(42))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(2)
 
-            Text("Time to check in")
-                .font(.title.bold())
-                .foregroundStyle(Theme.textPrimary)
-
-            Text("How's your posture right now?")
+            Text("A three-second scan. Or just tell us — we trust you.")
                 .font(.body)
-                .foregroundStyle(Theme.textSecondary)
-
-            Spacer()
-
-            VStack(spacing: 14) {
-                Button {
-                    phase = .scanning
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "camera.viewfinder")
-                            .font(.title3)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Quick Scan")
-                                .font(.headline)
-                            Text("Uses front camera — 3 seconds")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.white)
-                }
-
-                Button {
-                    recordAcknowledgment(method: .manual, quality: nil)
-                    withAnimation { phase = .done }
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "hand.tap")
-                            .font(.title3)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("I Sat Up Straight")
-                                .font(.headline)
-                            Text("Manual check — no camera")
-                                .font(.caption)
-                                .foregroundStyle(Theme.textSecondary)
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(Theme.cardSurface, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(Theme.textPrimary)
-                }
-
-                if let idx = notificationIndex, idx > 0 {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Text("Dismiss")
-                            .font(.body)
-                            .foregroundStyle(Theme.textSecondary)
-                    }
-                }
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 48)
-        }
-    }
-
-    // MARK: - Scanning View
-
-    private var scanningView: some View {
-        VStack(spacing: 20) {
-            Text("Checking your posture")
-                .font(.headline)
-                .foregroundStyle(Theme.textPrimary)
-                .padding(.top, 24)
-
-            QuickScanView(
-                scheduledAt: scheduledAt,
-                onComplete: { quality in
-                    recordedQuality = quality
-                    recordAcknowledgment(method: .camera, quality: quality)
-                    withAnimation { phase = .done }
-                },
-                onFallback: {
-                    recordedQuality = nil
-                    recordAcknowledgment(method: .manual, quality: nil)
-                    withAnimation { phase = .done }
-                }
-            )
-            .padding(.horizontal, 16)
-        }
-    }
-
-    // MARK: - Done View
-
-    private var doneView: some View {
-        VStack(spacing: 24) {
-            let icon = recordedQuality.map { q -> (String, Color) in
-                switch q {
-                case .good: return ("checkmark.circle.fill", Theme.good)
-                case .borderline: return ("exclamationmark.triangle.fill", Theme.borderline)
-                case .bad: return ("xmark.octagon.fill", Theme.bad)
-                }
-            } ?? ("hand.wave.fill", Theme.brandPrimary)
-
-            Image(systemName: icon.0)
-                .font(.system(size: 72))
-                .foregroundStyle(icon.1)
-
-            VStack(spacing: 8) {
-                if let quality = recordedQuality {
-                    switch quality {
-                    case .good:
-                        Text("Looking good!")
-                            .font(.title.bold())
-                        Text("Your posture is on track.")
-                            .foregroundStyle(Theme.textSecondary)
-                    case .borderline:
-                        Text("Shift back a bit")
-                            .font(.title.bold())
-                        Text("You're close but slightly forward.")
-                            .foregroundStyle(Theme.textSecondary)
-                    case .bad:
-                        Text("Straighten up")
-                            .font(.title.bold())
-                        Text("Sit tall with your shoulders back.")
-                            .foregroundStyle(Theme.textSecondary)
-                    }
-                } else {
-                    Text("Checked in!")
-                        .font(.title.bold())
-                    Text("Good job staying mindful.")
-                        .foregroundStyle(Theme.textSecondary)
-                }
-            }
-
-            // Posture tip
-            if let tip = currentTip {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "lightbulb.fill")
-                            .foregroundStyle(Theme.borderline)
-                        Text("Tip")
-                            .font(.caption.bold())
-                            .foregroundStyle(Theme.textSecondary)
-                    }
-                    Text(tip.text)
-                        .font(.subheadline)
-                        .foregroundStyle(Theme.textPrimary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(Theme.cardPadding)
-                .background(Theme.cardSurface, in: .rect(cornerRadius: Theme.cardRadius))
-                .padding(.horizontal, 32)
-            }
+                .foregroundStyle(Theme.ink2)
+                .padding(.top, 14)
 
             Spacer()
 
             Button {
-                dismiss()
+                phase = .scanning
             } label: {
-                Text("Done")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.white)
+                Text("scan")
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 32)
+            .buttonStyle(.plain)
+            .daylightCTA(.primary)
+
+            Button {
+                recordAcknowledgment(method: .manual, quality: nil)
+                recordedQuality = nil
+                withAnimation { phase = .done }
+            } label: {
+                Text("just checking in — manual →")
+            }
+            .buttonStyle(.plain)
+            .daylightCTA(.ghost)
+            .padding(.bottom, 16)
         }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(Theme.paper.ignoresSafeArea())
+    }
+
+    // MARK: - Scanning
+
+    private var scanningView: some View {
+        QuickScanView(
+            scheduledAt: scheduledAt,
+            onComplete: { quality in
+                recordedQuality = quality
+                recordAcknowledgment(method: .camera, quality: quality)
+                withAnimation { phase = .done }
+            },
+            onFallback: {
+                recordedQuality = nil
+                recordAcknowledgment(method: .manual, quality: nil)
+                withAnimation { phase = .done }
+            },
+            onClose: { dismiss() }
+        )
+    }
+
+    // MARK: - Done
+
+    private var doneView: some View {
+        ZStack {
+            tintForDone.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 22) {
+                HStack {
+                    Spacer()
+                    closeButton
+                }
+                Spacer()
+                VStack(alignment: .leading, spacing: 14) {
+                    Text(doneEyebrow)
+                        .font(.caption.weight(.semibold))
+                        .tracking(2)
+                        .foregroundStyle(resultColor)
+                    HStack(alignment: .firstTextBaseline, spacing: 0) {
+                        Text(resultWord)
+                            .font(Theme.displaySerif(64))
+                            .foregroundStyle(Theme.ink)
+                        Text(".")
+                            .font(Theme.displaySerif(64))
+                            .foregroundStyle(resultColor)
+                    }
+                    Text(resultSubtitle)
+                        .font(.body)
+                        .foregroundStyle(Theme.ink2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                HorizonMeter(quality: recordedQuality)
+                    .frame(height: 48)
+                    .padding(.vertical, 8)
+                if let tip = currentTip {
+                    TipLine(tip: tip)
+                }
+                Spacer()
+                Button { dismiss() } label: { Text("done") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 32)
+        }
+    }
+
+    // MARK: - Chrome
+
+    private var closeButton: some View {
+        Button { dismiss() } label: {
+            Image(systemName: "xmark")
+                .font(.body.weight(.medium))
+                .foregroundStyle(Theme.ink3)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Close")
+    }
+
+    // MARK: - Result copy
+
+    private var resultWord: String {
+        switch recordedQuality {
+        case .good: return "aligned"
+        case .borderline: return "drifting"
+        case .bad: return "resting"
+        case nil: return "noted"
+        }
+    }
+
+    private var resultColor: Color {
+        switch recordedQuality {
+        case .good: return Theme.sage
+        case .borderline: return Theme.sand
+        case .bad: return Theme.clay
+        case nil: return Theme.ink3
+        }
+    }
+
+    private var tintForDone: Color {
+        switch recordedQuality {
+        case .good: return Theme.sageTint
+        case .borderline: return Theme.sandTint
+        case .bad: return Theme.clayTint
+        case nil: return Theme.paper2
+        }
+    }
+
+    private var resultSubtitle: String {
+        switch recordedQuality {
+        case .good:
+            return "Crown over hips. Shoulders soft. You're holding the shape well."
+        case .borderline:
+            return "Head's a little forward. A small reset is all this needs."
+        case .bad:
+            return "Curled forward. Take a slow breath, lift the crown of your head."
+        case nil:
+            return "Logged without a scan. That counts — staying mindful is most of it."
+        }
+    }
+
+    private var doneEyebrow: String {
+        recordedQuality == nil ? "noted" : "\(timeString(scheduledAt)) · scanned"
+    }
+
+    private func eyebrow(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE · h:mm a"
+        return f.string(from: date).lowercased()
+    }
+
+    private func timeString(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "h:mm a"
+        return f.string(from: date).lowercased()
     }
 
     // MARK: - Recording
@@ -251,5 +241,3 @@ struct AcknowledgmentView: View {
         AnalyticsService.acknowledgmentRecorded(method: method, quality: quality)
     }
 }
-
-
