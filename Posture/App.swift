@@ -56,6 +56,12 @@ private struct AirpodsRootView: View {
             )) { cover in
                 AcknowledgmentView(scheduledAt: cover.scheduledAt, notificationIndex: cover.index)
             }
+            .onChange(of: settings.hasCompletedOnboarding) { _, completed in
+                // First time the user finishes onboarding — now the
+                // "a few nudges a day" copy has been read, so the iOS
+                // notification prompt has context.
+                if completed { Task { await ReminderScheduler.reschedule() } }
+            }
             .onChange(of: settings.reminderEnabled) { _, _ in
                 Task { await ReminderScheduler.reschedule() }
             }
@@ -159,7 +165,11 @@ struct RootView: View {
             guard !didMigrate else { return }
             GoalSettings.shared.migrateFromDeprecatedKeys()
             didMigrate = true
-            await ReminderScheduler.reschedule()
+            // Hold the iOS notification prompt until after onboarding so
+            // the user reads "a few nudges a day" before the system asks.
+            if GoalSettings.shared.hasCompletedOnboarding {
+                await ReminderScheduler.reschedule()
+            }
         }
     }
 }
