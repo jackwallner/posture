@@ -13,14 +13,6 @@ struct PaywallView: View {
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
 
-    private var priceText: String {
-        guard subscriptions.isConfigured else {
-            return "$4.99 / month · $29.99 / year · $79.99 lifetime"
-        }
-        // In production, pull from RevenueCat offerings
-        return "Monthly or annual — cancel anytime"
-    }
-
     var body: some View {
         #if canImport(RevenueCatUI)
         if subscriptions.isConfigured {
@@ -44,127 +36,116 @@ struct PaywallView: View {
 
     private var placeholderPaywall: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                Spacer().frame(height: 24)
-
-                Image(systemName: "crown.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(Theme.brandGradient)
-
-                Text("Posture Pro")
-                    .font(Theme.bigNumber(34))
-
-                Text("Always-on protection against tech neck.")
-                    .font(.headline)
-                    .foregroundStyle(Theme.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                VStack(spacing: 14) {
-                    BenefitRow(icon: "applewatch.radiowaves.left.and.right",
-                               title: "Always-on Watch monitoring",
-                               detail: "Continuous wrist tracking + haptic nudges.")
-                    BenefitRow(icon: "chart.bar.xaxis",
-                               title: "All-day timeline + heatmap",
-                               detail: "See exactly when your posture slips.")
-                    BenefitRow(icon: "camera.fill",
-                               title: "Before/after photo analysis",
-                               detail: "Track measurable head-forward angle change.")
-                    BenefitRow(icon: "infinity",
-                               title: "Unlimited history",
-                               detail: "Free is 7 days; Pro keeps everything.")
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text("POSTURE · PRO")
+                        .font(.caption.weight(.semibold))
+                        .tracking(2)
+                        .foregroundStyle(Theme.ink3)
+                    Spacer()
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(Theme.ink3)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Close")
                 }
-                .padding(.horizontal, 24)
+
+                Text("The long way is\nthe only way.")
+                    .font(Theme.displaySerif(34))
+                    .foregroundStyle(Theme.ink)
+
+                Text("Pro adds the parts of the practice you only see after a few weeks.")
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.ink2)
+
+                YourJulyPostcard()
+
+                VStack(alignment: .leading, spacing: 0) {
+                    includedRow("24-hour rhythm — when you slip, hour by hour")
+                    includedRow("Quiet AirPods background monitoring")
+                    includedRow("Every month kept — free shows a week", isLast: true)
+                }
+                .padding(.top, 4)
 
                 if let error = purchaseError {
                     Text(error)
                         .font(.caption)
-                        .foregroundStyle(Theme.bad)
-                        .padding(.horizontal, 32)
+                        .foregroundStyle(Theme.clay)
                 }
-
-                purchaseButton("Subscribe Monthly · $4.99") {
-                    await purchaseMonthly()
-                }
-                .padding(.horizontal, 32)
-
-                purchaseButton("Subscribe Yearly · $29.99") {
-                    await purchaseYearly()
-                }
-                .padding(.horizontal, 32)
-
-                Text("Free trial included with annual. Cancel anytime.")
-                    .font(.caption2)
-                    .foregroundStyle(Theme.textTertiary)
-                    .padding(.horizontal, 32)
 
                 Button {
-                    restoreAttempted = true
+                    guard !isPurchasing else { return }
+                    isPurchasing = true
                     purchaseError = nil
-                    Task {
-                        do {
+                    Task { await purchaseYearly(); isPurchasing = false }
+                } label: {
+                    HStack(spacing: 8) {
+                        if isPurchasing { ProgressView().tint(Theme.paper) }
+                        Text("try 7 days · then $29.99 / year")
+                    }
+                }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
+                .disabled(isPurchasing)
+                .padding(.top, 4)
+
+                HStack(spacing: 14) {
+                    Text("or $4.99 / month")
+                        .font(.caption)
+                        .foregroundStyle(Theme.ink3)
+                    Spacer()
+                    Button("restore") {
+                        restoreAttempted = true
+                        purchaseError = nil
+                        Task {
                             #if canImport(RevenueCat)
-                            try await Purchases.shared.restorePurchases()
-                            await subscriptions.refresh()
+                            do {
+                                try await Purchases.shared.restorePurchases()
+                                await subscriptions.refresh()
+                            } catch {
+                                purchaseError = "Could not restore purchases. Please try again."
+                            }
                             #endif
-                        } catch {
-                            purchaseError = "Could not restore purchases. Please try again."
                         }
                     }
-                } label: {
-                    Text("Restore Purchases")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Theme.cardSurface, in: .rect(cornerRadius: 14))
-                        .foregroundStyle(Theme.brandPrimary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.ink2)
+                    Text("·").foregroundStyle(Theme.ink3)
+                    Button("maybe later") { dismiss() }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Theme.ink2)
                 }
-                .padding(.horizontal, 32)
+                .buttonStyle(.plain)
 
                 if restoreAttempted && !subscriptions.isProSubscriber {
                     Text("No purchases found to restore.")
                         .font(.caption)
-                        .foregroundStyle(Theme.textSecondary)
+                        .foregroundStyle(Theme.ink3)
                 }
-
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Maybe Later")
-                        .font(.subheadline)
-                        .foregroundStyle(Theme.textSecondary)
-                }
-                .padding(.bottom, 32)
             }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
         }
-        .background(Theme.background.ignoresSafeArea())
+        .background(Theme.paper.ignoresSafeArea())
         .onAppear { AnalyticsService.paywallShown() }
     }
 
-    private func purchaseButton(_ label: String, action: @escaping () async -> Void) -> some View {
-        Button {
-            guard !isPurchasing else { return }
-            isPurchasing = true
-            purchaseError = nil
-            Task {
-                await action()
-                isPurchasing = false
+    private func includedRow(_ text: String, isLast: Bool = false) -> some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 10) {
+                Text("·")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.sage)
+                Text(text)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.ink)
+                Spacer(minLength: 0)
             }
-        } label: {
-            HStack {
-                if isPurchasing {
-                    ProgressView()
-                        .tint(.white)
-                }
-                Text(label)
-                    .font(.headline)
-            }
-            .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-            .foregroundStyle(.white)
+            if !isLast { Divider().background(Theme.paper3) }
         }
-        .disabled(isPurchasing)
     }
 
     private func purchaseMonthly() async {
@@ -178,10 +159,7 @@ struct PaywallView: View {
                 return
             }
             let result = try await Purchases.shared.purchase(package: monthly)
-            if result.userCancelled {
-                purchaseError = nil
-                return
-            }
+            if result.userCancelled { purchaseError = nil; return }
             AnalyticsService.purchaseCompleted(plan: "monthly")
             await subscriptions.refresh()
             dismiss()
@@ -202,10 +180,7 @@ struct PaywallView: View {
                 return
             }
             let result = try await Purchases.shared.purchase(package: yearly)
-            if result.userCancelled {
-                purchaseError = nil
-                return
-            }
+            if result.userCancelled { purchaseError = nil; return }
             AnalyticsService.purchaseCompleted(plan: "yearly")
             await subscriptions.refresh()
             dismiss()
@@ -216,21 +191,79 @@ struct PaywallView: View {
     }
 }
 
-private struct BenefitRow: View {
-    let icon: String
-    let title: String
-    let detail: String
-    var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(Theme.brandPrimary)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.subheadline.weight(.semibold))
-                Text(detail).font(.caption).foregroundStyle(Theme.textSecondary)
+/// A synthetic 30-day "preview" of a Pro month — deliberately not real
+/// data (avoids any before/after medical-claim reading). A 14-day
+/// contiguous stretch is outlined.
+private struct YourJulyPostcard: View {
+    // Deterministic synthetic month: mostly aligned with a few dips.
+    private let bars: [PostureQuality] = {
+        var out: [PostureQuality] = []
+        for i in 0..<30 {
+            switch i {
+            case 3, 9, 21: out.append(.bad)
+            case 1, 7, 14, 24, 27: out.append(.borderline)
+            default: out.append(.good)
             }
-            Spacer()
+        }
+        return out
+    }()
+
+    private let stretchRange = 10...23  // the "14 day stretch"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("YOUR JULY · A PREVIEW")
+                    .font(.caption.weight(.semibold))
+                    .tracking(2)
+                    .foregroundStyle(Theme.ink3)
+                Spacer()
+                Text("84% aligned")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.sage)
+            }
+
+            HStack(alignment: .bottom, spacing: 3) {
+                ForEach(0..<30, id: \.self) { i in
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Theme.qualityColor(bars[i]))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: barHeight(bars[i]))
+                }
+            }
+            .frame(height: 56)
+            .overlay(alignment: .leading) { stretchOutline }
+
+            HStack {
+                Text("JUL 1").font(.caption2).foregroundStyle(Theme.ink3)
+                Spacer()
+                Text("14 DAY STRETCH").font(.caption2.weight(.semibold)).foregroundStyle(Theme.ink2)
+                Spacer()
+                Text("JUL 30").font(.caption2).foregroundStyle(Theme.ink3)
+            }
+        }
+        .padding(16)
+        .background(Theme.paper2, in: .rect(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
+    }
+
+    private var stretchOutline: some View {
+        GeometryReader { geo in
+            let barW = geo.size.width / 30
+            let x = barW * CGFloat(stretchRange.lowerBound)
+            let w = barW * CGFloat(stretchRange.count)
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(Theme.ink, lineWidth: 1.5)
+                .frame(width: w, height: geo.size.height + 6)
+                .offset(x: x - 3, y: -3)
+        }
+    }
+
+    private func barHeight(_ q: PostureQuality) -> CGFloat {
+        switch q {
+        case .good: return 56
+        case .borderline: return 38
+        case .bad: return 22
         }
     }
 }
