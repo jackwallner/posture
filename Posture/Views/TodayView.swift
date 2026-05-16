@@ -9,9 +9,26 @@ struct TodayView: View {
     @Query(sort: \AcknowledgmentRecord.timestamp, order: .reverse) private var acknowledgments: [AcknowledgmentRecord]
 
     @State private var showingAck = false
+    @State private var showingRecalibrate = false
     @State private var nextReminderText = "—"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
+    @Query(sort: \Calibration.capturedAt, order: .reverse) private var calibrations: [Calibration]
+    @Query private var passiveSamples: [PosturePassiveSample]
+
+    private var hasPassiveSamplesToday: Bool {
+        let today = DateHelpers.startOfDay()
+        return passiveSamples.contains { $0.timestamp >= today }
+    }
+
+    /// Show a soft prompt to recalibrate after 30+ days — head pose drifts
+    /// against the saved baseline (especially with AirPods which sit
+    /// differently each time).
+    private var needsRecalibration: Bool {
+        guard let last = calibrations.first else { return false }
+        let days = Calendar.current.dateComponents([.day], from: last.capturedAt, to: .now).day ?? 0
+        return days >= 30
+    }
 
     /// Display-only streak. Does not insert a StreakState during body
     /// evaluation (audit P1-10) — creation is owned by StreakService.
@@ -43,6 +60,10 @@ struct TodayView: View {
                         monitoringChip(monitor: monitor)
                     }
 
+                    if hasPassiveSamplesToday {
+                        PassiveTimelineView()
+                    }
+
                     DayStrip(acks: todayAcks)
 
                     VStack(spacing: 10) {
@@ -52,7 +73,14 @@ struct TodayView: View {
                         metaRow
                     }
 
-                    if todayAcks.isEmpty {
+                    if needsRecalibration {
+                        PostureBanner(
+                            tone: .muted,
+                            title: "Recalibrate when you have a minute.",
+                            message: "It's been a while. A quick reset keeps the readings honest.",
+                            action: ("recalibrate", { showingRecalibrate = true })
+                        )
+                    } else if todayAcks.isEmpty {
                         PostureBanner(
                             tone: .muted,
                             title: "A daylight habit takes about a week.",
@@ -82,6 +110,9 @@ struct TodayView: View {
             }
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
+            }
+            .sheet(isPresented: $showingRecalibrate) {
+                CalibrationView(mode: .quickRecalibrate)
             }
             .task { await refreshReminderStatus() }
             .onChange(of: settings.reminderEnabled) { _, _ in
@@ -150,11 +181,12 @@ struct TodayView: View {
     @ViewBuilder
     private func monitoringChip(monitor: AirpodsBackgroundMonitor) -> some View {
         let live = monitor.isConnected
+        let bgMode = monitor.isBackground
         HStack(spacing: 8) {
             Circle()
                 .fill(live ? Theme.sage : Theme.sand)
                 .frame(width: 6, height: 6)
-            Text(live ? "monitoring · airpods linked" : "monitoring · waiting for airpods")
+            Text(chipLabel(live: live, background: bgMode))
                 .font(.system(.caption, design: .rounded).weight(.semibold))
                 .foregroundStyle(live ? Theme.sage : Theme.ink2)
             Spacer(minLength: 0)
@@ -162,6 +194,15 @@ struct TodayView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(live ? Theme.sageTint : Theme.sandTint, in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func chipLabel(live: Bool, background: Bool) -> String {
+        switch (live, background) {
+        case (true, true): return "monitoring · airpods linked"
+        case (true, false): return "in-app coaching · airpods linked"
+        case (false, true): return "monitoring · waiting for airpods"
+        case (false, false): return "in-app coaching · waiting for airpods"
+        }
     }
 
     // MARK: - Meta row

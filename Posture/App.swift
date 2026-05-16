@@ -38,11 +38,12 @@ private struct AirpodsRootView: View {
                 guard monitor == nil else { return }
                 let m = AirpodsBackgroundMonitor(modelContext: context)
                 monitor = m
-                // P1-7: a cold launch fires none of the onChange/foreground
-                // hooks, so start monitoring here if it's enabled + Pro.
-                if settings.airpodsBackgroundEnabled && subscriptions.isProSubscriber {
-                    _ = m.start()
-                }
+                // Free users with AirPods get foreground-only coaching so
+                // they can feel the haptics while the app is open. Pro +
+                // toggle extends that with the silent-audio background
+                // trick. P1-7: a cold launch fires no onChange hooks, so
+                // do the right thing here.
+                startMonitoringForCurrentTier(m)
                 UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
                 NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
@@ -67,26 +68,33 @@ private struct AirpodsRootView: View {
             .onChange(of: settings.activeHoursEnd) { _, _ in
                 Task { await ReminderScheduler.reschedule() }
             }
-            .onChange(of: settings.airpodsBackgroundEnabled) { _, enabled in
-                updateMonitoring(enabled: enabled && subscriptions.isProSubscriber)
+            .onChange(of: settings.airpodsBackgroundEnabled) { _, _ in
+                if let m = monitor { restartMonitoringForCurrentTier(m) }
             }
-            .onChange(of: subscriptions.isProSubscriber) { _, isPro in
-                updateMonitoring(enabled: settings.airpodsBackgroundEnabled && isPro)
+            .onChange(of: subscriptions.isProSubscriber) { _, _ in
+                if let m = monitor { restartMonitoringForCurrentTier(m) }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 Task { await ReminderScheduler.reschedule() }
-                if settings.airpodsBackgroundEnabled && subscriptions.isProSubscriber {
-                    _ = monitor?.start()
+                if let m = monitor, !m.isMonitoring {
+                    startMonitoringForCurrentTier(m)
                 }
             }
     }
 
-    private func updateMonitoring(enabled: Bool) {
-        if enabled {
-            _ = monitor?.start()
-        } else {
-            monitor?.stop()
-        }
+    /// Free users with AirPods get foreground-only coaching. Pro + toggle
+    /// gets the silent-audio background extension. Users without AirPods
+    /// get nothing.
+    private func startMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
+        guard settings.hasAirpods == true else { return }
+        let allowBackground = settings.airpodsBackgroundEnabled
+            && subscriptions.isProSubscriber
+        _ = m.start(background: allowBackground)
+    }
+
+    private func restartMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
+        m.stop()
+        startMonitoringForCurrentTier(m)
     }
 }
 

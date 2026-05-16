@@ -79,26 +79,37 @@ final class AirpodsBackgroundMonitor {
 
     // MARK: - Start / Stop
 
-    /// Start background monitoring. Returns false if AirPods aren't available.
+    /// Public for UI: are we currently running with the background audio
+    /// session attached (the Pro extension) or foreground-only?
+    private(set) var isBackground = false
+
+    /// Start monitoring. `background: true` attaches a silent audio session
+    /// so motion samples keep flowing while the app is suspended — this is
+    /// the Pro tier behavior and shows the iOS orange dot. `background:
+    /// false` starts motion only; iOS will suspend it when the app leaves
+    /// the foreground. Returns false if AirPods aren't available.
     @discardableResult
-    func start() -> Bool {
+    func start(background: Bool = true) -> Bool {
         guard !isMonitoring else { return true }
         guard headphoneService.isAvailable else {
             lastError = "AirPods with head tracking not available"
             return false
         }
 
-        do {
-            try startAudioSession()
-            try startSilentAudio()
-        } catch {
-            lastError = "Audio setup failed: \(error.localizedDescription)"
-            stop()
-            return false
+        if background {
+            do {
+                try startAudioSession()
+                try startSilentAudio()
+            } catch {
+                lastError = "Audio setup failed: \(error.localizedDescription)"
+                stop()
+                return false
+            }
         }
 
         headphoneService.start()
         isMonitoring = true
+        isBackground = background
         lastError = nil
         return true
     }
@@ -108,6 +119,7 @@ final class AirpodsBackgroundMonitor {
         stopSilentAudio()
         stopAudioSession()
         isMonitoring = false
+        isBackground = false
         isConnected = false
         currentQuality = .good
     }

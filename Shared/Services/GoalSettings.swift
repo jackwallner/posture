@@ -27,6 +27,9 @@ final class GoalSettings {
         // Pro features
         static let airpodsBackgroundEnabled = "airpodsBackgroundEnabled"
 
+        // AirPods ownership (asked once at onboarding, nil if never asked)
+        static let hasAirpods = "hasAirpods"
+
         // Deprecated (kept for migration)
         static let dailyReminderEnabled = "dailyReminderEnabled"
         static let dailyReminderHour = "dailyReminderHour"
@@ -86,6 +89,23 @@ final class GoalSettings {
     var airpodsBackgroundEnabled: Bool {
         get { access(keyPath: \.airpodsBackgroundEnabled); return defaults.bool(forKey: Key.airpodsBackgroundEnabled) }
         set { withMutation(keyPath: \.airpodsBackgroundEnabled) { defaults.set(newValue, forKey: Key.airpodsBackgroundEnabled) } }
+    }
+
+    /// Tri-state: nil = never asked (legacy install or upgrade path), true/false
+    /// = answer from onboarding. Read by CalibrationView and the foreground
+    /// monitor decision in App.swift.
+    var hasAirpods: Bool? {
+        get {
+            access(keyPath: \.hasAirpods)
+            guard defaults.object(forKey: Key.hasAirpods) != nil else { return nil }
+            return defaults.bool(forKey: Key.hasAirpods)
+        }
+        set {
+            withMutation(keyPath: \.hasAirpods) {
+                if let value = newValue { defaults.set(value, forKey: Key.hasAirpods) }
+                else { defaults.removeObject(forKey: Key.hasAirpods) }
+            }
+        }
     }
 
     // MARK: - Migration from old reminder keys

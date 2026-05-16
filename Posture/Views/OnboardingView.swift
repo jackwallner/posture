@@ -3,63 +3,113 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(GoalSettings.self) private var settings
 
+    @State private var step: Step = .welcome
+
+    enum Step { case welcome, airpodsQuestion }
+
     var body: some View {
-        VStack(spacing: 24) {
+        Group {
+            switch step {
+            case .welcome: welcomeStep
+            case .airpodsQuestion: airpodsStep
+            }
+        }
+        .background(Theme.paper.ignoresSafeArea())
+    }
+
+    // MARK: - Welcome
+
+    private var welcomeStep: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("POSTURE")
+                .font(.caption.weight(.semibold)).tracking(2)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 16)
+
             Spacer()
-            Image(systemName: "figure.stand")
-                .font(.system(size: 80, weight: .light))
-                .foregroundStyle(Theme.brandGradient)
 
-            Text("Stand tall, every day.")
-                .font(Theme.bigNumber(34))
-                .multilineTextAlignment(.center)
+            Text("a daylight\nhabit.")
+                .font(Theme.displaySerif(48))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(2)
 
-            Text("Posture builds a daily habit of better posture using your iPhone, AirPods, and Apple Watch.")
+            Text("Small check-ins through the day. A quiet record of how you held the shape — nothing more, nothing graded.")
                 .font(.body)
-                .foregroundStyle(Theme.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .foregroundStyle(Theme.ink2)
+                .padding(.top, 16)
 
-            FeatureRow(icon: "camera.viewfinder", title: "Calibrate once", detail: "We learn what your good posture looks like.")
-            FeatureRow(icon: "timer", title: "Periodic reminders", detail: "We'll nudge you throughout the day to check in.")
-            FeatureRow(icon: "bell.badge.waveform", title: "Quick check-ins", detail: "Tap or scan your posture in seconds.")
+            VStack(alignment: .leading, spacing: 14) {
+                row(eyebrow: "01", title: "Calibrate once.",
+                    detail: "We learn what your good posture looks like.")
+                row(eyebrow: "02", title: "A few nudges a day.",
+                    detail: "Pick the cadence — every 15, 30, or 60 minutes.")
+                row(eyebrow: "03", title: "Three seconds, no friction.",
+                    detail: "Tap a reminder, hold still, done.")
+            }
+            .padding(.top, 32)
+
+            Spacer()
+
+            Button { step = .airpodsQuestion } label: {
+                Text("begin")
+            }
+            .buttonStyle(.plain)
+            .daylightCTA(.primary)
+            .padding(.bottom, 28)
+        }
+        .padding(.horizontal, 24)
+    }
+
+    private func row(eyebrow: String, title: String, detail: String) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            Text(eyebrow)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Theme.ink3)
+                .frame(width: 24, alignment: .leading)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.body.weight(.medium)).foregroundStyle(Theme.ink)
+                Text(detail).font(.subheadline).foregroundStyle(Theme.ink2)
+            }
+        }
+    }
+
+    // MARK: - AirPods question
+
+    private var airpodsStep: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("SETUP · 1 OF 2")
+                .font(.caption.weight(.semibold)).tracking(2)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 16)
+
+            Spacer()
+
+            Text("do you have\nairpods?")
+                .font(Theme.displaySerif(40))
+                .foregroundStyle(Theme.ink)
+
+            Text("If yes, we'll use their motion sensor — no camera, hands free. Pro extends this into the background while you work.")
+                .font(.body)
+                .foregroundStyle(Theme.ink2)
+                .padding(.top, 14)
 
             Spacer()
 
             Button {
+                settings.hasAirpods = true
                 settings.hasCompletedOnboarding = true
-            } label: {
-                Text("Get started")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Theme.brandGradient, in: .rect(cornerRadius: 14))
-                    .foregroundStyle(.white)
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 32)
-        }
-        .background(Theme.background.ignoresSafeArea())
-    }
-}
+            } label: { Text("yes — link them") }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
 
-private struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let detail: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(Theme.brandPrimary)
-                .frame(width: 32)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.headline)
-                Text(detail).font(.subheadline).foregroundStyle(Theme.textSecondary)
-            }
-            Spacer()
+            Button {
+                settings.hasAirpods = false
+                settings.hasCompletedOnboarding = true
+            } label: { Text("no — use my camera") }
+                .buttonStyle(.plain)
+                .daylightCTA(.secondary)
+                .padding(.bottom, 28)
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, 24)
     }
 }

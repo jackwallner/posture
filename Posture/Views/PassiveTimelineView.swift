@@ -33,7 +33,7 @@ struct PassiveTimelineView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("TODAY'S RHYTHM · PRO")
+            Text("TODAY'S RHYTHM")
                 .font(.caption.weight(.semibold))
                 .tracking(2)
                 .foregroundStyle(Theme.sage)

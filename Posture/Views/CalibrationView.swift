@@ -17,7 +17,7 @@ struct CalibrationView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var step: Step = .airpodsQuestion
+    @State private var step: Step = .captureBaseline
     @State private var hasAirpods: Bool?
     @State private var face = FaceTrackingService()
     @State private var airpods = HeadphoneMotionService()
@@ -30,12 +30,11 @@ struct CalibrationView: View {
     @State private var countdownTask: Task<Void, Never>?
     @State private var captureError: String?
 
-    enum Step { case airpodsQuestion, captureBaseline, done }
+    enum Step { case captureBaseline, done }
 
     var body: some View {
         Group {
             switch step {
-            case .airpodsQuestion: airpodsQuestionStep
             case .captureBaseline:
                 if hasAirpods == true { airpodsCaptureStep } else { captureStep }
             case .done: doneStep
@@ -43,12 +42,14 @@ struct CalibrationView: View {
         }
         .background(Theme.paper.ignoresSafeArea())
         .task {
-            // Quick-recalibrate skips the question — reuse the previously
-            // chosen mode by reading whether the last calibration had AirPods.
-            if mode == .quickRecalibrate, step == .airpodsQuestion {
+            // First-time calibration trusts the onboarding answer. Quick
+            // recalibrate inherits the prior calibration's source. Either
+            // way the question step is dead code — we just skip to capture.
+            if mode == .quickRecalibrate {
                 let last = CalibrationService(context: context).current()
                 hasAirpods = (last?.airpodsPitch != nil)
-                step = .captureBaseline
+            } else if hasAirpods == nil {
+                hasAirpods = settings.hasAirpods ?? false
             }
             if step == .captureBaseline {
                 if hasAirpods == true {
@@ -63,48 +64,6 @@ struct CalibrationView: View {
             face.stop()
             airpods.stop()
         }
-    }
-
-    // MARK: - AirPods question
-
-    private var airpodsQuestionStep: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("CALIBRATION")
-                .font(.caption.weight(.semibold)).tracking(2)
-                .foregroundStyle(Theme.ink3)
-                .padding(.top, 16)
-
-            Spacer()
-
-            Text("do you have\nairpods?")
-                .font(Theme.displaySerif(40))
-                .foregroundStyle(Theme.ink)
-
-            Text("If yes, we'll use their motion sensor to catch slouches without staring at the camera.")
-                .font(.body)
-                .foregroundStyle(Theme.ink2)
-                .padding(.top, 14)
-
-            Spacer()
-
-            Button {
-                hasAirpods = true
-                step = .captureBaseline
-                airpods.start()
-            } label: { Text("yes — link them") }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
-
-            Button {
-                hasAirpods = false
-                step = .captureBaseline
-                Task { await face.start() }
-            } label: { Text("no — use my camera") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
-                .padding(.bottom, 24)
-        }
-        .padding(.horizontal, 24)
     }
 
     // MARK: - AirPods-only capture
