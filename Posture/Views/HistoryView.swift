@@ -1,330 +1,238 @@
-import Charts
 import SwiftData
 import SwiftUI
 
 struct HistoryView: View {
-    @Query private var sessions: [PostureSession]
     @Query private var acknowledgments: [AcknowledgmentRecord]
     @State private var subscriptions = SubscriptionService.shared
+    @State private var showingAck = false
 
     init() {
-        let cutoff = DateHelpers.daysAgo(30)
-        let sessionPredicate = #Predicate<PostureSession> { session in
-            session.startedAt >= cutoff
-        }
-        _sessions = Query(filter: sessionPredicate, sort: \PostureSession.startedAt, order: .reverse)
+        let cutoff = DateHelpers.daysAgo(14)
         let ackPredicate = #Predicate<AcknowledgmentRecord> { ack in
             ack.timestamp >= cutoff
         }
         _acknowledgments = Query(filter: ackPredicate, sort: \AcknowledgmentRecord.timestamp, order: .reverse)
     }
 
-    /// Best quality score per day (from sessions or camera acknowledgments).
-    private var weeklyQualityData: [(day: Date, score: Int)] {
-        let today = DateHelpers.startOfDay()
-        var bestByDay: [Date: Int] = [:]
+    private let cal = Calendar.current
 
-        // Collect from sessions
-        for session in sessions {
-            let day = DateHelpers.startOfDay(session.startedAt)
-            let daysFrom = Calendar.current.dateComponents([.day], from: day, to: today).day ?? 0
-            guard daysFrom < 7 else { continue }
-            bestByDay[day] = max(bestByDay[day] ?? 0, session.score)
-        }
-
-        // Collect from camera acknowledgments
-        for ack in acknowledgments where ack.method == .camera {
-            let day = DateHelpers.startOfDay(ack.timestamp)
-            let daysFrom = Calendar.current.dateComponents([.day], from: day, to: today).day ?? 0
-            guard daysFrom < 7 else { continue }
-            if let quality = ack.quality {
-                bestByDay[day] = max(bestByDay[day] ?? 0, qualityToScore(quality))
-            }
-        }
-
-        return (0..<7).compactMap { offset in
-            guard let day = Calendar.current.date(byAdding: .day, value: -offset, to: today) else { return nil }
-            return (day, bestByDay[day] ?? 0)
-        }
-        .reversed()
-    }
-
-    /// Response rate per day (acknowledgments vs estimated reminders sent).
-    private var weeklyResponseData: [(day: Date, rate: Double)] {
-        let today = DateHelpers.startOfDay()
-        let calendar = Calendar.current
-
-        return (0..<7).compactMap { offset in
-            guard let day = calendar.date(byAdding: .day, value: -offset, to: today) else { return nil }
-            let dayStart = day
-            let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
-
-            let todayAcks = acknowledgments.filter {
-                $0.timestamp >= dayStart && $0.timestamp < dayEnd
-            }.count
-
-            // Estimate reminders: assume ~1 per interval during active hours
-            // This is a rough estimate — we track scheduledCount in a more advanced impl
-            let reminderCount = max(todayAcks, 1) // show at least 1 for days with data
-            let rate = todayAcks > 0 ? min(Double(todayAcks) / Double(reminderCount), 1.0) : 0.0
-
-            return (day, rate)
-        }
-        .reversed()
-    }
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Quality chart
-                    if !weeklyQualityData.allSatisfy({ $0.score == 0 }) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Weekly Quality")
-                                .font(.headline)
-                                .foregroundStyle(Theme.textSecondary)
-                                .padding(.horizontal, 4)
-                            WeeklyTrendChart(data: weeklyQualityData)
-                                .frame(height: 120)
-                        }
-                        .padding(.horizontal)
-                    }
-
-                    // Response rate chart
-                    if !weeklyResponseData.allSatisfy({ $0.rate == 0 }) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Response Rate")
-                                .font(.headline)
-                                .foregroundStyle(Theme.textSecondary)
-                                .padding(.horizontal, 4)
-                            ResponseRateChart(data: weeklyResponseData)
-                                .frame(height: 80)
-                        }
-                        .padding(.horizontal)
-                    }
-
-                    if subscriptions.isProSubscriber {
-                        PassiveTimelineView()
-                            .padding(.horizontal)
-                    }
-
-                    // Mixed timeline: acknowledgments + sessions
-                    if sessions.isEmpty && acknowledgments.isEmpty {
-                        emptyState
-                    } else {
-                        timeline
-                    }
-                }
-                .padding(.vertical)
-            }
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("History")
-        }
-    }
-
-    private var emptyState: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "chart.bar.xaxis")
-                .font(.system(size: 56, weight: .light))
-                .foregroundStyle(Theme.textTertiary)
-            Text("No history yet")
-                .font(.headline)
-            Text("Respond to a posture reminder to start tracking your progress.")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(40)
-    }
-
-    // MARK: - Timeline
-
-    private var timeline: some View {
-        VStack(spacing: 0) {
-            // Interleave recent acknowledgments and sessions
-            ForEach(mergedTimeline, id: \.id) { entry in
-                switch entry {
-                case .acknowledgment(let ack):
-                    ackRow(for: ack)
-                case .session(let session):
-                    sessionRow(for: session)
-                }
-                if entry.id != mergedTimeline.last?.id {
-                    Divider().padding(.leading, 80)
-                }
-            }
-        }
-        .background(Theme.cardSurface, in: .rect(cornerRadius: Theme.cardRadius))
-        .padding(.horizontal)
-    }
-
-    private enum TimelineEntry: Identifiable {
-        case acknowledgment(AcknowledgmentRecord)
-        case session(PostureSession)
-
-        var id: String {
-            switch self {
-            case .acknowledgment(let a): "ack-\(a.id)"
-            case .session(let s): "sess-\(s.id)"
-            }
-        }
-    }
-
-    private var mergedTimeline: [TimelineEntry] {
-        var entries: [TimelineEntry] = []
-        entries.append(contentsOf: acknowledgments.map { .acknowledgment($0) })
-        entries.append(contentsOf: sessions.map { .session($0) })
-        entries.sort { lhs, rhs in
-            let d1: Date = switch lhs { case .acknowledgment(let a): a.timestamp case .session(let s): s.startedAt }
-            let d2: Date = switch rhs { case .acknowledgment(let a): a.timestamp case .session(let s): s.startedAt }
-            return d1 > d2
-        }
-        return entries
-    }
-
-    private func ackRow(for ack: AcknowledgmentRecord) -> some View {
-        HStack(spacing: 14) {
-            // Quality indicator or icon
-            if let quality = ack.quality {
-                PostureRing(score: qualityToScore(quality), size: 52, lineWidth: 6)
-            } else {
-                Image(systemName: "hand.tap")
-                    .font(.title3)
-                    .foregroundStyle(Theme.textSecondary)
-                    .frame(width: 52, height: 52)
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(DateHelpers.mediumDateTime(ack.timestamp))
-                    .font(.headline)
-                Text(ack.method == .camera ? "Camera scan" : "Manual check-in")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.textSecondary)
-            }
-
-            Spacer()
-
-            if let quality = ack.quality {
-                Text(quality.rawValue)
-                    .font(.caption.bold())
-                    .foregroundStyle(Theme.qualityColor(quality))
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-    }
-
-    private func sessionRow(for session: PostureSession) -> some View {
-        HStack(spacing: 14) {
-            PostureRing(score: session.score, size: 52, lineWidth: 6)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(DateHelpers.mediumDate(session.startedAt))
-                    .font(.headline)
-                Text("\(session.durationSeconds)s · Legacy session")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.textSecondary)
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-    }
-
-    private func qualityToScore(_ quality: PostureQuality) -> Int {
-        switch quality {
+    private func qualityScore(_ q: PostureQuality) -> Int {
+        switch q {
         case .good: return 85
         case .borderline: return 55
         case .bad: return 25
         }
     }
-}
 
-// MARK: - Weekly Trend Chart
+    /// 7 day buckets, oldest → newest, ending today.
+    private var weekDays: [Date] {
+        let today = DateHelpers.startOfDay()
+        return (0..<7).reversed().compactMap {
+            cal.date(byAdding: .day, value: -$0, to: today)
+        }
+    }
 
-private struct WeeklyTrendChart: View {
-    let data: [(day: Date, score: Int)]
+    private var expectedPerDay: Int {
+        // Rough: active-window minutes / interval, clamped.
+        max(1, min(20, ((20 - 8) * 60) / 30))
+    }
+
+    private func acks(on day: Date) -> [AcknowledgmentRecord] {
+        let end = cal.date(byAdding: .day, value: 1, to: day) ?? day
+        return acknowledgments.filter { $0.timestamp >= day && $0.timestamp < end }
+    }
+
+    private var weekSummaries: [DaySummary] {
+        let wf = DateFormatter()
+        wf.dateFormat = "EEEEE"
+        return weekDays.map { day in
+            let dayAcks = acks(on: day)
+            let scored = dayAcks.compactMap { $0.quality.map(qualityScore) }
+            let avgQuality: PostureQuality? = scored.isEmpty ? nil : {
+                let m = Double(scored.reduce(0, +)) / Double(scored.count)
+                switch m {
+                case 70...: return .good
+                case 40..<70: return .borderline
+                default: return .bad
+                }
+            }()
+            let rate = min(1.0, Double(dayAcks.count) / Double(expectedPerDay))
+            return DaySummary(label: wf.string(from: day), responseRate: rate, averageQuality: avgQuality)
+        }
+    }
+
+    private var weekScored: [Int] {
+        let weekStart = weekDays.first ?? DateHelpers.startOfDay()
+        return acknowledgments
+            .filter { $0.timestamp >= weekStart }
+            .compactMap { $0.quality.map(qualityScore) }
+    }
+
+    private var weekAlignmentPercent: Int {
+        guard !weekScored.isEmpty else { return 0 }
+        return Int((Double(weekScored.reduce(0, +)) / Double(weekScored.count)).rounded())
+    }
+
+    private var deltaVsLastWeek: String {
+        let weekStart = weekDays.first ?? DateHelpers.startOfDay()
+        let prevStart = cal.date(byAdding: .day, value: -7, to: weekStart) ?? weekStart
+        let prev = acknowledgments
+            .filter { $0.timestamp >= prevStart && $0.timestamp < weekStart }
+            .compactMap { $0.quality.map(qualityScore) }
+        guard !prev.isEmpty, !weekScored.isEmpty else { return "—" }
+        let prevMean = Double(prev.reduce(0, +)) / Double(prev.count)
+        let delta = Double(weekAlignmentPercent) - prevMean
+        let rounded = Int(delta.rounded())
+        return rounded >= 0 ? "+\(rounded) vs last" : "\(rounded) vs last"
+    }
+
+    private var weekRangeLabel: String {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        guard let first = weekDays.first, let last = weekDays.last else { return "" }
+        return "\(f.string(from: first)) — \(f.string(from: last))".uppercased()
+    }
 
     var body: some View {
-        Chart {
-            bars
-        }
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .day)) { value in
-                AxisValueLabel(format: .dateTime.weekday(.abbreviated), centered: true)
+        NavigationStack {
+            ScrollView {
+                if acknowledgments.isEmpty {
+                    emptyState
+                } else {
+                    VStack(alignment: .leading, spacing: 18) {
+                        if subscriptions.isProSubscriber {
+                            PassiveTimelineView()
+                        } else {
+                            proPreviewCard
+                        }
+
+                        weekHeader
+                        WeekStrip(days: weekSummaries, todayIndex: 6)
+
+                        HStack {
+                            Text("\(weekAlignmentPercent)% aligned")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Theme.ink)
+                            Spacer()
+                            Text(deltaVsLastWeek)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Theme.ink2)
+                        }
+
+                        Divider().background(Theme.paper3)
+
+                        journalFeed
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                }
+            }
+            .background(Theme.paper.ignoresSafeArea())
+            .navigationTitle("history")
+            .navigationBarTitleDisplayMode(.inline)
+            .fullScreenCover(isPresented: $showingAck) {
+                AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
         }
-        .chartYAxis {
-            AxisMarks(values: .automatic(desiredCount: 3)) { value in
-                AxisValueLabel()
+    }
+
+    private var weekHeader: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(weekRangeLabel)
+                .font(.caption.weight(.semibold))
+                .tracking(2)
+                .foregroundStyle(Theme.ink3)
+            Text(HistoryNarrative.sentence(for: acknowledgments))
+                .font(Theme.displaySerif(24))
+                .foregroundStyle(Theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var journalFeed: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(acknowledgments.prefix(20))) { ack in
+                HStack(alignment: .top, spacing: 14) {
+                    Text(timeString(ack.timestamp))
+                        .font(.system(.subheadline, design: .rounded).monospacedDigit())
+                        .foregroundStyle(Theme.ink2)
+                        .frame(width: 64, alignment: .leading)
+                    Text(rowLabel(ack))
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.ink)
+                    Spacer()
+                    Circle()
+                        .fill(ack.quality.map(Theme.qualityColor) ?? .clear)
+                        .frame(width: 8, height: 8)
+                        .overlay {
+                            if ack.quality == nil {
+                                Circle().stroke(Theme.ink3, lineWidth: 1).frame(width: 8, height: 8)
+                            }
+                        }
+                        .padding(.top, 6)
+                }
+                .padding(.vertical, 12)
+                if ack.id != acknowledgments.prefix(20).last?.id {
+                    Divider().background(Theme.paper3)
+                }
             }
         }
-        .chartYScale(domain: 0...100)
-        .chartXScale(domain: xDomain)
-        .accessibilityLabel("Weekly posture trend chart")
     }
 
-    @ChartContentBuilder
-    private var bars: some ChartContent {
-        ForEach(data, id: \.day) { entry in
-            BarMark(x: .value("Day", entry.day, unit: .day),
-                    y: .value("Score", barHeight(for: entry.score)))
-            .clipShape(.rect(cornerRadius: 4))
-            .foregroundStyle(scoreColor(entry.score).gradient)
+    private var proPreviewCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("TODAY'S RHYTHM · PRO")
+                .font(.caption.weight(.semibold))
+                .tracking(2)
+                .foregroundStyle(Theme.sage)
+            Text("See the hours your posture slips.")
+                .font(Theme.displaySerif(22))
+                .foregroundStyle(Theme.ink)
+            Text("Pro adds an hour-by-hour rhythm from AirPods and Watch.")
+                .font(.caption)
+                .foregroundStyle(Theme.ink2)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
+        .background(Theme.sageTint, in: .rect(cornerRadius: 14))
     }
 
-    private var xDomain: ClosedRange<Date> {
-        guard let f = data.first, let l = data.last else { return .now ... .now }
-        return f.day ... l.day
-    }
-
-    private func barHeight(for score: Int) -> Int {
-        score == 0 ? 0 : max(score, 10)
-    }
-
-    private func scoreColor(_ score: Int) -> Color {
-        switch score {
-        case 80...: return Theme.good
-        case 50..<80: return Theme.borderline
-        case 1..<50: return Theme.bad
-        default: return Theme.textTertiary.opacity(0.3)
+    private var emptyState: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HorizonStroke()
+            Text("NO HISTORY YET")
+                .font(.caption.weight(.semibold))
+                .tracking(2)
+                .foregroundStyle(Theme.ink3)
+            Text("Check in once and a story begins.")
+                .font(Theme.displaySerif(28))
+                .foregroundStyle(Theme.ink)
+            Text("We need a few days before patterns are worth showing. Until then, today is plenty.")
+                .font(.body)
+                .foregroundStyle(Theme.ink2)
+            Button { showingAck = true } label: { Text("check in now") }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
         }
-    }
-}
-
-// MARK: - Response Rate Chart
-
-private struct ResponseRateChart: View {
-    let data: [(day: Date, rate: Double)]
-
-    var body: some View {
-        Chart {
-            ForEach(data, id: \.day) { entry in
-                BarMark(x: .value("Day", entry.day, unit: .day),
-                        y: .value("Rate", entry.rate * 100))
-                .clipShape(.rect(cornerRadius: 4))
-                .foregroundStyle((entry.rate > 0.6 ? Theme.good : entry.rate > 0.3 ? Theme.borderline : Theme.textTertiary).gradient)
-            }
-        }
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .day)) { value in
-                AxisValueLabel(format: .dateTime.weekday(.abbreviated), centered: true)
-            }
-        }
-        .chartYAxis {
-            AxisMarks(values: .automatic(desiredCount: 2)) { value in
-                AxisValueLabel("\(Int(value.as(Int.self) ?? 0))%")
-            }
-        }
-        .chartYScale(domain: 0...100)
-        .chartXScale(domain: xDomain)
-        .accessibilityLabel("Weekly response rate chart")
+        .padding(24)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var xDomain: ClosedRange<Date> {
-        guard let f = data.first, let l = data.last else { return .now ... .now }
-        return f.day ... l.day
+    private func rowLabel(_ ack: AcknowledgmentRecord) -> String {
+        let method = ack.method == .camera ? "scan" : "manual"
+        guard let q = ack.quality else { return "noted · \(method)" }
+        let word: String
+        switch q {
+        case .good: word = "aligned"
+        case .borderline: word = "drifting"
+        case .bad: word = "resting"
+        }
+        return "\(word) · \(method)"
+    }
+
+    private func timeString(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "h:mm a"
+        return f.string(from: date).lowercased()
     }
 }

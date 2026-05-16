@@ -33,13 +33,23 @@ struct PostureWatchProvider: TimelineProvider {
         }
         let context = ModelContext(container)
         let streak = (try? context.fetch(FetchDescriptor<StreakState>()))?.first?.currentStreak ?? 0
-        var sessionDescriptor = FetchDescriptor<PostureSession>(
-            sortBy: [SortDescriptor(\PostureSession.startedAt, order: .reverse)]
-        )
-        sessionDescriptor.fetchLimit = 1
-        let latest = (try? context.fetch(sessionDescriptor))?.first
-        let todayScore: Int? = (latest != nil && Calendar.current.isDateInToday(latest!.startedAt)) ? latest!.score : nil
+        let startOfDay = Calendar.current.startOfDay(for: .now)
+        let ackPredicate = #Predicate<AcknowledgmentRecord> { ack in
+            ack.timestamp >= startOfDay && ack.qualityRaw != nil
+        }
+        let todayAcks = (try? context.fetch(FetchDescriptor<AcknowledgmentRecord>(predicate: ackPredicate))) ?? []
+        let todayScore: Int? = todayAcks
+            .compactMap { $0.quality.map(qualityScore) }
+            .max()
         return PostureWatchWidgetEntry(date: .now, streak: streak, todayScore: todayScore)
+    }
+
+    static func qualityScore(_ q: PostureQuality) -> Int {
+        switch q {
+        case .good: return 85
+        case .borderline: return 55
+        case .bad: return 25
+        }
     }
 }
 
