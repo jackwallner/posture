@@ -18,8 +18,9 @@ enum ReminderScheduler {
 
         let authorized = await NotificationService.requestAuthorization()
         guard authorized else {
-            // User denied notifications — disable reminders silently
-            settings.reminderEnabled = false
+            // Denied — keep the preference on so Settings can surface a
+            // "notifications are off" banner (audit P1-3) instead of the
+            // toggle silently flipping back. Just don't schedule.
             return
         }
 
@@ -43,13 +44,19 @@ enum ReminderScheduler {
         #endif
     }
 
-    /// Number of reminders scheduled for the remainder of today.
+    /// Number of reminders still due before midnight today.
     static func remainingCount() async -> Int {
         #if os(watchOS)
         return 0
         #else
         let pending = await UNUserNotificationCenter.current().pendingNotificationRequests()
-        return pending.filter { $0.identifier.hasPrefix("posture.reminder.") }.count
+        let endOfDay = Calendar.current.startOfDay(for: Date())
+            .addingTimeInterval(24 * 60 * 60)
+        return pending
+            .filter { $0.identifier.hasPrefix("posture.reminder.") }
+            .compactMap { ($0.trigger as? UNCalendarNotificationTrigger)?.nextTriggerDate() }
+            .filter { $0 < endOfDay }
+            .count
         #endif
     }
 

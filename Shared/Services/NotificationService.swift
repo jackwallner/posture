@@ -2,19 +2,29 @@ import Foundation
 import UserNotifications
 
 enum NotificationService {
-    /// Rotating pool of reminder bodies to keep notifications from feeling robotic.
-    private static let reminderMessages: [String] = [
-        "Time to check your posture. Quick scan or tap to acknowledge.",
-        "Sit up straight — how's your alignment?",
-        "Posture check! Take a moment to straighten up.",
-        "Are you slouching? Check in with a quick scan.",
-        "Heads up — check your posture.",
-        "Straighten that spine. Quick check-in time.",
+    /// Daylight voice — lowercase, observational, never imperative.
+    /// ≤24 chars so the banner doesn't truncate.
+    private static let reminderTitles: [String] = [
+        "a small check-in.",
+        "how are you sitting?",
+        "crown of the head, up.",
+        "shoulders, soft.",
+        "a posture pause.",
+        "feet flat?",
+        "how's the spine now?",
+        "a breath. and a sit-up.",
+        "jaw and tongue, soft.",
+        "ears over shoulders.",
+        "how upright?",
+        "a moment for the body.",
     ]
 
     static let categoryIdentifier = "posture.reminder"
 
-    /// Request notification authorization (alert + sound).
+    /// Max pending reminder slots. iOS allows 64 pending requests; we
+    /// schedule repeating daily triggers so the day's slots persist.
+    private static let maxSlots = 60
+
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
         do {
@@ -24,8 +34,6 @@ enum NotificationService {
         }
     }
 
-    /// Register the notification category for posture reminders.
-    /// Call this once at app launch (e.g., in App.init).
     static func registerCategories() {
         let category = UNNotificationCategory(
             identifier: categoryIdentifier,
@@ -36,91 +44,74 @@ enum NotificationService {
         UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 
-    /// Schedule posture reminders from `now` through `activeHoursEnd`,
-    /// spaced by `intervalMinutes`.
+    /// Schedule **repeating daily** posture reminders across the active
+    /// window. Repeating triggers mean reminders keep firing on later
+    /// days even if the app isn't reopened (audit P1-2), and the slot
+    /// cap covers permanent daily slots rather than a single day's queue
+    /// (audit P1-4).
     static func scheduleReminders(
         intervalMinutes: Int,
         activeHoursStart: Int,
         activeHoursEnd: Int
     ) async {
         let center = UNUserNotificationCenter.current()
-        // Cancel all existing posture reminders first
-        center.removePendingNotificationRequests(
-            withIdentifiers: pendingReminderIdentifiers()
-        )
-        center.removeDeliveredNotifications(
-            withIdentifiers: deliveredReminderIdentifiers()
-        )
+        center.removePendingNotificationRequests(withIdentifiers: pendingReminderIdentifiers())
+        center.removeDeliveredNotifications(withIdentifiers: deliveredReminderIdentifiers())
 
-        // Compute reminder times from now to activeHoursEnd
-        let now = Date()
-        let calendar = Calendar.current
-        var times: [Date] = []
+        guard intervalMinutes > 0, activeHoursEnd > activeHoursStart else { return }
 
-        guard let startToday = calendar.date(
-            bySettingHour: activeHoursStart, minute: 0, second: 0, of: now
-        ), let endToday = calendar.date(
-            bySettingHour: activeHoursEnd, minute: 0, second: 0, of: now
-        ) else { return }
-
-        // Clamp start to now if we're past the start hour
-        let effectiveStart = max(now, startToday)
-
-        guard effectiveStart < endToday else { return }
-
-        // Walk from effectiveStart to endToday in intervalMinutes steps
-        var cursor = effectiveStart
-        while cursor < endToday {
-            times.append(cursor)
-            guard let next = calendar.date(byAdding: .minute, value: intervalMinutes, to: cursor) else { break }
-            cursor = next
+        // Build (hour, minute) slots across the active window.
+        var slots: [(hour: Int, minute: Int)] = []
+        var minutes = activeHoursStart * 60
+        let endMinutes = activeHoursEnd * 60
+        while minutes < endMinutes && slots.count < maxSlots {
+            slots.append((minutes / 60, minutes % 60))
+            minutes += intervalMinutes
         }
 
-        // Don't schedule more than 20 reminders (prevents over-scheduling for very long windows)
-        if times.count > 20 {
-            times = Array(times.prefix(20))
-        }
-
-        for (index, fireDate) in times.enumerated() {
-            let message = reminderMessages[index % reminderMessages.count]
+        for (index, slot) in slots.enumerated() {
+            let title = reminderTitles[index % reminderTitles.count]
             let content = UNMutableNotificationContent()
-            content.title = "Posture check"
-            content.body = message
+            content.title = title
             content.sound = .default
             content.categoryIdentifier = categoryIdentifier
+
+            var fire = DateComponents()
+            fire.hour = slot.hour
+            fire.minute = slot.minute
+
+            let scheduledAt = Calendar.current.date(
+                bySettingHour: slot.hour, minute: slot.minute, second: 0, of: Date()
+            ) ?? Date()
             content.userInfo = [
                 "type": "posture-reminder",
                 "index": index,
-                "scheduledAt": fireDate.timeIntervalSince1970,
+                "scheduledAt": scheduledAt.timeIntervalSince1970,
             ]
 
-            let components = calendar.dateComponents([.hour, .minute], from: fireDate)
-            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-            let identifier = "posture.reminder.\(index)"
-            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: fire, repeats: true)
+            let request = UNNotificationRequest(
+                identifier: "posture.reminder.\(index)",
+                content: content,
+                trigger: trigger
+            )
             try? await center.add(request)
         }
+        AnalyticsService.remindersScheduled(count: slots.count)
     }
 
-    /// Cancel all pending posture reminders.
     static func cancelAllReminders() async {
-        let identifiers = pendingReminderIdentifiers()
-        UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: identifiers
-        )
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: pendingReminderIdentifiers())
     }
 
     // MARK: - Helpers
 
     private static func pendingReminderIdentifiers() -> [String] {
-        // We can't list pending requests synchronously, so we use a known prefix pattern.
-        // This is best-effort — redundant IDs are harmless.
-        // On foreground re-schedule we call removeAllPendingNotificationRequests anyway.
-        (0..<20).map { "posture.reminder.\($0)" }
+        (0..<maxSlots).map { "posture.reminder.\($0)" }
     }
 
     private static func deliveredReminderIdentifiers() -> [String] {
-        // Same pattern for delivered notifications we want to clear.
-        (0..<20).map { "posture.reminder.\($0)" }
+        (0..<maxSlots).map { "posture.reminder.\($0)" }
     }
 }
