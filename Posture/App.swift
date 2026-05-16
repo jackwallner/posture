@@ -36,10 +36,15 @@ private struct AirpodsRootView: View {
             .environment(monitor)
             .onAppear {
                 guard monitor == nil else { return }
-                monitor = AirpodsBackgroundMonitor(modelContext: context)
-                // Set up notification delegate callback
+                let m = AirpodsBackgroundMonitor(modelContext: context)
+                monitor = m
+                // P1-7: a cold launch fires none of the onChange/foreground
+                // hooks, so start monitoring here if it's enabled + Pro.
+                if settings.airpodsBackgroundEnabled && subscriptions.isProSubscriber {
+                    _ = m.start()
+                }
                 UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-                NotificationDelegate.shared.onReceive = { [self] scheduledAt, index in
+                NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
                     ackNotificationIndex = index
                 }
@@ -96,8 +101,9 @@ private struct AckCover: Identifiable {
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @unchecked Sendable {
     static let shared = NotificationDelegate()
 
-    /// Called when a posture-reminder notification is tapped.
-    var onReceive: ((Date, Int) -> Void)?
+    /// Called when a posture-reminder notification is tapped. Invoked on
+    /// the main actor — it mutates SwiftUI state.
+    var onReceive: (@MainActor (Date, Int) -> Void)?
 
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -108,7 +114,9 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
         if userInfo["type"] as? String == "posture-reminder" {
             let scheduledAt = Date(timeIntervalSince1970: userInfo["scheduledAt"] as? TimeInterval ?? 0)
             let index = userInfo["index"] as? Int ?? 0
-            onReceive?(scheduledAt, index)
+            // P1-6: hop to the main actor — this delegate fires on UN's
+            // private queue and the callback touches @State.
+            Task { @MainActor in onReceive?(scheduledAt, index) }
         }
         completionHandler()
     }
