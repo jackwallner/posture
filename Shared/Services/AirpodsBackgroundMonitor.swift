@@ -118,7 +118,10 @@ final class AirpodsBackgroundMonitor {
         isConnected = true
 
         let calibration = calibrationService.current()
-        let baseline = calibration?.basePitch ?? 0
+        // AirPods motion lives in a different reference frame than the front
+        // camera. Prefer the AirPods baseline; fall back to camera only if
+        // calibration predates the AirPods path.
+        let baseline = calibration?.airpodsPitch ?? calibration?.basePitch ?? 0
         let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
         let sensitivity = GoalSettings.shared.sensitivity
 

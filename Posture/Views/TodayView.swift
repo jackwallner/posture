@@ -4,6 +4,7 @@ import SwiftUI
 struct TodayView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
+    @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
     @Query private var streaks: [StreakState]
     @Query(sort: \AcknowledgmentRecord.timestamp, order: .reverse) private var acknowledgments: [AcknowledgmentRecord]
 
@@ -37,6 +38,10 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     alignmentReadout
+
+                    if let monitor = airpodsMonitor, monitor.isMonitoring {
+                        monitoringChip(monitor: monitor)
+                    }
 
                     DayStrip(acks: todayAcks)
 
@@ -138,6 +143,25 @@ struct TodayView: View {
         }
         let onTrack = scoredAcks.filter { $0.quality == .good }.count
         return "\(onTrack) of \(scoredAcks.count) scans on track"
+    }
+
+    // MARK: - Monitoring chip
+
+    @ViewBuilder
+    private func monitoringChip(monitor: AirpodsBackgroundMonitor) -> some View {
+        let live = monitor.isConnected
+        HStack(spacing: 8) {
+            Circle()
+                .fill(live ? Theme.sage : Theme.sand)
+                .frame(width: 6, height: 6)
+            Text(live ? "monitoring · airpods linked" : "monitoring · waiting for airpods")
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .foregroundStyle(live ? Theme.sage : Theme.ink2)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(live ? Theme.sageTint : Theme.sandTint, in: RoundedRectangle(cornerRadius: 10))
     }
 
     // MARK: - Meta row
