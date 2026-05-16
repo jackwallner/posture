@@ -38,11 +38,17 @@ final class AirpodsBackgroundMonitor {
     private var audioEngine: AVAudioEngine?
     private var audioPlayer: AVAudioPlayerNode?
 
-    // MARK: - Haptic debounce
+    // MARK: - Slouch detection (time-based)
 
+    /// When the user first entered `.bad`. Reset on `.good` or on AirPods
+    /// disconnect. We trigger a haptic + record a sample after this much
+    /// continuous bad posture.
+    private var firstBadAt: Date?
+    private let badDurationThreshold: TimeInterval = 3.0
+
+    /// Haptic debounce so we don't buzz the user every few seconds.
     private var lastHapticAt: Date = .distantPast
     private let hapticDebounceSeconds: TimeInterval = 60
-    private var consecutiveBadCount = 0
 
     // MARK: - Init
 
@@ -54,6 +60,20 @@ final class AirpodsBackgroundMonitor {
 
         headphoneService.onSample = { [weak self] pitch, yaw, roll in
             self?.onSample(pitch: pitch, yaw: yaw, roll: roll)
+        }
+        // AirPods can drop in/out during a background session (case, ear-out,
+        // device switch). Don't tear down — just reflect the truth in UI so
+        // the user sees we're "armed and waiting" vs "live."
+        headphoneService.onConnect = { [weak self] connected in
+            self?.handleConnect(connected)
+        }
+    }
+
+    private func handleConnect(_ connected: Bool) {
+        isConnected = connected
+        if !connected {
+            currentQuality = .good
+            firstBadAt = nil
         }
     }
 
@@ -110,17 +130,24 @@ final class AirpodsBackgroundMonitor {
         )
         currentQuality = quality
 
+        let now = Date.now
         switch quality {
         case .good:
-            consecutiveBadCount = 0
+            firstBadAt = nil
         case .borderline:
-            consecutiveBadCount += 1
+            // Drifting — don't restart the clock, but don't trigger either.
+            break
         case .bad:
-            consecutiveBadCount += 1
-            if consecutiveBadCount >= 3 {
-                recordSlouchEvent(severity: 1.0)
-                triggerHaptic()
-                consecutiveBadCount = 0
+            if let started = firstBadAt {
+                if now.timeIntervalSince(started) >= badDurationThreshold {
+                    recordSlouchEvent(severity: 1.0)
+                    triggerHaptic()
+                    // Hold off until the next sustained slouch — we already
+                    // told them once.
+                    firstBadAt = nil
+                }
+            } else {
+                firstBadAt = now
             }
         }
     }

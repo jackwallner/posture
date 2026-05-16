@@ -17,6 +17,7 @@ final class HeadphoneMotionService {
     private(set) var lastRoll: Double?
 
     var onSample: ((_ pitch: Double, _ yaw: Double, _ roll: Double) -> Void)?
+    var onConnect: ((Bool) -> Void)?
 
     private let manager = CMHeadphoneMotionManager()
     private let queue: OperationQueue = {
@@ -30,7 +31,11 @@ final class HeadphoneMotionService {
         self.isAvailable = manager.isDeviceMotionAvailable
         manager.delegate = HeadphoneDelegateBox.shared
         HeadphoneDelegateBox.shared.onChange = { [weak self] connected in
-            Task { @MainActor [weak self] in self?.isConnected = connected }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.isConnected = connected
+                self.onConnect?(connected)
+            }
         }
     }
 

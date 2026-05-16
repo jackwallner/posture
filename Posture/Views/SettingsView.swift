@@ -185,18 +185,52 @@ struct SettingsView: View {
 private struct AirpodsStatusChip: View {
     let monitor: AirpodsBackgroundMonitor
 
+    private enum State { case live, armed, off }
+    private var state: State {
+        if !monitor.isMonitoring { return .off }
+        return monitor.isConnected ? .live : .armed
+    }
+
     var body: some View {
         HStack(spacing: 6) {
             Circle()
-                .fill(monitor.isConnected ? Theme.sage : Theme.ink3)
+                .fill(dotColor)
                 .frame(width: 6, height: 6)
-            Text(monitor.isConnected ? "airpods · linked" : "airpods · not linked")
+            Text(label)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(monitor.isConnected ? Theme.sage : Theme.ink2)
+                .foregroundStyle(textColor)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(monitor.isConnected ? Theme.sageTint : Theme.paper3, in: .capsule)
+        .background(background, in: .capsule)
+    }
+
+    private var label: String {
+        switch state {
+        case .live: return "live · airpods linked"
+        case .armed: return "ready · waiting for airpods"
+        case .off: return "monitoring off"
+        }
+    }
+    private var dotColor: Color {
+        switch state {
+        case .live: return Theme.sage
+        case .armed: return Theme.sand
+        case .off: return Theme.ink3
+        }
+    }
+    private var textColor: Color {
+        switch state {
+        case .live: return Theme.sage
+        case .armed, .off: return Theme.ink2
+        }
+    }
+    private var background: Color {
+        switch state {
+        case .live: return Theme.sageTint
+        case .armed: return Theme.sandTint
+        case .off: return Theme.paper3
+        }
     }
 }
 
