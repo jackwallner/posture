@@ -138,16 +138,20 @@ struct AcknowledgmentView: View {
                 .foregroundStyle(Theme.textPrimary)
                 .padding(.top, 24)
 
-            QuickScanView(scheduledAt: scheduledAt) { quality in
-                recordedQuality = quality
-                recordAcknowledgment(method: .camera, quality: quality)
-                withAnimation { phase = .done }
-            }
+            QuickScanView(
+                scheduledAt: scheduledAt,
+                onComplete: { quality in
+                    recordedQuality = quality
+                    recordAcknowledgment(method: .camera, quality: quality)
+                    withAnimation { phase = .done }
+                },
+                onFallback: {
+                    recordedQuality = nil
+                    recordAcknowledgment(method: .manual, quality: nil)
+                    withAnimation { phase = .done }
+                }
+            )
             .padding(.horizontal, 16)
-
-            Text("Hold still and look straight ahead")
-                .font(.subheadline)
-                .foregroundStyle(Theme.textSecondary)
         }
     }
 

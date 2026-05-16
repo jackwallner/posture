@@ -5,7 +5,7 @@ struct SettingsView: View {
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
 
-    @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor
+    @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
     @State private var showingRecalibrate = false
