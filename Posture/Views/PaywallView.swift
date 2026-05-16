@@ -1,5 +1,5 @@
 import SwiftUI
-#if canImport(RevenueCat)
+#if HAS_REVENUECAT
 import RevenueCat
 #endif
 #if canImport(RevenueCatUI)
@@ -100,7 +100,7 @@ struct PaywallView: View {
                         restoreAttempted = true
                         purchaseError = nil
                         Task {
-                            #if canImport(RevenueCat)
+                            #if HAS_REVENUECAT
                             do {
                                 try await Purchases.shared.restorePurchases()
                                 await subscriptions.refresh()
@@ -150,7 +150,7 @@ struct PaywallView: View {
 
     private func purchaseMonthly() async {
         AnalyticsService.purchaseAttempted(plan: "monthly")
-        #if canImport(RevenueCat)
+        #if HAS_REVENUECAT
         do {
             guard let offerings = try? await Purchases.shared.offerings(),
                   let monthly = offerings.current?.monthly
@@ -171,7 +171,7 @@ struct PaywallView: View {
 
     private func purchaseYearly() async {
         AnalyticsService.purchaseAttempted(plan: "yearly")
-        #if canImport(RevenueCat)
+        #if HAS_REVENUECAT
         do {
             guard let offerings = try? await Purchases.shared.offerings(),
                   let yearly = offerings.current?.annual

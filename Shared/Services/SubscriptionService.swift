@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-#if canImport(RevenueCat)
+#if HAS_REVENUECAT
 import RevenueCat
 #endif
 
@@ -24,7 +24,7 @@ final class SubscriptionService {
     }
 
     func configure() {
-        #if canImport(RevenueCat)
+        #if HAS_REVENUECAT
         guard !isConfigured else { return }
         Purchases.configure(withAPIKey: Self.apiKey)
         isConfigured = true
@@ -35,7 +35,7 @@ final class SubscriptionService {
     }
 
     func refresh() async {
-        #if canImport(RevenueCat)
+        #if HAS_REVENUECAT
         guard isConfigured else { return }
         do {
             let info = try await Purchases.shared.customerInfo()
