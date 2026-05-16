@@ -19,8 +19,17 @@ struct AcknowledgmentView: View {
     @State private var phase: Phase = .choice
     @State private var recordedQuality: PostureQuality?
     @State private var currentTip: PostureTip?
+    @State private var forcedCamera = false
 
     enum Phase { case choice, scanning, done }
+
+    /// True when the user calibrated with AirPods — prefer the motion-based
+    /// scan unless the user explicitly opted into the camera this time.
+    private var preferAirpods: Bool {
+        guard !forcedCamera else { return false }
+        let cal = CalibrationService(context: context).current()
+        return cal?.airpodsPitch != nil
+    }
 
     var body: some View {
         Group {
@@ -93,21 +102,42 @@ struct AcknowledgmentView: View {
 
     // MARK: - Scanning
 
+    @ViewBuilder
     private var scanningView: some View {
-        QuickScanView(
-            scheduledAt: scheduledAt,
-            onComplete: { quality in
-                recordedQuality = quality
-                recordAcknowledgment(method: .camera, quality: quality)
-                withAnimation { phase = .done }
-            },
-            onFallback: {
-                recordedQuality = nil
-                recordAcknowledgment(method: .manual, quality: nil)
-                withAnimation { phase = .done }
-            },
-            onClose: { dismiss() }
-        )
+        if preferAirpods {
+            AirpodsScanView(
+                scheduledAt: scheduledAt,
+                onComplete: { quality in
+                    recordedQuality = quality
+                    recordAcknowledgment(method: .airpods, quality: quality)
+                    withAnimation { phase = .done }
+                },
+                onUseCamera: {
+                    forcedCamera = true
+                },
+                onFallback: {
+                    recordedQuality = nil
+                    recordAcknowledgment(method: .manual, quality: nil)
+                    withAnimation { phase = .done }
+                },
+                onClose: { dismiss() }
+            )
+        } else {
+            QuickScanView(
+                scheduledAt: scheduledAt,
+                onComplete: { quality in
+                    recordedQuality = quality
+                    recordAcknowledgment(method: .camera, quality: quality)
+                    withAnimation { phase = .done }
+                },
+                onFallback: {
+                    recordedQuality = nil
+                    recordAcknowledgment(method: .manual, quality: nil)
+                    withAnimation { phase = .done }
+                },
+                onClose: { dismiss() }
+            )
+        }
     }
 
     // MARK: - Done

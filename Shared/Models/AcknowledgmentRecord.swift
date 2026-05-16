@@ -41,5 +41,6 @@ final class AcknowledgmentRecord {
 
 enum AcknowledgmentMethod: String, Codable, Sendable {
     case camera
+    case airpods
     case manual
 }

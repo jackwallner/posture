@@ -46,9 +46,10 @@ struct WatchTodayView: View {
     private var bestTodayScore: Int {
         let today = Calendar.current.startOfDay(for: .now)
 
-        // Check AcknowledgmentRecords (camera-based) for today
+        // Check scored AcknowledgmentRecords (camera or airpods) for today
         let ackPredicate = #Predicate<AcknowledgmentRecord> { record in
-            record.methodRaw == "camera" && record.qualityRaw != nil
+            (record.methodRaw == "camera" || record.methodRaw == "airpods")
+                && record.qualityRaw != nil
         }
         let todayAcks = (try? context.fetch(FetchDescriptor<AcknowledgmentRecord>(predicate: ackPredicate))) ?? []
         let todayAcksFiltered = todayAcks.filter { $0.timestamp >= today }

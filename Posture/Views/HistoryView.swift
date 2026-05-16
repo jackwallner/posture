@@ -219,7 +219,12 @@ struct HistoryView: View {
     }
 
     private func rowLabel(_ ack: AcknowledgmentRecord) -> String {
-        let method = ack.method == .camera ? "scan" : "manual"
+        let method: String
+        switch ack.method {
+        case .camera: method = "scan"
+        case .airpods: method = "airpods"
+        case .manual: method = "manual"
+        }
         guard let q = ack.quality else { return "noted · \(method)" }
         let word: String
         switch q {
