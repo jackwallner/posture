@@ -1,0 +1,1328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Daylight — design pass for Posture</title>
+<meta name="viewport" content="width=1400">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="daylight/styles.css">
+</head>
+<body>
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+<header class="review-header">
+  <p class="review-eyebrow">Posture · v0.1 design pass · for app store submission</p>
+  <h1 class="review-title">Daylight<em>.</em></h1>
+  <p class="review-deck">A calm, paper-and-sage identity for a posture habit you can actually keep. Replaces the blue→purple gradient and SF-Symbol traffic light with a warm earth palette, a horizon metaphor for alignment, and a tonal three-step quality scale (<em>aligned · drifting · resting</em>) that never scolds.</p>
+  <div class="review-meta">
+    <span><b>Direction</b> · Daylight (warm, paper, sage)</span>
+    <span><b>Type</b> · SF Serif (display) + SF Pro Rounded (numerals) + SF Pro (UI)</span>
+    <span><b>Surfaces redesigned</b> · 9</span>
+    <span><b>New components</b> · 4</span>
+  </div>
+</header>
+
+<!-- =====================================================
+     01 · COLOR
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">01</span>
+    <h2 class="block-title">A palette of <em>paper and sage</em>.</h2>
+    <p class="block-sub">Drop the cool brand-gradient. Two earth accents do the same work without inheriting SaaS chrome.</p>
+  </div>
+
+  <div class="palette-row">
+    <span class="label">Brand · light</span>
+    <div class="swatch-grid">
+      <div class="swatch light-tag" data-mode="paper" style="background:#F6F1E8;color:#1F1B16;border:1px solid #E5DDC9"><span class="swatch-name">paper</span><span class="swatch-hex">#F6F1E8</span></div>
+      <div class="swatch" style="background:#EFE7D6;color:#1F1B16"><span class="swatch-name">card</span><span class="swatch-hex">#EFE7D6</span></div>
+      <div class="swatch" style="background:#1F1B16;color:#F6F1E8"><span class="swatch-name">ink</span><span class="swatch-hex">#1F1B16</span></div>
+      <div class="swatch" style="background:#6B8E7A;color:#F6F1E8"><span class="swatch-name">sage</span><span class="swatch-hex">#6B8E7A</span></div>
+      <div class="swatch" style="background:#C68F4D;color:#1F1B16"><span class="swatch-name">sand</span><span class="swatch-hex">#C68F4D</span></div>
+      <div class="swatch" style="background:#B8654A;color:#F6F1E8"><span class="swatch-name">clay</span><span class="swatch-hex">#B8654A</span></div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <span class="label">Brand · dark</span>
+    <div class="swatch-grid">
+      <div class="swatch dark-tag" data-mode="paper" style="background:#171614;color:#EFE9DC;border:1px solid #2A2722"><span class="swatch-name">paper</span><span class="swatch-hex">#171614</span></div>
+      <div class="swatch" style="background:#211F1B;color:#EFE9DC"><span class="swatch-name">card</span><span class="swatch-hex">#211F1B</span></div>
+      <div class="swatch" style="background:#EFE9DC;color:#1F1B16"><span class="swatch-name">ink</span><span class="swatch-hex">#EFE9DC</span></div>
+      <div class="swatch" style="background:#8FB39E;color:#171614"><span class="swatch-name">sage</span><span class="swatch-hex">#8FB39E</span></div>
+      <div class="swatch" style="background:#DDB07A;color:#171614"><span class="swatch-name">sand</span><span class="swatch-hex">#DDB07A</span></div>
+      <div class="swatch" style="background:#E0967A;color:#171614"><span class="swatch-name">clay</span><span class="swatch-hex">#E0967A</span></div>
+    </div>
+  </div>
+
+  <div class="palette-row">
+    <span class="label">Quality scale</span>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+      <div style="display:flex;gap:14px;align-items:center;padding:18px;border:1px solid #D8D0BD;border-radius:12px;background:#F6F1E8">
+        <div style="width:36px;height:36px;border-radius:50%;background:#6B8E7A"></div>
+        <div>
+          <div style="font-family:var(--rounded);font-weight:600">Aligned</div>
+          <div style="font-size:12px;color:#5A5247;margin-top:2px">replaces "Looking good!" — score ≥ 80</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;padding:18px;border:1px solid #D8D0BD;border-radius:12px;background:#F6F1E8">
+        <div style="width:36px;height:36px;border-radius:50%;background:#C68F4D"></div>
+        <div>
+          <div style="font-family:var(--rounded);font-weight:600">Drifting</div>
+          <div style="font-size:12px;color:#5A5247;margin-top:2px">replaces "Shift back a bit" — 50–79</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;padding:18px;border:1px solid #D8D0BD;border-radius:12px;background:#F6F1E8">
+        <div style="width:36px;height:36px;border-radius:50%;background:#B8654A"></div>
+        <div>
+          <div style="font-family:var(--rounded);font-weight:600">Resting</div>
+          <div style="font-size:12px;color:#5A5247;margin-top:2px">replaces "Straighten up" — &lt; 50</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     02 · TYPE
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">02</span>
+    <h2 class="block-title">Type, used <em>sparely</em>.</h2>
+    <p class="block-sub">Serif italics for moments worth slowing down for. Rounded numerals where you read data. SF Pro for everything else.</p>
+  </div>
+
+  <div class="type-grid">
+    <div class="type-row">
+      <div class="type-role">Display · serif</div>
+      <div class="type-sample" style="font-family:var(--serif);font-style:italic;font-size:64px;line-height:1">aligned.</div>
+      <div class="type-spec">.system(.largeTitle, design:&nbsp;.serif)<br>italic · 64pt · -2% tracking</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Numeral · rounded</div>
+      <div class="type-sample" style="font-family:var(--serif);font-style:italic;font-size:96px;line-height:0.9;letter-spacing:-0.04em">82<span style="font-size:36px;opacity:0.5">°</span></div>
+      <div class="type-spec">.system(size: 96, design: .serif)<br>italic · ° in 38pt rounded</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Title</div>
+      <div class="type-sample" style="font-family:var(--rounded);font-weight:600;font-size:22px">how's your posture?</div>
+      <div class="type-spec">.title2 · weight .semibold</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Body</div>
+      <div class="type-sample" style="font-size:15px;line-height:1.4">Shoulders heavier than ears. Tongue against the roof of the mouth.</div>
+      <div class="type-spec">.body · 15pt · 1.4 leading</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Caption · rounded</div>
+      <div class="type-sample" style="font-family:var(--rounded);font-weight:600;font-size:12px;color:#5A5247">NEXT NUDGE 3:00 PM · 5 LEFT</div>
+      <div class="type-spec">.caption · rounded · 12pt · 16% tracking</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Tip · serif italic</div>
+      <div class="type-sample" style="font-family:var(--serif);font-style:italic;font-size:17px;color:#5A5247">· feet flat. crown of the head reaches.</div>
+      <div class="type-spec">.system(.callout, design:&nbsp;.serif)<br>italic · 17pt</div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:18px">Why serif italics? They give the wellness moments — your alignment score, the tip of the day, the result word — a hand-written, journal-like quality that visually separates them from system chrome. The system serif design ships with iOS — no licensed font, no shipped binary.</p>
+</section>
+
+<!-- =====================================================
+     03 · COMPONENTS
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">03</span>
+    <h2 class="block-title">Components, four <em>that earn their place</em>.</h2>
+    <p class="block-sub">Each is reusable across the redesigned surfaces. The horizon meter replaces the SF-Symbol triangle/octagon; the day strip replaces today's summary tiles.</p>
+  </div>
+
+  <div class="gallery">
+    <div class="gallery-card">
+      <span class="label">CTA · sage pill</span>
+      <div class="gallery-body"><button class="cta">check in now</button></div>
+      <div class="gallery-foot">Replaces the brand-gradient rectangle. 52pt tall, full-width, single solid sage, semibold rounded. Ghost and tonal variants for secondary use.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Quality chips</span>
+      <div class="gallery-body" style="flex-direction:column;gap:8px">
+        <span class="chip sage"><span class="dot"></span>aligned · 88</span>
+        <span class="chip sand"><span class="dot"></span>drifting · 64</span>
+        <span class="chip clay"><span class="dot"></span>resting · 41</span>
+      </div>
+      <div class="gallery-foot">Replaces <span class="kbd">PostureLiveIndicator</span>. Lowercase, never shouts. Score is optional on the right.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Horizon meter</span>
+      <div class="gallery-body" style="padding:20px">
+        <div class="horizon" style="--tilt:-2deg">
+          <div class="horizon-line"></div>
+          <div class="horizon-sun"></div>
+        </div>
+      </div>
+      <div class="gallery-foot">Replaces the iconography in the Done state. The bar tilts to imply alignment; the sun-dot recolors by quality. Animation: tilt eases over 600ms after a scan completes.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Day strip · today hero</span>
+      <div class="gallery-body" style="width:100%;padding:0 8px">
+        <div class="daystrip" style="height:80px;width:100%">
+          <div class="h" style="height:18px"></div>
+          <div class="h aligned" style="height:38px"></div>
+          <div class="h aligned" style="height:50px"></div>
+          <div class="h drifting" style="height:28px"></div>
+          <div class="h aligned" style="height:58px"></div>
+          <div class="h resting" style="height:22px"></div>
+          <div class="h aligned now" style="height:66px"></div>
+          <div class="h future"></div>
+          <div class="h future"></div>
+          <div class="h future"></div>
+        </div>
+      </div>
+      <div class="gallery-foot">A horizon of the day, hour by hour. Each check-in colors a bar. Future hours are dashed lines. Replaces the response-rate progress bar AND the today-summary tile row.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Week strip · history hero</span>
+      <div class="gallery-body" style="width:100%">
+        <div class="weekstrip" style="height:120px">
+          <div class="day"><div class="bar" style="height:60%"><div class="fill" style="height:55%"></div></div><div class="lbl">M</div></div>
+          <div class="day"><div class="bar" style="height:78%"><div class="fill" style="height:90%"></div></div><div class="lbl">T</div></div>
+          <div class="day"><div class="bar" style="height:52%"><div class="fill mixed" style="height:80%"></div></div><div class="lbl">W</div></div>
+          <div class="day"><div class="bar" style="height:88%"><div class="fill" style="height:92%"></div></div><div class="lbl">T</div></div>
+          <div class="day"><div class="bar" style="height:46%"><div class="fill" style="height:30%;background:var(--q-resting)"></div></div><div class="lbl">F</div></div>
+          <div class="day"><div class="bar" style="height:30%"><div class="fill" style="height:50%"></div></div><div class="lbl">S</div></div>
+          <div class="day today"><div class="bar" style="height:72%"><div class="fill" style="height:72%"></div></div><div class="lbl">S</div></div>
+        </div>
+      </div>
+      <div class="gallery-foot">Bar height = response rate, fill color = average quality (solid sage if uniformly aligned, banded if mixed). Today is marked with a small dot, never a different bar style.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Banner · empty/error/permission</span>
+      <div class="gallery-body" style="width:100%;flex-direction:column;gap:10px">
+        <div class="banner muted"><div class="b-mark"></div><div><div class="banner-title">No data yet.</div><div class="banner-body">Check in once and a story begins.</div></div></div>
+        <div class="banner error"><div class="b-mark"></div><div><div class="banner-title">Camera off.</div><div class="banner-body">Posture needs the front camera for scans.</div><span class="banner-action">open settings →</span></div></div>
+      </div>
+      <div class="gallery-foot">Single reusable component. Three flavors: <span class="kbd">.muted</span>, <span class="kbd">.warn</span>, <span class="kbd">.error</span>. Inline by default; <span class="kbd">.fullscreen</span> modifier for first-run.</div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:28px">Patterns that <em>aren't</em> here: the brand gradient (cut), drop shadows (cut — borders only), SF Symbol traffic-light icons in result screens (replaced by the horizon meter), and the "crown" iconography on paywall (replaced by a personal postcard concept).</p>
+</section>
+
+<!-- =====================================================
+     04 · TODAY
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">04</span>
+    <h2 class="block-title">Today · <em>one hero, one question answered</em>.</h2>
+    <p class="block-sub">Above the fold answers "how am I doing today, and what do I do next." Stats and streak are demoted; the tip and habits link are below the CTA.</p>
+  </div>
+
+  <div class="phones cols-4">
+    <!-- 1. Today — with data -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status">
+              <span>9:41</span>
+              <div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div>
+            </div>
+            <div class="nav">
+              <span class="nav-title">today</span>
+              <div class="nav-streak">12 days</div>
+            </div>
+            <div class="screen-body" style="padding-top:8px;display:flex;flex-direction:column;gap:18px">
+              <!-- HERO: alignment + day strip -->
+              <div>
+                <span class="eye">today's alignment</span>
+                <div class="readout" style="margin-top:6px">
+                  <div class="readout-num">82<span class="deg">°</span></div>
+                  <div class="readout-meta">
+                    <div class="qual">aligned</div>
+                    <div class="sub">5 of 7 scans on track.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="daystrip">
+                  <div class="h" style="height:18%"></div>
+                  <div class="h aligned" style="height:42%"></div>
+                  <div class="h aligned" style="height:58%"></div>
+                  <div class="h drifting" style="height:30%"></div>
+                  <div class="h aligned" style="height:68%"></div>
+                  <div class="h resting" style="height:24%"></div>
+                  <div class="h aligned now" style="height:78%"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                </div>
+                <div class="daystrip-labels">
+                  <span>8a</span><span>10</span><span>12</span><span>2</span><span>4</span><span>6p</span>
+                </div>
+              </div>
+
+              <!-- CTA + meta -->
+              <div>
+                <button class="cta">check in now</button>
+                <div class="meta-row" style="margin-top:10px">
+                  <span>next nudge <b>3:00 pm</b></span>
+                  <span>5 left today</span>
+                </div>
+              </div>
+
+              <!-- Tip line -->
+              <div class="tipline">shoulders heavier than ears.</div>
+            </div>
+            <div class="tabbar">
+              <div class="tab active"><span class="tab-dot"></span>today</div>
+              <div class="tab"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">05a</span><span class="name">Today · <em>with data</em></span></div>
+    </div>
+
+    <!-- 2. Today — new user / empty -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">today</span><div class="nav-streak" style="opacity:0">— —</div></div>
+            <div class="screen-body" style="padding-top:8px;display:flex;flex-direction:column;gap:22px">
+              <div>
+                <span class="eye">today's alignment</span>
+                <div style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:38px;line-height:1.05;letter-spacing:-0.02em;color:var(--ink-3);margin-top:8px;max-width:240px">no scans yet.</div>
+                <p style="font:13px/1.45 var(--sans);color:var(--ink-2);margin:12px 0 0;max-width:220px">Your first reading lands when you check in — usually within an hour.</p>
+              </div>
+
+              <div>
+                <div class="daystrip">
+                  <div class="h future"></div><div class="h future"></div><div class="h future"></div>
+                  <div class="h future"></div><div class="h future"></div><div class="h future"></div>
+                  <div class="h future"></div><div class="h future"></div><div class="h future"></div>
+                  <div class="h future"></div><div class="h future"></div><div class="h future"></div>
+                </div>
+                <div class="daystrip-labels"><span>8a</span><span>10</span><span>12</span><span>2</span><span>4</span><span>6p</span></div>
+              </div>
+
+              <div>
+                <button class="cta">start the day</button>
+                <div class="meta-row" style="margin-top:10px">
+                  <span>reminders <b>every 30 min</b></span>
+                  <span>9–6</span>
+                </div>
+              </div>
+
+              <div class="banner muted">
+                <div class="b-mark"></div>
+                <div>
+                  <div class="banner-title">A daylight habit takes about a week.</div>
+                  <div class="banner-body">Check in three or four times today. We'll show you the shape of it.</div>
+                </div>
+              </div>
+            </div>
+            <div class="tabbar">
+              <div class="tab active"><span class="tab-dot"></span>today</div>
+              <div class="tab"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">05b</span><span class="name">Today · <em>first run / empty</em></span></div>
+    </div>
+
+    <!-- 3. Today — reminders off (alt state) -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">today</span><div class="nav-streak">12 days</div></div>
+            <div class="screen-body" style="padding-top:8px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <span class="eye">today's alignment</span>
+                <div class="readout" style="margin-top:6px">
+                  <div class="readout-num">71<span class="deg">°</span></div>
+                  <div class="readout-meta">
+                    <div class="qual drifting">drifting</div>
+                    <div class="sub">manual check-ins only.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="daystrip">
+                  <div class="h" style="height:14%"></div>
+                  <div class="h drifting" style="height:30%"></div>
+                  <div class="h" style="height:14%"></div>
+                  <div class="h aligned" style="height:42%"></div>
+                  <div class="h drifting" style="height:30%"></div>
+                  <div class="h aligned now" style="height:55%"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                  <div class="h future"></div>
+                </div>
+                <div class="daystrip-labels"><span>8a</span><span>10</span><span>12</span><span>2</span><span>4</span><span>6p</span></div>
+              </div>
+
+              <div>
+                <button class="cta">check in now</button>
+                <div class="meta-row" style="margin-top:10px;color:var(--ink-3)">
+                  <span>reminders are off.</span>
+                  <span style="color:var(--sage-2);font-weight:600;font-family:var(--rounded)">turn on →</span>
+                </div>
+              </div>
+
+              <div class="tipline">crown of the head, not the chin, leads.</div>
+            </div>
+            <div class="tabbar">
+              <div class="tab active"><span class="tab-dot"></span>today</div>
+              <div class="tab"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">05c</span><span class="name">Today · <em>reminders off</em></span></div>
+    </div>
+
+    <!-- 4. Today — dark mode -->
+    <div class="phone">
+      <div class="phone-frame dark">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner dark">
+          <div class="screen dark" style="background:#171614">
+            <div class="status" style="color:#EFE9DC"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title" style="color:#EFE9DC">today</span><div class="nav-streak" style="color:#B7AE9D">12 days</div></div>
+            <div class="screen-body" style="padding-top:8px;display:flex;flex-direction:column;gap:18px">
+              <div>
+                <span class="eye" style="color:#7C7464">today's alignment</span>
+                <div class="readout" style="margin-top:6px">
+                  <div class="readout-num" style="color:#EFE9DC">82<span class="deg">°</span></div>
+                  <div class="readout-meta">
+                    <div class="qual" style="color:#8FB39E">aligned</div>
+                    <div class="sub" style="color:#B7AE9D">5 of 7 scans on track.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="daystrip">
+                  <div class="h" style="background:#2A2722;height:18%"></div>
+                  <div class="h" style="background:#8FB39E;height:42%"></div>
+                  <div class="h" style="background:#8FB39E;height:58%"></div>
+                  <div class="h" style="background:#DDB07A;height:30%"></div>
+                  <div class="h" style="background:#8FB39E;height:68%"></div>
+                  <div class="h" style="background:#E0967A;height:24%"></div>
+                  <div class="h now" style="background:#8FB39E;height:78%"></div>
+                  <div class="h" style="background:transparent;border-top:1px dashed #2A2722;height:6px;align-self:flex-end"></div>
+                  <div class="h" style="background:transparent;border-top:1px dashed #2A2722;height:6px;align-self:flex-end"></div>
+                  <div class="h" style="background:transparent;border-top:1px dashed #2A2722;height:6px;align-self:flex-end"></div>
+                  <div class="h" style="background:transparent;border-top:1px dashed #2A2722;height:6px;align-self:flex-end"></div>
+                  <div class="h" style="background:transparent;border-top:1px dashed #2A2722;height:6px;align-self:flex-end"></div>
+                </div>
+                <div class="daystrip-labels" style="color:#7C7464"><span>8a</span><span>10</span><span>12</span><span>2</span><span>4</span><span>6p</span></div>
+              </div>
+
+              <button class="cta" style="background:#8FB39E;color:#171614">check in now</button>
+
+              <div class="tipline" style="color:#B7AE9D">tongue against the roof of the mouth.</div>
+            </div>
+            <div class="tabbar" style="background:#171614e0;border-color:#2A2722">
+              <div class="tab active" style="color:#EFE9DC"><span class="tab-dot" style="background:#8FB39E"></span>today</div>
+              <div class="tab" style="color:#7C7464"><span class="tab-dot"></span>history</div>
+              <div class="tab" style="color:#7C7464"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">05d</span><span class="name">Today · <em>dark</em></span></div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:24px"><b>Against current implementation:</b> kills the 8-card stack. Replaces the brand-gradient "check in now" rectangle with a solid sage pill. Removes the response-rate progress bar and the 3-tile today summary (replaced by the day strip). Moves the streak from a top-of-screen flame to a quiet numeric in the nav. The tip card collapses to a single italic line; tap to reveal full text, "all posture tips" moves into a small icon button in the nav (not shown).</p>
+</section>
+
+<!-- =====================================================
+     05 · ACKNOWLEDGMENT
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">05</span>
+    <h2 class="block-title">Acknowledgment · <em>fast, never scolding</em>.</h2>
+    <p class="block-sub">Fires up to 24× per day. Choice screen demoted to one action + one text link + always-on close. Done screen is the reward.</p>
+  </div>
+
+  <div class="phones cols-4">
+
+    <!-- Choice -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav">
+              <span class="eye">wednesday · 3:00 pm</span>
+              <div class="nav-right"><span style="font-size:18px;line-height:1">×</span></div>
+            </div>
+            <div class="screen-body" style="display:flex;flex-direction:column;padding-top:40px">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+                <h2 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:42px;line-height:1.05;margin:0;letter-spacing:-0.01em">how's your posture<br>right now?</h2>
+                <p style="font-size:14px;line-height:1.5;color:var(--ink-2);margin:0;max-width:240px">A three-second scan. Or just tell us — we trust you.</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px;padding-bottom:24px">
+                <button class="cta">scan</button>
+                <button class="cta ghost">just checking in — manual →</button>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">06</span><span class="name">Ack · <em>choice</em></span></div>
+    </div>
+
+    <!-- Scanning -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen cam" style="position:absolute;inset:0">
+            <div class="status" style="color:#fff"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav">
+              <span class="eye" style="color:rgba(255,255,255,0.5)">scanning</span>
+              <div class="nav-right" style="color:rgba(255,255,255,0.6)"><span style="font-size:18px;line-height:1">×</span></div>
+            </div>
+            <div class="cam-guide"></div>
+            <div class="cam-count">2</div>
+            <div class="cam-status"><span class="dot"></span>head centered</div>
+            <div class="cam-caption">hold still. look straight ahead.</div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">07</span><span class="name">Ack · <em>scanning</em></span></div>
+    </div>
+
+    <!-- Done — aligned -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen tint-aligned">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">3:00 pm · scanned</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+                <div>
+                  <span class="eye" style="color:var(--sage-2)">today, 3:00 pm</span>
+                  <div class="bigword" style="margin-top:8px;color:var(--ink)">aligned<span style="color:var(--sage)">.</span></div>
+                  <p style="margin:14px 0 0;font:15px/1.5 var(--sans);color:var(--ink-2);max-width:230px">Crown over hips. Shoulders soft. You're holding the shape well.</p>
+                </div>
+                <div class="horizon" style="--tilt:-1.5deg;margin-top:10px">
+                  <div class="horizon-line"></div>
+                  <div class="horizon-sun" style="background:var(--sage);box-shadow:0 0 0 8px color-mix(in srgb,var(--sage) 22%,transparent)"></div>
+                </div>
+                <div class="tipline">jaw and tongue, soft.</div>
+              </div>
+              <button class="cta ghost" style="margin-bottom:28px">done</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">08a</span><span class="name">Ack done · <em>aligned</em></span></div>
+    </div>
+
+    <!-- Done — drifting -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen tint-drifting">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">3:00 pm · scanned</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+                <div>
+                  <span class="eye" style="color:#8a6428">today, 3:00 pm</span>
+                  <div class="bigword" style="margin-top:8px;color:var(--ink)">drifting<span style="color:var(--sand)">.</span></div>
+                  <p style="margin:14px 0 0;font:15px/1.5 var(--sans);color:var(--ink-2);max-width:230px">Head's a little forward. A small reset is all this needs.</p>
+                </div>
+                <div class="horizon" style="--tilt:5deg">
+                  <div class="horizon-line"></div>
+                  <div class="horizon-sun" style="background:var(--sand);box-shadow:0 0 0 8px color-mix(in srgb,var(--sand) 22%,transparent)"></div>
+                </div>
+                <div class="tipline">draw your ears back over your shoulders.</div>
+              </div>
+              <button class="cta ghost" style="margin-bottom:28px">done</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">08b</span><span class="name">Ack done · <em>drifting</em></span></div>
+    </div>
+
+    <!-- Done — resting -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen tint-resting">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">3:00 pm · scanned</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+                <div>
+                  <span class="eye" style="color:#7a3a25">today, 3:00 pm</span>
+                  <div class="bigword" style="margin-top:8px;color:var(--ink)">resting<span style="color:var(--clay)">.</span></div>
+                  <p style="margin:14px 0 0;font:15px/1.5 var(--sans);color:var(--ink-2);max-width:240px">Curled forward. Take a slow breath, lift the crown of your head.</p>
+                </div>
+                <div class="horizon" style="--tilt:12deg">
+                  <div class="horizon-line"></div>
+                  <div class="horizon-sun" style="background:var(--clay);box-shadow:0 0 0 8px color-mix(in srgb,var(--clay) 22%,transparent)"></div>
+                </div>
+                <div class="tipline">feet flat. sit bones, not tailbone.</div>
+              </div>
+              <button class="cta ghost" style="margin-bottom:28px">done</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">08c</span><span class="name">Ack done · <em>resting</em></span></div>
+    </div>
+
+    <!-- Done — manual -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen tint-manual">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">3:00 pm · manual</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px">
+                <div>
+                  <span class="eye">today, 3:00 pm</span>
+                  <div class="bigword" style="margin-top:8px;color:var(--ink)">noted<span style="color:var(--ink-3)">.</span></div>
+                  <p style="margin:14px 0 0;font:15px/1.5 var(--sans);color:var(--ink-2);max-width:240px">Logged without a scan. That counts — staying mindful is most of it.</p>
+                </div>
+                <div class="horizon" style="--tilt:0deg">
+                  <div class="horizon-line"></div>
+                  <div class="horizon-sun" style="background:var(--ink-3);box-shadow:0 0 0 8px color-mix(in srgb,var(--ink-3) 16%,transparent)"></div>
+                </div>
+                <div class="tipline">three deep breaths before the next nudge.</div>
+              </div>
+              <button class="cta ghost" style="margin-bottom:28px">done</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">08d</span><span class="name">Ack done · <em>manual</em></span></div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:24px"><b>Against current implementation:</b> the choice screen drops the secondary "I sat up straight" pill (now a text link) so only one decision matters: scan or manual. Always-visible close button (×) fixes audit P1-12. The Done screen swaps SF-Symbol checkmark / triangle / xmark.octagon for the tonal full-screen + horizon meter + single italic verb. Copy: <em>"Looking good!"</em> → <em>"aligned."</em>; <em>"Shift back a bit"</em> → <em>"drifting."</em>; <em>"Straighten up"</em> → <em>"resting."</em> Scan view goes full-bleed with a soft oval head-guide instead of the rectangular brand-gradient inset.</p>
+</section>
+
+<!-- =====================================================
+     06 · HISTORY
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">06</span>
+    <h2 class="block-title">History · <em>tell me a story</em>.</h2>
+    <p class="block-sub">The two near-identical bar charts collapse into a single week strip and a one-sentence narrative pulled from the data. The "interleaved timeline of recent acks" becomes a journal feed.</p>
+  </div>
+
+  <div class="phones cols-3">
+
+    <!-- History — with data -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">history</span><div class="nav-right"><span class="chip">this week ›</span></div></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;gap:18px;padding-top:8px">
+
+              <div>
+                <span class="eye">nov 11 — nov 17</span>
+                <h3 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:24px;line-height:1.25;margin:6px 0 0;max-width:260px">Your best stretch was Tuesday morning. Friday afternoon slipped.</h3>
+              </div>
+
+              <div class="weekstrip">
+                <div class="day"><div class="bar" style="height:60%"><div class="fill" style="height:55%"></div></div><div class="lbl">M</div></div>
+                <div class="day"><div class="bar" style="height:82%"><div class="fill" style="height:88%"></div></div><div class="lbl">T</div></div>
+                <div class="day"><div class="bar" style="height:55%"><div class="fill mixed" style="height:80%"></div></div><div class="lbl">W</div></div>
+                <div class="day"><div class="bar" style="height:90%"><div class="fill" style="height:92%"></div></div><div class="lbl">T</div></div>
+                <div class="day"><div class="bar" style="height:48%"><div class="fill" style="height:32%;background:var(--q-resting)"></div></div><div class="lbl">F</div></div>
+                <div class="day"><div class="bar" style="height:30%"><div class="fill" style="height:50%"></div></div><div class="lbl">S</div></div>
+                <div class="day today"><div class="bar" style="height:72%"><div class="fill" style="height:72%"></div></div><div class="lbl">S</div></div>
+              </div>
+
+              <div class="meta-row" style="margin-top:-4px">
+                <span><b>74%</b> aligned this week</span>
+                <span><b>+11</b> vs last</span>
+              </div>
+
+              <div class="hr"></div>
+
+              <div class="journal">
+                <div class="j-row"><div class="j-time">3:00p</div><div class="j-body">aligned · scan<em>"crown over hips. shoulders soft."</em></div><div class="j-dot"></div></div>
+                <div class="j-row"><div class="j-time">2:00p</div><div class="j-body">resting · scan</div><div class="j-dot resting"></div></div>
+                <div class="j-row"><div class="j-time">1:00p</div><div class="j-body">noted · manual</div><div class="j-dot manual"></div></div>
+                <div class="j-row"><div class="j-time">11:30</div><div class="j-body">aligned · scan</div><div class="j-dot"></div></div>
+              </div>
+
+            </div>
+            <div class="tabbar">
+              <div class="tab"><span class="tab-dot"></span>today</div>
+              <div class="tab active"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">09a</span><span class="name">History · <em>with data</em></span></div>
+    </div>
+
+    <!-- History — empty -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">history</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:18px;padding-top:0">
+              <div class="sun"></div>
+              <div>
+                <span class="eye">no history yet</span>
+                <h3 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:28px;line-height:1.2;margin:6px 0 0;max-width:240px">Check in once and a story begins.</h3>
+                <p style="font:14px/1.5 var(--sans);color:var(--ink-2);margin:14px 0 0;max-width:230px">We need a few days before patterns are worth showing. Until then, today is plenty.</p>
+              </div>
+              <button class="cta" style="margin-top:8px">check in now</button>
+            </div>
+            <div class="tabbar">
+              <div class="tab"><span class="tab-dot"></span>today</div>
+              <div class="tab active"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">09b</span><span class="name">History · <em>empty</em></span></div>
+    </div>
+
+    <!-- History — pro preview -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">history</span><div class="nav-right"><span class="chip">this week ›</span></div></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;gap:16px;padding-top:8px">
+
+              <div>
+                <span class="eye">today's rhythm · pro</span>
+                <p style="font:14px/1.4 var(--sans);color:var(--ink-2);margin:6px 0 0;max-width:240px">Most slouching: <b style="color:var(--ink)">2 — 3 pm</b>. From AirPods + Watch.</p>
+              </div>
+
+              <!-- mini passive timeline -->
+              <div style="display:flex;gap:3px;align-items:flex-end;height:60px;border-bottom:1px solid var(--paper-3);padding-bottom:4px">
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:12%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:18%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:8%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:24%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:32%"></div>
+                <div style="flex:1;background:var(--sand);border-radius:2px;height:55%"></div>
+                <div style="flex:1;background:var(--clay);border-radius:2px;height:78%"></div>
+                <div style="flex:1;background:var(--clay);border-radius:2px;height:64%"></div>
+                <div style="flex:1;background:var(--sand);border-radius:2px;height:42%"></div>
+                <div style="flex:1;background:var(--sand);border-radius:2px;height:30%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:18%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:12%"></div>
+                <div style="flex:1;background:var(--paper-3);border-radius:2px;height:8%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font:10px/1 var(--sans);color:var(--ink-3);letter-spacing:0.06em">
+                <span>9a</span><span>11</span><span>1p</span><span>3</span><span>5</span><span>7</span><span>9p</span>
+              </div>
+
+              <div style="display:flex;gap:8px">
+                <span class="chip sage"><span class="dot"></span>airpods</span>
+                <span class="chip"><span class="dot"></span>watch</span>
+              </div>
+
+              <div class="hr"></div>
+
+              <div>
+                <span class="eye">7-day trend</span>
+                <h3 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:20px;line-height:1.3;margin:6px 0 0">Afternoons are your weak spot. Mornings are gold.</h3>
+              </div>
+
+              <div class="weekstrip" style="height:100px">
+                <div class="day"><div class="bar" style="height:55%"><div class="fill" style="height:55%"></div></div><div class="lbl">M</div></div>
+                <div class="day"><div class="bar" style="height:78%"><div class="fill" style="height:88%"></div></div><div class="lbl">T</div></div>
+                <div class="day"><div class="bar" style="height:50%"><div class="fill mixed" style="height:80%"></div></div><div class="lbl">W</div></div>
+                <div class="day"><div class="bar" style="height:88%"><div class="fill" style="height:92%"></div></div><div class="lbl">T</div></div>
+                <div class="day"><div class="bar" style="height:46%"><div class="fill" style="height:32%;background:var(--q-resting)"></div></div><div class="lbl">F</div></div>
+                <div class="day"><div class="bar" style="height:30%"><div class="fill" style="height:50%"></div></div><div class="lbl">S</div></div>
+                <div class="day today"><div class="bar" style="height:72%"><div class="fill" style="height:72%"></div></div><div class="lbl">S</div></div>
+              </div>
+
+            </div>
+            <div class="tabbar">
+              <div class="tab"><span class="tab-dot"></span>today</div>
+              <div class="tab active"><span class="tab-dot"></span>history</div>
+              <div class="tab"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">09c + 13</span><span class="name">History · <em>Pro (24-hour rhythm + week)</em></span></div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:24px"><b>Against current implementation:</b> drops one of the two duplicate weekly bar charts. The remaining chart absorbs both response-rate (bar height) and average-quality (fill color), so it's a single dense signal. The recent-acks list becomes a typed journal — italic serif callouts only when the entry had a tip attached. PassiveTimelineView's bars switch from <span class="kbd">Theme.bad</span> opacity to the warm sand/clay scale so heavy hours don't read as alarm-state.</p>
+</section>
+
+<!-- =====================================================
+     07 · PAYWALL
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">07</span>
+    <h2 class="block-title">Paywall · <em>the long way is the only way</em>.</h2>
+    <p class="block-sub">Replaces crown-and-checklist with a "look back" — a personal postcard of what your next month could look like.</p>
+  </div>
+
+  <div class="phones cols-3">
+
+    <!-- Paywall -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">posture · pro</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;gap:14px;padding-top:4px">
+
+              <h2 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:30px;line-height:1.05;margin:4px 0 0;max-width:260px">The long way is the only way.</h2>
+              <p style="font:13px/1.45 var(--sans);color:var(--ink-2);margin:0;max-width:240px">Pro adds the parts of the practice you only see after a few weeks.</p>
+
+              <!-- look back postcard -->
+              <div class="postcard" style="padding:14px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span class="eye">your july · a preview</span>
+                  <span style="font-family:var(--rounded);font-weight:600;font-size:12px;color:var(--sage-2)">84% aligned</span>
+                </div>
+                <!-- 30-day strip -->
+                <div style="display:grid;grid-template-columns:repeat(30,1fr);gap:2px;height:38px;margin-top:10px;align-items:end">
+                  <div style="background:var(--q-aligned);height:60%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:80%;border-radius:2px"></div>
+                  <div style="background:var(--q-drifting);height:40%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:75%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:85%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:90%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:78%;border-radius:2px"></div>
+                  <div style="background:var(--q-resting);height:40%;border-radius:2px"></div>
+                  <div style="background:var(--q-drifting);height:55%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:70%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:85%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:92%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:78%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:88%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:92%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:80%;border-radius:2px"></div>
+                  <div style="background:var(--q-drifting);height:50%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:75%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:88%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:95%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:80%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:85%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:92%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:78%;border-radius:2px"></div>
+                  <div style="background:var(--q-drifting);height:60%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:80%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:90%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:88%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:92%;border-radius:2px"></div>
+                  <div style="background:var(--q-aligned);height:80%;border-radius:2px;outline:1.5px solid var(--ink);outline-offset:2px"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font:10px/1 var(--sans);color:var(--ink-3);margin-top:10px;letter-spacing:0.06em"><span>JUL 1</span><span>14 DAY STRETCH</span><span>JUL 30</span></div>
+              </div>
+
+              <!-- included list -->
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:0">
+                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 0;border-top:1px solid var(--paper-3)"><span style="color:var(--ink-3)">·</span><span style="font:13px/1.3 var(--sans);font-weight:500">24-hour rhythm — when you slip, hour by hour</span></div>
+                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 0;border-top:1px solid var(--paper-3)"><span style="color:var(--ink-3)">·</span><span style="font:13px/1.3 var(--sans);font-weight:500">Quiet AirPods background monitoring</span></div>
+                <div style="display:flex;align-items:baseline;gap:10px;padding:6px 0;border-top:1px solid var(--paper-3);border-bottom:1px solid var(--paper-3)"><span style="color:var(--ink-3)">·</span><span style="font:13px/1.3 var(--sans);font-weight:500">Every month kept — free shows a week</span></div>
+              </div>
+
+              <!-- price -->
+              <div style="margin-top:auto;padding-bottom:18px">
+                <button class="cta">try 7 days · then $29.99 / year</button>
+                <div style="display:flex;justify-content:space-between;margin-top:10px;font:11px/1 var(--sans);color:var(--ink-3)">
+                  <span>or $4.99 / month</span>
+                  <span>restore · maybe later</span>
+                </div>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">12a</span><span class="name">Paywall · <em>"a preview of your july"</em></span></div>
+    </div>
+
+    <!-- Paywall variant — single screen, simpler -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">posture · pro</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;padding-top:8px">
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+                <span class="eye">a wellness habit</span>
+                <h2 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:44px;line-height:1.05;margin:0;max-width:280px">Stay with it long enough to see it work.</h2>
+                <p style="font:15px/1.5 var(--sans);color:var(--ink-2);margin:0;max-width:260px">Pro keeps your history forever, learns your slouch hours from AirPods, and saves a year-end look-back. One subscription. Cancel any time.</p>
+
+                <div class="horizon" style="--tilt:-1deg;margin-top:8px">
+                  <div class="horizon-line"></div>
+                  <div class="horizon-sun"></div>
+                </div>
+              </div>
+              <div style="padding-bottom:24px">
+                <button class="cta">start 7-day trial</button>
+                <div style="display:flex;justify-content:space-between;margin-top:12px;font:12px/1 var(--sans);color:var(--ink-3)">
+                  <span>$29.99/yr · $4.99/mo</span>
+                  <span>restore</span>
+                </div>
+                <div style="text-align:center;margin-top:14px;font:13px/1 var(--rounded);font-weight:500;color:var(--ink-2)">maybe later</div>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">12b</span><span class="name">Paywall · <em>quieter alt</em></span></div>
+    </div>
+
+    <!-- Settings free — Pro upsell card -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="nav-title">settings</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;gap:14px;padding-top:0">
+              <!-- Pro upsell — not a chevron row -->
+              <div class="postcard" style="background:var(--sage-tint);border-color:transparent">
+                <span class="eye" style="color:var(--sage-2)">posture · pro</span>
+                <div style="font-family:var(--serif);font-style:italic;font-size:22px;color:var(--ink);margin-top:6px;line-height:1.2;max-width:230px">Keep the whole year. See your slouch hours.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+                  <span style="font:13px/1 var(--rounded);font-weight:600;color:var(--sage-2)">try 7 days · $29.99/yr →</span>
+                </div>
+              </div>
+
+              <div class="form-section-title">Reminders</div>
+              <div class="form-section">
+                <div class="form-row"><span class="lbl-l">Enabled</span><div class="toggle"></div></div>
+                <div class="form-row"><span class="lbl-l">Every</span><span class="lbl-r">30 min ›</span></div>
+                <div class="form-row"><span class="lbl-l">Active hours</span><span class="lbl-r">9:00 — 6:00</span></div>
+              </div>
+
+              <div class="form-section-title">Sensitivity</div>
+              <div class="form-section" style="background:transparent;border-radius:0;padding:0 4px">
+                <div class="segmented"><span class="seg">relaxed</span><span class="seg active">normal</span><span class="seg">strict</span></div>
+              </div>
+
+              <div class="form-section-title">Calibration</div>
+              <div class="form-section">
+                <div class="form-row chev"><span class="lbl-l">Recalibrate</span></div>
+                <div class="form-row"><span class="lbl-l">Last calibrated</span><span class="lbl-r">3 days ago</span></div>
+              </div>
+            </div>
+            <div class="tabbar">
+              <div class="tab"><span class="tab-dot"></span>today</div>
+              <div class="tab"><span class="tab-dot"></span>history</div>
+              <div class="tab active"><span class="tab-dot"></span>settings</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">11</span><span class="name">Settings · <em>free, with Pro card</em></span></div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:24px"><b>Against current implementation:</b> the placeholder paywall's crown icon and 4 checkmark rows are deleted. <em>12a</em> shows a "your july" simulated postcard — generic enough not to imply medical claims, but specific enough to feel personal. <em>12b</em> is the quieter alt for users who scroll past the postcard. Settings keeps the native Form, but the chevron row for Pro becomes a tonal sage card that earns a glance.</p>
+</section>
+
+<!-- =====================================================
+     08 · CALIBRATION
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">08</span>
+    <h2 class="block-title">Calibration · <em>still utilitarian, less DIY</em>.</h2>
+    <p class="block-sub">No new steps. Two adjustments: the AirPods question gets clear primary/secondary weight, and the capture screen goes full-bleed with an oval guide and an inline reason when "Capture" is disabled.</p>
+  </div>
+
+  <div class="phones cols-3">
+
+    <!-- AirPods question -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen" style="background:var(--paper)">
+            <div class="status"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav"><span class="eye">step 1 of 3</span><span style="font-size:18px;line-height:1;color:var(--ink-3)">×</span></div>
+            <div class="screen-body" style="display:flex;flex-direction:column;padding-top:24px">
+              <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+                <span class="eye">calibration</span>
+                <h2 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:34px;line-height:1.1;margin:0;max-width:260px">Do you wear AirPods at your desk?</h2>
+                <p style="font:14px/1.5 var(--sans);color:var(--ink-2);margin:0;max-width:240px">If yes, we'll use their motion sensor to catch slouches without staring at the camera.</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px;padding-bottom:32px">
+                <button class="cta secondary">yes — link them</button>
+                <button class="cta">no, use my camera</button>
+              </div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">02</span><span class="name">Calibration · <em>AirPods question</em></span></div>
+    </div>
+
+    <!-- Capture — face in frame -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen cam">
+            <div class="status" style="color:#fff"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav">
+              <span class="eye" style="color:rgba(255,255,255,0.5)">step 2 of 3</span>
+              <span style="font-size:18px;line-height:1;color:rgba(255,255,255,0.6)">×</span>
+            </div>
+            <div style="position:absolute;top:84px;left:0;right:0;text-align:center;color:#fff">
+              <div style="font-family:var(--serif);font-style:italic;font-size:24px">sit upright.</div>
+              <div style="font:12px/1.4 var(--sans);color:rgba(255,255,255,0.65);margin-top:6px;max-width:240px;margin-left:auto;margin-right:auto">Hold the position you want to come back to all day.</div>
+            </div>
+            <div class="cam-guide" style="top:36%"></div>
+            <div class="cam-count" style="top:34%">5</div>
+            <div class="cam-status"><span class="dot"></span>centered · holding still</div>
+            <div style="position:absolute;bottom:32px;left:20px;right:20px">
+              <button class="cta" style="width:100%">capture</button>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">03a</span><span class="name">Calibration · <em>capture</em></span></div>
+    </div>
+
+    <!-- Capture — no face -->
+    <div class="phone">
+      <div class="phone-frame">
+        <div class="dynamic-island"></div>
+        <div class="phone-inner">
+          <div class="screen cam">
+            <div class="status" style="color:#fff"><span>9:41</span><div class="status-right"><span style="font-size:11px">···</span><span style="font-size:11px">●</span></div></div>
+            <div class="nav">
+              <span class="eye" style="color:rgba(255,255,255,0.5)">step 2 of 3</span>
+              <span style="font-size:18px;line-height:1;color:rgba(255,255,255,0.6)">×</span>
+            </div>
+            <div style="position:absolute;top:84px;left:0;right:0;text-align:center;color:#fff">
+              <div style="font-family:var(--serif);font-style:italic;font-size:24px">sit upright.</div>
+            </div>
+            <div class="cam-guide" style="top:36%;border-color:rgba(255,180,120,0.7)"></div>
+            <div class="cam-status" style="background:rgba(184,101,74,0.35);bottom:140px">
+              <span class="dot" style="background:var(--clay)"></span>center your head in the oval
+            </div>
+            <div style="position:absolute;bottom:32px;left:20px;right:20px">
+              <button class="cta" disabled style="background:#3a3530;color:rgba(255,255,255,0.5);width:100%">capture</button>
+              <div style="text-align:center;font:11px/1.4 var(--sans);color:rgba(255,255,255,0.55);margin-top:8px">we'll enable this once we can see your face.</div>
+            </div>
+            <div class="home-bar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption"><span class="num">03b</span><span class="name">Calibration · <em>no face</em></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     09 · EMPTY / ERROR / PERMISSION
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">09</span>
+    <h2 class="block-title">Empty, error, permission · <em>one banner, three faces</em>.</h2>
+    <p class="block-sub">A reusable <span class="kbd">PostureBanner</span> the engineer can drop in any view. Inline by default; full-screen variant for first-run + permission-denied roadblocks.</p>
+  </div>
+
+  <div class="gallery">
+    <div class="gallery-card">
+      <span class="label">Inline · muted (empty)</span>
+      <div class="gallery-body" style="width:100%">
+        <div class="banner muted" style="width:100%">
+          <div class="b-mark"></div>
+          <div>
+            <div class="banner-title">No history yet.</div>
+            <div class="banner-body">A few days of check-ins and patterns appear here.</div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-foot">Use on History, the today summary block, and the Pro preview while data is < 3 days.</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Inline · warn (reminders disabled)</span>
+      <div class="gallery-body" style="width:100%">
+        <div class="banner" style="width:100%">
+          <div class="b-mark"></div>
+          <div>
+            <div class="banner-title">Notifications are off.</div>
+            <div class="banner-body">Reminders won't fire until you allow notifications.</div>
+            <span class="banner-action">allow →</span>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-foot">Use when the user toggles "Reminders on" but iOS hasn't granted authorization (fixes audit P1-3).</div>
+    </div>
+
+    <div class="gallery-card">
+      <span class="label">Inline · error (camera denied)</span>
+      <div class="gallery-body" style="width:100%">
+        <div class="banner error" style="width:100%">
+          <div class="b-mark"></div>
+          <div>
+            <div class="banner-title">Camera access denied.</div>
+            <div class="banner-body">Posture needs the front camera for quick scans. Manual check-ins still work.</div>
+            <span class="banner-action">open settings →</span>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-foot">Used inside AcknowledgmentView when AVCaptureDevice.authorizationStatus == .denied.</div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     10 · OPEN-QUESTIONS RESPONSES
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">10</span>
+    <h2 class="block-title">Decisions, briefly stated.</h2>
+    <p class="block-sub">One-liner answers to the 9 in <span class="kbd">open-questions.md</span>. Full reasoning lives in design-response.md.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px 60px">
+    <div>
+      <div class="label" style="margin-bottom:6px">1 · Streak prominence</div>
+      <p class="note" style="margin:0">Demote. Small numeric ("12 days") in nav toolbar. No flame icon on Today. Keep streak service intact for History journal entries and the year-end look-back.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">2 · "Bad posture" framing</div>
+      <p class="note" style="margin:0">Tonal three-step: <em>aligned · drifting · resting</em>. Body copy avoids imperatives — "Curled forward. Take a slow breath." not "Straighten up."</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">3 · Pro affordances</div>
+      <p class="note" style="margin:0">Preview-with-lock for cohesion (the 24-hour rhythm block is visible on free with a tonal sage card overlaying it). Hide nothing — wellness apps lose trust when surfaces vanish.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">4 · Calibration intensity</div>
+      <p class="note" style="margin:0">Stays utility. The full-bleed camera + oval guide is enough of a brand moment; don't invent a flow for a 5-second capture.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">5 · Camera framing</div>
+      <p class="note" style="margin:0">Full-bleed during scan (Quick Scan + Calibration). Oval guide line. Quality chip floats on the preview. Inset rectangle is killed.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">6 · Brand voice</div>
+      <p class="note" style="margin:0">Lowercase, observational, never imperative. "next nudge 3:00 pm" — not "Time to check your posture!" Reminder titles rotate from a single tone-of-voice spec in design-response.md.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">7 · App icon</div>
+      <p class="note" style="margin:0">Flag for a follow-up pass. Current <span class="kbd">figure.stand</span> motif is incompatible with the horizon metaphor; propose a horizon-and-sun icon for v1.0.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">8 · Empty-state philosophy</div>
+      <p class="note" style="margin:0">Illustrate the future, never hide. Every empty surface gets a one-line italic invitation + the <span class="kbd">PostureBanner</span>. No surface disappears.</p>
+    </div>
+    <div>
+      <div class="label" style="margin-bottom:6px">9 · AirPods orange indicator</div>
+      <p class="note" style="margin:0">If Engineering keeps the feature: name it. Settings shows "Quiet AirPods background" with a one-line "iOS shows an orange dot — that's us, listening to nothing." If cut, no design owed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     11 · ASCII composition reference (low-fi)
+     ===================================================== -->
+<section class="block">
+  <div class="block-head">
+    <span class="block-num">11</span>
+    <h2 class="block-title">Composition, also as ASCII.</h2>
+    <p class="block-sub">Pure-composition sketches for the four highest-priority screens — useful when the engineer wants to verify hierarchy without the colors getting in the way.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+
+<div class="ascii">┌─────────────────────────────┐
+│ today            12 days  ▾ │
+│                             │
+│ TODAY'S ALIGNMENT           │
+│  ┌───┐                      │
+│  │82°│  aligned             │
+│  └───┘  5 of 7 scans ok     │
+│                             │
+│ ▆ ▇ ▆ ▃ █ ▂ ▇ · · · · ·     │
+│ 8a  10  12  2  4  6p        │
+│                             │
+│ ╔═════════════════════════╗ │
+│ ║      check in now       ║ │
+│ ╚═════════════════════════╝ │
+│  next nudge 3pm · 5 left    │
+│                             │
+│ · shoulders heavier than    │
+│   ears.                     │
+│                             │
+│ ─────────────────────────── │
+│  today    history   settings│
+└─────────────────────────────┘
+TodayView.swift</div>
+
+<div class="ascii">┌─────────────────────────────┐
+│ wednesday · 3:00 pm      × │
+│                             │
+│                             │
+│   how's your posture        │
+│   right now?                │
+│                             │
+│   A three-second scan.      │
+│   Or just tell us — we      │
+│   trust you.                │
+│                             │
+│                             │
+│                             │
+│                             │
+│ ╔═════════════════════════╗ │
+│ ║          scan           ║ │
+│ ╚═════════════════════════╝ │
+│   just checking in →        │
+│                             │
+└─────────────────────────────┘
+AcknowledgmentView.swift · choice</div>
+
+<div class="ascii">┌─────────────────────────────┐
+│ history    [this week ▾]   │
+│                             │
+│ NOV 11 — NOV 17             │
+│ Your best stretch was       │
+│ Tuesday morning. Friday     │
+│ afternoon slipped.          │
+│                             │
+│  ▁  ▆  ▃  █  ▁  ▁  ▅        │
+│  M  T  W  T  F  S  S        │
+│        ●                    │
+│                             │
+│ 74% aligned    +11 vs last  │
+│ ─────────────────────────── │
+│ 3:00p  aligned · scan    ●  │
+│ 2:00p  resting · scan    ●  │
+│ 1:00p  noted · manual    ○  │
+│ 11:30  aligned · scan    ●  │
+│ ─────────────────────────── │
+│  today    history   settings│
+└─────────────────────────────┘
+HistoryView.swift</div>
+
+<div class="ascii">┌─────────────────────────────┐
+│ POSTURE · PRO            × │
+│                             │
+│   The long way is the       │
+│   only way.                 │
+│                             │
+│  Pro adds the parts of the  │
+│  practice you only see      │
+│  after a few weeks.         │
+│                             │
+│ ┌─────────────────────────┐ │
+│ │ YOUR JULY · A PREVIEW   │ │
+│ │             84% aligned │ │
+│ │ ▇▆▃▇█▇▇▂▅▇█▇▇█▇▇▃▇█▇▇█▇▇│ │
+│ │ JUL 1   14-DAY   JUL 30 │ │
+│ └─────────────────────────┘ │
+│                             │
+│ ─ 24-hour rhythm            │
+│ ─ Quiet AirPods background  │
+│ ─ Every month, kept         │
+│                             │
+│ ╔═════════════════════════╗ │
+│ ║ try 7 days · $29.99/yr  ║ │
+│ ╚═════════════════════════╝ │
+│  $4.99/mo · restore · later │
+└─────────────────────────────┘
+PaywallView.swift</div>
+
+  </div>
+</section>
+
+<footer style="margin-top:80px;padding-top:32px;border-top:1px solid #C9C1AE;font:12px/1.6 var(--sans);color:var(--label)">
+  <p style="margin:0">design pass for Posture · v0.1.0 · daylight direction · 2026-05-15</p>
+  <p style="margin:6px 0 0">deliverables: <span class="kbd">design-response.md</span> · <span class="kbd">change-list.md</span> · <span class="kbd">mockups/*.png</span></p>
+</footer>
+
+</body>
+</html>
