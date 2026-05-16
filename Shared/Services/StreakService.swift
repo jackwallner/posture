@@ -9,8 +9,12 @@ final class StreakService {
         self.context = context
     }
 
+    /// The single get-or-create entry point for StreakState. Views must
+    /// not insert StreakState during body evaluation (audit P1-10) —
+    /// route creation through here.
     func currentState() -> StreakState {
-        let descriptor = FetchDescriptor<StreakState>()
+        var descriptor = FetchDescriptor<StreakState>(sortBy: [SortDescriptor(\.id)])
+        descriptor.fetchLimit = 1
         if let existing = try? context.fetch(descriptor).first {
             return existing
         }

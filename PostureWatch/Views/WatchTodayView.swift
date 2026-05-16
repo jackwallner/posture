@@ -5,15 +5,9 @@ struct WatchTodayView: View {
     @Environment(\.modelContext) private var context
     @Query private var streaks: [StreakState]
 
-    @State private var showingSession = false
-
-    private var streak: StreakState {
-        if let s = streaks.first { return s }
-        let fresh = StreakState()
-        context.insert(fresh)
-        try? context.save()
-        return fresh
-    }
+    /// Display-only — never insert a StreakState during body evaluation
+    /// (audit P1-10). Creation is owned by StreakService on the phone.
+    private var currentStreak: Int { streaks.first?.currentStreak ?? 0 }
 
     var body: some View {
         NavigationStack {
@@ -21,8 +15,8 @@ struct WatchTodayView: View {
                 VStack(spacing: 12) {
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
-                            .foregroundStyle(streak.currentStreak > 0 ? Theme.streakFlame : Theme.textTertiary)
-                        Text("\(streak.currentStreak) day\(streak.currentStreak == 1 ? "" : "s")")
+                            .foregroundStyle(currentStreak > 0 ? Theme.streakFlame : Theme.textTertiary)
+                        Text("\(currentStreak) day\(currentStreak == 1 ? "" : "s")")
                             .font(.headline)
                     }
 
