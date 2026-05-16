@@ -10,6 +10,11 @@ enum ReminderScheduler {
     /// settings change or the app comes to foreground.
     @MainActor
     static func reschedule() async {
+        #if DEBUG
+        // Don't fire the iOS permission alert during UI tests — it lives
+        // outside the app process and would stall the harness.
+        if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") { return }
+        #endif
         let settings = GoalSettings.shared
         guard settings.reminderEnabled else {
             await NotificationService.cancelAllReminders()

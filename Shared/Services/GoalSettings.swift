@@ -122,4 +122,14 @@ final class GoalSettings {
         defaults.removeObject(forKey: Key.dailyReminderEnabled)
         defaults.removeObject(forKey: Key.dailyReminderHour)
     }
+
+    #if DEBUG
+    /// Wipe onboarding/calibration state so a UI test starts at the
+    /// welcome screen regardless of prior installs. Test-only.
+    func resetForUITest() {
+        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.hasAirpods] {
+            defaults.removeObject(forKey: key)
+        }
+    }
+    #endif
 }

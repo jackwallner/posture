@@ -8,6 +8,11 @@ struct PostureApp: App {
     @State private var subscriptions = SubscriptionService.shared
 
     init() {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") {
+            GoalSettings.shared.resetForUITest()
+        }
+        #endif
         SubscriptionService.shared.configure()
         NotificationService.registerCategories()
     }
