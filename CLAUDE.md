@@ -29,21 +29,48 @@ Device builds need a registered App Group (`group.com.jackwallner.posture`) — 
 
 After adding/removing any `.swift` file, rerun `xcodegen generate`.
 
-## Architecture (Phase 1)
+## Architecture
 
-- `Shared/Models/` — five SwiftData `@Model` types (PostureSession, PosturePassiveSample, Calibration, StreakState, BeforeAfterPhoto)
+The product pivoted from timed camera *sessions* to a reminder/acknowledgment loop:
+the app schedules N reminders per day in the user's active window, each tap opens a
+~3 second QuickScan, and the result is written as an `AcknowledgmentRecord`. Old
+`PostureSession` model is retained for back-compat reads but no longer written.
+
+- `Shared/Models/` — `AcknowledgmentRecord` (current), `PostureSession` (legacy),
+  `PosturePassiveSample`, `Calibration`, `StreakState`, `BeforeAfterPhoto`
 - `Shared/Services/`
   - `DataService` — App Group SwiftData container
   - `PostureScoring` — pure scoring (testable)
-  - `StreakService` — streak math + freeze logic (testable)
+  - `StreakService` — streak math + freeze logic. `currentState()` is the *only*
+    get-or-create path for `StreakState`; views must never insert in `body`.
   - `CalibrationService` — baseline storage
-  - `SessionEngine` — `@Observable` session runner; ingests pose samples → emits live quality + writes session on finish
   - `FaceTrackingService` — AVCapture + Vision face landmarks → head pitch
+  - `NotificationService` — schedules per-day rotation of reminders (repeating
+    `UNCalendarNotificationTrigger`)
+  - `ReminderScheduler` — orchestrates the reschedule on settings/foreground
+  - `AirpodsBackgroundMonitor` — Pro-only background AirPods motion sampling
+  - `HeadphoneMotionService` — foreground `CMHeadphoneMotionManager` wrapper
   - `GoalSettings` — `@Observable` UserDefaults wrapper (App Group)
-  - `NotificationService` — daily reminder
+  - `SubscriptionService` — RevenueCat (guarded by `#if canImport(RevenueCat)`)
+  - `AnalyticsService`, `PostureTipService`
 - `Posture/` — iOS UI
-  - `App.swift` → onboarding → calibration → MainTabView (Today / History / Settings)
-  - `Views/Components/` — PostureRing, StreakFlame, PostureLiveIndicator, CameraPreview
+  - `App.swift` → onboarding → calibration → MainTabView (Today / History / Settings).
+    Holds the AirPods monitor and the notification-tap fullScreenCover.
+  - `Views/AcknowledgmentView.swift` — the fullscreen sheet shown on reminder tap
+  - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
+    WeekStrip, PostureBanner, QualityChip, TipLine, DaylightCTA, QuickScanView,
+    CameraPreview, PostureRing, StreakFlame)
+- `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets, read
+  `AcknowledgmentRecord` from the shared App Group container
+- `PostureWatch/` — companion watch app
+
+### Daylight design system
+
+Palette + type tokens in `Shared/Utilities/Theme.swift`, backed by asset-catalog
+`Daylight*` colorsets (paper / ink / sage / sand / clay, with dark variants).
+Body type is rounded SF Pro; ritual moments use SF Serif italic
+(`Theme.displaySerif(_:)`). Posture qualities map: good→sage, borderline→sand,
+bad→clay. The look-and-feel brief is in `docs/design-response/`.
 
 ## Plan reference
 
@@ -69,4 +96,10 @@ ASC API key (shared across apps): `~/.baseball_credentials` (`ASC_API_KEY_ID`, `
 - Free dev account can't build to device (App Group entitlement). Use simulator.
 - `AVCaptureSession` is non-Sendable — `FaceTrackingService` uses `@preconcurrency import AVFoundation`.
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
-- `SessionEngine` finalizes the session via a 1Hz ticker, accumulating time-in-quality buckets.
+- HealthKit lives on the watch target only — the iOS target intentionally has no
+  HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
+- The iOS app declares `UIBackgroundModes = ["audio"]` for AirPods background
+  motion sampling (Pro feature). Settings shows a disclosure when the toggle is
+  on (audit P0-3).
+- Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)`
+  so reminders survive app kill (audit P1-2). Slot cap is 60 (P1-4).
