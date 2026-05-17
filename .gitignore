@@ -13,6 +13,9 @@ Posture.xcodeproj/
 # macOS
 .DS_Store
 
+# Claude Code local harness state
+.claude/
+
 # Swift PM
 .build/
 Packages/
