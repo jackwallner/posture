@@ -52,14 +52,6 @@ struct CalibrationView: View {
                 hasAirpods = settings.hasAirpods ?? false
             }
             if step == .captureBaseline {
-                // User said "yes airpods" but their AirPods don't support head
-                // motion (e.g. AirPods 4 standard, original AirPods). Flip the
-                // setting and use the camera so we don't strand them on a
-                // capture screen that will never produce a reading.
-                if hasAirpods == true, !airpods.isAvailable {
-                    hasAirpods = false
-                    settings.hasAirpods = false
-                }
                 if hasAirpods == true {
                     airpods.start()
                 } else {

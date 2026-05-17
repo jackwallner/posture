@@ -9,7 +9,10 @@ import Observation
 @MainActor
 @Observable
 final class HeadphoneMotionService {
-    private(set) var isAvailable: Bool
+    /// `isDeviceMotionAvailable` reflects whether *currently-connected* headphones report
+    /// motion. It can flip false→true when supported AirPods come into range, so we read
+    /// it live instead of caching at init.
+    var isAvailable: Bool { manager.isDeviceMotionAvailable }
     private(set) var isConnected: Bool = false
     private(set) var isRunning: Bool = false
     private(set) var lastPitch: Double?
@@ -20,6 +23,7 @@ final class HeadphoneMotionService {
     var onConnect: ((Bool) -> Void)?
 
     private let manager = CMHeadphoneMotionManager()
+    private let delegateBox: HeadphoneDelegateBox
     private let queue: OperationQueue = {
         let q = OperationQueue()
         q.qualityOfService = .userInitiated
@@ -28,9 +32,15 @@ final class HeadphoneMotionService {
     }()
 
     init() {
-        self.isAvailable = manager.isDeviceMotionAvailable
-        manager.delegate = HeadphoneDelegateBox.shared
-        HeadphoneDelegateBox.shared.onChange = { [weak self] connected in
+        // Per-instance delegate, set up before being attached to the manager and never
+        // mutated again. Previously a `static let shared` box was overwritten by every
+        // HMS init, racing with delegate callbacks delivered on a non-main thread —
+        // when AirPods connected mid-onboarding the stale closure could be invoked
+        // against a deallocated instance and crash under Swift 6 strict concurrency.
+        let box = HeadphoneDelegateBox()
+        self.delegateBox = box
+        manager.delegate = box
+        box.onChange = { [weak self] connected in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.isConnected = connected
@@ -40,7 +50,7 @@ final class HeadphoneMotionService {
     }
 
     func start() {
-        guard isAvailable, manager.isDeviceMotionAvailable else { return }
+        guard manager.isDeviceMotionAvailable else { return }
         guard !manager.isDeviceMotionActive else { return }
         manager.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
             guard let motion else { return }
@@ -66,9 +76,10 @@ final class HeadphoneMotionService {
     }
 }
 
-/// Delegate has to live somewhere outside the actor to satisfy the protocol's nonisolated requirement.
+/// Delegate has to live outside the @MainActor service so it can conform to the
+/// nonisolated `CMHeadphoneMotionManagerDelegate` protocol. Each HMS owns its
+/// own box — no shared mutable state.
 private final class HeadphoneDelegateBox: NSObject, CMHeadphoneMotionManagerDelegate, @unchecked Sendable {
-    static let shared = HeadphoneDelegateBox()
     var onChange: ((Bool) -> Void)?
 
     func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
