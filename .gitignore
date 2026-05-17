@@ -16,6 +16,10 @@ Posture.xcodeproj/
 # Claude Code local harness state
 .claude/
 
+# Fastlane: contact info for App Review (contains personal phone/email) and ASC snapshots
+fastlane/metadata/review_information/
+fastlane/metadata.bak.*/
+
 # Swift PM
 .build/
 Packages/

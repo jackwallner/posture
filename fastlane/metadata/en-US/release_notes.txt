@@ -1,1 +1,10 @@
+Welcome to Posture 1.0.
 
+• Quick 3-second posture scans with on-device Vision
+• Personal calibration baseline
+• Smart reminders during your active hours
+• Duolingo-style streaks with freeze protection
+• Lockscreen and Home Screen widgets
+• AirPods background monitoring and Apple Watch coaching with Posture Pro
+
+Thanks for trying Posture. If something feels off or you have ideas, jackwallner@gmail.com goes straight to me.
