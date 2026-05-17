@@ -32,14 +32,15 @@ final class HeadphoneMotionService {
     }()
 
     init() {
-        // Per-instance delegate, set up before being attached to the manager and never
-        // mutated again. Previously a `static let shared` box was overwritten by every
-        // HMS init, racing with delegate callbacks delivered on a non-main thread —
-        // when AirPods connected mid-onboarding the stale closure could be invoked
-        // against a deallocated instance and crash under Swift 6 strict concurrency.
+        // Per-instance delegate. Previously a `static let shared` box was overwritten
+        // by every HMS init, racing with delegate callbacks delivered on a non-main
+        // thread — when AirPods connected mid-onboarding the stale closure storage
+        // could be read against a deallocated instance and crash under Swift 6
+        // strict concurrency. Wire the closure first, then attach the delegate, so
+        // the first connect callback can't land in the gap.
         let box = HeadphoneDelegateBox()
         self.delegateBox = box
-        manager.delegate = box
+        // self is now fully initialized — safe to capture in the escaping closure.
         box.onChange = { [weak self] connected in
             Task { @MainActor [weak self] in
                 guard let self else { return }
@@ -47,6 +48,7 @@ final class HeadphoneMotionService {
                 self.onConnect?(connected)
             }
         }
+        manager.delegate = box
     }
 
     func start() {
