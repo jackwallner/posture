@@ -5,6 +5,6 @@ Welcome to Posture 1.0.
 • Smart reminders during your active hours
 • Duolingo-style streaks with freeze protection
 • Lockscreen and Home Screen widgets
-• AirPods background monitoring and Apple Watch coaching with Posture Pro
+• AirPods background monitoring and Apple Watch coaching with Posture+
 
 Thanks for trying Posture. If something feels off or you have ideas, jackwallner@gmail.com goes straight to me.

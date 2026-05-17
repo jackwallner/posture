@@ -42,7 +42,7 @@ struct SettingsView: View {
                             .listRowBackground(Color.clear)
                     }
                 } header: {
-                    Text("posture · pro")
+                    Text("posture+")
                 }
 
                 // MARK: - Reminders
@@ -146,7 +146,7 @@ struct SettingsView: View {
     private var proPostcard: some View {
         Button { showingPaywall = true } label: {
             VStack(alignment: .leading, spacing: 10) {
-                Text("POSTURE · PRO")
+                Text("POSTURE+")
                     .font(.caption.weight(.semibold))
                     .tracking(2)
                     .foregroundStyle(Theme.sage)

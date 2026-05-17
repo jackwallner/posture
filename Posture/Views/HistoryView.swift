@@ -181,14 +181,14 @@ struct HistoryView: View {
 
     private var proPreviewCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("TODAY'S RHYTHM · PRO")
+            Text("TODAY'S RHYTHM · POSTURE+")
                 .font(.caption.weight(.semibold))
                 .tracking(2)
                 .foregroundStyle(Theme.sage)
             Text("See the hours your posture slips.")
                 .font(Theme.displaySerif(22))
                 .foregroundStyle(Theme.ink)
-            Text("Pro adds an hour-by-hour rhythm from AirPods and Watch.")
+            Text("Posture+ adds an hour-by-hour rhythm from AirPods and Watch.")
                 .font(.caption)
                 .foregroundStyle(Theme.ink2)
         }

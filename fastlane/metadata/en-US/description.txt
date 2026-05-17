@@ -16,7 +16,7 @@ THE FREE TIER
 • Full posture history and trend view
 • Lockscreen and Home Screen widgets
 
-POSTURE PRO
+POSTURE+
 • AirPods background motion monitoring — get a tap when you start to slouch, even when the phone is in your pocket
 • Apple Watch companion app with background coaching
 • Always-on monitoring — set it and forget it
@@ -33,7 +33,7 @@ PRIVATE BY DESIGN
 A NOTE ON THE CAMERA
 Posture only uses the front camera during a 3-second scan that you start by tapping a reminder. It does not run in the background. It does not record. It does not save frames.
 
-Posture Pro is an auto-renewing subscription with monthly and yearly options, plus a one-time lifetime unlock. Manage or cancel any time in Settings › Apple ID › Subscriptions. Payment is charged to your Apple ID at confirmation of purchase. Subscriptions automatically renew unless turned off at least 24 hours before the end of the current period.
+Posture+ is an auto-renewing subscription with monthly and yearly options, plus a one-time lifetime unlock. Manage or cancel any time in Settings › Apple ID › Subscriptions. Payment is charged to your Apple ID at confirmation of purchase. Subscriptions automatically renew unless turned off at least 24 hours before the end of the current period.
 
 Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

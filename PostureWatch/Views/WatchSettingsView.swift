@@ -36,7 +36,7 @@ struct WatchSettingsView: View {
                             .foregroundStyle(Theme.textSecondary)
                     }
                 } else {
-                    Label("Pro only", systemImage: "crown.fill")
+                    Label("Posture+ only", systemImage: "crown.fill")
                         .foregroundStyle(Theme.brandPrimary)
                     Text("Open Posture on iPhone to upgrade.")
                         .font(.caption2)

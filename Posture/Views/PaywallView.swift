@@ -38,7 +38,7 @@ struct PaywallView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
-                    Text("POSTURE · PRO")
+                    Text("POSTURE+")
                         .font(.caption.weight(.semibold))
                         .tracking(2)
                         .foregroundStyle(Theme.ink3)
@@ -56,7 +56,7 @@ struct PaywallView: View {
                     .font(Theme.displaySerif(34))
                     .foregroundStyle(Theme.ink)
 
-                Text("Pro adds the parts of the practice you only see after a few weeks.")
+                Text("Posture+ adds the parts of the practice you only see after a few weeks.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.ink2)
 

@@ -88,7 +88,7 @@ struct OnboardingView: View {
                 .font(Theme.displaySerif(40))
                 .foregroundStyle(Theme.ink)
 
-            Text("If yes, we'll use their motion sensor — no camera, hands free. Pro extends this into the background while you work.")
+            Text("If yes, we'll use their motion sensor — no camera, hands free. Posture+ extends this into the background while you work.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
