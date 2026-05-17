@@ -93,6 +93,16 @@ struct OnboardingView: View {
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
 
+            VStack(alignment: .leading, spacing: 4) {
+                Text("WORKS WITH")
+                    .font(.caption2.weight(.semibold)).tracking(2)
+                    .foregroundStyle(Theme.ink3)
+                Text("AirPods Pro (1st & 2nd gen) · AirPods (3rd gen) · AirPods 4 with Active Noise Cancellation · AirPods Max")
+                    .font(.footnote)
+                    .foregroundStyle(Theme.ink2)
+            }
+            .padding(.top, 20)
+
             Spacer()
 
             Button {
