@@ -20,18 +20,29 @@ enum Theme {
     static let clay     = Color(red: 0.878, green: 0.588, blue: 0.478)
     static let clayTint = Color(red: 0.231, green: 0.161, blue: 0.125)
     #else
-    static let paper     = Color("DaylightPaper")
-    static let paper2    = Color("DaylightPaper2")
-    static let paper3    = Color("DaylightPaper3")
-    static let ink       = Color("DaylightInk")
-    static let ink2      = Color("DaylightInk2")
-    static let ink3      = Color("DaylightInk3")
-    static let sage      = Color("DaylightSage")
-    static let sageTint  = Color("DaylightSageTint")
-    static let sand      = Color("DaylightSand")
-    static let sandTint  = Color("DaylightSandTint")
-    static let clay      = Color("DaylightClay")
-    static let clayTint  = Color("DaylightClayTint")
+    // Calm pastel palette — soft mint canvas, white cards, deep slate ink,
+    // lavender accent for ritual moments, soft sage/sand/coral for posture
+    // quality. Literal colors rather than the legacy asset-catalog
+    // Daylight* colorsets; those are no longer referenced.
+    static let paper     = Color(red: 0.910, green: 0.957, blue: 0.937) // #E8F4EF mint canvas
+    static let paper2    = Color(red: 1.000, green: 1.000, blue: 1.000) // pure white card
+    static let paper3    = Color(red: 0.957, green: 0.976, blue: 0.969) // #F4F9F7 track/divider
+    static let ink       = Color(red: 0.184, green: 0.243, blue: 0.227) // #2F3E3A deep slate
+    static let ink2      = Color(red: 0.420, green: 0.482, blue: 0.463) // #6B7B76 secondary
+    static let ink3      = Color(red: 0.604, green: 0.659, blue: 0.643) // #9AA8A4 tertiary
+    static let sage      = Color(red: 0.561, green: 0.773, blue: 0.659) // #8FC5A8 calm green
+    static let sageTint  = Color(red: 0.871, green: 0.945, blue: 0.910) // pale sage wash
+    static let sand      = Color(red: 0.910, green: 0.784, blue: 0.588) // #E8C896 warm pastel
+    static let sandTint  = Color(red: 0.980, green: 0.945, blue: 0.882) // pale sand wash
+    static let clay      = Color(red: 0.910, green: 0.627, blue: 0.604) // #E8A09A coral
+    static let clayTint  = Color(red: 0.980, green: 0.910, blue: 0.898) // pale coral wash
+    static let lavender     = Color(red: 0.749, green: 0.659, blue: 0.894) // #BFA8E4 ritual accent
+    static let lavenderTint = Color(red: 0.945, green: 0.922, blue: 0.969)
+    #endif
+
+    #if os(watchOS)
+    static let lavender     = Color(red: 0.749, green: 0.659, blue: 0.894)
+    static let lavenderTint = Color(red: 0.220, green: 0.188, blue: 0.290)
     #endif
 
     // MARK: - Posture quality
@@ -63,8 +74,9 @@ enum Theme {
 
     // MARK: - Geometry
 
-    static let cardRadius: CGFloat = 20
-    static let cardPadding: CGFloat = 20
+    static let cardRadius: CGFloat = 24
+    static let cardPadding: CGFloat = 22
+    static let ctaRadius: CGFloat = 28
 
     // MARK: - Type
 

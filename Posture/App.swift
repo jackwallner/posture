@@ -188,11 +188,12 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             TodayView()
-                .tabItem { Label("Today", systemImage: "figure.stand") }
+                .tabItem { Label("Today", systemImage: "leaf.fill") }
             HistoryView()
-                .tabItem { Label("History", systemImage: "chart.bar.xaxis") }
+                .tabItem { Label("History", systemImage: "chart.bar.fill") }
             SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
+        .tint(Theme.sage)
     }
 }

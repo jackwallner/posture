@@ -53,61 +53,51 @@ struct TodayView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    alignmentReadout
+                VStack(alignment: .leading, spacing: 20) {
+                    headerGreeting
+
+                    alignmentCard
 
                     if let monitor = airpodsMonitor, monitor.isMonitoring {
-                        monitoringChip(monitor: monitor)
+                        monitoringPill(monitor: monitor)
                     }
 
-                    if hasPassiveSamplesToday {
-                        PassiveTimelineView()
-                    }
+                    weekCard
 
-                    DayStrip(acks: todayAcks)
-
-                    VStack(spacing: 10) {
+                    VStack(spacing: 12) {
                         Button { showingAck = true } label: { Text("check in now") }
                             .buttonStyle(.plain)
                             .daylightCTA(.primary)
                         metaRow
                     }
+                    .padding(.top, 4)
 
                     if needsRecalibration {
-                        PostureBanner(
-                            tone: .muted,
-                            title: "Recalibrate when you have a minute.",
-                            message: "It's been a while. A quick reset keeps the readings honest.",
-                            action: ("recalibrate", { showingRecalibrate = true })
+                        softBanner(
+                            title: "Time for a quick recalibrate.",
+                            body: "Things drift after a while. Reset the baseline in five seconds.",
+                            actionLabel: "recalibrate",
+                            action: { showingRecalibrate = true }
                         )
                     } else if todayAcks.isEmpty {
-                        PostureBanner(
-                            tone: .muted,
-                            title: "A daylight habit takes about a week.",
-                            message: "Check in a few times today. We'll show you the shape of it."
+                        softBanner(
+                            title: "A new habit, gently.",
+                            body: "Check in a couple of times today. The pattern shows up in about a week.",
+                            actionLabel: nil,
+                            action: nil
                         )
                     }
 
-                    TipLine(tip: currentTip)
+                    tipCard(tip: currentTip)
                         .onTapGesture {
                             withAnimation { currentTip = PostureTipService.randomTip() }
                         }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.bottom, 32)
             }
             .background(Theme.paper.ignoresSafeArea())
-            .navigationTitle("today")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    if currentStreak > 0 {
-                        Text("\(currentStreak) days")
-                            .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                            .foregroundStyle(Theme.ink2)
-                    }
-                }
-            }
+            .navigationBarHidden(true)
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
@@ -124,29 +114,181 @@ struct TodayView: View {
         }
     }
 
-    // MARK: - Alignment readout
+    // MARK: - Header
 
-    private var alignmentReadout: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("TODAY'S ALIGNMENT")
-                .font(.caption.weight(.semibold))
-                .tracking(2)
-                .foregroundStyle(Theme.ink3)
-            HStack(alignment: .lastTextBaseline, spacing: 14) {
-                Text(alignmentScore.map { "\($0)°" } ?? "—°")
-                    .font(Theme.displaySerif(76))
-                    .foregroundStyle(alignmentScore == nil ? Theme.ink3 : Theme.ink)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(readoutLabel)
+    private var headerGreeting: some View {
+        HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(timeOfDayGreeting)
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .tracking(1.5)
+                    .foregroundStyle(Theme.ink3)
+                Text("today")
+                    .font(.system(size: 34, weight: .regular, design: .rounded))
+                    .foregroundStyle(Theme.ink)
+            }
+            Spacer()
+            if currentStreak > 0 {
+                HStack(spacing: 6) {
+                    Image(systemName: "flame.fill")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Theme.sand)
+                    Text("\(currentStreak)")
                         .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                        .foregroundStyle(readoutColor)
-                    Text(readoutSubtitle)
-                        .font(.caption)
-                        .foregroundStyle(Theme.ink2)
+                        .foregroundStyle(Theme.ink)
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule().fill(Theme.sandTint)
+                )
             }
         }
+        .padding(.top, 12)
     }
+
+    private var timeOfDayGreeting: String {
+        let hour = Calendar.current.component(.hour, from: .now)
+        switch hour {
+        case 5..<12: return "good morning"
+        case 12..<17: return "good afternoon"
+        case 17..<22: return "good evening"
+        default: return "hello, night owl"
+        }
+    }
+
+    // MARK: - Alignment card
+
+    private var alignmentCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("today's alignment")
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .tracking(1.2)
+                .foregroundStyle(Theme.ink3)
+            HStack(alignment: .center, spacing: 18) {
+                ZStack {
+                    Circle()
+                        .fill(alignmentRingColor.opacity(0.18))
+                        .frame(width: 96, height: 96)
+                    Text(alignmentScore.map { "\($0)" } ?? "—")
+                        .font(.system(size: 42, weight: .regular, design: .rounded))
+                        .foregroundStyle(Theme.ink)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(readoutLabel)
+                        .font(.system(.title3, design: .rounded).weight(.semibold))
+                        .foregroundStyle(alignmentRingColor)
+                    Text(readoutSubtitle)
+                        .font(.system(.footnote, design: .rounded))
+                        .foregroundStyle(Theme.ink2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                .fill(Theme.paper2)
+        )
+    }
+
+    private var alignmentRingColor: Color {
+        guard let s = alignmentScore else { return Theme.ink3 }
+        switch s {
+        case 70...: return Theme.sage
+        case 40..<70: return Theme.sand
+        default: return Theme.clay
+        }
+    }
+
+    // MARK: - Week card
+
+    private var weekCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("this week")
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .tracking(1.2)
+                    .foregroundStyle(Theme.ink3)
+                Spacer()
+                Text("\(todayAcks.count) today")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Theme.ink3)
+            }
+            DayStrip(acks: todayAcks)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                .fill(Theme.paper2)
+        )
+    }
+
+    // MARK: - Monitoring pill
+
+    private func monitoringPill(monitor: AirpodsBackgroundMonitor) -> some View {
+        let live = monitor.isConnected
+        return HStack(spacing: 10) {
+            Circle()
+                .fill(live ? Theme.sage : Theme.sand)
+                .frame(width: 7, height: 7)
+            Text(live ? "AirPods linked · listening" : "waiting for AirPods")
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .foregroundStyle(live ? Theme.sage : Theme.ink2)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(live ? Theme.sageTint : Theme.sandTint)
+        )
+    }
+
+    // MARK: - Soft banner
+
+    private func softBanner(title: String, body: String, actionLabel: String?, action: (() -> Void)?) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .foregroundStyle(Theme.ink)
+            Text(body)
+                .font(.system(.footnote, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
+            if let actionLabel, let action {
+                Button(action: action) {
+                    Text(actionLabel + " →")
+                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .foregroundStyle(Theme.sage)
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 4)
+            }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                .fill(Theme.lavenderTint)
+        )
+    }
+
+    private func tipCard(tip: PostureTip) -> some View {
+        TipLine(tip: tip)
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                    .fill(Theme.paper2)
+            )
+    }
+
+    // MARK: - Readout copy
 
     private var readoutLabel: String {
         guard let s = alignmentScore else {
@@ -159,50 +301,12 @@ struct TodayView: View {
         }
     }
 
-    private var readoutColor: Color {
-        guard let s = alignmentScore else { return Theme.ink3 }
-        switch s {
-        case 70...: return Theme.sage
-        case 40..<70: return Theme.sand
-        default: return Theme.clay
-        }
-    }
-
     private var readoutSubtitle: String {
         if scoredAcks.isEmpty {
-            return todayAcks.isEmpty ? "Your first reading lands after a scan." : "manual check-ins only"
+            return todayAcks.isEmpty ? "your first reading lands after a scan." : "manual check-ins only"
         }
         let onTrack = scoredAcks.filter { $0.quality == .good }.count
         return "\(onTrack) of \(scoredAcks.count) scans on track"
-    }
-
-    // MARK: - Monitoring chip
-
-    @ViewBuilder
-    private func monitoringChip(monitor: AirpodsBackgroundMonitor) -> some View {
-        let live = monitor.isConnected
-        let bgMode = monitor.isBackground
-        HStack(spacing: 8) {
-            Circle()
-                .fill(live ? Theme.sage : Theme.sand)
-                .frame(width: 6, height: 6)
-            Text(chipLabel(live: live, background: bgMode))
-                .font(.system(.caption, design: .rounded).weight(.semibold))
-                .foregroundStyle(live ? Theme.sage : Theme.ink2)
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(live ? Theme.sageTint : Theme.sandTint, in: RoundedRectangle(cornerRadius: 10))
-    }
-
-    private func chipLabel(live: Bool, background: Bool) -> String {
-        switch (live, background) {
-        case (true, true): return "monitoring · airpods linked"
-        case (true, false): return "in-app coaching · airpods linked"
-        case (false, true): return "monitoring · waiting for airpods"
-        case (false, false): return "in-app coaching · waiting for airpods"
-        }
     }
 
     // MARK: - Meta row

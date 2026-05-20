@@ -44,12 +44,14 @@ struct AirpodsScanView: View {
 
     // MARK: - Scan
 
+    @SwiftUI.State private var heroPulse = false
+
     private var scanView: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(eyebrow)
-                    .font(.caption.weight(.semibold))
-                    .tracking(2)
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .tracking(1.5)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 Button { onClose() } label: {
@@ -60,37 +62,27 @@ struct AirpodsScanView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Close")
             }
-            .padding(.top, 12)
+            .padding(.top, 16)
 
-            Spacer()
+            Spacer(minLength: 16)
 
-            Text(phase == .scanning ? "\(max(0, 3 - elapsedSeconds))" : "·")
-                .font(Theme.displaySerif(96))
-                .foregroundStyle(phase == .scanning ? Theme.ink : Theme.ink3)
-                .contentTransition(.numericText())
-                .animation(.default, value: elapsedSeconds)
-                .frame(maxWidth: .infinity, alignment: .center)
+            scanHero
 
             Text(phase == .scanning ? "hold still. look straight ahead."
-                                    : "put your airpods in.")
-                .font(.system(.callout, design: .serif).italic())
+                                    : "pop your AirPods in to begin.")
+                .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 16)
+                .multilineTextAlignment(.center)
+                .padding(.top, 24)
 
-            Spacer()
-
-            airpodsChip
-                .padding(.bottom, 12)
+            Spacer(minLength: 24)
 
             if phase == .waiting {
-                Button { onUseCamera() } label: { Text("use camera instead") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.secondary)
-                Button { onFallback() } label: { Text("check in by hand →") }
+                Button { onFallback() } label: { Text("check in by hand") }
                     .buttonStyle(.plain)
                     .daylightCTA(.ghost)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 12)
             }
         }
         .padding(.horizontal, 24)
@@ -98,25 +90,45 @@ struct AirpodsScanView: View {
         .background(Theme.paper.ignoresSafeArea())
     }
 
-    private var airpodsChip: some View {
-        HStack(spacing: 6) {
+    private var scanHero: some View {
+        ZStack {
             Circle()
-                .fill(airpods.isConnected ? Theme.sage : Theme.sand)
-                .frame(width: 6, height: 6)
-            Text(airpods.isConnected ? "airpods linked" : "waiting for airpods")
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(airpods.isConnected ? Theme.sage : Theme.ink2)
+                .fill(heroWash)
+                .frame(width: 220, height: 220)
+                .scaleEffect(heroPulse ? 1.05 : 0.96)
+                .opacity(heroPulse ? 0.55 : 1.0)
+            Circle()
+                .fill(heroWash)
+                .frame(width: 160, height: 160)
+            if phase == .scanning {
+                Text("\(max(0, 3 - elapsedSeconds))")
+                    .font(.system(size: 84, weight: .regular, design: .rounded))
+                    .foregroundStyle(Theme.ink)
+                    .contentTransition(.numericText(countsDown: true))
+                    .animation(.easeOut(duration: 0.2), value: elapsedSeconds)
+            } else {
+                Image(systemName: "airpodspro")
+                    .font(.system(size: 60, weight: .regular))
+                    .foregroundStyle(heroAccent)
+            }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .background(airpods.isConnected ? Theme.sageTint : Theme.sandTint, in: .capsule)
         .frame(maxWidth: .infinity)
+        .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: heroPulse)
+        .onAppear { heroPulse = true }
+    }
+
+    private var heroAccent: Color {
+        airpods.isConnected ? Theme.sage : Theme.sand
+    }
+
+    private var heroWash: Color {
+        airpods.isConnected ? Theme.sageTint : Theme.sandTint
     }
 
     // MARK: - No-connection fallback view
 
     private var noConnectionView: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Spacer()
                 Button { onClose() } label: {
@@ -127,19 +139,40 @@ struct AirpodsScanView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Close")
             }
-            Spacer()
-            PostureBanner(
-                tone: .warn,
-                title: "AirPods aren't reporting motion.",
-                message: "Put them in, or fall back to the camera for this one."
-            )
-            Button { onUseCamera() } label: { Text("use camera") }
+            .padding(.top, 16)
+
+            Spacer(minLength: 16)
+
+            ZStack {
+                Circle()
+                    .fill(Theme.sandTint)
+                    .frame(width: 200, height: 200)
+                Image(systemName: "airpodspro")
+                    .font(.system(size: 60))
+                    .foregroundStyle(Theme.sand)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text("can't hear your AirPods.")
+                .font(.system(size: 28, weight: .regular, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+                .padding(.top, 24)
+
+            Text("Pop them back in, or log this one by hand.")
+                .font(.system(.body, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+                .padding(.top, 10)
+
+            Spacer(minLength: 24)
+
+            Button { onFallback() } label: { Text("check in by hand") }
                 .buttonStyle(.plain)
-                .daylightCTA(.primary)
-            Button { onFallback() } label: { Text("check in by hand →") }
-                .buttonStyle(.plain)
-                .daylightCTA(.ghost)
-            Spacer()
+                .daylightCTA(.secondary)
+                .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

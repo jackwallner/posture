@@ -20,99 +20,133 @@ struct OnboardingView: View {
     // MARK: - Welcome
 
     private var welcomeStep: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("POSTURE")
-                .font(.caption.weight(.semibold)).tracking(2)
-                .foregroundStyle(Theme.ink3)
-                .padding(.top, 16)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 28) {
+                Text("hello.")
+                    .font(.system(size: 56, weight: .regular, design: .rounded))
+                    .foregroundStyle(Theme.ink)
+                    .padding(.top, 40)
 
-            Spacer()
+                Text("Posture is a kind, hands-free habit. A few quiet check-ins each day — your AirPods do the reading.")
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(Theme.ink2)
+                    .lineSpacing(3)
 
-            Text("a daylight\nhabit.")
-                .font(Theme.displaySerif(48))
-                .foregroundStyle(Theme.ink)
-                .lineSpacing(2)
+                VStack(spacing: 14) {
+                    pillarCard(
+                        index: "1",
+                        title: "Calibrate once",
+                        body: "We learn your aligned posture in five seconds.",
+                        accent: Theme.sage
+                    )
+                    pillarCard(
+                        index: "2",
+                        title: "A few nudges a day",
+                        body: "Pick a cadence that suits your day.",
+                        accent: Theme.lavender
+                    )
+                    pillarCard(
+                        index: "3",
+                        title: "Three-second check-ins",
+                        body: "Tap, hold still, done.",
+                        accent: Theme.sand
+                    )
+                }
+                .padding(.top, 4)
 
-            Text("Small check-ins through the day. A quiet record of how you held the shape — nothing more, nothing graded.")
-                .font(.body)
-                .foregroundStyle(Theme.ink2)
-                .padding(.top, 16)
+                Spacer(minLength: 24)
 
-            VStack(alignment: .leading, spacing: 14) {
-                row(eyebrow: "01", title: "Calibrate once.",
-                    detail: "We learn what your good posture looks like.")
-                row(eyebrow: "02", title: "A few nudges a day.",
-                    detail: "Pick the cadence — every 15, 30, or 60 minutes.")
-                row(eyebrow: "03", title: "Three seconds, no friction.",
-                    detail: "Tap a reminder, hold still, done.")
+                Button { step = .airpodsQuestion } label: { Text("get started") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.primary)
+                    .padding(.bottom, 28)
             }
-            .padding(.top, 32)
-
-            Spacer()
-
-            Button { step = .airpodsQuestion } label: {
-                Text("begin")
-            }
-            .buttonStyle(.plain)
-            .daylightCTA(.primary)
-            .padding(.bottom, 28)
+            .padding(.horizontal, 24)
         }
-        .padding(.horizontal, 24)
     }
 
-    private func row(eyebrow: String, title: String, detail: String) -> some View {
+    private func pillarCard(index: String, title: String, body: String, accent: Color) -> some View {
         HStack(alignment: .top, spacing: 14) {
-            Text(eyebrow)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Theme.ink3)
-                .frame(width: 24, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.body.weight(.medium)).foregroundStyle(Theme.ink)
-                Text(detail).font(.subheadline).foregroundStyle(Theme.ink2)
+            ZStack {
+                Circle()
+                    .fill(accent.opacity(0.18))
+                    .frame(width: 36, height: 36)
+                Text(index)
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .foregroundStyle(accent)
             }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(.body, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.ink)
+                Text(body)
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Theme.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
         }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                .fill(Theme.paper2)
+        )
     }
 
     // MARK: - AirPods question
 
     private var airpodsStep: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("SETUP · 1 OF 2")
-                .font(.caption.weight(.semibold)).tracking(2)
-                .foregroundStyle(Theme.ink3)
-                .padding(.top, 16)
-
-            Spacer()
-
-            Text("do you have\nairpods?")
-                .font(Theme.displaySerif(40))
-                .foregroundStyle(Theme.ink)
-
-            Text("If yes, we'll use their motion sensor — no camera, hands free. Posture+ extends this into the background while you work.")
-                .font(.body)
-                .foregroundStyle(Theme.ink2)
-                .padding(.top, 14)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("WORKS WITH")
-                    .font(.caption2.weight(.semibold)).tracking(2)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("01 of 01")
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .tracking(2)
                     .foregroundStyle(Theme.ink3)
-                Text("AirPods Pro (1st & 2nd gen) · AirPods (3rd gen) · AirPods 4 with Active Noise Cancellation · AirPods Max")
-                    .font(.footnote)
+                    .padding(.top, 40)
+
+                Text("ready your AirPods.")
+                    .font(.system(size: 38, weight: .regular, design: .rounded))
+                    .foregroundStyle(Theme.ink)
+
+                Text("Posture uses the head-motion sensor in your AirPods to read your alignment. Pop them in before you tap continue.")
+                    .font(.system(.body, design: .rounded))
                     .foregroundStyle(Theme.ink2)
+                    .lineSpacing(3)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "airpodspro")
+                            .font(.system(size: 22))
+                            .foregroundStyle(Theme.lavender)
+                        Text("works with")
+                            .font(.system(.caption, design: .rounded).weight(.semibold))
+                            .tracking(1.5)
+                            .foregroundStyle(Theme.ink3)
+                    }
+                    Text("AirPods Pro (1st & 2nd gen) · AirPods 3rd gen · AirPods 4 with ANC · AirPods Max")
+                        .font(.system(.footnote, design: .rounded))
+                        .foregroundStyle(Theme.ink2)
+                        .lineSpacing(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                        .fill(Theme.lavenderTint)
+                )
+
+                Spacer(minLength: 16)
+
+                Button {
+                    settings.hasAirpods = true
+                    settings.hasCompletedOnboarding = true
+                } label: { Text("continue") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.primary)
+                    .padding(.bottom, 28)
             }
-            .padding(.top, 20)
-
-            Spacer()
-
-            Button {
-                settings.hasAirpods = true
-                settings.hasCompletedOnboarding = true
-            } label: { Text("yes — link them") }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
-                .padding(.bottom, 28)
+            .padding(.horizontal, 24)
         }
-        .padding(.horizontal, 24)
     }
 }

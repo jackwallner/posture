@@ -29,6 +29,7 @@ struct CalibrationView: View {
     @State private var capturing: Bool = false
     @State private var countdownTask: Task<Void, Never>?
     @State private var captureError: String?
+    @State private var heroPulse: Bool = false
 
     enum Step { case captureBaseline, done }
 
@@ -70,67 +71,102 @@ struct CalibrationView: View {
 
     private var airpodsCaptureStep: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("CALIBRATION")
-                .font(.caption.weight(.semibold)).tracking(2)
+            Text("calibration")
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .tracking(1.5)
                 .foregroundStyle(Theme.ink3)
-                .padding(.top, 16)
-
-            Spacer()
+                .padding(.top, 24)
 
             Text("sit upright.")
-                .font(Theme.displaySerif(40))
+                .font(.system(size: 40, weight: .regular, design: .rounded))
                 .foregroundStyle(Theme.ink)
+                .padding(.top, 4)
 
-            Text("AirPods in. Look straight ahead, like you're at eye level with a screen. Hold for five seconds.")
-                .font(.body)
+            Text("Pop your AirPods in, look straight ahead. Hold the shape for five seconds.")
+                .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
-                .padding(.top, 14)
+                .lineSpacing(3)
+                .padding(.top, 12)
 
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(airpods.isConnected ? Theme.sage : Theme.sand)
-                    .frame(width: 6, height: 6)
-                Text(airpods.isConnected ? "airpods linked" : "waiting for airpods")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(airpods.isConnected ? Theme.sage : Theme.ink2)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(airpods.isConnected ? Theme.sageTint : Theme.sandTint, in: .capsule)
-            .padding(.top, 20)
+            Spacer(minLength: 8)
 
-            if capturing {
-                Text("\(countdown)")
-                    .font(Theme.displaySerif(72))
-                    .foregroundStyle(Theme.ink)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, 16)
-            }
+            calibrationHero
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
 
-            Spacer()
+            Spacer(minLength: 8)
 
             if let captureError {
                 Text(captureError)
-                    .font(.caption)
+                    .font(.system(.footnote, design: .rounded))
                     .foregroundStyle(Theme.clay)
-                    .padding(.bottom, 6)
-            } else if !airpods.isAvailable {
-                Text("Pop your AirPods in to continue. Posture needs the head-motion sensor in AirPods Pro, AirPods 3rd-gen, AirPods 4 with ANC, or AirPods Max.")
-                    .font(.caption)
-                    .foregroundStyle(Theme.ink2)
-                    .padding(.bottom, 6)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.bottom, 10)
             }
 
             Button {
                 guard airpods.isConnected else { return }
                 runAirpodsCountdown()
-            } label: { Text(capturing ? "hold still…" : "capture") }
+            } label: { Text(capturing ? "hold still…" : "calibrate") }
                 .buttonStyle(.plain)
                 .daylightCTA(airpods.isConnected && !capturing ? .primary : .secondary)
                 .disabled(capturing || !airpods.isConnected)
+                .opacity(airpods.isConnected ? 1.0 : 0.55)
                 .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)
+    }
+
+    /// Large central status circle. Three states: waiting (sand pulse),
+    /// linked (sage steady), capturing (sage with countdown numeral).
+    private var calibrationHero: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(heroTintWash)
+                    .frame(width: 200, height: 200)
+                    .scaleEffect(heroPulse ? 1.06 : 0.96)
+                    .opacity(heroPulse ? 0.55 : 1.0)
+                Circle()
+                    .fill(heroTintWash)
+                    .frame(width: 150, height: 150)
+                if capturing {
+                    Text("\(countdown)")
+                        .font(.system(size: 72, weight: .regular, design: .rounded))
+                        .foregroundStyle(Theme.ink)
+                        .contentTransition(.numericText(countsDown: true))
+                        .animation(.easeOut(duration: 0.2), value: countdown)
+                } else {
+                    Image(systemName: "airpodspro")
+                        .font(.system(size: 56, weight: .regular))
+                        .foregroundStyle(heroAccent)
+                }
+            }
+            .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: heroPulse)
+            .onAppear { heroPulse = true }
+
+            HStack(spacing: 8) {
+                Circle().fill(heroAccent).frame(width: 7, height: 7)
+                Text(heroCaption)
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .foregroundStyle(heroAccent)
+            }
+        }
+    }
+
+    private var heroAccent: Color {
+        if !airpods.isConnected { return Theme.sand }
+        return Theme.sage
+    }
+
+    private var heroTintWash: Color {
+        if !airpods.isConnected { return Theme.sandTint }
+        return Theme.sageTint
+    }
+
+    private var heroCaption: String {
+        if capturing { return "reading…" }
+        return airpods.isConnected ? "AirPods linked" : "waiting for AirPods"
     }
 
     // MARK: - Camera capture (fallback)
@@ -203,23 +239,34 @@ struct CalibrationView: View {
     private var doneStep: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer()
-            Text("calibrated.")
-                .font(Theme.displaySerif(40))
+
+            ZStack {
+                Circle()
+                    .fill(Theme.sageTint)
+                    .frame(width: 180, height: 180)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 60, weight: .regular))
+                    .foregroundStyle(Theme.sage)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text("all set.")
+                .font(.system(size: 40, weight: .regular, design: .rounded))
                 .foregroundStyle(Theme.ink)
-            Text(hasAirpods == true
-                 ? "We track your AirPods head motion for hands-free check-ins. The camera stays as a backup."
-                 : "We use your front camera during quick scans to read head orientation. Prop the phone at eye level for the best read.")
-                .font(.body)
+                .padding(.top, 28)
+
+            Text("We've learned your aligned posture. From here on, every check-in is just three quiet seconds.")
+                .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
-                .padding(.top, 14)
-            HorizonMeter(quality: .good)
-                .frame(height: 44)
-                .padding(.vertical, 24)
+                .lineSpacing(3)
+                .padding(.top, 10)
+
             Spacer()
+
             Button {
                 if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
             } label: {
-                Text(mode == .quickRecalibrate ? "done" : "start using posture")
+                Text(mode == .quickRecalibrate ? "done" : "let's go")
             }
             .buttonStyle(.plain)
             .daylightCTA(.primary)

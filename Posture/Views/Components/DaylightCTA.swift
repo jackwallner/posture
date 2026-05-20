@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Daylight's call-to-action treatment. A solid sage pill by default;
-/// `ghost` / `secondary` / `tonal` for lower-emphasis actions. Replaces
-/// the brand-gradient rectangle used across the old UI.
+/// Soft pastel CTA — rounded card, gentle shadow on primary, white text on
+/// sage. Secondary is a lavender-tinted card. Tonal mirrors a quiet
+/// hint chip. Ghost is plain text for tertiary moves.
 struct DaylightCTA: ViewModifier {
     enum Style { case primary, secondary, tonal, ghost }
     let style: Style
@@ -10,14 +10,24 @@ struct DaylightCTA: ViewModifier {
     func body(content: Content) -> some View {
         switch style {
         case .primary:
-            base(content, fg: Theme.paper)
-                .background(Theme.sage, in: .capsule)
+            base(content, fg: Color.white)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.ctaRadius, style: .continuous)
+                        .fill(Theme.sage)
+                )
+                .shadow(color: Theme.sage.opacity(0.35), radius: 14, y: 6)
         case .secondary:
             base(content, fg: Theme.ink)
-                .overlay(Capsule().stroke(Theme.paper3, lineWidth: 1))
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.ctaRadius, style: .continuous)
+                        .fill(Theme.lavenderTint)
+                )
         case .tonal:
             base(content, fg: Theme.sage)
-                .background(Theme.sageTint, in: .capsule)
+                .background(
+                    RoundedRectangle(cornerRadius: Theme.ctaRadius, style: .continuous)
+                        .fill(Theme.sageTint)
+                )
         case .ghost:
             content
                 .font(.system(.subheadline, design: .rounded).weight(.semibold))
@@ -32,7 +42,7 @@ struct DaylightCTA: ViewModifier {
             .font(.system(.headline, design: .rounded).weight(.semibold))
             .foregroundStyle(fg)
             .frame(maxWidth: .infinity)
-            .frame(height: 52)
+            .frame(height: 56)
     }
 }
 
