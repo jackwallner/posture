@@ -31,29 +31,51 @@ final class HeadphoneMotionService {
         return q
     }()
 
+    /// Set by `start()` even if motion can't begin yet (no AirPods connected).
+    /// When the delegate later reports connect we activate updates then. Without
+    /// this, the user puts in AirPods after we called `start()` and motion
+    /// never flows — UI looks "linked" but no samples ever arrive.
+    private var wantsToRun = false
+
     init() {
-        // Per-instance delegate. Previously a `static let shared` box was overwritten
-        // by every HMS init, racing with delegate callbacks delivered on a non-main
-        // thread — when AirPods connected mid-onboarding the stale closure storage
-        // could be read against a deallocated instance and crash under Swift 6
-        // strict concurrency. Wire the closure first, then attach the delegate, so
-        // the first connect callback can't land in the gap.
+        // Per-instance delegate with a `weak` back-pointer to the owner.
+        // Previously the box stored a closure assigned post-init; that closure
+        // read happened cross-thread (CoreMotion delivers delegate calls on a
+        // private queue) against a `var` property, which Swift 6 strict
+        // concurrency would not vouch for despite `@unchecked Sendable`. A
+        // `weak` reference uses atomic load and is safe to read from any
+        // thread.
         let box = HeadphoneDelegateBox()
         self.delegateBox = box
-        // self is now fully initialized — safe to capture in the escaping closure.
-        box.onChange = { [weak self] connected in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.isConnected = connected
-                self.onConnect?(connected)
-            }
-        }
+        box.owner = self
         manager.delegate = box
     }
 
+    /// Called by the delegate (off-main) via a MainActor hop.
+    fileprivate func handleConnectChange(_ connected: Bool) {
+        isConnected = connected
+        // If start() was called before AirPods were connected, the motion
+        // updates never began. Now that they're here, kick them off.
+        if connected, wantsToRun, !manager.isDeviceMotionActive {
+            beginMotionUpdates()
+        }
+        onConnect?(connected)
+    }
+
     func start() {
+        wantsToRun = true
+        // If AirPods are already in when we attach (e.g. cold launch with the
+        // user already wearing them), the delegate's didConnect doesn't fire.
+        // Reflect the truth synchronously so the UI doesn't sit on "waiting."
+        if manager.isDeviceMotionAvailable, !isConnected {
+            isConnected = true
+        }
         guard manager.isDeviceMotionAvailable else { return }
         guard !manager.isDeviceMotionActive else { return }
+        beginMotionUpdates()
+    }
+
+    private func beginMotionUpdates() {
         manager.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
             guard let motion else { return }
             let pitch = motion.attitude.pitch
@@ -72,6 +94,7 @@ final class HeadphoneMotionService {
     }
 
     func stop() {
+        wantsToRun = false
         guard manager.isDeviceMotionActive else { return }
         manager.stopDeviceMotionUpdates()
         isRunning = false
@@ -80,16 +103,21 @@ final class HeadphoneMotionService {
 
 /// Delegate has to live outside the @MainActor service so it can conform to the
 /// nonisolated `CMHeadphoneMotionManagerDelegate` protocol. Each HMS owns its
-/// own box — no shared mutable state.
+/// own box and the box weakly points back — no shared mutable closure storage,
+/// no cross-thread races.
 private final class HeadphoneDelegateBox: NSObject, CMHeadphoneMotionManagerDelegate, @unchecked Sendable {
-    var onChange: ((Bool) -> Void)?
+    weak var owner: HeadphoneMotionService?
 
     func headphoneMotionManagerDidConnect(_ manager: CMHeadphoneMotionManager) {
-        onChange?(true)
+        Task { @MainActor [weak owner] in
+            owner?.handleConnectChange(true)
+        }
     }
 
     func headphoneMotionManagerDidDisconnect(_ manager: CMHeadphoneMotionManager) {
-        onChange?(false)
+        Task { @MainActor [weak owner] in
+            owner?.handleConnectChange(false)
+        }
     }
 }
 #endif

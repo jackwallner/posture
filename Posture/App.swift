@@ -29,10 +29,15 @@ struct PostureApp: App {
 // MARK: - Root with AirPods Monitor Setup
 
 private struct AirpodsRootView: View {
-    @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
     @State private var subscriptions = SubscriptionService.shared
-    @State private var monitor: AirpodsBackgroundMonitor?
+    // Process-scoped — see `AirpodsBackgroundMonitor.shared` for why this
+    // can't be a `@State` default expression. SwiftUI re-evaluates @State
+    // initial values on every parent rerender; with the monitor's audio
+    // observers having no removal hook, those dropped instances would leak
+    // observers into NotificationCenter forever.
+    private let monitor = AirpodsBackgroundMonitor.shared
+    @State private var didActivate = false
     @State private var ackScheduledAt: Date?
     @State private var ackNotificationIndex: Int?
 
@@ -40,15 +45,14 @@ private struct AirpodsRootView: View {
         RootView()
             .environment(monitor)
             .onAppear {
-                guard monitor == nil else { return }
-                let m = AirpodsBackgroundMonitor(modelContext: context)
-                monitor = m
+                guard !didActivate else { return }
+                didActivate = true
                 // Free users with AirPods get foreground-only coaching so
                 // they can feel the haptics while the app is open. Pro +
                 // toggle extends that with the silent-audio background
                 // trick. P1-7: a cold launch fires no onChange hooks, so
                 // do the right thing here.
-                startMonitoringForCurrentTier(m)
+                startMonitoringForCurrentTier(monitor)
                 UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
                 NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
@@ -80,15 +84,15 @@ private struct AirpodsRootView: View {
                 Task { await ReminderScheduler.reschedule() }
             }
             .onChange(of: settings.airpodsBackgroundEnabled) { _, _ in
-                if let m = monitor { restartMonitoringForCurrentTier(m) }
+                restartMonitoringForCurrentTier(monitor)
             }
             .onChange(of: subscriptions.isProSubscriber) { _, _ in
-                if let m = monitor { restartMonitoringForCurrentTier(m) }
+                restartMonitoringForCurrentTier(monitor)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 Task { await ReminderScheduler.reschedule() }
-                if let m = monitor, !m.isMonitoring {
-                    startMonitoringForCurrentTier(m)
+                if !monitor.isMonitoring {
+                    startMonitoringForCurrentTier(monitor)
                 }
             }
     }

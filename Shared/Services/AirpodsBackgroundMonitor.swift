@@ -37,6 +37,7 @@ final class AirpodsBackgroundMonitor {
 
     private var audioEngine: AVAudioEngine?
     private var audioPlayer: AVAudioPlayerNode?
+    private var audioObservers: [NSObjectProtocol] = []
 
     // MARK: - Slouch detection (time-based)
 
@@ -45,6 +46,11 @@ final class AirpodsBackgroundMonitor {
     /// continuous bad posture.
     private var firstBadAt: Date?
     private let badDurationThreshold: TimeInterval = 3.0
+
+    /// Have we already fired the slouch event for the current bad bout?
+    /// Keeps a long slouch from spamming `PosturePassiveSample` rows every
+    /// 3 seconds. Reset on `.good` or disconnect.
+    private var inBadBout = false
 
     /// Haptic debounce so we don't buzz the user every few seconds.
     private var lastHapticAt: Date = .distantPast
@@ -67,13 +73,37 @@ final class AirpodsBackgroundMonitor {
         headphoneService.onConnect = { [weak self] connected in
             self?.handleConnect(connected)
         }
+
+        observeAudioNotifications()
     }
+
+    // Intentionally no deinit: `audioObservers` is @MainActor-isolated and
+    // deinit is nonisolated, so we can't touch it here. The monitor is
+    // process-scoped via `.shared` and never deallocs in practice.
+
+    /// Process-scoped instance. Constructed lazily on first access and
+    /// reused for the life of the app — avoids the SwiftUI `@State` default-
+    /// value footgun where the parent View's body recomputation builds a new
+    /// monitor on every render. Each rebuild adds NotificationCenter
+    /// observers that survive the dropped instance.
+    @MainActor static let shared = AirpodsBackgroundMonitor(
+        modelContext: DataService.sharedModelContainer.mainContext
+    )
 
     private func handleConnect(_ connected: Bool) {
         isConnected = connected
         if !connected {
             currentQuality = .good
             firstBadAt = nil
+            inBadBout = false
+            return
+        }
+        // AirPods just became available. If start() previously returned
+        // false because no head-tracking AirPods were connected, the user
+        // is now in the "armed and waiting" state — activate motion now.
+        isAvailable = headphoneService.isAvailable
+        if isMonitoring && !headphoneService.isRunning {
+            activateMotion()
         }
     }
 
@@ -83,45 +113,58 @@ final class AirpodsBackgroundMonitor {
     /// session attached (the Pro extension) or foreground-only?
     private(set) var isBackground = false
 
-    /// Start monitoring. `background: true` attaches a silent audio session
+    /// Arm monitoring. `background: true` attaches a silent audio session
     /// so motion samples keep flowing while the app is suspended — this is
     /// the Pro tier behavior and shows the iOS orange dot. `background:
     /// false` starts motion only; iOS will suspend it when the app leaves
-    /// the foreground. Returns false if AirPods aren't available.
+    /// the foreground. Returns true as long as the monitor is armed, even
+    /// if AirPods aren't currently connected — motion activates when they
+    /// appear via the connect callback.
     @discardableResult
     func start(background: Bool = true) -> Bool {
         guard !isMonitoring else { return true }
-        guard headphoneService.isAvailable else {
-            lastError = "AirPods with head tracking not available"
-            return false
-        }
-
-        if background {
-            do {
-                try startAudioSession()
-                try startSilentAudio()
-            } catch {
-                lastError = "Audio setup failed: \(error.localizedDescription)"
-                stop()
-                return false
-            }
-        }
-
-        headphoneService.start()
         isMonitoring = true
         isBackground = background
         lastError = nil
+        activateMotion()
         return true
     }
 
+    /// Wire up audio (if Pro/background) and start head-motion updates. Safe
+    /// to call repeatedly — guarded by `headphoneService.isRunning` and the
+    /// engine's own `isRunning`. Called from `start()` and from
+    /// `handleConnect(true)` when AirPods appear after a cold launch.
+    private func activateMotion() {
+        guard isMonitoring else { return }
+        isAvailable = headphoneService.isAvailable
+        guard headphoneService.isAvailable else { return }
+
+        if isBackground {
+            do {
+                if AVAudioSession.sharedInstance().category != .playback {
+                    try startAudioSession()
+                }
+                if audioEngine?.isRunning != true {
+                    try startSilentAudio()
+                }
+            } catch {
+                lastError = "Audio setup failed: \(error.localizedDescription)"
+                return
+            }
+        }
+        headphoneService.start()
+    }
+
     func stop() {
+        isMonitoring = false
+        isBackground = false
         headphoneService.stop()
         stopSilentAudio()
         stopAudioSession()
-        isMonitoring = false
-        isBackground = false
         isConnected = false
         currentQuality = .good
+        firstBadAt = nil
+        inBadBout = false
     }
 
     // MARK: - Sample handler
@@ -149,17 +192,20 @@ final class AirpodsBackgroundMonitor {
         switch quality {
         case .good:
             firstBadAt = nil
+            inBadBout = false
         case .borderline:
             // Drifting — don't restart the clock, but don't trigger either.
             break
         case .bad:
             if let started = firstBadAt {
-                if now.timeIntervalSince(started) >= badDurationThreshold {
+                if !inBadBout, now.timeIntervalSince(started) >= badDurationThreshold {
                     recordSlouchEvent(severity: 1.0)
                     triggerHaptic()
-                    // Hold off until the next sustained slouch — we already
-                    // told them once.
-                    firstBadAt = nil
+                    // One record + buzz per bout. Re-arms when posture
+                    // returns to `.good`, not when the threshold lapses
+                    // again — otherwise a 30-min slouch writes hundreds
+                    // of rows.
+                    inBadBout = true
                 }
             } else {
                 firstBadAt = now
@@ -200,7 +246,85 @@ final class AirpodsBackgroundMonitor {
     }
 
     private func stopAudioSession() {
-        try? AVAudioSession.sharedInstance().setActive(false)
+        try? AVAudioSession.sharedInstance().setActive(
+            false,
+            options: .notifyOthersOnDeactivation
+        )
+    }
+
+    // MARK: - Interruption + config-change recovery
+
+    /// A phone call, Siri, or another app taking the audio session will
+    /// pause our silent track. When the interruption ends we must reactivate
+    /// the session AND restart the engine — `AVAudioEngine` doesn't resume
+    /// itself. Same for `AVAudioEngineConfigurationChange`, which fires when
+    /// the route changes (AirPods leaving, CarPlay handoff). Without these
+    /// observers the "always-on" Pro feature silently dies the first time a
+    /// call comes in.
+    ///
+    /// Use block-based observers that hop to MainActor — system audio
+    /// notifications post on private queues, so a selector-based observer on
+    /// a `@MainActor` class would trip Swift 6 isolation.
+    private func observeAudioNotifications() {
+        let center = NotificationCenter.default
+        let interruption = center.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] note in
+            // Pull the raw type out here — `userInfo` is `[AnyHashable: Any]?`
+            // which isn't Sendable, so we can't ferry it across the actor hop.
+            let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
+            Task { @MainActor in self?.handleInterruption(rawType: raw) }
+        }
+        let configChange = center.addObserver(
+            forName: .AVAudioEngineConfigurationChange,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            Task { @MainActor in self?.handleEngineConfigChange() }
+        }
+        audioObservers = [interruption, configChange]
+    }
+
+    private func handleInterruption(rawType: UInt?) {
+        guard
+            let raw = rawType,
+            let type = AVAudioSession.InterruptionType(rawValue: raw)
+        else { return }
+        switch type {
+        case .began:
+            // Engine has stopped. Nothing to do until .ended fires.
+            break
+        case .ended:
+            guard isMonitoring, isBackground else { return }
+            resumeSilentAudio()
+        @unknown default:
+            break
+        }
+    }
+
+    private func handleEngineConfigChange() {
+        guard isMonitoring, isBackground else { return }
+        resumeSilentAudio()
+    }
+
+    private func resumeSilentAudio() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(
+                true,
+                options: .notifyOthersOnDeactivation
+            )
+            if let engine = audioEngine, !engine.isRunning {
+                try engine.start()
+                audioPlayer?.play()
+            } else if audioEngine == nil {
+                try startSilentAudio()
+            }
+            lastError = nil
+        } catch {
+            lastError = "Could not resume audio: \(error.localizedDescription)"
+        }
     }
 
     // MARK: - Silent Audio
