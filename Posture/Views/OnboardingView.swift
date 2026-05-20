@@ -111,13 +111,6 @@ struct OnboardingView: View {
             } label: { Text("yes — link them") }
                 .buttonStyle(.plain)
                 .daylightCTA(.primary)
-
-            Button {
-                settings.hasAirpods = false
-                settings.hasCompletedOnboarding = true
-            } label: { Text("no — use my camera") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
                 .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)

@@ -115,18 +115,9 @@ struct CalibrationView: View {
                     .foregroundStyle(Theme.clay)
                     .padding(.bottom, 6)
             } else if !airpods.isAvailable {
-                Text("These AirPods don't report head motion. Use the camera path instead.")
+                Text("Pop your AirPods in to continue. Posture needs the head-motion sensor in AirPods Pro, AirPods 3rd-gen, AirPods 4 with ANC, or AirPods Max.")
                     .font(.caption)
                     .foregroundStyle(Theme.ink2)
-                    .padding(.bottom, 6)
-                Button {
-                    hasAirpods = false
-                    airpods.stop()
-                    captureError = nil
-                    Task { await face.start() }
-                } label: { Text("use camera instead") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.secondary)
                     .padding(.bottom, 6)
             }
 
