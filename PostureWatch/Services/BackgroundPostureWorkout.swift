@@ -91,10 +91,10 @@ final class BackgroundPostureWorkout: NSObject {
     private func startMotionUpdates() {
         guard motion.isDeviceMotionAvailable, !motion.isDeviceMotionActive else { return }
         motion.deviceMotionUpdateInterval = 0.5
-        motion.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
+        motion.startDeviceMotionUpdates(to: queue) { @Sendable [weak self] motion, _ in
             guard let motion else { return }
             let g = motion.gravity
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 self?.handle(gravity: (g.x, g.y, g.z))
             }
         }

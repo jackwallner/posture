@@ -42,10 +42,10 @@ final class WatchMotionService {
 
     func start() {
         guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
-        manager.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
+        manager.startDeviceMotionUpdates(to: queue) { @Sendable [weak self] motion, _ in
             guard let motion else { return }
             let g = motion.gravity
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 guard let self else { return }
                 if self.baseline == nil {
                     self.baseline = (g.x, g.y, g.z)

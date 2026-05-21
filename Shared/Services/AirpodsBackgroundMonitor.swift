@@ -271,7 +271,7 @@ final class AirpodsBackgroundMonitor {
             forName: AVAudioSession.interruptionNotification,
             object: nil,
             queue: nil
-        ) { [weak self] note in
+        ) { @Sendable [weak self] note in
             // Pull the raw type out here — `userInfo` is `[AnyHashable: Any]?`
             // which isn't Sendable, so we can't ferry it across the actor hop.
             let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
@@ -281,7 +281,7 @@ final class AirpodsBackgroundMonitor {
             forName: .AVAudioEngineConfigurationChange,
             object: nil,
             queue: nil
-        ) { [weak self] _ in
+        ) { @Sendable [weak self] _ in
             Task { @MainActor in self?.handleEngineConfigChange() }
         }
         audioObservers = [interruption, configChange]
@@ -332,7 +332,9 @@ final class AirpodsBackgroundMonitor {
     private func startSilentAudio() throws {
         let engine = AVAudioEngine()
         let player = AVAudioPlayerNode()
-        let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)!
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1) else {
+            throw MonitorError.formatCreationFailed
+        }
 
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44100) else {
             throw MonitorError.bufferCreationFailed
@@ -363,10 +365,12 @@ final class AirpodsBackgroundMonitor {
 
 enum MonitorError: LocalizedError {
     case bufferCreationFailed
+    case formatCreationFailed
 
     var errorDescription: String? {
         switch self {
         case .bufferCreationFailed: return "Could not create silent audio buffer"
+        case .formatCreationFailed: return "Could not create silent audio format"
         }
     }
 }

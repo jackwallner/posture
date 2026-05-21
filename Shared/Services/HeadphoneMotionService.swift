@@ -76,12 +76,18 @@ final class HeadphoneMotionService {
     }
 
     private func beginMotionUpdates() {
-        manager.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
+        // The handler MUST be `@Sendable` so it doesn't inherit this method's
+        // @MainActor isolation. CoreMotion's bridged signature isn't @Sendable,
+        // so without this annotation the closure carries MainActor isolation,
+        // and the runtime asserts on the main queue when CoreMotion invokes it
+        // from our OperationQueue thread (EXC_BREAKPOINT in
+        // _swift_task_checkIsolatedSwift). Repro: TF feedback #10 (build 18).
+        manager.startDeviceMotionUpdates(to: queue) { @Sendable [weak self] motion, _ in
             guard let motion else { return }
             let pitch = motion.attitude.pitch
             let yaw = motion.attitude.yaw
             let roll = motion.attitude.roll
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 guard let self else { return }
                 self.isConnected = true
                 self.lastPitch = pitch
