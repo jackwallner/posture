@@ -5,7 +5,7 @@ struct WatchSettingsView: View {
     @Environment(\.modelContext) private var context
     @State private var settings = GoalSettings.shared
     @State private var subscriptions = SubscriptionService.shared
-    @State private var background = BackgroundPostureWorkout()
+    @State private var background = BackgroundPostureWorkout.shared
 
     var body: some View {
         Form {

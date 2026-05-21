@@ -117,9 +117,9 @@ struct QuickScanView: View {
     private var facePill: some View {
         HStack(spacing: 6) {
             Circle()
-                .fill(face.faceDetected ? Theme.sage : Theme.clay)
+                .fill(face.faceDetected ? Theme.sage : Theme.sand)
                 .frame(width: 6, height: 6)
-            Text(face.faceDetected ? "head centered" : "find your face")
+            Text(face.faceDetected ? "head centered" : "bring your face back into the frame")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
         }

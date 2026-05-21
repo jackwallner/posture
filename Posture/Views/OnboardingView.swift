@@ -104,11 +104,11 @@ struct OnboardingView: View {
                     .foregroundStyle(Theme.ink3)
                     .padding(.top, 40)
 
-                Text("ready your AirPods.")
+                Text("do you use AirPods?")
                     .font(.system(size: 38, weight: .regular, design: .rounded))
                     .foregroundStyle(Theme.ink)
 
-                Text("Posture uses the head-motion sensor in your AirPods to read your alignment. Pop them in before you tap continue.")
+                Text("If you have a compatible pair, Posture reads alignment from their head-motion sensor. No AirPods? We'll use the front camera instead — pick whichever fits your day.")
                     .font(.system(.body, design: .rounded))
                     .foregroundStyle(Theme.ink2)
                     .lineSpacing(3)
@@ -138,13 +138,22 @@ struct OnboardingView: View {
 
                 Spacer(minLength: 16)
 
-                Button {
-                    settings.hasAirpods = true
-                    settings.hasCompletedOnboarding = true
-                } label: { Text("continue") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.primary)
-                    .padding(.bottom, 28)
+                VStack(spacing: 10) {
+                    Button {
+                        settings.hasAirpods = true
+                        settings.hasCompletedOnboarding = true
+                    } label: { Text("yes — calibrate with AirPods") }
+                        .buttonStyle(.plain)
+                        .daylightCTA(.primary)
+
+                    Button {
+                        settings.hasAirpods = false
+                        settings.hasCompletedOnboarding = true
+                    } label: { Text("no — use iPhone camera") }
+                        .buttonStyle(.plain)
+                        .daylightCTA(.secondary)
+                }
+                .padding(.bottom, 28)
             }
             .padding(.horizontal, 24)
         }

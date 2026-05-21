@@ -15,6 +15,7 @@ struct PostureApp: App {
         #endif
         SubscriptionService.shared.configure()
         NotificationService.registerCategories()
+        WatchSyncService.shared.activate()
     }
 
     var body: some Scene {

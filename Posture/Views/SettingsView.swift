@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var showingRecalibrateSheet = false
     @State private var showingQuickRecalibrate = false
     @State private var notificationsDenied = false
+    @State private var showingWatchSyncInfo = false
 
     private let intervalOptions = [15, 30, 60]
 
@@ -24,12 +25,16 @@ struct SettingsView: View {
                 Section {
                     if subscriptions.isProSubscriber {
                         Toggle("Always-on Watch monitoring", isOn: $settings.alwaysOnEnabled)
-                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Enable it from the Watch app.")
+                            .onChange(of: settings.alwaysOnEnabled) { _, isOn in
+                                WatchSyncService.shared.pushAlwaysOn(isOn)
+                                if isOn { showingWatchSyncInfo = true }
+                            }
+                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin — your phone keeps it in sync from there.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
                         Toggle("Quiet AirPods background", isOn: $settings.airpodsBackgroundEnabled)
-                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot when this is on — that's Posture listening to silence so it can feel your slouch.")
+                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot — that's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
@@ -121,6 +126,11 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .task { await refreshNotificationStatus() }
             .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .alert("Open Posture on your Watch", isPresented: $showingWatchSyncInfo) {
+                Button("Got it", role: .cancel) { }
+            } message: {
+                Text("Open Posture on your Apple Watch once to start background tracking. Your phone has already sent the setting over.")
+            }
             .sheet(isPresented: $showingQuickRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
             }

@@ -191,8 +191,8 @@ struct CalibrationView: View {
                     .foregroundStyle(.white)
                     .padding(.top, 16)
                 Text(hasAirpods == true
-                     ? "AirPods in, phone at eye level, look straight ahead."
-                     : "Phone at eye level, look straight ahead.")
+                     ? "AirPods in, phone at eye level, look straight ahead. Hold still while we set your baseline."
+                     : "Phone at eye level, look straight ahead. Hold still while we set your baseline.")
                     .font(.system(.callout, design: .serif).italic())
                     .foregroundStyle(.white.opacity(0.75))
                     .multilineTextAlignment(.center)
@@ -213,7 +213,7 @@ struct CalibrationView: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .padding(.bottom, 6)
                 } else if !face.faceDetected && !capturing {
-                    Text("we'll enable this once we can see your face.")
+                    Text("align your face inside the guide to begin.")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.7))
                         .padding(.bottom, 6)

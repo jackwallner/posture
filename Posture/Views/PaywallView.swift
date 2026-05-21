@@ -12,6 +12,7 @@ struct PaywallView: View {
     @State private var restoreAttempted: Bool = false
     @State private var isPurchasing: Bool = false
     @State private var purchaseError: String?
+    @State private var loadTimedOut = false
 
     var body: some View {
         #if canImport(RevenueCatUI)
@@ -26,12 +27,56 @@ struct PaywallView: View {
                     Task { await subscriptions.refresh() }
                     dismiss()
                 }
-        } else {
+        } else if loadTimedOut {
+            // RevenueCat never came online (no network, or SDK not wired
+            // up) — fall back to the static listing rather than spinning
+            // forever.
             placeholderPaywall
+        } else {
+            loadingPaywall
         }
         #else
         placeholderPaywall
         #endif
+    }
+
+    /// Shown while RevenueCat is still wiring up offerings — keeps the
+    /// layout calm instead of flashing the placeholder, then snapping to
+    /// the real paywall once `isConfigured` flips.
+    private var loadingPaywall: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack {
+                Text("POSTURE+")
+                    .font(.caption.weight(.semibold))
+                    .tracking(2)
+                    .foregroundStyle(Theme.ink3)
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(Theme.ink3)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Close")
+            }
+            Spacer()
+            VStack(spacing: 14) {
+                ProgressView().tint(Theme.sage)
+                Text("loading plans…")
+                    .font(.system(.subheadline, design: .rounded))
+                    .foregroundStyle(Theme.ink2)
+            }
+            .frame(maxWidth: .infinity)
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Theme.paper.ignoresSafeArea())
+        .task {
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            loadTimedOut = true
+        }
     }
 
     private var placeholderPaywall: some View {

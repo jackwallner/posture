@@ -11,6 +11,11 @@ import WatchKit
 @MainActor
 @Observable
 final class BackgroundPostureWorkout: NSObject {
+    /// Process-scoped so the phone-synced auto-starter and the on-watch
+    /// settings toggle drive the *same* workout instead of racing two
+    /// HKWorkoutSessions.
+    static let shared = BackgroundPostureWorkout()
+
     private(set) var isActive: Bool = false
     private(set) var lastSlouchAt: Date?
     private(set) var totalSlouchEvents: Int = 0

@@ -10,6 +10,11 @@ struct AirpodsScanView: View {
     @Environment(GoalSettings.self) private var settings
 
     let scheduledAt: Date
+    /// True when the saved calibration also has a valid camera baseline.
+    /// AirPods-only calibrations leave `basePitch == 0`, so a camera scan
+    /// would compare against a nonsense origin — in that case we hide the
+    /// "use camera scan instead" affordance and only offer the manual log.
+    let cameraScanAvailable: Bool
     let onComplete: (PostureQuality) -> Void
     let onUseCamera: () -> Void
     let onFallback: () -> Void
@@ -79,10 +84,17 @@ struct AirpodsScanView: View {
             Spacer(minLength: 24)
 
             if phase == .waiting {
-                Button { onFallback() } label: { Text("check in by hand") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
-                    .padding(.bottom, 12)
+                VStack(spacing: 8) {
+                    if cameraScanAvailable {
+                        Button { onUseCamera() } label: { Text("use camera scan instead") }
+                            .buttonStyle(.plain)
+                            .daylightCTA(.secondary)
+                    }
+                    Button { onFallback() } label: { Text("check in by hand") }
+                        .buttonStyle(.plain)
+                        .daylightCTA(.ghost)
+                }
+                .padding(.bottom, 12)
             }
         }
         .padding(.horizontal, 24)
@@ -169,10 +181,17 @@ struct AirpodsScanView: View {
 
             Spacer(minLength: 24)
 
-            Button { onFallback() } label: { Text("check in by hand") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
-                .padding(.bottom, 28)
+            VStack(spacing: 8) {
+                if cameraScanAvailable {
+                    Button { onUseCamera() } label: { Text("use camera scan instead") }
+                        .buttonStyle(.plain)
+                        .daylightCTA(.primary)
+                }
+                Button { onFallback() } label: { Text("check in by hand") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(cameraScanAvailable ? .ghost : .secondary)
+            }
+            .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

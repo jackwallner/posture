@@ -31,6 +31,14 @@ struct AcknowledgmentView: View {
         return cal?.airpodsPitch != nil
     }
 
+    /// A camera scan is meaningful only when the saved calibration captured
+    /// a real camera baseline. AirPods-only calibrations leave basePitch
+    /// at 0, which would produce garbage deviation in QuickScanView.
+    private var hasCameraBaseline: Bool {
+        let cal = CalibrationService(context: context).current()
+        return (cal?.basePitch ?? 0) != 0
+    }
+
     var body: some View {
         Group {
             switch phase {
@@ -107,6 +115,7 @@ struct AcknowledgmentView: View {
         if preferAirpods {
             AirpodsScanView(
                 scheduledAt: scheduledAt,
+                cameraScanAvailable: hasCameraBaseline,
                 onComplete: { quality in
                     recordedQuality = quality
                     recordAcknowledgment(method: .airpods, quality: quality)

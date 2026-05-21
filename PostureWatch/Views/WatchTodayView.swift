@@ -4,6 +4,9 @@ import SwiftUI
 struct WatchTodayView: View {
     @Environment(\.modelContext) private var context
     @Query private var streaks: [StreakState]
+    @State private var settings = GoalSettings.shared
+    @State private var subscriptions = SubscriptionService.shared
+    @State private var background = BackgroundPostureWorkout.shared
 
     /// Display-only — never insert a StreakState during body evaluation
     /// (audit P1-10). Creation is owned by StreakService on the phone.
@@ -39,6 +42,32 @@ struct WatchTodayView: View {
                 .padding(.horizontal, 4)
             }
             .navigationTitle("Posture")
+        }
+        .task {
+            WatchSyncService.shared.activate()
+            WatchSyncService.shared.onAlwaysOnReceived = { _ in
+                Task { await applyAlwaysOn() }
+            }
+            await applyAlwaysOn()
+        }
+        .onChange(of: settings.alwaysOnEnabled) { _, _ in
+            Task { await applyAlwaysOn() }
+        }
+    }
+
+    /// Reconcile the (possibly phone-synced) preference with the live
+    /// workout: start it when monitoring is on for a Pro user, stop it
+    /// otherwise. Idempotent — safe to call on launch and on every change.
+    @MainActor
+    private func applyAlwaysOn() async {
+        let shouldRun = settings.alwaysOnEnabled && subscriptions.isProSubscriber
+        if shouldRun, !background.isActive {
+            let cal = CalibrationService(context: context).current()
+                ?? Calibration(basePitch: 0, baseYaw: 0, baseRoll: 0, slouchPitchDelta: .pi / 6)
+            _ = await background.requestAuthorization()
+            await background.start(calibration: cal)
+        } else if !shouldRun, background.isActive {
+            background.stop()
         }
     }
 
