@@ -14,17 +14,17 @@ final class OnboardingUITests: XCTestCase {
         app.launchArguments += ["UITEST_FRESH"]
         app.launch()
 
-        let begin = app.buttons["begin"]
+        let begin = app.buttons["get started"]
         XCTAssertTrue(begin.waitForExistence(timeout: 10), "welcome screen never appeared")
         begin.tap()
 
-        let noAirpods = app.buttons["no — use my camera"]
+        let noAirpods = app.buttons["no — use iPhone camera"]
         XCTAssertTrue(noAirpods.waitForExistence(timeout: 5), "AirPods question never appeared")
         noAirpods.tap()
 
         // The bug was the view freezing here. Calibration (camera path,
         // since we answered "no AirPods") must take over.
-        let calibration = app.staticTexts["we'll enable this once we can see your face."]
+        let calibration = app.staticTexts["align your face inside the guide to begin."]
         XCTAssertTrue(
             calibration.waitForExistence(timeout: 6),
             "stuck on onboarding — hasCompletedOnboarding flip did not re-render RootView"
@@ -41,11 +41,11 @@ final class OnboardingUITests: XCTestCase {
         app.launchArguments += ["UITEST_FRESH"]
         app.launch()
 
-        let begin = app.buttons["begin"]
+        let begin = app.buttons["get started"]
         XCTAssertTrue(begin.waitForExistence(timeout: 10), "welcome screen never appeared")
         begin.tap()
 
-        let yesAirpods = app.buttons["yes — link them"]
+        let yesAirpods = app.buttons["yes — calibrate with AirPods"]
         XCTAssertTrue(yesAirpods.waitForExistence(timeout: 5), "AirPods question never appeared")
         yesAirpods.tap()
 
@@ -53,7 +53,7 @@ final class OnboardingUITests: XCTestCase {
         // head-tracking AirPods, OR camera fallback on simulator / unsupported
         // AirPods. Both prove we didn't crash.
         let airpodsStep = app.staticTexts["sit upright."]
-        let cameraStep = app.staticTexts["we'll enable this once we can see your face."]
+        let cameraStep = app.staticTexts["align your face inside the guide to begin."]
         let predicate = NSPredicate { _, _ in airpodsStep.exists || cameraStep.exists }
         let reached = expectation(for: predicate, evaluatedWith: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [reached], timeout: 6), .completed,

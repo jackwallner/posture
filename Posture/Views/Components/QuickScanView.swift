@@ -198,19 +198,26 @@ struct QuickScanView: View {
     private func runScan() {
         countdownTask?.cancel()
         countdownTask = Task {
-            for second in 0..<3 {
+            // Count only the ticks where a face is actually in frame: the
+            // countdown pauses while the user is out of view and resumes
+            // when centered, so "hold still" means literally three seconds
+            // of held posture. A wall-clock cap prevents an endless wait.
+            let ticksPerSecond = 5
+            let neededTicks = 3 * ticksPerSecond
+            let maxTicks = neededTicks * 4
+            var detectedTicks = 0
+            var totalTicks = 0
+            while detectedTicks < neededTicks {
                 guard !Task.isCancelled else { return }
-                for _ in 0..<5 {
-                    guard !Task.isCancelled else { return }
-                    if let pitch = face.lastPitch {
-                        samples.append(pitch)
-                    }
-                    if face.faceDetected {
-                        faceEverDetected = true
-                    }
-                    try? await Task.sleep(nanoseconds: 200_000_000)
+                if face.faceDetected {
+                    faceEverDetected = true
+                    if let pitch = face.lastPitch { samples.append(pitch) }
+                    detectedTicks += 1
+                    elapsedSeconds = detectedTicks / ticksPerSecond
                 }
-                elapsedSeconds = second + 1
+                totalTicks += 1
+                if totalTicks >= maxTicks { break }
+                try? await Task.sleep(nanoseconds: 200_000_000)
             }
 
             guard !Task.isCancelled else { return }

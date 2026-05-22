@@ -129,7 +129,7 @@ struct PostureLockScreenWidgetView: View {
                 }
                 .foregroundStyle(.secondary)
             } else {
-                Text("No session today")
+                Text("No check-in yet today")
                     .font(.headline)
                     .foregroundStyle(.secondary)
                 Text("\(entry.streak)-day streak")
@@ -149,8 +149,8 @@ struct PostureWidget: Widget {
             PostureLockScreenWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-        .configurationDisplayName("Posture Streak")
-        .description("Your current streak and today's posture score.")
+        .configurationDisplayName("Posture today")
+        .description("Today's posture score, with your current streak.")
         .supportedFamilies([
             .accessoryCircular,
             .accessoryInline,

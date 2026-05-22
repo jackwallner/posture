@@ -13,6 +13,7 @@ struct SettingsView: View {
     @State private var showingQuickRecalibrate = false
     @State private var notificationsDenied = false
     @State private var showingWatchSyncInfo = false
+    @State private var showingAirpodsBackgroundConfirm = false
 
     private let intervalOptions = [15, 30, 60]
 
@@ -33,7 +34,18 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
-                        Toggle("Quiet AirPods background", isOn: $settings.airpodsBackgroundEnabled)
+                        Toggle("Quiet AirPods background", isOn: Binding(
+                            get: { settings.airpodsBackgroundEnabled },
+                            set: { newValue in
+                                if newValue && !settings.airpodsBackgroundEnabled {
+                                    // First-flip confirmation — explain the orange dot
+                                    // before the silent tone (and the indicator) start.
+                                    showingAirpodsBackgroundConfirm = true
+                                } else {
+                                    settings.airpodsBackgroundEnabled = newValue
+                                }
+                            }
+                        ))
                         Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot — that's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
@@ -105,6 +117,9 @@ struct SettingsView: View {
                         Text("Strict").tag(2)
                     }
                     .pickerStyle(.segmented)
+                    Text("Relaxed forgives small forward head tilt. Strict flags it sooner.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.ink2)
                 }
 
                 // MARK: - Calibration
@@ -131,6 +146,12 @@ struct SettingsView: View {
             } message: {
                 Text("Open Posture on your Apple Watch once to start background tracking. Your phone has already sent the setting over.")
             }
+            .alert("Turn on quiet background?", isPresented: $showingAirpodsBackgroundConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Turn on") { settings.airpodsBackgroundEnabled = true }
+            } message: {
+                Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded.")
+            }
             .sheet(isPresented: $showingQuickRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
             }
@@ -143,6 +164,9 @@ struct SettingsView: View {
                     },
                     onFull: {
                         CalibrationService(context: context).clear()
+                        // Re-ask the AirPods/camera question, then recalibrate.
+                        settings.hasAirpods = nil
+                        settings.hasCompletedOnboarding = false
                         settings.hasCalibrated = false
                         showingRecalibrateSheet = false
                     },
@@ -256,14 +280,14 @@ private struct RecalibrationOptionsView: View {
             Text("Recalibrate")
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(Theme.ink)
-            Text("Quick recaptures your baseline in five seconds. Full walks through setup again.")
+            Text("Refresh keeps your current setup and re-reads your aligned posture. Change tracking switches between AirPods and camera.")
                 .font(.subheadline)
                 .foregroundStyle(Theme.ink2)
 
-            Button { onQuick() } label: { Text("quick — 5 seconds") }
+            Button { onQuick() } label: { Text("refresh baseline — 5 seconds") }
                 .buttonStyle(.plain)
                 .daylightCTA(.secondary)
-            Button { onFull() } label: { Text("full — start over") }
+            Button { onFull() } label: { Text("change how you track") }
                 .buttonStyle(.plain)
                 .daylightCTA(.secondary)
             Button { onCancel() } label: { Text("cancel") }

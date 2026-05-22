@@ -112,9 +112,27 @@ struct CalibrationView: View {
                 .daylightCTA(airpods.isConnected && !capturing ? .primary : .secondary)
                 .disabled(capturing || !airpods.isConnected)
                 .opacity(airpods.isConnected ? 1.0 : 0.55)
-                .padding(.bottom, 28)
+
+            if !airpods.isConnected && !capturing {
+                Button { switchToCamera() } label: { Text("use iPhone camera instead") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+                    .padding(.top, 4)
+            }
         }
         .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+    }
+
+    /// Escape hatch from the AirPods waiting state: drop to the camera path
+    /// without forcing an app restart, and remember the choice.
+    private func switchToCamera() {
+        countdownTask?.cancel()
+        airpods.stop()
+        captureError = nil
+        settings.hasAirpods = false
+        hasAirpods = false
+        Task { await face.start() }
     }
 
     /// Large central status circle. Three states: waiting (sand pulse),

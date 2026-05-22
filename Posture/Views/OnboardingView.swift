@@ -27,7 +27,7 @@ struct OnboardingView: View {
                     .foregroundStyle(Theme.ink)
                     .padding(.top, 40)
 
-                Text("Posture is a kind, hands-free habit. A few quiet check-ins each day — your AirPods do the reading.")
+                Text("Posture is a kind, hands-free habit. A few quiet check-ins each day — your phone or AirPods read alignment in seconds.")
                     .font(.system(.body, design: .rounded))
                     .foregroundStyle(Theme.ink2)
                     .lineSpacing(3)
@@ -48,7 +48,7 @@ struct OnboardingView: View {
                     pillarCard(
                         index: "3",
                         title: "Three-second check-ins",
-                        body: "Tap, hold still, done.",
+                        body: "Tap a reminder, scan, and we'll note where you are.",
                         accent: Theme.sand
                     )
                 }

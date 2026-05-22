@@ -75,7 +75,7 @@ struct TodayView: View {
                     if needsRecalibration {
                         softBanner(
                             title: "Time for a quick recalibrate.",
-                            body: "Things drift after a while. Reset the baseline in five seconds.",
+                            body: "AirPods sit a little differently over time, and posture shifts too. A five-second reset keeps scans honest.",
                             actionLabel: "recalibrate",
                             action: { showingRecalibrate = true }
                         )
@@ -129,19 +129,10 @@ struct TodayView: View {
             }
             Spacer()
             if currentStreak > 0 {
-                HStack(spacing: 6) {
-                    Image(systemName: "flame.fill")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Theme.sand)
-                    Text("\(currentStreak)")
-                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                        .foregroundStyle(Theme.ink)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    Capsule().fill(Theme.sandTint)
-                )
+                Text("\(currentStreak) \(currentStreak == 1 ? "day" : "days")")
+                    .font(Theme.displaySerif(18))
+                    .foregroundStyle(Theme.ink2)
+                    .accessibilityLabel("\(currentStreak) day streak")
             }
         }
         .padding(.top, 12)
@@ -217,7 +208,10 @@ struct TodayView: View {
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(Theme.ink3)
             }
-            DayStrip(acks: todayAcks)
+            DayStrip(
+                acks: todayAcks,
+                activeWindow: settings.activeHoursStart...settings.activeHoursEnd
+            )
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -314,7 +308,7 @@ struct TodayView: View {
     @ViewBuilder
     private var metaRow: some View {
         if settings.reminderEnabled {
-            Text("next nudge \(nextReminderText.lowercased()) · \(remainingReminders) left")
+            Text("next reminder \(nextReminderText.lowercased()) · \(remainingReminders) more today")
                 .font(.system(.caption, design: .rounded))
                 .foregroundStyle(Theme.ink3)
         } else {

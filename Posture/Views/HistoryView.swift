@@ -2,9 +2,11 @@ import SwiftData
 import SwiftUI
 
 struct HistoryView: View {
+    @Environment(GoalSettings.self) private var settings
     @Query private var acknowledgments: [AcknowledgmentRecord]
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingAck = false
+    @State private var showingPaywall = false
 
     init() {
         let cutoff = DateHelpers.daysAgo(14)
@@ -32,9 +34,12 @@ struct HistoryView: View {
         }
     }
 
+    /// Mirror of `NotificationService.scheduleReminders` slot count, so the
+    /// week strip's "fill" ratio matches the user's actual reminder cadence.
     private var expectedPerDay: Int {
-        // Rough: active-window minutes / interval, clamped.
-        max(1, min(20, ((20 - 8) * 60) / 30))
+        let windowMinutes = max(0, (settings.activeHoursEnd - settings.activeHoursStart)) * 60
+        let interval = max(1, settings.reminderIntervalMinutes)
+        return max(1, min(20, windowMinutes / interval))
     }
 
     private func acks(on day: Date) -> [AcknowledgmentRecord] {
@@ -133,6 +138,7 @@ struct HistoryView: View {
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
+            .sheet(isPresented: $showingPaywall) { PaywallView() }
         }
     }
 
@@ -180,21 +186,28 @@ struct HistoryView: View {
     }
 
     private var proPreviewCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("TODAY'S RHYTHM · POSTURE+")
-                .font(.caption.weight(.semibold))
-                .tracking(2)
-                .foregroundStyle(Theme.sage)
-            Text("See the hours your posture slips.")
-                .font(Theme.displaySerif(22))
-                .foregroundStyle(Theme.ink)
-            Text("Posture+ adds an hour-by-hour rhythm from AirPods and Watch.")
-                .font(.caption)
-                .foregroundStyle(Theme.ink2)
+        Button { showingPaywall = true } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("TODAY'S RHYTHM · POSTURE+")
+                    .font(.caption.weight(.semibold))
+                    .tracking(2)
+                    .foregroundStyle(Theme.sage)
+                Text("See the hours your posture slips.")
+                    .font(Theme.displaySerif(22))
+                    .foregroundStyle(Theme.ink)
+                Text("Posture+ adds an hour-by-hour rhythm from AirPods and Watch.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.ink2)
+                Text("see your rhythm →")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.sage)
+                    .padding(.top, 2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+            .background(Theme.sageTint, in: .rect(cornerRadius: 14))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(Theme.sageTint, in: .rect(cornerRadius: 14))
+        .buttonStyle(.plain)
     }
 
     private var emptyState: some View {
@@ -222,8 +235,8 @@ struct HistoryView: View {
         let method: String
         switch ack.method {
         case .camera: method = "scan"
-        case .airpods: method = "airpods"
-        case .manual: method = "manual"
+        case .airpods: method = "AirPods scan"
+        case .manual: method = "logged"
         }
         guard let q = ack.quality else { return "noted · \(method)" }
         let word: String

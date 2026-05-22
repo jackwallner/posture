@@ -92,15 +92,22 @@ struct AcknowledgmentView: View {
             .buttonStyle(.plain)
             .daylightCTA(.primary)
 
-            Button {
-                recordAcknowledgment(method: .manual, quality: nil)
-                recordedQuality = nil
-                withAnimation { phase = .done }
-            } label: {
-                Text("just checking in — manual →")
+            VStack(spacing: 4) {
+                Button {
+                    recordAcknowledgment(method: .manual, quality: nil)
+                    recordedQuality = nil
+                    withAnimation { phase = .done }
+                } label: {
+                    Text("just checking in — manual →")
+                }
+                .buttonStyle(.plain)
+                .daylightCTA(.ghost)
+                Text("Counts for your streak. Alignment score needs a quick scan.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.ink3)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.plain)
-            .daylightCTA(.ghost)
             .padding(.bottom, 16)
         }
         .padding(.horizontal, 24)
@@ -244,7 +251,7 @@ struct AcknowledgmentView: View {
         case .bad:
             return "Curled forward. Take a slow breath, lift the crown of your head."
         case nil:
-            return "Logged without a scan. That counts — staying mindful is most of it."
+            return "Logged without a scan. Counts for your streak; alignment score updates only on scanned check-ins."
         }
     }
 
