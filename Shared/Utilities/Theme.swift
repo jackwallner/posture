@@ -72,6 +72,29 @@ enum Theme {
         LinearGradient(colors: [sage, sage], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
+    // MARK: - Dawn direction (visual register)
+
+    /// Pre-dawn page wash — lavender cresting at the top, fading into the
+    /// mint canvas. The recurring surface where ritual lives (Stage A · C).
+    static var dawnWash: LinearGradient {
+        LinearGradient(
+            colors: [lavenderTint, paper, paper],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    /// Score-ring sweep — sand into lavender, so the moment of measurement
+    /// and the moment of ritual visually blend (Stage A · C).
+    static var ringSweep: AngularGradient {
+        AngularGradient(
+            gradient: Gradient(colors: [sand, lavender]),
+            center: .center,
+            startAngle: .degrees(-90),
+            endAngle: .degrees(270)
+        )
+    }
+
     // MARK: - Geometry
 
     static let cardRadius: CGFloat = 24
@@ -101,5 +124,24 @@ enum Theme {
         case .borderline: return borderline
         case .bad: return bad
         }
+    }
+}
+
+// MARK: - Dawn surfaces
+
+extension View {
+    /// Dawn page background: the pre-dawn wash beneath the content.
+    func dawnBackground() -> some View {
+        background(Theme.dawnWash.ignoresSafeArea())
+    }
+
+    /// Dawn card surface: a translucent glass panel with a hairline edge,
+    /// replacing the opaque white card of the Daylight base register.
+    func dawnCard(cornerRadius: CGFloat = Theme.cardRadius) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        return self
+            .background(shape.fill(Theme.paper2.opacity(0.55)))
+            .background(shape.fill(.ultraThinMaterial))
+            .overlay(shape.stroke(Theme.ink.opacity(0.06), lineWidth: 1))
     }
 }

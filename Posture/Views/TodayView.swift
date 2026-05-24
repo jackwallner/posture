@@ -96,7 +96,7 @@ struct TodayView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 32)
             }
-            .background(Theme.paper.ignoresSafeArea())
+            .dawnBackground()
             .navigationBarHidden(true)
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
@@ -159,15 +159,21 @@ struct TodayView: View {
             HStack(alignment: .center, spacing: 18) {
                 ZStack {
                     Circle()
-                        .fill(alignmentRingColor.opacity(0.18))
-                        .frame(width: 96, height: 96)
+                        .stroke(Theme.ringTrack, lineWidth: 8)
+                    Circle()
+                        .trim(from: 0, to: Double(alignmentScore ?? 0) / 100.0)
+                        .stroke(Theme.ringSweep, style: .init(lineWidth: 8, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .animation(.easeOut(duration: 0.6), value: alignmentScore)
                     Text(alignmentScore.map { "\($0)" } ?? "—")
-                        .font(.system(size: 42, weight: .regular, design: .rounded))
+                        .font(.system(size: 34, weight: .regular, design: .rounded))
                         .foregroundStyle(Theme.ink)
                 }
+                .frame(width: 96, height: 96)
                 VStack(alignment: .leading, spacing: 4) {
+                    // Dawn: the quality word is the ritual moment — serif italic.
                     Text(readoutLabel)
-                        .font(.system(.title3, design: .rounded).weight(.semibold))
+                        .font(Theme.displaySerif(20))
                         .foregroundStyle(alignmentRingColor)
                     Text(readoutSubtitle)
                         .font(.system(.footnote, design: .rounded))
@@ -179,10 +185,7 @@ struct TodayView: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                .fill(Theme.paper2)
-        )
+        .dawnCard()
     }
 
     private var alignmentRingColor: Color {
@@ -215,10 +218,7 @@ struct TodayView: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                .fill(Theme.paper2)
-        )
+        .dawnCard()
     }
 
     // MARK: - Monitoring pill
@@ -276,10 +276,7 @@ struct TodayView: View {
         TipLine(tip: tip)
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                    .fill(Theme.paper2)
-            )
+            .dawnCard()
     }
 
     // MARK: - Readout copy
