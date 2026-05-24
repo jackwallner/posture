@@ -72,7 +72,7 @@ struct PaywallView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
         .task {
             try? await Task.sleep(nanoseconds: 3_000_000_000)
             loadTimedOut = true
@@ -173,7 +173,7 @@ struct PaywallView: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 20)
         }
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
         .onAppear { AnalyticsService.paywallShown() }
     }
 
@@ -288,7 +288,7 @@ private struct YourJulyPostcard: View {
             }
         }
         .padding(16)
-        .background(Theme.paper2, in: .rect(cornerRadius: 14))
+        .dawnCard(cornerRadius: 14)
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
     }
 

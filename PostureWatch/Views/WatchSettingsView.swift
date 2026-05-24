@@ -47,5 +47,7 @@ struct WatchSettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .scrollContentBackground(.hidden)
+        .containerBackground(Theme.dawnWash, for: .navigation)
     }
 }

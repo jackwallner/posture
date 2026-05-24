@@ -136,7 +136,7 @@ struct SettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Theme.paper.ignoresSafeArea())
+            .dawnBackground()
             .navigationTitle("settings")
             .navigationBarTitleDisplayMode(.inline)
             .task { await refreshNotificationStatus() }
@@ -296,6 +296,6 @@ private struct RecalibrationOptionsView: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
     }
 }

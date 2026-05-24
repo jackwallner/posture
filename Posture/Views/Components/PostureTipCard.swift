@@ -19,7 +19,7 @@ struct PostureTipCard: View {
             Spacer(minLength: 0)
         }
         .padding(Theme.cardPadding)
-        .background(Theme.cardSurface, in: .rect(cornerRadius: Theme.cardRadius))
+        .dawnCard()
     }
 
     private func iconForCategory(_ category: TipCategory) -> String {

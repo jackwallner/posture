@@ -78,7 +78,7 @@ struct PassiveTimelineView: View {
             }
         }
         .padding(18)
-        .background(Theme.paper2, in: .rect(cornerRadius: 14))
+        .dawnCard(cornerRadius: 14)
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
     }
 

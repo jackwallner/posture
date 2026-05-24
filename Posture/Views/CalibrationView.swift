@@ -41,7 +41,7 @@ struct CalibrationView: View {
             case .done: doneStep
             }
         }
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
         .task {
             // First-time calibration trusts the onboarding answer. Quick
             // recalibrate inherits the prior calibration's source. Either

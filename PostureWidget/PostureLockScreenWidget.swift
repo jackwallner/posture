@@ -147,7 +147,7 @@ struct PostureWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PostureWidgetProvider()) { entry in
             PostureLockScreenWidgetView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(Theme.dawnWash, for: .widget)
         }
         .configurationDisplayName("Posture today")
         .description("Today's posture score, with your current streak.")

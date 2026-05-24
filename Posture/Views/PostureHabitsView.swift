@@ -14,7 +14,7 @@ struct PostureHabitsView: View {
                 }
                 .padding(.vertical)
             }
-            .background(Theme.background.ignoresSafeArea())
+            .dawnBackground()
             .navigationTitle("Posture Habits")
         }
     }

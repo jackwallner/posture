@@ -144,4 +144,12 @@ extension View {
             .background(shape.fill(.ultraThinMaterial))
             .overlay(shape.stroke(Theme.ink.opacity(0.06), lineWidth: 1))
     }
+
+    /// Dawn pill surface — the capsule-shaped sibling of `dawnCard`.
+    func dawnCapsule() -> some View {
+        self
+            .background(Capsule().fill(Theme.paper2.opacity(0.55)))
+            .background(Capsule().fill(.ultraThinMaterial))
+            .overlay(Capsule().stroke(Theme.ink.opacity(0.06), lineWidth: 1))
+    }
 }

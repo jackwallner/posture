@@ -99,7 +99,7 @@ struct AirpodsScanView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
     }
 
     private var scanHero: some View {
@@ -195,7 +195,7 @@ struct AirpodsScanView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
     }
 
     // MARK: - Lifecycle

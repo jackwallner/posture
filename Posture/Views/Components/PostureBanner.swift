@@ -44,7 +44,7 @@ struct PostureBanner: View {
             Spacer(minLength: 0)
         }
         .padding(16)
-        .background(Theme.paper2, in: .rect(cornerRadius: 14))
+        .dawnCard(cornerRadius: 14)
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
     }
 }

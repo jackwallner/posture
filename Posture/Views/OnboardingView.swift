@@ -14,7 +14,7 @@ struct OnboardingView: View {
             case .airpodsQuestion: airpodsStep
             }
         }
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
     }
 
     // MARK: - Welcome
@@ -87,10 +87,7 @@ struct OnboardingView: View {
             Spacer(minLength: 0)
         }
         .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                .fill(Theme.paper2)
-        )
+        .dawnCard()
     }
 
     // MARK: - AirPods question

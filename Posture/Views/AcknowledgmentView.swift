@@ -112,7 +112,7 @@ struct AcknowledgmentView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Theme.paper.ignoresSafeArea())
+        .dawnBackground()
     }
 
     // MARK: - Scanning

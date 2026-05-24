@@ -42,6 +42,7 @@ struct WatchTodayView: View {
                 .padding(.horizontal, 4)
             }
             .navigationTitle("Posture")
+            .containerBackground(Theme.dawnWash, for: .navigation)
         }
         .task {
             WatchSyncService.shared.activate()
@@ -107,24 +108,18 @@ struct WatchTodayView: View {
 private struct PostureRingCompact: View {
     let score: Int
     private var progress: Double { Double(score) / 100.0 }
-    private var color: Color {
-        switch score {
-        case 80...: return Theme.good
-        case 50..<80: return Theme.borderline
-        default: return Theme.bad
-        }
-    }
     var body: some View {
         ZStack {
             Circle()
                 .stroke(Theme.ringTrack, lineWidth: 8)
+            // Dawn: sand → lavender sweep, matching the phone ring.
             Circle()
                 .trim(from: 0, to: progress)
-                .stroke(color, style: .init(lineWidth: 8, lineCap: .round))
+                .stroke(Theme.ringSweep, style: .init(lineWidth: 8, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text("\(score)")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
-                .foregroundStyle(color)
+                .foregroundStyle(Theme.ink)
         }
         .frame(width: 80, height: 80)
     }

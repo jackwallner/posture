@@ -132,7 +132,7 @@ struct HistoryView: View {
                     .padding(.vertical, 16)
                 }
             }
-            .background(Theme.paper.ignoresSafeArea())
+            .dawnBackground()
             .navigationTitle("history")
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $showingAck) {
