@@ -109,20 +109,14 @@ struct PaywallView: View {
 
     private var content: some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 16) {
                 header
                 trustStrip
                 featureList
-                YourJulyPostcard()
-                #if HAS_REVENUECAT
-                if showTrialTimeline {
-                    TrialTimelineStrip(trialLabel: selectedPackage?.postureIntroOfferLabel ?? "3-day free trial")
-                }
-                #endif
                 planCards
             }
             .padding(.horizontal, 24)
-            .padding(.top, displayCloseButton ? 52 : 24)
+            .padding(.top, displayCloseButton ? 52 : 20)
             .padding(.bottom, stickyCTAReservedSpace)
         }
     }
@@ -180,7 +174,7 @@ struct PaywallView: View {
             benefitRow(
                 icon: "clock.arrow.circlepath",
                 title: "See your day, hour by hour",
-                subtitle: "The 24-hour rhythm shows exactly when you drift — after lunch, late afternoon, that 3pm meeting."
+                subtitle: "The 24-hour rhythm shows exactly when you drift, like after lunch or that 3pm meeting."
             )
             benefitRow(
                 icon: "airpods.gen3",
@@ -190,7 +184,7 @@ struct PaywallView: View {
             benefitRow(
                 icon: "calendar",
                 title: "Keep every month, not just a week",
-                subtitle: "Free shows your last 7 days. Posture+ keeps the whole story — so streaks actually mean something.",
+                subtitle: "Free shows your last 7 days. Posture+ keeps the whole story, so streaks actually mean something.",
                 isLast: true
             )
         }
@@ -219,7 +213,7 @@ struct PaywallView: View {
 
     // MARK: - Sticky CTA
 
-    private var stickyCTAReservedSpace: CGFloat { 200 }
+    private var stickyCTAReservedSpace: CGFloat { 170 }
 
     @ViewBuilder
     private var stickyCTA: some View {
@@ -308,11 +302,10 @@ struct PaywallView: View {
 
     private var offlinePlaceholder: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 16) {
                 header
                 trustStrip
                 featureList
-                YourJulyPostcard()
                 Text("Connect to load plans")
                     .font(.caption)
                     .foregroundStyle(Theme.ink3)
@@ -345,20 +338,13 @@ struct PaywallView: View {
             return "\(price). One-time purchase. No subscription."
         }
         if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
-            return "\(trial.capitalized), then \(price). Auto-renews. Cancel anytime in Settings — no charge if you cancel before day 3."
+            return "\(trial.capitalized), then \(price). Auto-renews until canceled."
         }
-        return "\(price). Auto-renews. Cancel anytime in Settings."
+        return "\(price). Auto-renews until canceled."
         #else
         return nil
         #endif
     }
-
-    #if HAS_REVENUECAT
-    private var showTrialTimeline: Bool {
-        guard let package = selectedPackage else { return false }
-        return subscriptions.isEligibleForIntroOffer(package) && package.posturePackageKind != .lifetime
-    }
-    #endif
 
     // MARK: - Actions
 
@@ -555,143 +541,4 @@ private struct PosturePlanCard: View {
     }
 }
 
-/// Three-step trial timeline — proven to reduce purchase anxiety:
-/// users see the "reminder before charge" date, so the trial reads as zero-risk.
-private struct TrialTimelineStrip: View {
-    let trialLabel: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("HOW THE FREE TRIAL WORKS")
-                .font(.caption.weight(.semibold))
-                .tracking(2)
-                .foregroundStyle(Theme.ink3)
-
-            HStack(alignment: .top, spacing: 0) {
-                step(
-                    color: Theme.sage,
-                    title: "Today",
-                    body: "Unlock everything. No charge."
-                )
-                connector
-                step(
-                    color: Theme.sand,
-                    title: "Day 2",
-                    body: "We send a heads-up before the trial ends."
-                )
-                connector
-                step(
-                    color: Theme.ink2,
-                    title: "Day 3",
-                    body: "Trial ends. Cancel anytime in Settings."
-                )
-            }
-        }
-        .padding(16)
-        .background(Theme.paper2, in: RoundedRectangle(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
-    }
-
-    private var connector: some View {
-        Rectangle()
-            .fill(Theme.paper3)
-            .frame(height: 1)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 8)
-    }
-
-    private func step(color: Color, title: String, body: String) -> some View {
-        VStack(alignment: .center, spacing: 6) {
-            Circle()
-                .fill(color)
-                .frame(width: 16, height: 16)
-                .overlay(Circle().stroke(Theme.paper2, lineWidth: 3))
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(Theme.ink)
-            Text(body)
-                .font(.caption2)
-                .foregroundStyle(Theme.ink2)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
 #endif
-
-/// A synthetic 30-day "preview" of a Pro month — deliberately not real
-/// data (avoids any before/after medical-claim reading). A 14-day
-/// contiguous stretch is outlined.
-private struct YourJulyPostcard: View {
-    private let bars: [PostureQuality] = {
-        var out: [PostureQuality] = []
-        for i in 0..<30 {
-            switch i {
-            case 3, 9, 21: out.append(.bad)
-            case 1, 7, 14, 24, 27: out.append(.borderline)
-            default: out.append(.good)
-            }
-        }
-        return out
-    }()
-
-    private let stretchRange = 10...23
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text("YOUR JULY · A PREVIEW")
-                    .font(.caption.weight(.semibold))
-                    .tracking(2)
-                    .foregroundStyle(Theme.ink3)
-                Spacer()
-                Text("84% aligned")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Theme.sage)
-            }
-
-            HStack(alignment: .bottom, spacing: 3) {
-                ForEach(0..<30, id: \.self) { i in
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Theme.qualityColor(bars[i]))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: barHeight(bars[i]))
-                }
-            }
-            .frame(height: 56)
-            .overlay(alignment: .leading) { stretchOutline }
-
-            HStack {
-                Text("JUL 1").font(.caption2).foregroundStyle(Theme.ink3)
-                Spacer()
-                Text("14 DAY STRETCH").font(.caption2.weight(.semibold)).foregroundStyle(Theme.ink2)
-                Spacer()
-                Text("JUL 30").font(.caption2).foregroundStyle(Theme.ink3)
-            }
-        }
-        .padding(16)
-        .dawnCard(cornerRadius: 14)
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.paper3, lineWidth: 1))
-    }
-
-    private var stretchOutline: some View {
-        GeometryReader { geo in
-            let barW = geo.size.width / 30
-            let x = barW * CGFloat(stretchRange.lowerBound)
-            let w = barW * CGFloat(stretchRange.count)
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(Theme.ink, lineWidth: 1.5)
-                .frame(width: w, height: geo.size.height + 6)
-                .offset(x: x - 3, y: -3)
-        }
-    }
-
-    private func barHeight(_ q: PostureQuality) -> CGFloat {
-        switch q {
-        case .good: return 56
-        case .borderline: return 38
-        case .bad: return 22
-        }
-    }
-}

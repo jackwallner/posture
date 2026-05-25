@@ -30,7 +30,7 @@ struct SettingsView: View {
                                 WatchSyncService.shared.pushAlwaysOn(isOn)
                                 if isOn { showingWatchSyncInfo = true }
                             }
-                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin — your phone keeps it in sync from there.")
+                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
@@ -46,7 +46,7 @@ struct SettingsView: View {
                                 }
                             }
                         ))
-                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot — that's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded.")
+                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
@@ -301,7 +301,7 @@ private struct RecalibrationOptionsView: View {
                 .font(.subheadline)
                 .foregroundStyle(Theme.ink2)
 
-            Button { onQuick() } label: { Text("refresh baseline — 5 seconds") }
+            Button { onQuick() } label: { Text("refresh baseline, 5 seconds") }
                 .buttonStyle(.plain)
                 .daylightCTA(.secondary)
             Button { onFull() } label: { Text("change how you track") }

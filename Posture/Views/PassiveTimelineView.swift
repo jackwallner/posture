@@ -39,7 +39,7 @@ struct PassiveTimelineView: View {
                 .foregroundStyle(Theme.sage)
 
             if samples.isEmpty {
-                Text("No slouches yet — steady so far.")
+                Text("No slouches yet. Steady so far.")
                     .font(Theme.displaySerif(22))
                     .foregroundStyle(Theme.ink)
             } else if let peak = peakLabel {

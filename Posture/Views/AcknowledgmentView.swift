@@ -83,7 +83,7 @@ struct AcknowledgmentView: View {
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
 
-            Text("A three-second scan. Or just tell us — we trust you.")
+            Text("A three-second scan. Or just tell us. We trust you.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
@@ -104,7 +104,7 @@ struct AcknowledgmentView: View {
                     recordedQuality = nil
                     withAnimation { phase = .done }
                 } label: {
-                    Text("just checking in — manual →")
+                    Text("just checking in, manual →")
                 }
                 .buttonStyle(.plain)
                 .daylightCTA(.ghost)

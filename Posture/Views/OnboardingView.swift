@@ -22,14 +22,14 @@ struct OnboardingView: View {
     private var welcomeStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                Text("hello.")
-                    .font(.system(size: 56, weight: .regular, design: .rounded))
+                Text("Welcome to Posture.")
+                    .font(.system(size: 44, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.ink)
                     .padding(.top, 40)
 
-                Text("Posture is a kind, hands-free habit. A few quiet check-ins each day — your phone or AirPods read alignment in seconds.")
+                Text("A kind, hands-free habit. A few quiet check-ins each day, and your phone reads your alignment in seconds.")
                     .font(.system(.body, design: .rounded))
-                    .foregroundStyle(Theme.ink2)
+                    .foregroundStyle(Theme.ink)
                     .lineSpacing(3)
 
                 VStack(spacing: 14) {
@@ -56,7 +56,7 @@ struct OnboardingView: View {
 
                 Spacer(minLength: 24)
 
-                Button { step = .airpodsQuestion } label: { Text("get started") }
+                Button { step = .airpodsQuestion } label: { Text("Get Started") }
                     .buttonStyle(.plain)
                     .daylightCTA(.primary)
                     .padding(.bottom, 28)
@@ -81,7 +81,7 @@ struct OnboardingView: View {
                     .foregroundStyle(Theme.ink)
                 Text(body)
                     .font(.system(.subheadline, design: .rounded))
-                    .foregroundStyle(Theme.ink2)
+                    .foregroundStyle(Theme.ink)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
@@ -95,19 +95,19 @@ struct OnboardingView: View {
     private var airpodsStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("01 of 01")
+                Text("One quick question")
                     .font(.system(.caption, design: .rounded).weight(.semibold))
                     .tracking(2)
-                    .foregroundStyle(Theme.ink3)
+                    .foregroundStyle(Theme.ink2)
                     .padding(.top, 40)
 
-                Text("do you use AirPods?")
-                    .font(.system(size: 38, weight: .regular, design: .rounded))
+                Text("Do you use AirPods?")
+                    .font(.system(size: 34, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.ink)
 
-                Text("If you have a compatible pair, Posture reads alignment from their head-motion sensor. No AirPods? We'll use the front camera instead — pick whichever fits your day.")
+                Text("Either way works. The front camera handles every check-in on its own. If you have a compatible pair, Posture can also read alignment from their head-motion sensor.")
                     .font(.system(.body, design: .rounded))
-                    .foregroundStyle(Theme.ink2)
+                    .foregroundStyle(Theme.ink)
                     .lineSpacing(3)
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -115,14 +115,14 @@ struct OnboardingView: View {
                         Image(systemName: "airpodspro")
                             .font(.system(size: 22))
                             .foregroundStyle(Theme.lavender)
-                        Text("works with")
+                        Text("WORKS WITH")
                             .font(.system(.caption, design: .rounded).weight(.semibold))
                             .tracking(1.5)
-                            .foregroundStyle(Theme.ink3)
+                            .foregroundStyle(Theme.ink2)
                     }
-                    Text("AirPods Pro (1st & 2nd gen) · AirPods 3rd gen · AirPods 4 with ANC · AirPods Max")
+                    Text("AirPods Pro (1st & 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, and AirPods Max.")
                         .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(Theme.ink2)
+                        .foregroundStyle(Theme.ink)
                         .lineSpacing(2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -139,14 +139,14 @@ struct OnboardingView: View {
                     Button {
                         settings.hasAirpods = true
                         settings.hasCompletedOnboarding = true
-                    } label: { Text("yes — calibrate with AirPods") }
+                    } label: { Text("Yes, I use AirPods") }
                         .buttonStyle(.plain)
                         .daylightCTA(.primary)
 
                     Button {
                         settings.hasAirpods = false
                         settings.hasCompletedOnboarding = true
-                    } label: { Text("no — use iPhone camera") }
+                    } label: { Text("No, use the camera") }
                         .buttonStyle(.plain)
                         .daylightCTA(.secondary)
                 }

@@ -29,23 +29,24 @@ struct CalibrationView: View {
     @State private var capturing: Bool = false
     @State private var countdownTask: Task<Void, Never>?
     @State private var captureError: String?
-    @State private var heroPulse: Bool = false
 
     enum Step { case captureBaseline, done }
 
     var body: some View {
         Group {
             switch step {
-            case .captureBaseline:
-                if hasAirpods == true { airpodsCaptureStep } else { captureStep }
+            case .captureBaseline: captureStep
             case .done: doneStep
             }
         }
         .dawnBackground()
         .task {
-            // First-time calibration trusts the onboarding answer. Quick
-            // recalibrate inherits the prior calibration's source. Either
-            // way the question step is dead code — we just skip to capture.
+            // Calibration always runs through the camera: face detection is a
+            // reliable gate, whereas CMHeadphoneMotionManager.isDeviceMotionAvailable
+            // reads false on cold launch even with supported AirPods connected,
+            // which used to leave the AirPods-only capture button permanently
+            // disabled. When the user has AirPods we also start the motion
+            // service so its samples ride along and seed the AirPods baseline.
             if mode == .quickRecalibrate {
                 let last = CalibrationService(context: context).current()
                 hasAirpods = (last?.airpodsPitch != nil)
@@ -53,11 +54,8 @@ struct CalibrationView: View {
                 hasAirpods = settings.hasAirpods ?? false
             }
             if step == .captureBaseline {
-                if hasAirpods == true {
-                    airpods.start()
-                } else {
-                    await face.start()
-                }
+                if hasAirpods == true { airpods.start() }
+                await face.start()
             }
         }
         .onDisappear {
@@ -67,127 +65,7 @@ struct CalibrationView: View {
         }
     }
 
-    // MARK: - AirPods-only capture
-
-    private var airpodsCaptureStep: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("calibration")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(1.5)
-                .foregroundStyle(Theme.ink3)
-                .padding(.top, 24)
-
-            Text("sit upright.")
-                .font(.system(size: 40, weight: .regular, design: .rounded))
-                .foregroundStyle(Theme.ink)
-                .padding(.top, 4)
-
-            Text("Pop your AirPods in, look straight ahead. Hold the shape for five seconds.")
-                .font(.system(.body, design: .rounded))
-                .foregroundStyle(Theme.ink2)
-                .lineSpacing(3)
-                .padding(.top, 12)
-
-            Spacer(minLength: 8)
-
-            calibrationHero
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-
-            Spacer(minLength: 8)
-
-            if let captureError {
-                Text(captureError)
-                    .font(.system(.footnote, design: .rounded))
-                    .foregroundStyle(Theme.clay)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.bottom, 10)
-            }
-
-            Button {
-                guard airpods.isConnected else { return }
-                runAirpodsCountdown()
-            } label: { Text(capturing ? "hold still…" : "calibrate") }
-                .buttonStyle(.plain)
-                .daylightCTA(airpods.isConnected && !capturing ? .primary : .secondary)
-                .disabled(capturing || !airpods.isConnected)
-                .opacity(airpods.isConnected ? 1.0 : 0.55)
-
-            if !airpods.isConnected && !capturing {
-                Button { switchToCamera() } label: { Text("use iPhone camera instead") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
-                    .padding(.top, 4)
-            }
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 28)
-    }
-
-    /// Escape hatch from the AirPods waiting state: drop to the camera path
-    /// without forcing an app restart, and remember the choice.
-    private func switchToCamera() {
-        countdownTask?.cancel()
-        airpods.stop()
-        captureError = nil
-        settings.hasAirpods = false
-        hasAirpods = false
-        Task { await face.start() }
-    }
-
-    /// Large central status circle. Three states: waiting (sand pulse),
-    /// linked (sage steady), capturing (sage with countdown numeral).
-    private var calibrationHero: some View {
-        VStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(heroTintWash)
-                    .frame(width: 200, height: 200)
-                    .scaleEffect(heroPulse ? 1.06 : 0.96)
-                    .opacity(heroPulse ? 0.55 : 1.0)
-                Circle()
-                    .fill(heroTintWash)
-                    .frame(width: 150, height: 150)
-                if capturing {
-                    Text("\(countdown)")
-                        .font(.system(size: 72, weight: .regular, design: .rounded))
-                        .foregroundStyle(Theme.ink)
-                        .contentTransition(.numericText(countsDown: true))
-                        .animation(.easeOut(duration: 0.2), value: countdown)
-                } else {
-                    Image(systemName: "airpodspro")
-                        .font(.system(size: 56, weight: .regular))
-                        .foregroundStyle(heroAccent)
-                }
-            }
-            .animation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true), value: heroPulse)
-            .onAppear { heroPulse = true }
-
-            HStack(spacing: 8) {
-                Circle().fill(heroAccent).frame(width: 7, height: 7)
-                Text(heroCaption)
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
-                    .foregroundStyle(heroAccent)
-            }
-        }
-    }
-
-    private var heroAccent: Color {
-        if !airpods.isConnected { return Theme.sand }
-        return Theme.sage
-    }
-
-    private var heroTintWash: Color {
-        if !airpods.isConnected { return Theme.sandTint }
-        return Theme.sageTint
-    }
-
-    private var heroCaption: String {
-        if capturing { return "reading…" }
-        return airpods.isConnected ? "AirPods linked" : "waiting for AirPods"
-    }
-
-    // MARK: - Camera capture (fallback)
+    // MARK: - Camera capture
 
     private var captureStep: some View {
         ZStack {
@@ -204,7 +82,7 @@ struct CalibrationView: View {
             .ignoresSafeArea()
 
             VStack {
-                Text("sit upright")
+                Text("Sit upright")
                     .font(Theme.displaySerif(28))
                     .foregroundStyle(.white)
                     .padding(.top, 16)
@@ -231,7 +109,7 @@ struct CalibrationView: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .padding(.bottom, 6)
                 } else if !face.faceDetected && !capturing {
-                    Text("align your face inside the guide to begin.")
+                    Text("Align your face inside the guide to begin.")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.7))
                         .padding(.bottom, 6)
@@ -241,7 +119,7 @@ struct CalibrationView: View {
                     guard face.faceDetected else { return }
                     runCountdown()
                 } label: {
-                    Text(capturing ? "hold still…" : "capture")
+                    Text(capturing ? "Hold still…" : "Capture")
                 }
                 .buttonStyle(.plain)
                 .daylightCTA(face.faceDetected && !capturing ? .primary : .secondary)
@@ -268,14 +146,14 @@ struct CalibrationView: View {
             }
             .frame(maxWidth: .infinity)
 
-            Text("all set.")
-                .font(.system(size: 40, weight: .regular, design: .rounded))
+            Text("All set.")
+                .font(.system(size: 40, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 28)
 
             Text("We've learned your aligned posture. From here on, every check-in is just three quiet seconds.")
                 .font(.system(.body, design: .rounded))
-                .foregroundStyle(Theme.ink2)
+                .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
                 .padding(.top, 10)
 
@@ -284,7 +162,7 @@ struct CalibrationView: View {
             Button {
                 if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
             } label: {
-                Text(mode == .quickRecalibrate ? "done" : "let's go")
+                Text(mode == .quickRecalibrate ? "Done" : "Let's go")
             }
             .buttonStyle(.plain)
             .daylightCTA(.primary)
@@ -294,51 +172,6 @@ struct CalibrationView: View {
     }
 
     // MARK: - Capture logic
-
-    private func runAirpodsCountdown() {
-        capturing = true
-        captureError = nil
-        countdown = 5
-        AnalyticsService.calibrateStarted(mode: mode == .quickRecalibrate ? "quick" : "full")
-        countdownTask?.cancel()
-        countdownTask = Task {
-            defer { capturing = false; countdown = 0 }
-            for i in stride(from: 5, through: 1, by: -1) {
-                guard !Task.isCancelled else { return }
-                guard airpods.isConnected else {
-                    captureError = "Lost the AirPods — put them back in and try again."
-                    return
-                }
-                countdown = i
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                guard !Task.isCancelled else { return }
-            }
-
-            var pitches: [Double] = []
-            var yaws: [Double] = []
-            var rolls: [Double] = []
-            for _ in 0..<10 {
-                if let p = airpods.lastPitch { pitches.append(p) }
-                if let y = airpods.lastYaw { yaws.append(y) }
-                if let r = airpods.lastRoll { rolls.append(r) }
-                try? await Task.sleep(nanoseconds: 100_000_000)
-            }
-
-            guard pitches.count >= 5 else {
-                captureError = "Couldn't get a steady read — try again."
-                return
-            }
-
-            capturedAirpodsBasePitch = pitches.reduce(0, +) / Double(pitches.count)
-            capturedAirpodsBaseYaw = yaws.isEmpty ? nil : yaws.reduce(0, +) / Double(yaws.count)
-            capturedAirpodsBaseRoll = rolls.isEmpty ? nil : rolls.reduce(0, +) / Double(rolls.count)
-            // basePitch (camera frame) stays 0 — we never opened the camera.
-            capturedBasePitch = 0
-            guard !Task.isCancelled else { return }
-            save()
-            step = .done
-        }
-    }
 
     private func runCountdown() {
         capturing = true
@@ -352,7 +185,7 @@ struct CalibrationView: View {
                 guard !Task.isCancelled else { return }
                 // P1-5: abort if the face leaves the frame mid-countdown.
                 guard face.faceDetected else {
-                    captureError = "Lost your face — let's try that again."
+                    captureError = "Lost your face. Let's try that again."
                     return
                 }
                 countdown = i
@@ -374,7 +207,7 @@ struct CalibrationView: View {
 
             // P1-5: require enough valid samples — never persist a 0 baseline.
             guard faceSamples.count >= 5 else {
-                captureError = "Couldn't get a steady read — try again."
+                captureError = "Couldn't get a steady read. Please try again."
                 return
             }
 
