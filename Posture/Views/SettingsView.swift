@@ -140,7 +140,9 @@ struct SettingsView: View {
             .navigationTitle("settings")
             .navigationBarTitleDisplayMode(.inline)
             .task { await refreshNotificationStatus() }
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(paywallImpressionId: "posture_settings_sheet")
+            }
             .alert("Open Posture on your Watch", isPresented: $showingWatchSyncInfo) {
                 Button("Got it", role: .cancel) { }
             } message: {

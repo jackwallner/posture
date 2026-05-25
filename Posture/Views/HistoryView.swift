@@ -138,7 +138,9 @@ struct HistoryView: View {
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(paywallImpressionId: "posture_history_sheet")
+            }
         }
     }
 
