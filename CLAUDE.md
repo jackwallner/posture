@@ -91,6 +91,10 @@ Phase 6: Widgets, App Store polish.
 
 ASC API key (shared across apps): `~/.baseball_credentials` (`ASC_API_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`).
 
+## App Store reviews
+
+Enjoyment funnel after a **good scan** or **streak milestone** (7/14/30/60/100 days); explicit Rate → `AppStoreReviewLinks.writeReviewURL` (`6768514450`); `requestReview()` only after Yes + "Maybe later" dismiss. Settings → **Rate or Send Feedback**. Playbook: `~/Desktop/app-store-5-star-review-strategy.md`.
+
 ## Gotchas
 
 - Free dev account can't build to device (App Group entitlement). Use simulator.

@@ -20,6 +20,7 @@ struct AcknowledgmentView: View {
     @State private var recordedQuality: PostureQuality?
     @State private var currentTip: PostureTip?
     @State private var forcedCamera = false
+    @State private var earnedReviewPositiveMoment = false
 
     enum Phase { case choice, scanning, done }
 
@@ -54,6 +55,11 @@ struct AcknowledgmentView: View {
                     withIdentifiers: ["posture.reminder.\(idx)"]
                 )
             }
+        }
+        .onDisappear {
+            guard earnedReviewPositiveMoment else { return }
+            ReviewPromptTracker.recordPositiveMoment()
+            NotificationCenter.default.post(name: .posturePositiveMomentForReview, object: nil)
         }
     }
 
@@ -282,7 +288,16 @@ struct AcknowledgmentView: View {
         context.insert(record)
         try? context.save()
 
-        StreakService(context: context).recordAcknowledgment(at: .now)
+        let streakService = StreakService(context: context)
+        let streakBefore = streakService.currentState().currentStreak
+        let state = streakService.recordAcknowledgment(at: .now)
+
+        if quality == .good {
+            earnedReviewPositiveMoment = true
+        } else if state.currentStreak > streakBefore,
+                  StreakService.streakMilestoneDays.contains(state.currentStreak) {
+            earnedReviewPositiveMoment = true
+        }
 
         AnalyticsService.acknowledgmentRecorded(method: method, quality: quality)
     }

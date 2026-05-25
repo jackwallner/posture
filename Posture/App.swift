@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftData
 import SwiftUI
 import UserNotifications
@@ -16,6 +17,7 @@ struct PostureApp: App {
         SubscriptionService.shared.configure()
         NotificationService.registerCategories()
         WatchSyncService.shared.activate()
+        ReviewPromptTracker.recordAppLaunch()
     }
 
     var body: some Scene {
@@ -186,15 +188,90 @@ struct RootView: View {
 }
 
 struct MainTabView: View {
+    @Environment(GoalSettings.self) private var settings
+    @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
+    @State private var selectedTab = 0
+    @State private var showReviewPrompt = false
+    @State private var reviewPromptInitialStep: ReviewPromptSheet.Step = .enjoyment
+    @State private var reviewPromptShownThisSession = false
+    @State private var pendingNativeReviewAfterDismiss = false
+    @Environment(\.requestReview) private var requestReview
+
+    private var hasCompletedSetup: Bool {
+        settings.hasCompletedOnboarding && settings.hasCalibrated
+    }
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             TodayView()
                 .tabItem { Label("Today", systemImage: "leaf.fill") }
+                .tag(0)
             HistoryView()
                 .tabItem { Label("History", systemImage: "chart.bar.fill") }
+                .tag(1)
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+                .tag(2)
         }
         .tint(Theme.sage)
+        .onReceive(NotificationCenter.default.publisher(for: .posturePositiveMomentForReview)) { _ in
+            scheduleReviewPromptAfterPositiveMoment()
+        }
+        .onChange(of: selectedTab) { _, tab in
+            if tab == 0 {
+                scheduleReviewPromptAfterPositiveMoment()
+            }
+        }
+        .onChange(of: reviewPromptCoordinator.pendingPresentation) { _, presentation in
+            guard let presentation else { return }
+            defer { reviewPromptCoordinator.clear() }
+            switch presentation {
+            case .enjoymentPrompt:
+                presentReviewPrompt(step: .enjoyment)
+            case .feedbackOnly:
+                presentReviewPrompt(step: .feedback)
+            }
+        }
+        .sheet(isPresented: $showReviewPrompt, onDismiss: {
+            if pendingNativeReviewAfterDismiss {
+                pendingNativeReviewAfterDismiss = false
+                requestReview()
+            }
+        }) {
+            ReviewPromptSheet(initialStep: reviewPromptInitialStep, onFinish: handleReviewPromptFinish)
+        }
+    }
+
+    private func scheduleReviewPromptAfterPositiveMoment() {
+        guard ReviewPromptTracker.shouldShowAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
+              !reviewPromptShownThisSession,
+              selectedTab == 0,
+              !showReviewPrompt
+        else { return }
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            guard selectedTab == 0,
+                  !showReviewPrompt,
+                  ReviewPromptTracker.shouldShowAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup)
+            else { return }
+            ReviewPromptTracker.consumePendingPositiveMoment()
+            reviewPromptInitialStep = .enjoyment
+            reviewPromptShownThisSession = true
+            showReviewPrompt = true
+        }
+    }
+
+    private func handleReviewPromptFinish(_ outcome: ReviewPromptDismissOutcome) {
+        showReviewPrompt = false
+        if outcome == .enjoyedMaybeLater {
+            pendingNativeReviewAfterDismiss = true
+        }
+    }
+
+    private func presentReviewPrompt(step: ReviewPromptSheet.Step) {
+        reviewPromptInitialStep = step
+        reviewPromptShownThisSession = true
+        showReviewPrompt = true
     }
 }

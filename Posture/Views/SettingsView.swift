@@ -129,6 +129,21 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.sage)
                 }
 
+                // MARK: - Help
+
+                Section("help") {
+                    Button {
+                        ReviewPromptCoordinator.shared.requestEnjoymentPrompt()
+                    } label: {
+                        Label("Rate or Send Feedback", systemImage: "star.bubble")
+                    }
+                    .foregroundStyle(Theme.ink)
+
+                    Link(destination: URL(string: "https://jackwallner.github.io/posture/support.html")!) {
+                        Label("Support", systemImage: "questionmark.circle")
+                    }
+                }
+
                 // MARK: - About
 
                 Section("about") {

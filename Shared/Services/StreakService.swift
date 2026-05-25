@@ -81,7 +81,8 @@ final class StreakService {
     }
 
     /// Bonus freeze at streak milestones: 7, 14, 30, 60, 100 days.
-    private nonisolated static let milestoneDays: Set<Int> = [7, 14, 30, 60, 100]
+    nonisolated static let streakMilestoneDays: Set<Int> = [7, 14, 30, 60, 100]
+    private nonisolated static let milestoneDays = streakMilestoneDays
     nonisolated static func awardMilestoneFreezes(_ state: StreakState, at date: Date) {
         guard milestoneDays.contains(state.currentStreak) else { return }
         state.freezesAvailable += 1
