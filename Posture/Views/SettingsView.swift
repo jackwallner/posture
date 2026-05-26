@@ -142,6 +142,10 @@ struct SettingsView: View {
                     Link(destination: URL(string: "https://jackwallner.github.io/posture/support.html")!) {
                         Label("Support", systemImage: "questionmark.circle")
                     }
+
+                    Link(destination: PaywallLinks.privacyPolicy) {
+                        Label("Privacy Policy", systemImage: "hand.raised")
+                    }
                 }
 
                 // MARK: - About

@@ -18,7 +18,7 @@
 </head>
 <body>
     <h1>Posture Privacy Policy</h1>
-    <p class="date">Last updated: May 12, 2026</p>
+    <p class="date">Last updated: May 25, 2026</p>
 
     <h2>Overview</h2>
     <p>Posture is an AI posture coach for iPhone, AirPods, and Apple Watch. The core experience is free. An optional Posture+ subscription unlocks additional features. Your privacy is fundamental to how this app is built.</p>
@@ -29,7 +29,8 @@
         <li>No camera frames leave your device</li>
         <li>No health or motion data is sent to any server</li>
         <li>No analytics or tracking of any kind</li>
-        <li>No third-party SDKs or frameworks (except Apple's StoreKit for purchases)</li>
+        <li>No third-party analytics or advertising SDKs</li>
+        <li>RevenueCat is used only to validate Posture+ subscription status via Apple's StoreKit (anonymous purchase receipts; no posture, camera, or motion data)</li>
         <li>No advertising</li>
         <li>No account creation required</li>
     </ul>
@@ -42,18 +43,18 @@
     <p>Following a free trial or paid subscription period, if you cancel, your access to Posture+ features ends at the close of the current billing period. No data is lost &mdash; your posture data and preferences remain on your device, and the free tier continues to work as before.</p>
 
     <h2>Camera Data</h2>
-    <p>Posture requests access to your iPhone's front camera to measure head angle and forward lean during posture sessions. Camera frames are processed entirely on-device using Apple's Vision framework and are <strong>never stored, saved to disk, or transmitted anywhere</strong>. Each frame is analyzed in real time and immediately discarded.</p>
-    <p>You control when the camera is active by starting and stopping sessions. Posture only accesses the camera during an active session.</p>
+    <p>Posture requests access to your iPhone's front camera to measure head angle during quick posture checks (about 3 seconds) that you start by tapping a reminder. Camera frames are processed entirely on-device using Apple's Vision framework and are <strong>never stored, saved to disk, or transmitted anywhere</strong>. Each frame is analyzed in real time and immediately discarded.</p>
+    <p>Posture only accesses the camera during an active check-in you initiate. It does not run the camera in the background.</p>
 
     <h2>Motion Data</h2>
     <p>Posture+ subscribers can enable AirPods head-motion monitoring via CMHeadphoneMotionManager. This data is processed entirely on-device to detect head angle changes and is <strong>never stored or transmitted</strong>.</p>
 
-    <h2>HealthKit Data</h2>
-    <p>Posture+ subscribers can enable Apple Watch background monitoring via HKWorkoutSession. Posture requests <strong>read-only</strong> access to HealthKit to start a brief workout session for background wrist-motion detection. Posture <strong>does not write any data to Apple Health</strong>.</p>
-    <p>You can revoke Posture's HealthKit access at any time by going to <strong>Settings &gt; Health &gt; Data Access &amp; Devices &gt; Posture</strong>.</p>
+    <h2>HealthKit Data (Apple Watch)</h2>
+    <p>Posture+ subscribers can enable Apple Watch background monitoring via HKWorkoutSession on the watch app. The watch app requests HealthKit access for background wrist-motion detection. Posture <strong>does not write any data to Apple Health</strong>. The iPhone app does not use HealthKit.</p>
+    <p>You can revoke HealthKit access on your watch by going to <strong>Settings &gt; Health &gt; Data Access &amp; Devices &gt; Posture</strong> on the paired iPhone.</p>
 
     <h2>Local Storage</h2>
-    <p>Posture stores your posture sessions, calibration data, streak state, and preferences locally on your device using SwiftData. This data is shared with the Apple Watch app via App Group. This data <strong>never leaves your device</strong>.</p>
+    <p>Posture stores your check-in history, calibration data, streak state, and preferences locally on your device using SwiftData. This data is shared with the Apple Watch app and widgets via App Group. This data <strong>never leaves your device</strong>.</p>
     <p>Your preferences (goals, calibration baseline, notification settings) are stored locally in UserDefaults on your device.</p>
 
     <h2>Data Retention &amp; Deletion</h2>

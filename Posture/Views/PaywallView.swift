@@ -140,8 +140,10 @@ struct PaywallView: View {
 
     private var headlineText: String {
         #if HAS_REVENUECAT
-        if let pkg = selectedPackage, subscriptions.isEligibleForIntroOffer(pkg) {
-            return "Try Posture+\nfree for 3 days."
+        if let pkg = selectedPackage,
+           subscriptions.isEligibleForIntroOffer(pkg),
+           let trial = pkg.postureIntroOfferLabel {
+            return "Try Posture+\n\(trial)."
         }
         #endif
         return "Build the posture\nyou keep."
@@ -254,19 +256,20 @@ struct PaywallView: View {
 
             HStack(spacing: 14) {
                 Button(action: startRestore) {
-                    Text(isRestoring ? "restoring…" : "Restore")
+                    Text(isRestoring ? "Restoring…" : "Restore Purchases")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(Theme.ink2)
                 }
                 .buttonStyle(.plain)
                 .disabled(isRestoring || isPurchasing)
 
-                Link("Terms", destination: PaywallLinks.standardEULA)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(Theme.ink3)
-                Link("Privacy", destination: PaywallLinks.privacyPolicy)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(Theme.ink3)
+                HStack(spacing: 4) {
+                    Link("Terms of Use", destination: PaywallLinks.standardEULA)
+                    Text("·")
+                    Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
+                }
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(Theme.ink3)
             }
         }
         .padding(.horizontal, 24)
@@ -323,7 +326,7 @@ struct PaywallView: View {
         #if HAS_REVENUECAT
         guard let package = selectedPackage else { return "Continue" }
         if package.posturePackageKind == .lifetime { return "Unlock Lifetime" }
-        if subscriptions.isEligibleForIntroOffer(package) { return "Start my 3 days free" }
+        if subscriptions.isEligibleForIntroOffer(package) { return "Start Free Trial" }
         return "Start Posture+"
         #else
         return "Continue"
@@ -335,12 +338,13 @@ struct PaywallView: View {
         guard let package = selectedPackage else { return nil }
         let price = package.posturePriceLabel
         if package.posturePackageKind == .lifetime {
-            return "\(price). One-time purchase. No subscription."
+            return "\(price). One-time purchase. Lifetime access, no subscription."
         }
+        let renew = "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings."
         if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
-            return "\(trial.capitalized), then \(price). Auto-renews until canceled."
+            return "\(trial.capitalized), then \(price). \(renew)"
         }
-        return "\(price). Auto-renews until canceled."
+        return "\(price). \(renew)"
         #else
         return nil
         #endif
