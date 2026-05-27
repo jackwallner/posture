@@ -1,25 +1,14 @@
 import SwiftUI
 
+/// Single-step welcome: this is an AirPods-based posture app. The previous
+/// "do you use AirPods?" branch was removed because the camera path no
+/// longer ships — tapping Get Started flips the install state and the
+/// next gate (AirPods calibration) handles the "do you actually have
+/// compatible AirPods" question with its own waiting / unsupported UI.
 struct OnboardingView: View {
     @Environment(GoalSettings.self) private var settings
 
-    @State private var step: Step = .welcome
-
-    enum Step { case welcome, airpodsQuestion }
-
     var body: some View {
-        Group {
-            switch step {
-            case .welcome: welcomeStep
-            case .airpodsQuestion: airpodsStep
-            }
-        }
-        .dawnBackground()
-    }
-
-    // MARK: - Welcome
-
-    private var welcomeStep: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 Text("Welcome to Posture.")
@@ -27,7 +16,7 @@ struct OnboardingView: View {
                     .foregroundStyle(Theme.ink)
                     .padding(.top, 40)
 
-                Text("A kind, hands-free habit. A few quiet check-ins each day, and your phone reads your alignment in seconds.")
+                Text("A kind, hands-free habit for AirPods. Your earbuds read your alignment without a glance at the phone.")
                     .font(.system(.body, design: .rounded))
                     .foregroundStyle(Theme.ink)
                     .lineSpacing(3)
@@ -35,20 +24,20 @@ struct OnboardingView: View {
                 VStack(spacing: 14) {
                     pillarCard(
                         index: "1",
-                        title: "Calibrate once",
-                        body: "We learn your aligned posture in five seconds.",
-                        accent: Theme.sage
-                    )
-                    pillarCard(
-                        index: "2",
-                        title: "A few nudges a day",
-                        body: "Pick a cadence that suits your day.",
+                        title: "Pop in your AirPods",
+                        body: "AirPods Pro, AirPods 3, AirPods 4 with ANC, or AirPods Max.",
                         accent: Theme.lavender
                     )
                     pillarCard(
+                        index: "2",
+                        title: "Calibrate once",
+                        body: "Sit upright, hold still. We learn your aligned posture in five seconds.",
+                        accent: Theme.sage
+                    )
+                    pillarCard(
                         index: "3",
-                        title: "Three-second check-ins",
-                        body: "Tap a reminder, scan, and we'll note where you are.",
+                        title: "Quiet nudges all day",
+                        body: "We notice when you drift, gently — no screens, no scolding.",
                         accent: Theme.sand
                     )
                 }
@@ -56,13 +45,17 @@ struct OnboardingView: View {
 
                 Spacer(minLength: 24)
 
-                Button { step = .airpodsQuestion } label: { Text("Get Started") }
+                Button {
+                    settings.hasAirpods = true
+                    settings.hasCompletedOnboarding = true
+                } label: { Text("Get Started") }
                     .buttonStyle(.plain)
                     .daylightCTA(.primary)
                     .padding(.bottom, 28)
             }
             .padding(.horizontal, 24)
         }
+        .dawnBackground()
     }
 
     private func pillarCard(index: String, title: String, body: String, accent: Color) -> some View {
@@ -88,71 +81,5 @@ struct OnboardingView: View {
         }
         .padding(18)
         .dawnCard()
-    }
-
-    // MARK: - AirPods question
-
-    private var airpodsStep: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                Text("One quick question")
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .tracking(2)
-                    .foregroundStyle(Theme.ink2)
-                    .padding(.top, 40)
-
-                Text("Do you use AirPods?")
-                    .font(.system(size: 34, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Theme.ink)
-
-                Text("Either way works. The front camera handles every check-in on its own. If you have a compatible pair, Posture can also read alignment from their head-motion sensor.")
-                    .font(.system(.body, design: .rounded))
-                    .foregroundStyle(Theme.ink)
-                    .lineSpacing(3)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "airpodspro")
-                            .font(.system(size: 22))
-                            .foregroundStyle(Theme.lavender)
-                        Text("WORKS WITH")
-                            .font(.system(.caption, design: .rounded).weight(.semibold))
-                            .tracking(1.5)
-                            .foregroundStyle(Theme.ink2)
-                    }
-                    Text("AirPods Pro (1st & 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, and AirPods Max.")
-                        .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(Theme.ink)
-                        .lineSpacing(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(18)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
-                        .fill(Theme.lavenderTint)
-                )
-
-                Spacer(minLength: 16)
-
-                VStack(spacing: 10) {
-                    Button {
-                        settings.hasAirpods = true
-                        settings.hasCompletedOnboarding = true
-                    } label: { Text("Yes, I use AirPods") }
-                        .buttonStyle(.plain)
-                        .daylightCTA(.primary)
-
-                    Button {
-                        settings.hasAirpods = false
-                        settings.hasCompletedOnboarding = true
-                    } label: { Text("No, use the camera") }
-                        .buttonStyle(.plain)
-                        .daylightCTA(.secondary)
-                }
-                .padding(.bottom, 28)
-            }
-            .padding(.horizontal, 24)
-        }
     }
 }

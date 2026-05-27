@@ -19,26 +19,9 @@ struct AcknowledgmentView: View {
     @State private var phase: Phase = .choice
     @State private var recordedQuality: PostureQuality?
     @State private var currentTip: PostureTip?
-    @State private var forcedCamera = false
     @State private var earnedReviewPositiveMoment = false
 
     enum Phase { case choice, scanning, done }
-
-    /// True when the user calibrated with AirPods — prefer the motion-based
-    /// scan unless the user explicitly opted into the camera this time.
-    private var preferAirpods: Bool {
-        guard !forcedCamera else { return false }
-        let cal = CalibrationService(context: context).current()
-        return cal?.airpodsPitch != nil
-    }
-
-    /// A camera scan is meaningful only when the saved calibration captured
-    /// a real camera baseline. AirPods-only calibrations leave basePitch
-    /// at 0, which would produce garbage deviation in QuickScanView.
-    private var hasCameraBaseline: Bool {
-        let cal = CalibrationService(context: context).current()
-        return (cal?.basePitch ?? 0) != 0
-    }
 
     var body: some View {
         Group {
@@ -123,43 +106,23 @@ struct AcknowledgmentView: View {
 
     // MARK: - Scanning
 
-    @ViewBuilder
     private var scanningView: some View {
-        if preferAirpods {
-            AirpodsScanView(
-                scheduledAt: scheduledAt,
-                cameraScanAvailable: hasCameraBaseline,
-                onComplete: { quality in
-                    recordedQuality = quality
-                    recordAcknowledgment(method: .airpods, quality: quality)
-                    withAnimation { phase = .done }
-                },
-                onUseCamera: {
-                    forcedCamera = true
-                },
-                onFallback: {
-                    recordedQuality = nil
-                    recordAcknowledgment(method: .manual, quality: nil)
-                    withAnimation { phase = .done }
-                },
-                onClose: { dismiss() }
-            )
-        } else {
-            QuickScanView(
-                scheduledAt: scheduledAt,
-                onComplete: { quality in
-                    recordedQuality = quality
-                    recordAcknowledgment(method: .camera, quality: quality)
-                    withAnimation { phase = .done }
-                },
-                onFallback: {
-                    recordedQuality = nil
-                    recordAcknowledgment(method: .manual, quality: nil)
-                    withAnimation { phase = .done }
-                },
-                onClose: { dismiss() }
-            )
-        }
+        AirpodsScanView(
+            scheduledAt: scheduledAt,
+            cameraScanAvailable: false,
+            onComplete: { quality in
+                recordedQuality = quality
+                recordAcknowledgment(method: .airpods, quality: quality)
+                withAnimation { phase = .done }
+            },
+            onUseCamera: { /* no-op: camera path removed */ },
+            onFallback: {
+                recordedQuality = nil
+                recordAcknowledgment(method: .manual, quality: nil)
+                withAnimation { phase = .done }
+            },
+            onClose: { dismiss() }
+        )
     }
 
     // MARK: - Done

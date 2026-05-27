@@ -9,7 +9,6 @@ struct SettingsView: View {
 
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
-    @State private var showingRecalibrateSheet = false
     @State private var showingQuickRecalibrate = false
     @State private var notificationsDenied = false
     @State private var showingWatchSyncInfo = false
@@ -125,8 +124,11 @@ struct SettingsView: View {
                 // MARK: - Calibration
 
                 Section("calibration") {
-                    Button("Recalibrate") { showingRecalibrateSheet = true }
-                        .foregroundStyle(Theme.sage)
+                    Button("Recalibrate") {
+                        CalibrationService(context: context).clear()
+                        showingQuickRecalibrate = true
+                    }
+                    .foregroundStyle(Theme.sage)
                 }
 
                 // MARK: - Help
@@ -175,25 +177,6 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingQuickRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
-            }
-            .sheet(isPresented: $showingRecalibrateSheet) {
-                RecalibrationOptionsView(
-                    onQuick: {
-                        CalibrationService(context: context).clear()
-                        showingRecalibrateSheet = false
-                        showingQuickRecalibrate = true
-                    },
-                    onFull: {
-                        CalibrationService(context: context).clear()
-                        // Re-ask the AirPods/camera question, then recalibrate.
-                        settings.hasAirpods = nil
-                        settings.hasCompletedOnboarding = false
-                        settings.hasCalibrated = false
-                        showingRecalibrateSheet = false
-                    },
-                    onCancel: { showingRecalibrateSheet = false }
-                )
-                .presentationDetents([.height(280)])
             }
         }
     }
@@ -289,34 +272,3 @@ private struct AirpodsStatusChip: View {
     }
 }
 
-// MARK: - Recalibration options sheet
-
-private struct RecalibrationOptionsView: View {
-    let onQuick: () -> Void
-    let onFull: () -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recalibrate")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(Theme.ink)
-            Text("Refresh keeps your current setup and re-reads your aligned posture. Change tracking switches between AirPods and camera.")
-                .font(.subheadline)
-                .foregroundStyle(Theme.ink2)
-
-            Button { onQuick() } label: { Text("refresh baseline, 5 seconds") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
-            Button { onFull() } label: { Text("change how you track") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
-            Button { onCancel() } label: { Text("cancel") }
-                .buttonStyle(.plain)
-                .daylightCTA(.ghost)
-        }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .dawnBackground()
-    }
-}
