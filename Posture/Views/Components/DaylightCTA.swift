@@ -34,6 +34,7 @@ struct DaylightCTA: ViewModifier {
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
+                .contentShape(Rectangle())
         }
     }
 
@@ -43,6 +44,7 @@ struct DaylightCTA: ViewModifier {
             .foregroundStyle(fg)
             .frame(maxWidth: .infinity)
             .frame(height: 56)
+            .contentShape(Rectangle())
     }
 }
 
