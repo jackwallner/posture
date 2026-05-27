@@ -1,5 +1,7 @@
+import AVFoundation
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct CalibrationView: View {
     enum Mode {
@@ -16,6 +18,7 @@ struct CalibrationView: View {
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var step: Step = .captureBaseline
     @State private var hasAirpods: Bool?
@@ -29,13 +32,19 @@ struct CalibrationView: View {
     @State private var capturing: Bool = false
     @State private var countdownTask: Task<Void, Never>?
     @State private var captureError: String?
+    @State private var cameraStatus: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
 
     enum Step { case captureBaseline, done }
 
     var body: some View {
         Group {
             switch step {
-            case .captureBaseline: captureStep
+            case .captureBaseline:
+                switch cameraStatus {
+                case .authorized: captureStep
+                case .denied, .restricted: permissionDeniedStep
+                default: requestingPermissionStep
+                }
             case .done: doneStep
             }
         }
@@ -53,9 +62,16 @@ struct CalibrationView: View {
             } else if hasAirpods == nil {
                 hasAirpods = settings.hasAirpods ?? false
             }
-            if step == .captureBaseline {
-                if hasAirpods == true { airpods.start() }
-                await face.start()
+            await ensureCameraAndStart()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // If the user opened Settings to flip the camera switch, pick up
+            // the new permission state as soon as they come back.
+            guard phase == .active, step == .captureBaseline else { return }
+            let latest = AVCaptureDevice.authorizationStatus(for: .video)
+            if latest != cameraStatus {
+                cameraStatus = latest
+                Task { await ensureCameraAndStart() }
             }
         }
         .onDisappear {
@@ -63,6 +79,31 @@ struct CalibrationView: View {
             face.stop()
             airpods.stop()
         }
+    }
+
+    /// Drives the camera permission state machine and starts the capture
+    /// session once we're allowed. Idempotent — safe to call on every
+    /// foreground transition.
+    private func ensureCameraAndStart() async {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .notDetermined:
+            let granted = await AVCaptureDevice.requestAccess(for: .video)
+            cameraStatus = granted ? .authorized : .denied
+        case .authorized:
+            cameraStatus = .authorized
+        case .denied:
+            cameraStatus = .denied
+            return
+        case .restricted:
+            cameraStatus = .restricted
+            return
+        @unknown default:
+            cameraStatus = .denied
+            return
+        }
+        guard cameraStatus == .authorized, step == .captureBaseline else { return }
+        if hasAirpods == true { airpods.start() }
+        await face.start()
     }
 
     // MARK: - Camera capture
@@ -128,6 +169,65 @@ struct CalibrationView: View {
                 .padding(.bottom, 28)
             }
         }
+    }
+
+    // MARK: - Permission states
+
+    private var requestingPermissionStep: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            ProgressView().tint(Theme.sage)
+            Text("Asking for camera permission…")
+                .font(.system(.subheadline, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 24)
+    }
+
+    private var permissionDeniedStep: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Spacer()
+            ZStack {
+                Circle()
+                    .fill(Theme.sandTint)
+                    .frame(width: 96, height: 96)
+                Image(systemName: "camera.fill")
+                    .font(.system(size: 36, weight: .regular))
+                    .foregroundStyle(Theme.sand)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text("Camera access is off.")
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 18)
+
+            Text("Posture needs the front camera to set your alignment baseline. Frames never leave your device.")
+                .font(.system(.body, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            Spacer()
+
+            Button {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            } label: { Text("Open Settings") }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
+
+            if mode == .quickRecalibrate {
+                Button { dismiss() } label: { Text("Cancel") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Done
