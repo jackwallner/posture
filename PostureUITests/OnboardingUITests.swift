@@ -7,57 +7,30 @@ final class OnboardingUITests: XCTestCase {
 
     /// Regression: RootView read GoalSettings through the singleton with
     /// no SwiftUI observation, so flipping hasCompletedOnboarding never
-    /// re-rendered — onboarding hung on the AirPods question. This drives
-    /// the full welcome → AirPods → calibration handoff.
-    func testOnboardingAdvancesThroughAirPodsToCalibration() {
+    /// re-rendered — onboarding hung on the welcome screen. This drives
+    /// the welcome → AirPods-calibration handoff.
+    ///
+    /// Post-pivot the flow is a single welcome screen ("Get Started")
+    /// straight into AirPods calibration. On the simulator there are no
+    /// head-tracking AirPods, so calibration parks on its "Pop in your
+    /// AirPods." waiting state — that's the deterministic outcome we assert.
+    func testOnboardingAdvancesToAirpodsCalibration() {
         let app = XCUIApplication()
         app.launchArguments += ["UITEST_FRESH"]
         app.launch()
 
-        let begin = app.buttons["get started"]
+        let begin = app.buttons["Get Started"]
         XCTAssertTrue(begin.waitForExistence(timeout: 10), "welcome screen never appeared")
         begin.tap()
 
-        let noAirpods = app.buttons["no — use iPhone camera"]
-        XCTAssertTrue(noAirpods.waitForExistence(timeout: 5), "AirPods question never appeared")
-        noAirpods.tap()
-
-        // The bug was the view freezing here. Calibration (camera path,
-        // since we answered "no AirPods") must take over.
-        let calibration = app.staticTexts["align your face inside the guide to begin."]
+        // The bug was the view freezing on welcome. Calibration must take
+        // over — on simulator it lands on the AirPods waiting prompt.
+        let waiting = app.staticTexts["Pop in your AirPods."]
         XCTAssertTrue(
-            calibration.waitForExistence(timeout: 6),
+            waiting.waitForExistence(timeout: 6),
             "stuck on onboarding — hasCompletedOnboarding flip did not re-render RootView"
         )
-        XCTAssertFalse(noAirpods.exists, "AirPods question still on screen after answering")
-    }
-
-    /// Reproduction: tapping "yes — link them" was reported to crash. Drives the
-    /// AirPods path of the same handoff (welcome → AirPods → calibration). On
-    /// simulator, head-motion isn't available, so we expect the auto-fallback
-    /// to the camera capture step rather than the AirPods capture screen.
-    func testOnboardingYesAirpodsReachesCalibration() {
-        let app = XCUIApplication()
-        app.launchArguments += ["UITEST_FRESH"]
-        app.launch()
-
-        let begin = app.buttons["get started"]
-        XCTAssertTrue(begin.waitForExistence(timeout: 10), "welcome screen never appeared")
-        begin.tap()
-
-        let yesAirpods = app.buttons["yes — calibrate with AirPods"]
-        XCTAssertTrue(yesAirpods.waitForExistence(timeout: 5), "AirPods question never appeared")
-        yesAirpods.tap()
-
-        // Either AirPods capture ("sit upright.") on a real device with
-        // head-tracking AirPods, OR camera fallback on simulator / unsupported
-        // AirPods. Both prove we didn't crash.
-        let airpodsStep = app.staticTexts["sit upright."]
-        let cameraStep = app.staticTexts["align your face inside the guide to begin."]
-        let predicate = NSPredicate { _, _ in airpodsStep.exists || cameraStep.exists }
-        let reached = expectation(for: predicate, evaluatedWith: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [reached], timeout: 6), .completed,
-                       "did not reach calibration after answering yes — link them")
-        XCTAssertTrue(app.state == .runningForeground, "app crashed during AirPods onboarding")
+        XCTAssertFalse(begin.exists, "welcome screen still on screen after Get Started")
+        XCTAssertTrue(app.state == .runningForeground, "app crashed during onboarding handoff")
     }
 }

@@ -117,9 +117,14 @@ private struct AirpodsRootView: View {
 }
 
 private struct AckCover: Identifiable {
-    let id = UUID()
     let scheduledAt: Date
     let index: Int
+    // Stable identity derived from the reminder it represents. A random
+    // UUID here would change on every parent re-render, and
+    // `.fullScreenCover(item:)` keys presentation off `id` — a churning id
+    // tears down and rebuilds the live AcknowledgmentView mid-check-in,
+    // snapping it back from .scanning/.done to .choice.
+    var id: String { "\(scheduledAt.timeIntervalSince1970)-\(index)" }
 }
 
 // MARK: - Notification Delegate

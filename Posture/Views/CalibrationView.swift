@@ -23,7 +23,7 @@ struct CalibrationView: View {
 
     @State private var airpods = HeadphoneMotionService()
     @State private var phase: Phase = .waiting
-    @State private var countdown: Int = 0
+    @State private var countdown: Int = 5
     @State private var capturedPitch: Double?
     @State private var capturedYaw: Double?
     @State private var capturedRoll: Double?
