@@ -1,22 +1,16 @@
 import SwiftData
 import SwiftUI
 
-/// A 3-second AirPods posture scan. No camera. Reads head pitch from
+/// A 3-second AirPods posture scan. Reads head pitch from
 /// `CMHeadphoneMotionManager` against the user's AirPods baseline. If
-/// the AirPods aren't currently in-ear we show a waiting state with
-/// fallbacks (camera scan, or manual check-in).
+/// the AirPods aren't currently in-ear we show a waiting state with a
+/// manual check-in fallback.
 struct AirpodsScanView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
 
     let scheduledAt: Date
-    /// True when the saved calibration also has a valid camera baseline.
-    /// AirPods-only calibrations leave `basePitch == 0`, so a camera scan
-    /// would compare against a nonsense origin — in that case we hide the
-    /// "use camera scan instead" affordance and only offer the manual log.
-    let cameraScanAvailable: Bool
     let onComplete: (PostureQuality) -> Void
-    let onUseCamera: () -> Void
     let onFallback: () -> Void
     let onClose: () -> Void
 
@@ -84,17 +78,10 @@ struct AirpodsScanView: View {
             Spacer(minLength: 24)
 
             if phase == .waiting {
-                VStack(spacing: 8) {
-                    if cameraScanAvailable {
-                        Button { onUseCamera() } label: { Text("use camera scan instead") }
-                            .buttonStyle(.plain)
-                            .daylightCTA(.secondary)
-                    }
-                    Button { onFallback() } label: { Text("check in by hand") }
-                        .buttonStyle(.plain)
-                        .daylightCTA(.ghost)
-                }
-                .padding(.bottom, 12)
+                Button { onFallback() } label: { Text("check in by hand") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+                    .padding(.bottom, 12)
             }
         }
         .padding(.horizontal, 24)
@@ -181,17 +168,10 @@ struct AirpodsScanView: View {
 
             Spacer(minLength: 24)
 
-            VStack(spacing: 8) {
-                if cameraScanAvailable {
-                    Button { onUseCamera() } label: { Text("use camera scan instead") }
-                        .buttonStyle(.plain)
-                        .daylightCTA(.primary)
-                }
-                Button { onFallback() } label: { Text("check in by hand") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(cameraScanAvailable ? .ghost : .secondary)
-            }
-            .padding(.bottom, 28)
+            Button { onFallback() } label: { Text("check in by hand") }
+                .buttonStyle(.plain)
+                .daylightCTA(.secondary)
+                .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

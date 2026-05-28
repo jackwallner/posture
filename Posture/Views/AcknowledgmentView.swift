@@ -109,13 +109,11 @@ struct AcknowledgmentView: View {
     private var scanningView: some View {
         AirpodsScanView(
             scheduledAt: scheduledAt,
-            cameraScanAvailable: false,
             onComplete: { quality in
                 recordedQuality = quality
                 recordAcknowledgment(method: .airpods, quality: quality)
                 withAnimation { phase = .done }
             },
-            onUseCamera: { /* no-op: camera path removed */ },
             onFallback: {
                 recordedQuality = nil
                 recordAcknowledgment(method: .manual, quality: nil)

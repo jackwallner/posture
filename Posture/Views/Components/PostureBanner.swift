@@ -85,9 +85,9 @@ extension PostureBanner {
                       message: "Reminders won't fire until you allow notifications.",
                       action: ("allow", {}))
         PostureBanner(tone: .error,
-                      title: "Camera access denied.",
-                      message: "Posture needs the front camera for quick scans. Manual check-ins still work.",
-                      action: ("open settings", {}))
+                      title: "Can't hear your AirPods.",
+                      message: "Pop them back in to scan, or log this one by hand.",
+                      action: ("check in by hand", {}))
     }
     .padding(24)
     .background(Theme.paper)
