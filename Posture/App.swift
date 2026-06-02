@@ -24,6 +24,14 @@ struct PostureApp: App {
         WindowGroup {
             AirpodsRootView()
                 .environment(settings)
+                // The Daylight palette is a fixed light-only set of literal
+                // colors (no adaptive asset variants). Without locking the
+                // scheme, system-drawn surfaces — .ultraThinMaterial in
+                // dawnCard/dawnCapsule, sheet/nav backgrounds, default button
+                // chrome — render dark on a dark-mode device while our
+                // hardcoded colors stay light, giving the "half light, half
+                // black" mismatch. Lock the app to light.
+                .preferredColorScheme(.light)
         }
         .modelContainer(DataService.sharedModelContainer)
     }
@@ -195,8 +203,10 @@ struct RootView: View {
 struct MainTabView: View {
     @Environment(GoalSettings.self) private var settings
     @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
+    @State private var subscriptions = SubscriptionService.shared
     @State private var selectedTab = 0
     @State private var showReviewPrompt = false
+    @State private var showIntroPaywall = false
     @State private var reviewPromptInitialStep: ReviewPromptSheet.Step = .enjoyment
     @State private var reviewPromptShownThisSession = false
     @State private var pendingNativeReviewAfterDismiss = false
@@ -244,6 +254,31 @@ struct MainTabView: View {
             }
         }) {
             ReviewPromptSheet(initialStep: reviewPromptInitialStep, onFinish: handleReviewPromptFinish)
+        }
+        .sheet(isPresented: $showIntroPaywall) {
+            PaywallView(paywallImpressionId: "posture_intro")
+        }
+        .task { maybeShowIntroPaywall() }
+    }
+
+    /// H2: make sure every new user sees the trial offer at least once. Show the
+    /// paywall on the first entry to the main app, for non-subscribers who have
+    /// working AirPods (Pro is AirPods-centric, so we skip users who deferred
+    /// calibration without compatible AirPods). Dismissible — the free tier stays
+    /// fully usable.
+    private func maybeShowIntroPaywall() {
+        guard !settings.hasSeenIntroPaywall,
+              !subscriptions.isProSubscriber,
+              !settings.calibrationDeferred,
+              hasCompletedSetup
+        else { return }
+        settings.hasSeenIntroPaywall = true
+        Task { @MainActor in
+            // Let the Today screen settle in first so the paywall reads as a
+            // moment, not an interruption of the setup transition.
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            guard !showReviewPrompt, !showIntroPaywall else { return }
+            showIntroPaywall = true
         }
     }
 
