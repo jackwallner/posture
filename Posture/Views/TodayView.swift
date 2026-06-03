@@ -34,6 +34,9 @@ struct TodayView: View {
     /// evaluation (audit P1-10) — creation is owned by StreakService.
     private var currentStreak: Int { streaks.first?.currentStreak ?? 0 }
 
+    /// Display-only freeze count — so users know their streak has a safety net.
+    private var freezesAvailable: Int { streaks.first?.freezesAvailable ?? 0 }
+
     private var todayAcks: [AcknowledgmentRecord] {
         let today = DateHelpers.startOfDay()
         return acknowledgments.filter { $0.timestamp >= today }
@@ -72,7 +75,14 @@ struct TodayView: View {
                     }
                     .padding(.top, 4)
 
-                    if needsRecalibration {
+                    if settings.calibrationDeferred {
+                        softBanner(
+                            title: "Finish setting up.",
+                            body: "Calibrate with your AirPods to unlock scored scans. Until then, check in by hand to keep your streak.",
+                            actionLabel: "calibrate with AirPods",
+                            action: { showingRecalibrate = true }
+                        )
+                    } else if needsRecalibration {
                         softBanner(
                             title: "Time for a quick recalibrate.",
                             body: "AirPods sit a little differently over time, and posture shifts too. A five-second reset keeps scans honest.",
@@ -83,8 +93,8 @@ struct TodayView: View {
                         softBanner(
                             title: "A new habit, gently.",
                             body: "Check in a couple of times today. The pattern shows up in about a week.",
-                            actionLabel: nil,
-                            action: nil
+                            actionLabel: "do your first check-in",
+                            action: { showingAck = true }
                         )
                     }
 
@@ -129,10 +139,22 @@ struct TodayView: View {
             }
             Spacer()
             if currentStreak > 0 {
-                Text("\(currentStreak) \(currentStreak == 1 ? "day" : "days")")
-                    .font(Theme.displaySerif(18))
-                    .foregroundStyle(Theme.ink2)
-                    .accessibilityLabel("\(currentStreak) day streak")
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(currentStreak) \(currentStreak == 1 ? "day" : "days")")
+                        .font(Theme.displaySerif(18))
+                        .foregroundStyle(Theme.ink2)
+                        .accessibilityLabel("\(currentStreak) day streak")
+                    if freezesAvailable > 0 {
+                        HStack(spacing: 3) {
+                            Image(systemName: "snowflake")
+                                .font(.system(size: 9, weight: .semibold))
+                            Text("\(freezesAvailable)")
+                                .font(.system(.caption2, design: .rounded).weight(.semibold))
+                        }
+                        .foregroundStyle(Theme.ink3)
+                        .accessibilityLabel("\(freezesAvailable) streak \(freezesAvailable == 1 ? "freeze" : "freezes") available")
+                    }
+                }
             }
         }
         .padding(.top, 12)

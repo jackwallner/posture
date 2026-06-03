@@ -13,6 +13,18 @@ final class HeadphoneMotionService {
     /// motion. It can flip false→true when supported AirPods come into range, so we read
     /// it live instead of caching at init.
     var isAvailable: Bool { manager.isDeviceMotionAvailable }
+
+    /// True when the user has denied (or is restricted from) motion access, so a
+    /// calibration/scan failure is a permission problem, not missing hardware.
+    /// Lets the UI show a distinct "Motion access is off → Settings" state instead
+    /// of the misleading "compatible AirPods required" gate.
+    static var isMotionAccessDenied: Bool {
+        switch CMHeadphoneMotionManager.authorizationStatus() {
+        case .denied, .restricted: return true
+        default: return false
+        }
+    }
+
     private(set) var isConnected: Bool = false
     private(set) var isRunning: Bool = false
     private(set) var lastPitch: Double?

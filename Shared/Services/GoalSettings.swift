@@ -15,6 +15,8 @@ final class GoalSettings {
     private enum Key {
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
         static let hasCalibrated = "hasCalibrated"
+        static let calibrationDeferred = "calibrationDeferred"
+        static let hasSeenIntroPaywall = "hasSeenIntroPaywall"
         static let sensitivity = "sensitivity"
         static let alwaysOnEnabled = "alwaysOnEnabled"
 
@@ -45,6 +47,21 @@ final class GoalSettings {
     var hasCalibrated: Bool {
         get { access(keyPath: \.hasCalibrated); return defaults.bool(forKey: Key.hasCalibrated) }
         set { withMutation(keyPath: \.hasCalibrated) { defaults.set(newValue, forKey: Key.hasCalibrated) } }
+    }
+
+    /// True when the user entered the app via "Continue without AirPods" and is
+    /// running on a neutral baseline. Today shows a persistent "finish setup"
+    /// banner until a real calibration capture clears it.
+    var calibrationDeferred: Bool {
+        get { access(keyPath: \.calibrationDeferred); return defaults.bool(forKey: Key.calibrationDeferred) }
+        set { withMutation(keyPath: \.calibrationDeferred) { defaults.set(newValue, forKey: Key.calibrationDeferred) } }
+    }
+
+    /// One-shot: the intro paywall is shown once on the first entry to the main
+    /// app for non-subscribers, so every new user sees the trial offer at least once.
+    var hasSeenIntroPaywall: Bool {
+        get { access(keyPath: \.hasSeenIntroPaywall); return defaults.bool(forKey: Key.hasSeenIntroPaywall) }
+        set { withMutation(keyPath: \.hasSeenIntroPaywall) { defaults.set(newValue, forKey: Key.hasSeenIntroPaywall) } }
     }
 
     var sensitivity: Int {
@@ -127,7 +144,7 @@ final class GoalSettings {
     /// Wipe onboarding/calibration state so a UI test starts at the
     /// welcome screen regardless of prior installs. Test-only.
     func resetForUITest() {
-        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.hasAirpods] {
+        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasAirpods] {
             defaults.removeObject(forKey: key)
         }
     }

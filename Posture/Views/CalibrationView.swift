@@ -24,21 +24,27 @@ struct CalibrationView: View {
     @State private var airpods = HeadphoneMotionService()
     @State private var phase: Phase = .waiting
     @State private var countdown: Int = 5
+    @State private var showSkipHint = false
     @State private var capturedPitch: Double?
     @State private var capturedYaw: Double?
     @State private var capturedRoll: Double?
     @State private var captureTask: Task<Void, Never>?
     @State private var waitDeadlineTask: Task<Void, Never>?
+    @State private var permissionWatchTask: Task<Void, Never>?
 
     enum Phase {
         case waiting          // AirPods not yet sending samples
         case capturing        // got first sample, running countdown
         case unsupported      // gave up — show the gate
+        case permissionDenied // motion access is off, not missing hardware
         case done             // saved
     }
 
     /// Generous: lets a user pop AirPods in after launching the app.
     private let connectDeadlineSeconds: Double = 30
+    /// After this long with no AirPods, offer an escape so a user (or reviewer)
+    /// without compatible AirPods is never trapped on a static screen.
+    private let skipHintSeconds: Double = 6
 
     var body: some View {
         Group {
@@ -46,6 +52,7 @@ struct CalibrationView: View {
             case .waiting: waitingStep
             case .capturing: capturingStep
             case .unsupported: unsupportedStep
+            case .permissionDenied: permissionDeniedStep
             case .done: doneStep
             }
         }
@@ -59,6 +66,7 @@ struct CalibrationView: View {
         .onDisappear {
             captureTask?.cancel()
             waitDeadlineTask?.cancel()
+            permissionWatchTask?.cancel()
             airpods.stop()
         }
     }
@@ -83,12 +91,21 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 24)
 
-            Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone.")
+            Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone — iOS will ask permission to read motion.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
             Spacer()
+
+            // M5: never leave the user stranded on a static screen. After a
+            // few seconds, offer a way into the app without AirPods. The
+            // manual "check in by hand" loop works without calibration.
+            if showSkipHint && mode == .onboarding {
+                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            }
 
             if mode == .quickRecalibrate {
                 Button { dismiss() } label: { Text("Cancel") }
@@ -162,7 +179,58 @@ struct CalibrationView: View {
                 .buttonStyle(.plain)
                 .daylightCTA(.primary)
 
-            if mode == .quickRecalibrate {
+            // B1: an escape so a user/reviewer without compatible AirPods is
+            // never dead-ended at the gate. Drops them into the app on a
+            // neutral baseline; the manual check-in loop works without AirPods.
+            if mode == .onboarding {
+                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            } else {
+                Button { dismiss() } label: { Text("Cancel") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var permissionDeniedStep: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Spacer()
+            ZStack {
+                Circle()
+                    .fill(Theme.sandTint)
+                    .frame(width: 96, height: 96)
+                Image(systemName: "hand.raised.slash")
+                    .font(.system(size: 38, weight: .regular))
+                    .foregroundStyle(Theme.sand)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text("Motion access is off.")
+                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 18)
+
+            Text("Posture needs permission to read your AirPods' motion sensor. Turn on Motion & Fitness for Posture in Settings, then try again.")
+                .font(.system(.body, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            Spacer()
+
+            Button { openSettings() } label: { Text("Open Settings") }
+                .buttonStyle(.plain)
+                .daylightCTA(.primary)
+
+            if mode == .onboarding {
+                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                    .buttonStyle(.plain)
+                    .daylightCTA(.ghost)
+            } else {
                 Button { dismiss() } label: { Text("Cancel") }
                     .buttonStyle(.plain)
                     .daylightCTA(.ghost)
@@ -224,11 +292,42 @@ struct CalibrationView: View {
             startCapture()
             return
         }
+        armWaiting()
+    }
+
+    /// Start (or restart) the no-AirPods countdowns: a short timer that reveals
+    /// the "Continue without AirPods" escape, and the longer deadline that
+    /// surfaces the unsupported gate. A parallel watcher catches a denied
+    /// motion permission so we show the right message (not "need AirPods").
+    private func armWaiting() {
+        showSkipHint = false
+
         waitDeadlineTask?.cancel()
         waitDeadlineTask = Task {
-            try? await Task.sleep(nanoseconds: UInt64(connectDeadlineSeconds * 1_000_000_000))
+            try? await Task.sleep(nanoseconds: UInt64(skipHintSeconds * 1_000_000_000))
             guard !Task.isCancelled else { return }
-            if phase == .waiting { phase = .unsupported }
+            if phase == .waiting { withAnimation { showSkipHint = true } }
+
+            try? await Task.sleep(nanoseconds: UInt64((connectDeadlineSeconds - skipHintSeconds) * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            if phase == .waiting {
+                phase = HeadphoneMotionService.isMotionAccessDenied ? .permissionDenied : .unsupported
+            }
+        }
+
+        permissionWatchTask?.cancel()
+        permissionWatchTask = Task {
+            // Poll briefly so a "Don't Allow" tap surfaces the permission
+            // state quickly rather than after the full connect deadline.
+            for _ in 0..<60 {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                guard !Task.isCancelled else { return }
+                if phase == .waiting, HeadphoneMotionService.isMotionAccessDenied {
+                    phase = .permissionDenied
+                    return
+                }
+                if phase != .waiting { return }
+            }
         }
     }
 
@@ -236,16 +335,42 @@ struct CalibrationView: View {
         phase = .waiting
         airpods.stop()
         airpods.start()
+        if airpods.isConnected {
+            startCapture()
+            return
+        }
+        armWaiting()
+    }
+
+    /// B1: leave the AirPods gate without being trapped. Save a neutral
+    /// baseline (scans fall back to a 0 baseline) and flag setup as deferred so
+    /// Today can nudge the user to finish calibrating once AirPods are around.
+    private func skipWithoutAirpods() {
+        captureTask?.cancel()
         waitDeadlineTask?.cancel()
-        waitDeadlineTask = Task {
-            try? await Task.sleep(nanoseconds: UInt64(connectDeadlineSeconds * 1_000_000_000))
-            guard !Task.isCancelled else { return }
-            if phase == .waiting { phase = .unsupported }
+        permissionWatchTask?.cancel()
+        airpods.stop()
+        AnalyticsService.calibrateStarted(mode: "skipped")
+        let cal = Calibration(
+            basePitch: 0,
+            baseYaw: 0,
+            baseRoll: 0,
+            slouchPitchDelta: .pi / 24
+        )
+        CalibrationService(context: context).save(cal)
+        settings.calibrationDeferred = true
+        if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
+    }
+
+    private func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 
     private func startCapture() {
         waitDeadlineTask?.cancel()
+        permissionWatchTask?.cancel()
         phase = .capturing
         AnalyticsService.calibrateStarted(mode: mode == .quickRecalibrate ? "quick" : "full")
 
@@ -305,6 +430,9 @@ struct CalibrationView: View {
             airpodsYaw: capturedYaw
         )
         CalibrationService(context: context).save(cal)
+        // A real AirPods capture happened — clear any deferred-setup flag so
+        // Today stops nudging the user to finish calibration.
+        settings.calibrationDeferred = false
         AnalyticsService.calibrateCompleted()
         airpods.stop()
     }

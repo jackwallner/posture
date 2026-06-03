@@ -19,8 +19,13 @@ struct AirpodsScanView: View {
     @State private var elapsedSeconds = 0
     @State private var phase: Phase = .waiting
     @State private var countdownTask: Task<Void, Never>?
+    @State private var waitDeadlineTask: Task<Void, Never>?
 
     enum Phase { case waiting, scanning, noConnection }
+
+    /// If AirPods never start streaming, don't sit on "waiting" forever — fall
+    /// to the no-connection view (which surfaces the prominent manual fallback).
+    private let waitDeadlineSeconds: Double = 12
 
     var body: some View {
         Group {
@@ -32,6 +37,7 @@ struct AirpodsScanView: View {
         .task { begin() }
         .onDisappear {
             countdownTask?.cancel()
+            waitDeadlineTask?.cancel()
             airpods.stop()
         }
         .onChange(of: airpods.isConnected) { _, connected in
@@ -188,12 +194,21 @@ struct AirpodsScanView: View {
         airpods.start()
         if airpods.isConnected {
             runScan()
+            return
+        }
+        // M6: don't wait on "pop your AirPods in" indefinitely.
+        waitDeadlineTask?.cancel()
+        waitDeadlineTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(waitDeadlineSeconds * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            if phase == .waiting { phase = .noConnection }
         }
     }
 
     private func runScan() {
         guard phase != .scanning else { return }
         phase = .scanning
+        waitDeadlineTask?.cancel()
         countdownTask?.cancel()
         countdownTask = Task {
             for second in 0..<3 {
@@ -209,8 +224,10 @@ struct AirpodsScanView: View {
             }
             guard !Task.isCancelled else { return }
 
-            // Lost connection mid-scan, or never got a reading.
-            guard !samples.isEmpty, airpods.isConnected else {
+            // M7: if we gathered readings, score them even if the AirPods
+            // dropped at the very end — don't throw away the user's 3-second
+            // hold. Only fall back when we truly never got a sample.
+            guard !samples.isEmpty else {
                 phase = .noConnection
                 return
             }

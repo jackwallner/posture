@@ -19,6 +19,19 @@ enum NotificationService {
         "a moment for the body.",
     ]
 
+    /// Optional supporting line — a small tip, paired with a title. Kept gentle
+    /// and observational to match the Daylight voice.
+    private static let reminderBodies: [String] = [
+        "Lift the crown of your head a touch.",
+        "Let your shoulders drop away from your ears.",
+        "Stack your ears over your shoulders.",
+        "Unclench the jaw, soften the tongue.",
+        "A slow breath, and a small lift.",
+        "Feet flat, weight even.",
+        "Ease back from the screen an inch.",
+        "Long spine, easy neck.",
+    ]
+
     static let categoryIdentifier = "posture.reminder"
 
     /// Max pending reminder slots. iOS allows 64 pending requests; we
@@ -69,10 +82,17 @@ enum NotificationService {
             minutes += intervalMinutes
         }
 
+        // Offset the rotation by the day of the year so the same phrase doesn't
+        // land at the same time every day (reschedule runs on foreground/day
+        // change). Avoids the "mechanical, same 12 lines" feel.
+        let dayOffset = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+
         for (index, slot) in slots.enumerated() {
-            let title = reminderTitles[index % reminderTitles.count]
+            let rotation = index + dayOffset
+            let title = reminderTitles[rotation % reminderTitles.count]
             let content = UNMutableNotificationContent()
             content.title = title
+            content.body = reminderBodies[rotation % reminderBodies.count]
             content.sound = .default
             content.categoryIdentifier = categoryIdentifier
 

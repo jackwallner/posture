@@ -18,6 +18,7 @@ struct AcknowledgmentView: View {
 
     @State private var phase: Phase = .choice
     @State private var recordedQuality: PostureQuality?
+    @State private var recordedMethod: AcknowledgmentMethod?
     @State private var currentTip: PostureTip?
     @State private var earnedReviewPositiveMoment = false
 
@@ -66,7 +67,7 @@ struct AcknowledgmentView: View {
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
 
-            Text("A three-second scan. Or just tell us. We trust you.")
+            Text("A three-second scan with your AirPods. Or just tell us — we trust you.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
@@ -76,32 +77,59 @@ struct AcknowledgmentView: View {
             Button {
                 phase = .scanning
             } label: {
-                Text("scan")
+                Text("scan with AirPods")
             }
             .buttonStyle(.plain)
             .daylightCTA(.primary)
 
-            VStack(spacing: 4) {
+            // Manual self-report — works without AirPods and still records a
+            // real posture quality, so the alignment score and history fill in.
+            VStack(spacing: 8) {
+                Text("or tell us how you're sitting")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.ink3)
+                    .frame(maxWidth: .infinity)
+                HStack(spacing: 10) {
+                    selfReportChip(label: "aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
+                    selfReportChip(label: "drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
+                    selfReportChip(label: "resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+                }
                 Button {
-                    recordAcknowledgment(method: .manual, quality: nil)
-                    recordedQuality = nil
-                    withAnimation { phase = .done }
+                    recordManual(quality: nil)
                 } label: {
-                    Text("just checking in, manual →")
+                    Text("just log it →")
+                        .font(.caption)
+                        .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
-                .daylightCTA(.ghost)
-                Text("Counts for your streak. Alignment score needs a quick scan.")
-                    .font(.caption)
-                    .foregroundStyle(Theme.ink3)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
+                .padding(.top, 2)
             }
             .padding(.bottom, 16)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
+    }
+
+    private func selfReportChip(label: String, quality: PostureQuality, tint: Color, accent: Color) -> some View {
+        Button {
+            recordManual(quality: quality)
+        } label: {
+            Text(label)
+                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .foregroundStyle(accent)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("I'm sitting \(label)")
+    }
+
+    private func recordManual(quality: PostureQuality?) {
+        recordedQuality = quality
+        recordAcknowledgment(method: .manual, quality: quality)
+        withAnimation { phase = .done }
     }
 
     // MARK: - Scanning
@@ -218,12 +246,14 @@ struct AcknowledgmentView: View {
         case .bad:
             return "Curled forward. Take a slow breath, lift the crown of your head."
         case nil:
-            return "Logged without a scan. Counts for your streak; alignment score updates only on scanned check-ins."
+            return "Logged for your streak. Next time, tell us how you're sitting or scan to add a score."
         }
     }
 
     private var doneEyebrow: String {
-        recordedQuality == nil ? "noted" : "\(timeString(scheduledAt)) · scanned"
+        guard recordedQuality != nil else { return "noted" }
+        let verb = recordedMethod == .airpods ? "scanned" : "logged"
+        return "\(timeString(scheduledAt)) · \(verb)"
     }
 
     private func eyebrow(_ date: Date) -> String {
@@ -241,6 +271,7 @@ struct AcknowledgmentView: View {
     // MARK: - Recording
 
     private func recordAcknowledgment(method: AcknowledgmentMethod, quality: PostureQuality?) {
+        recordedMethod = method
         let record = AcknowledgmentRecord(
             method: method,
             quality: quality,

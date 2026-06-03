@@ -77,6 +77,8 @@ struct PaywallView: View {
                 .font(.system(.subheadline, design: .rounded))
                 .foregroundStyle(Theme.ink2)
             Spacer()
+            legalFooter
+                .padding(.bottom, 18)
         }
         .padding(.horizontal, 24)
     }
@@ -104,7 +106,10 @@ struct PaywallView: View {
             .font(.system(.subheadline, design: .rounded, weight: .semibold))
             .foregroundStyle(Theme.sage)
             Spacer()
+            legalFooter
+                .padding(.bottom, 18)
         }
+        .padding(.horizontal, 24)
     }
 
     private var content: some View {
@@ -113,6 +118,7 @@ struct PaywallView: View {
                 header
                 trustStrip
                 featureList
+                backgroundAudioNote
                 planCards
             }
             .padding(.horizontal, 24)
@@ -193,6 +199,16 @@ struct PaywallView: View {
         .padding(.top, 2)
     }
 
+    /// Honesty on the conversion screen: the background feature above is the
+    /// silent-tone mechanism that lights the orange dot. Keeps the "private"
+    /// trust strip from reading as deceptive next to it.
+    private var backgroundAudioNote: some View {
+        Text("Background coaching keeps the AirPods sensor awake with a silent tone, so iOS shows an orange dot. No audio is recorded, and motion stays on your device.")
+            .font(.caption2)
+            .foregroundStyle(Theme.ink3)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
     #if HAS_REVENUECAT
     private var planCards: some View {
         VStack(spacing: 10) {
@@ -254,23 +270,7 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
             }
 
-            HStack(spacing: 14) {
-                Button(action: startRestore) {
-                    Text(isRestoring ? "Restoring…" : "Restore Purchases")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Theme.ink2)
-                }
-                .buttonStyle(.plain)
-                .disabled(isRestoring || isPurchasing)
-
-                HStack(spacing: 4) {
-                    Link("Terms of Use", destination: PaywallLinks.standardEULA)
-                    Text("·")
-                    Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
-                }
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(Theme.ink3)
-            }
+            legalFooter
         }
         .padding(.horizontal, 24)
         .padding(.top, 14)
@@ -284,6 +284,29 @@ struct PaywallView: View {
             )
             .allowsHitTesting(false)
         )
+    }
+
+    /// Restore + legal links. Required by 3.1.2 to be present on the paywall in
+    /// EVERY state — including while products are still loading or failed to
+    /// load — so it lives outside the product-loaded branch.
+    private var legalFooter: some View {
+        HStack(spacing: 14) {
+            Button(action: startRestore) {
+                Text(isRestoring ? "Restoring…" : "Restore Purchases")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(Theme.ink2)
+            }
+            .buttonStyle(.plain)
+            .disabled(isRestoring || isPurchasing)
+
+            HStack(spacing: 4) {
+                Link("Terms of Use", destination: PaywallLinks.standardEULA)
+                Text("·")
+                Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
+            }
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(Theme.ink3)
+        }
     }
 
     private var closeButton: some View {
@@ -313,6 +336,9 @@ struct PaywallView: View {
                     .font(.caption)
                     .foregroundStyle(Theme.ink3)
                     .frame(maxWidth: .infinity)
+                legalFooter
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
             }
             .padding(.horizontal, 24)
             .padding(.top, displayCloseButton ? 52 : 24)
@@ -515,7 +541,7 @@ private struct PosturePlanCard: View {
             return trial.capitalized
         }
         if package.posturePackageKind == .lifetime {
-            return "Pay once · keep forever"
+            return "Pay once · never renews"
         }
         return nil
     }

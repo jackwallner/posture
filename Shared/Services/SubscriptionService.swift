@@ -194,7 +194,10 @@ final class SubscriptionService: NSObject {
 
     func isEligibleForIntroOffer(_ package: Package) -> Bool {
         guard package.postureIntroOfferLabel != nil else { return false }
-        return introEligibility[package.storeProduct.productIdentifier] ?? true
+        // Default to NOT eligible until RevenueCat confirms eligibility, so we
+        // never promise "Start Free Trial" (and the trial-then-price disclosure)
+        // to a user who already used the trial and would be charged immediately.
+        return introEligibility[package.storeProduct.productIdentifier] ?? false
     }
 
     /// Custom paywall impressions for RevenueCat analytics (hosted UI did this automatically).
