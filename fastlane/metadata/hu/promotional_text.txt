@@ -1,0 +1,1 @@
+Építs testtartás-szokást ellenőrzésről ellenőrzésre. Állítsd be az emlékeztetőket, csinálj egy 3 mp-es AirPods-ellenőrzést, és tartsd a sorozatod.

@@ -1,0 +1,369 @@
+{
+  "scannedAt": "2026-05-26T02:31:55Z",
+  "stores": {
+    "us": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ca": {
+      "term": "posture coach",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "mx": {
+      "term": "app postura",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "br": {
+      "term": "app postura",
+      "competitors": []
+    },
+    "ar": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "bo": {
+      "term": "posture reminder",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "cl": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "co": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "cr": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "do": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ec": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "sv": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "gt": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "hn": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "pa": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "py": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "pe": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "gb": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "de": {
+      "term": "haltung app",
+      "competitors": []
+    },
+    "fr": {
+      "term": "application posture",
+      "competitors": []
+    },
+    "es": {
+      "term": "app postura",
+      "competitors": []
+    },
+    "it": {
+      "term": "app postura",
+      "competitors": []
+    },
+    "nl": {
+      "term": "houding app",
+      "competitors": []
+    },
+    "at": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "be": {
+      "term": "posture reminder",
+      "error": "<urlopen error [Errno 61] Connection refused>"
+    },
+    "ch": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "se": {
+      "term": "hållning app",
+      "competitors": []
+    },
+    "no": {
+      "term": "holdning app",
+      "competitors": []
+    },
+    "dk": {
+      "term": "holdning app",
+      "competitors": []
+    },
+    "fi": {
+      "term": "asento sovellus",
+      "competitors": []
+    },
+    "pl": {
+      "term": "aplikacja postawa",
+      "competitors": []
+    },
+    "pt": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ie": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ru": {
+      "term": "приложение осанка",
+      "competitors": []
+    },
+    "ua": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "cz": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "sk": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "hu": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ro": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "gr": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "hr": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "bg": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "si": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ee": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "lv": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "lu": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "is": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "cy": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "tr": {
+      "term": "duruş uygulaması",
+      "competitors": []
+    },
+    "az": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "kz": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "kg": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "uz": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "al": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "au": {
+      "term": "posture app",
+      "competitors": []
+    },
+    "nz": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "jp": {
+      "term": "姿勢 アプリ",
+      "competitors": []
+    },
+    "kr": {
+      "term": "자세 앱",
+      "competitors": []
+    },
+    "cn": {
+      "term": "姿势 提醒",
+      "competitors": []
+    },
+    "hk": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "tw": {
+      "term": "姿勢 提醒",
+      "competitors": []
+    },
+    "mo": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "sg": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "my": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "th": {
+      "term": "แอปท่าทาง",
+      "competitors": []
+    },
+    "vn": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "id": {
+      "term": "aplikasi postur",
+      "competitors": []
+    },
+    "ph": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "in": {
+      "term": "posture app",
+      "competitors": []
+    },
+    "kh": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "mn": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "np": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "lk": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "sa": {
+      "term": "تطبيق وضعية",
+      "competitors": []
+    },
+    "ae": {
+      "term": "posture reminder",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "eg": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "il": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "jo": {
+      "term": "posture reminder",
+      "error": "timed out"
+    },
+    "kw": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "lb": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "om": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "qa": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "bh": {
+      "term": "posture reminder",
+      "error": "timed out"
+    },
+    "iq": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ma": {
+      "term": "posture reminder",
+      "error": "timed out"
+    },
+    "dz": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "gh": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "ke": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "za": {
+      "term": "posture reminder",
+      "competitors": []
+    },
+    "pk": {
+      "term": "posture reminder",
+      "error": "timed out"
+    },
+    "am": {
+      "term": "posture reminder",
+      "error": "HTTP Error 500: Internal Server Error"
+    }
+  }
+}

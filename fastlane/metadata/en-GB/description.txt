@@ -1,0 +1,40 @@
+Sit up straight — and actually stick with it.
+
+Posture is a gentle, on-device posture coach for iPhone, AirPods, and Apple Watch. Rather than nagging you all day, it nudges you a few times a day to take a quick posture check. Keep a good streak going and watch your habit grow.
+
+HOW IT WORKS
+• Calibrate once. Sit the way you want to sit, and your AirPods learn your personal baseline in a few seconds.
+• Pick your rhythm. Choose how many reminders you'd like each day and the hours you want them to land.
+• Tap a reminder. A 3-second AirPods check reads your head position and tells you whether you're upright, drifting, or slouching — or just tell us how you're sitting by hand.
+• Build the streak. Every day you respond to your reminders, your flame grows. Freeze protection covers the off days.
+
+THE FREE TIER
+• Quick 3-second posture checks using your AirPods' motion sensor
+• Manual check-ins for when your AirPods aren't in
+• Personal calibration baseline
+• Smart reminders during your active hours
+• Duolingo-style streaks with freeze protection
+• Your last 7 days of posture history and trends
+• Lock Screen and Home Screen widgets
+
+POSTURE+
+• Quiet all-day AirPods background coaching — a gentle nudge when you start to slouch, even with your phone in your pocket
+• Apple Watch companion app with background coaching
+• Your full posture history, hour by hour — see exactly when you drift
+• Always-on monitoring — set it and forget it
+• Priority support
+
+WHICH AIRPODS WORK
+Posture reads head motion from AirPods Pro (1st & 2nd gen), AirPods (3rd gen), AirPods 4 with Active Noise Cancellation, or AirPods Max. No AirPods to hand? You can still log check-ins by hand and keep your streak alive.
+
+PRIVATE BY DESIGN
+• No accounts, no sign-up
+• No analytics, no third-party trackers, no ads
+• Head-motion data is processed on-device and never leaves your phone
+• AirPods and Apple Watch motion data stays on-device
+• You can use the entire app without ever creating an account
+
+Posture+ is an auto-renewing subscription with monthly and yearly options, plus a one-off lifetime unlock. A free trial is available on the subscription plans; after the trial it renews at the listed price unless cancelled. Manage or cancel any time in Settings › Apple ID › Subscriptions. Payment is charged to your Apple ID at confirmation of purchase. Subscriptions automatically renew unless turned off at least 24 hours before the end of the current period.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -1,0 +1,384 @@
+{
+  "appId": "104",
+  "minKw": 25,
+  "lowStores": [
+    "br",
+    "ar",
+    "cl",
+    "co",
+    "cr",
+    "do",
+    "ec",
+    "sv",
+    "py",
+    "pe",
+    "gb",
+    "es",
+    "it",
+    "nl",
+    "be",
+    "ch",
+    "se",
+    "no",
+    "dk",
+    "fi",
+    "pl",
+    "pt",
+    "ie",
+    "ru",
+    "ua",
+    "cz",
+    "sk",
+    "hu",
+    "ro",
+    "gr",
+    "hr",
+    "bg",
+    "si",
+    "ee",
+    "lv",
+    "lu",
+    "is",
+    "cy",
+    "tr",
+    "kz",
+    "kg",
+    "uz",
+    "au",
+    "nz",
+    "jp",
+    "kr",
+    "cn",
+    "hk",
+    "tw",
+    "mo",
+    "sg",
+    "my",
+    "th",
+    "vn",
+    "id",
+    "ph",
+    "in",
+    "kh",
+    "mn",
+    "np",
+    "lk",
+    "sa",
+    "ae",
+    "eg",
+    "il",
+    "jo",
+    "kw",
+    "lb",
+    "om",
+    "qa",
+    "bh",
+    "iq",
+    "ma",
+    "dz",
+    "gh",
+    "ke",
+    "za",
+    "pk"
+  ],
+  "stores": {
+    "us": {
+      "count": 89
+    },
+    "ca": {
+      "count": 36
+    },
+    "mx": {
+      "count": 37
+    },
+    "br": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "ar": {
+      "count": 0,
+      "error": "timed out"
+    },
+    "bo": {
+      "count": 42
+    },
+    "cl": {
+      "count": 8
+    },
+    "co": {
+      "count": 3
+    },
+    "cr": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "do": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "ec": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "sv": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "gt": {
+      "count": 32
+    },
+    "hn": {
+      "count": 32
+    },
+    "pa": {
+      "count": 27
+    },
+    "py": {
+      "count": 0,
+      "error": "timed out"
+    },
+    "pe": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "gb": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "de": {
+      "count": 29
+    },
+    "fr": {
+      "count": 26
+    },
+    "es": {
+      "count": 0
+    },
+    "it": {
+      "count": 0
+    },
+    "nl": {
+      "count": 0
+    },
+    "at": {
+      "count": 35
+    },
+    "be": {
+      "count": 24
+    },
+    "ch": {
+      "count": 0
+    },
+    "se": {
+      "count": 0
+    },
+    "no": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "dk": {
+      "count": 0
+    },
+    "fi": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "pl": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "pt": {
+      "count": 0
+    },
+    "ie": {
+      "count": 0
+    },
+    "ru": {
+      "count": 0
+    },
+    "ua": {
+      "count": 0
+    },
+    "cz": {
+      "count": 0
+    },
+    "sk": {
+      "count": 0
+    },
+    "hu": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "ro": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "gr": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "hr": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "bg": {
+      "count": 0
+    },
+    "si": {
+      "count": 0
+    },
+    "ee": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "lv": {
+      "count": 0
+    },
+    "lu": {
+      "count": 0
+    },
+    "is": {
+      "count": 0
+    },
+    "cy": {
+      "count": 0
+    },
+    "tr": {
+      "count": 0
+    },
+    "az": {
+      "count": 45
+    },
+    "kz": {
+      "count": 0
+    },
+    "kg": {
+      "count": 0
+    },
+    "uz": {
+      "count": 0
+    },
+    "al": {
+      "count": 29
+    },
+    "au": {
+      "count": 1
+    },
+    "nz": {
+      "count": 0
+    },
+    "jp": {
+      "count": 0
+    },
+    "kr": {
+      "count": 0
+    },
+    "cn": {
+      "count": 0
+    },
+    "hk": {
+      "count": 0
+    },
+    "tw": {
+      "count": 0
+    },
+    "mo": {
+      "count": 0
+    },
+    "sg": {
+      "count": 0
+    },
+    "my": {
+      "count": 0
+    },
+    "th": {
+      "count": 0
+    },
+    "vn": {
+      "count": 0
+    },
+    "id": {
+      "count": 0
+    },
+    "ph": {
+      "count": 0
+    },
+    "in": {
+      "count": 0
+    },
+    "kh": {
+      "count": 0
+    },
+    "mn": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "np": {
+      "count": 0
+    },
+    "lk": {
+      "count": 0
+    },
+    "sa": {
+      "count": 0
+    },
+    "ae": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "eg": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "il": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "jo": {
+      "count": 0
+    },
+    "kw": {
+      "count": 0
+    },
+    "lb": {
+      "count": 0
+    },
+    "om": {
+      "count": 0
+    },
+    "qa": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "bh": {
+      "count": 0
+    },
+    "iq": {
+      "count": 0
+    },
+    "ma": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "dz": {
+      "count": 0,
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    "gh": {
+      "count": 0
+    },
+    "ke": {
+      "count": 0,
+      "error": "timed out"
+    },
+    "za": {
+      "count": 0
+    },
+    "pk": {
+      "count": 0
+    },
+    "am": {
+      "count": 47
+    }
+  }
+}

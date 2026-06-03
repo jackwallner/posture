@@ -1,0 +1,352 @@
+{
+  "ar-SA": {
+    "name": "فحص الوقفة – يومي",
+    "subtitle": "تدريب الرقبة والمكتب",
+    "keywords_len": 98,
+    "description_len": 1009,
+    "was_desc_empty": true
+  },
+  "bn-BD": {
+    "name": "পোসচার চেক – সক্রিয়",
+    "subtitle": "ঘাড়, ডেস্ক ও ভঙ্গি",
+    "keywords_len": 89,
+    "description_len": 887,
+    "was_desc_empty": true
+  },
+  "ca": {
+    "name": "Posture Check – Actiu",
+    "subtitle": "Coll, escriptori i postura",
+    "keywords_len": 98,
+    "description_len": 1140,
+    "was_desc_empty": true
+  },
+  "cs": {
+    "name": "Posture Check – Aktivně",
+    "subtitle": "Krk, stůl a držení těla",
+    "keywords_len": 100,
+    "description_len": 1046,
+    "was_desc_empty": true
+  },
+  "da": {
+    "name": "Posture Check – Aktiv",
+    "subtitle": "Nakke, skrivebord & holdning",
+    "keywords_len": 89,
+    "description_len": 1184,
+    "was_desc_empty": true
+  },
+  "de-DE": {
+    "name": "Posture Check – Täglich aktiv",
+    "subtitle": "Nacken- & Schreibtisch-Coach",
+    "keywords_len": 95,
+    "description_len": 2123,
+    "was_desc_empty": true
+  },
+  "el": {
+    "name": "Posture Check – Ενεργό",
+    "subtitle": "Λαιμός, γραφείο & στάση",
+    "keywords_len": 96,
+    "description_len": 1081,
+    "was_desc_empty": true
+  },
+  "en-AU": {
+    "name": "Posture Check - Active Daily",
+    "subtitle": "Neck, desk & slouch coach",
+    "keywords_len": 90,
+    "description_len": 2241,
+    "was_desc_empty": true
+  },
+  "en-CA": {
+    "name": "Posture Check - Active Daily",
+    "subtitle": "Neck, desk & slouch coach",
+    "keywords_len": 90,
+    "description_len": 2241,
+    "was_desc_empty": true
+  },
+  "en-GB": {
+    "name": "Posture Check - Active Daily",
+    "subtitle": "Neck, desk & slouch coach",
+    "keywords_len": 90,
+    "description_len": 2241,
+    "was_desc_empty": true
+  },
+  "en-US": {
+    "name": "Posture Check - Active Daily",
+    "subtitle": "Neck, desk & slouch coach",
+    "keywords_len": 90,
+    "description_len": 2241,
+    "was_desc_empty": false
+  },
+  "es-ES": {
+    "name": "Posture Check – Activo",
+    "subtitle": "Cuello, escritorio y postura",
+    "keywords_len": 96,
+    "description_len": 1959,
+    "was_desc_empty": true
+  },
+  "es-MX": {
+    "name": "Posture Check – Activo",
+    "subtitle": "Cuello, escritorio y postura",
+    "keywords_len": 95,
+    "description_len": 1959,
+    "was_desc_empty": true
+  },
+  "fi": {
+    "name": "Posture Check – Aktiivinen",
+    "subtitle": "Niska, työpöytä & asento",
+    "keywords_len": 94,
+    "description_len": 1170,
+    "was_desc_empty": true
+  },
+  "fr-CA": {
+    "name": "Posture Check – Actif",
+    "subtitle": "Nuque, bureau & posture",
+    "keywords_len": 97,
+    "description_len": 1998,
+    "was_desc_empty": true
+  },
+  "fr-FR": {
+    "name": "Posture Check – Actif",
+    "subtitle": "Nuque, bureau & posture",
+    "keywords_len": 97,
+    "description_len": 1998,
+    "was_desc_empty": true
+  },
+  "gu-IN": {
+    "name": "પોસ્ચર ચેક – સક્રિય",
+    "subtitle": "ગરદન, ડેસ્ક અને પોશ્ચર",
+    "keywords_len": 93,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "he": {
+    "name": "בדיקת יציבה – יומי",
+    "subtitle": "מאמן צוואר ושולחן",
+    "keywords_len": 99,
+    "description_len": 923,
+    "was_desc_empty": true
+  },
+  "hi": {
+    "name": "पोश्चर चेक – रोज़ सक्रिय",
+    "subtitle": "गर्दन, डेस्क व पोश्चर",
+    "keywords_len": 94,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "hr": {
+    "name": "Posture Check – Aktivno",
+    "subtitle": "Vrat, stol i držanje",
+    "keywords_len": 92,
+    "description_len": 1008,
+    "was_desc_empty": true
+  },
+  "hu": {
+    "name": "Posture Check – Aktív",
+    "subtitle": "Nyak, asztal és testtartás",
+    "keywords_len": 93,
+    "description_len": 1075,
+    "was_desc_empty": true
+  },
+  "id": {
+    "name": "Cek Postur – Aktif",
+    "subtitle": "Pelatih leher & meja",
+    "keywords_len": 99,
+    "description_len": 1127,
+    "was_desc_empty": true
+  },
+  "it": {
+    "name": "Posture Check – Attivo",
+    "subtitle": "Collo, scrivania e postura",
+    "keywords_len": 94,
+    "description_len": 1337,
+    "was_desc_empty": true
+  },
+  "ja": {
+    "name": "姿勢チェック – 毎日",
+    "subtitle": "首・デスク・姿勢コーチ",
+    "keywords_len": 79,
+    "description_len": 840,
+    "was_desc_empty": true
+  },
+  "kn-IN": {
+    "name": "ಪೋಸ್ಚರ್ ಚೆಕ್ – ಸಕ್ರಿಯ",
+    "subtitle": "ಕುತ್ತಿಗೆ, ಡೆಸ್ಕ್ ಮತ್ತು ಭಂಗಿ",
+    "keywords_len": 98,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "ko": {
+    "name": "자세 체크 – 매일",
+    "subtitle": "목·책상·자세 코치",
+    "keywords_len": 64,
+    "description_len": 798,
+    "was_desc_empty": true
+  },
+  "ml-IN": {
+    "name": "പോസ്ചർ ചെക്ക് – സജീവം",
+    "subtitle": "കഴുത്ത്, ഡെസ്ക്, പോസ്ചർ",
+    "keywords_len": 95,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "mr-IN": {
+    "name": "पोश्चर चेक – सक्रिय",
+    "subtitle": "मान, डेस्क व पोश्चर",
+    "keywords_len": 94,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "ms": {
+    "name": "Semak Postur – Aktif",
+    "subtitle": "Leher, meja & postur",
+    "keywords_len": 99,
+    "description_len": 1124,
+    "was_desc_empty": true
+  },
+  "nl-NL": {
+    "name": "Posture Check – Dagelijks",
+    "subtitle": "Nek, bureau & houding",
+    "keywords_len": 99,
+    "description_len": 1258,
+    "was_desc_empty": true
+  },
+  "no": {
+    "name": "Posture Check – Aktiv",
+    "subtitle": "Nakke, skrivebord & holdning",
+    "keywords_len": 92,
+    "description_len": 1185,
+    "was_desc_empty": true
+  },
+  "or-IN": {
+    "name": "ପୋଚର ଚେକ – ସକ୍ରିୟ",
+    "subtitle": "ଗଲା, ଡେସ୍କ ଏବଂ ଭଙ୍ଗି",
+    "keywords_len": 92,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "pa-IN": {
+    "name": "ਪੋਸਚਰ ਚੈਕ – ਸਰਗਰਮ",
+    "subtitle": "ਗਰਦਨ, ਡੈਸਕ ਅਤੇ ਪੋਸਚਰ",
+    "keywords_len": 100,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "pl": {
+    "name": "Posture Check – Aktywnie",
+    "subtitle": "Szyja, biurko i postawa",
+    "keywords_len": 97,
+    "description_len": 1164,
+    "was_desc_empty": true
+  },
+  "pt-BR": {
+    "name": "Posture Check – Ativo",
+    "subtitle": "Pescoço, mesa e postura",
+    "keywords_len": 97,
+    "description_len": 1301,
+    "was_desc_empty": true
+  },
+  "pt-PT": {
+    "name": "Posture Check – Ativo",
+    "subtitle": "Pescoço, secretária e postura",
+    "keywords_len": 99,
+    "description_len": 1304,
+    "was_desc_empty": true
+  },
+  "ro": {
+    "name": "Posture Check – Activ",
+    "subtitle": "Gât, birou și postură",
+    "keywords_len": 94,
+    "description_len": 1087,
+    "was_desc_empty": true
+  },
+  "ru": {
+    "name": "Posture Check – Активно",
+    "subtitle": "Шея, стол и осанка",
+    "keywords_len": 96,
+    "description_len": 1134,
+    "was_desc_empty": true
+  },
+  "sk": {
+    "name": "Posture Check – Aktívne",
+    "subtitle": "Krk, stôl a držanie tela",
+    "keywords_len": 95,
+    "description_len": 1046,
+    "was_desc_empty": true
+  },
+  "sl-SI": {
+    "name": "Posture Check – Aktivno",
+    "subtitle": "Vrat, miza in drža",
+    "keywords_len": 93,
+    "description_len": 2241,
+    "was_desc_empty": true
+  },
+  "sv": {
+    "name": "Posture Check – Aktiv",
+    "subtitle": "Nacke, skrivbord & hållning",
+    "keywords_len": 99,
+    "description_len": 1185,
+    "was_desc_empty": true
+  },
+  "ta-IN": {
+    "name": "போச்சர் செக் – தினசரி",
+    "subtitle": "கழுத்து, மேசை, உடல்வாகம்",
+    "keywords_len": 93,
+    "description_len": 941,
+    "was_desc_empty": true
+  },
+  "te-IN": {
+    "name": "పోచర్ చెక్ – సక్రియం",
+    "subtitle": "మెడ, డెస్క్, పోచర్",
+    "keywords_len": 94,
+    "description_len": 878,
+    "was_desc_empty": true
+  },
+  "th": {
+    "name": "เช็กท่าทาง – ทุกวัน",
+    "subtitle": "โค้ชคอ โต๊ะ ท่านั่ง",
+    "keywords_len": 93,
+    "description_len": 973,
+    "was_desc_empty": true
+  },
+  "tr": {
+    "name": "Posture Check – Aktif",
+    "subtitle": "Boyun, masa ve duruş",
+    "keywords_len": 89,
+    "description_len": 1081,
+    "was_desc_empty": true
+  },
+  "uk": {
+    "name": "Posture Check – Активно",
+    "subtitle": "Шия, стіл і постава",
+    "keywords_len": 94,
+    "description_len": 1135,
+    "was_desc_empty": true
+  },
+  "ur-PK": {
+    "name": "پوسچر چیک – فعال",
+    "subtitle": "گردن، ڈیسک اور پوسچر",
+    "keywords_len": 100,
+    "description_len": 1103,
+    "was_desc_empty": true
+  },
+  "vi": {
+    "name": "Kiểm tra tư thế",
+    "subtitle": "Huấn luyện cổ & bàn",
+    "keywords_len": 99,
+    "description_len": 1025,
+    "was_desc_empty": true
+  },
+  "zh-Hans": {
+    "name": "姿态检查 - 每日活跃",
+    "subtitle": "颈椎办公姿势教练",
+    "keywords_len": 64,
+    "description_len": 705,
+    "was_desc_empty": true
+  },
+  "zh-Hant": {
+    "name": "姿態檢查 - 每日活躍",
+    "subtitle": "頸椎辦公姿勢教練",
+    "keywords_len": 64,
+    "description_len": 711,
+    "was_desc_empty": true
+  }
+}

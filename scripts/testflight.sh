@@ -43,6 +43,8 @@ xcodebuild -project Posture.xcodeproj \
   -destination 'generic/platform=iOS' \
   -archivePath "$ARCHIVE" \
   -allowProvisioningUpdates \
+  -parallelizeTargets \
+  IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4 \
   archive
 
 exec "$ROOT/scripts/upload-testflight.sh" "$ARCHIVE"

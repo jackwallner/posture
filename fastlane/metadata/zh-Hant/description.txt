@@ -1,0 +1,40 @@
+坐直——並真正堅持下去。
+
+Posture 是一款溫和的本機姿態教練，適用於 iPhone、AirPods 和 Apple Watch。它不會整天嘮叨，而是每天提醒你幾次，進行快速的姿態檢查。保持良好的連續紀錄，看著你的習慣逐漸養成。
+
+運作方式
+• 校準一次。以你想要的方式坐好，你的 AirPods 會在幾秒內學會你的個人基準。
+• 選擇你的節奏。決定每天要收到幾次提醒，以及希望它們出現在哪些時段。
+• 點按提醒。3 秒的 AirPods 檢查會讀取你的頭部位置，告訴你坐得挺直、開始走樣，還是已經駝背——或者直接用手動方式告訴我們你目前的坐姿。
+• 累積連續紀錄。每天你回應提醒，你的火焰就會成長。凍結保護會替你顧好沒能跟上的日子。
+
+免費功能
+• 透過 AirPods 動作感測器進行 3 秒快速姿態檢查
+• 沒戴 AirPods 時可手動回報
+• 個人校準基準
+• 在你的活躍時段提供智慧提醒
+• Duolingo 風格的連續紀錄，附凍結保護
+• 過去 7 天的姿態歷史與趨勢
+• Lock Screen 與 Home Screen 小工具
+
+POSTURE+
+• 一整天安靜的 AirPods 背景指導——當你開始駝背時輕輕提醒你，即使 iPhone 放在口袋裡也一樣
+• Apple Watch 夥伴 App，提供背景指導
+• 完整的姿態歷史，逐小時呈現——精準看出你何時開始走樣
+• 始終開啟的監測——設定一次就能放手不管
+• 優先支援
+
+哪些 AirPods 適用
+Posture 可透過 AirPods Pro（第 1 與第 2 代）、AirPods（第 3 代）、具備主動式降噪的 AirPods 4，或 AirPods Max 讀取頭部動作。手邊沒有 AirPods？你仍可手動記錄檢查，讓連續紀錄持續下去。
+
+從設計之初就重視隱私
+• 無需帳號、無需註冊
+• 無分析、無第三方追蹤程式、無廣告
+• 頭部動作資料皆在本機處理，絕不會離開你的手機
+• AirPods 與 Apple Watch 的動作資料皆留在本機
+• 你無需建立任何帳號即可使用整個 App
+
+Posture+ 是自動續訂的訂閱，提供月繳與年繳選項，以及一次性的終身解鎖。訂閱方案提供免費試用；試用結束後，除非取消，否則將以所列價格續訂。你可隨時於 設定 › Apple ID › 訂閱項目 中管理或取消。付款將於確認購買時向你的 Apple ID 收取。除非在目前週期結束前至少 24 小時關閉，否則訂閱將自動續訂。
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
