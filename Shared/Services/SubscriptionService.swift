@@ -246,7 +246,13 @@ final class SubscriptionService: NSObject {
     }
 
     private func applyProStatus(from info: CustomerInfo) {
-        isProSubscriber = info.entitlements[Self.proEntitlement]?.isActive == true
+        // Posture ships a single premium entitlement. Prefer the canonical "pro"
+        // identifier, but fall back to ANY active entitlement: the live RevenueCat
+        // entitlement is currently configured as "Posture Check - Active Daily Pro"
+        // (its display name) rather than "pro", so a hardcoded lookup by id would
+        // otherwise leave paid users locked out after a successful purchase.
+        let active = info.entitlements.active
+        isProSubscriber = active[Self.proEntitlement]?.isActive == true || !active.isEmpty
         sharedDefaults?.set(isProSubscriber, forKey: "isProSubscriber")
     }
 
