@@ -95,6 +95,8 @@ targets:
     platform: watchOS
     sources:
       - path: PostureWatchWidget
+      - path: PostureWatchWidget/PrivacyInfo.xcprivacy
+        buildPhase: resources
       - path: Shared
     settings:
       base:
@@ -110,6 +112,8 @@ targets:
     platform: iOS
     sources:
       - path: PostureWidget
+      - path: PostureWidget/PrivacyInfo.xcprivacy
+        buildPhase: resources
       - path: Shared
     settings:
       base:

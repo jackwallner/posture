@@ -13,7 +13,7 @@ THE FREE TIER
 • Manual check-ins for when your AirPods aren't in
 • Personal calibration baseline
 • Smart reminders during your active hours
-• Duolingo-style streaks with freeze protection
+• Daily streaks with freeze protection
 • Your last 7 days of posture history and trends
 • Lock Screen and Home Screen widgets
 
@@ -29,7 +29,7 @@ Posture reads head motion from AirPods Pro (1st & 2nd gen), AirPods (3rd gen), A
 
 PRIVATE BY DESIGN
 • No accounts, no sign-up
-• No analytics, no third-party trackers, no ads
+• No ads and no cross-app tracking of your activity
 • Head-motion data is processed on-device and never leaves your phone
 • AirPods and Apple Watch motion data stays on-device
 • You can use the entire app without ever creating an account

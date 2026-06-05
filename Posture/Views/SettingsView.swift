@@ -45,7 +45,7 @@ struct SettingsView: View {
                                 }
                             }
                         ))
-                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded.")
+                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded. This uses extra battery.")
                             .font(.caption)
                             .foregroundStyle(Theme.ink2)
 
@@ -173,7 +173,7 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) { }
                 Button("Turn on") { settings.airpodsBackgroundEnabled = true }
             } message: {
-                Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded.")
+                Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded. Always-on tracking uses extra battery.")
             }
             .sheet(isPresented: $showingQuickRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)

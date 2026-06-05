@@ -8,6 +8,7 @@ import SwiftUI
 struct AirpodsScanView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let scheduledAt: Date
     let onComplete: (PostureQuality) -> Void
@@ -118,8 +119,8 @@ struct AirpodsScanView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: heroPulse)
-        .onAppear { heroPulse = true }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: heroPulse)
+        .onAppear { if !reduceMotion { heroPulse = true } }
     }
 
     private var heroAccent: Color {

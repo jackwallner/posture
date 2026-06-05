@@ -18,20 +18,19 @@
 </head>
 <body>
     <h1>Posture Privacy Policy</h1>
-    <p class="date">Last updated: May 28, 2026</p>
+    <p class="date">Last updated: June 4, 2026</p>
 
     <h2>Overview</h2>
-    <p>Posture is an AI posture coach for AirPods, iPhone, and Apple Watch. It reads your alignment from the head-motion sensor in your AirPods. The core experience is free. An optional Posture+ subscription unlocks additional features. Your privacy is fundamental to how this app is built.</p>
+    <p>Posture is a posture coach for AirPods, iPhone, and Apple Watch. It reads your alignment from the head-motion sensor in your AirPods. The core experience is free. An optional Posture+ subscription unlocks additional features. Your privacy is fundamental to how this app is built.</p>
 
     <h2>Data Collection</h2>
-    <p><strong>Posture does not collect, transmit, or share any of your personal data.</strong></p>
+    <p><strong>Posture does not collect or transmit your posture, motion, or health data.</strong> The only information that ever leaves your device is anonymous purchase data used to validate your subscription, as described below.</p>
     <ul>
         <li>No camera is used — alignment is read from AirPods head-motion only</li>
         <li>No health or motion data is sent to any server</li>
-        <li>No analytics or tracking of any kind</li>
-        <li>No third-party analytics or advertising SDKs</li>
-        <li>RevenueCat is used only to validate Posture+ subscription status via Apple's StoreKit (anonymous purchase receipts; no posture or motion data)</li>
-        <li>No advertising</li>
+        <li>No advertising, and no cross-app tracking of any kind</li>
+        <li>No third-party advertising or analytics SDKs — the only third-party SDK is RevenueCat, used solely to validate Posture+ purchases (see below)</li>
+        <li>RevenueCat validates Posture+ subscription status via Apple's StoreKit using anonymous purchase receipts and an anonymous identifier; it never receives your posture, motion, or health data</li>
         <li>No account creation required</li>
     </ul>
 
@@ -47,7 +46,7 @@
     <p>Posture+ background monitoring plays a silent audio tone so iOS keeps delivering AirPods motion while the app is in the background; iOS shows an orange dot to indicate audio is in use. <strong>No audio is ever recorded or captured</strong> &mdash; the silent tone exists only to keep the motion sensor awake.</p>
 
     <h2>HealthKit Data (Apple Watch)</h2>
-    <p>Posture+ subscribers can enable Apple Watch background monitoring via HKWorkoutSession on the watch app. The watch app requests HealthKit access for background wrist-motion detection. Posture <strong>does not write any data to Apple Health</strong>. The iPhone app does not use HealthKit.</p>
+    <p>Posture+ subscribers can enable Apple Watch background monitoring via HKWorkoutSession on the watch app. To keep the background session and motion updates alive, the watch app saves a short posture-monitoring workout to <strong>your own</strong> Apple Health on your device. This workout stays in your private Apple Health and is <strong>never transmitted to us or anyone else</strong>. Your wrist motion is read on-device via the watch's motion sensors (CoreMotion), not from Apple Health — the app reads no Health data. The iPhone app does not use HealthKit at all.</p>
     <p>You can revoke HealthKit access on your watch by going to <strong>Settings &gt; Health &gt; Data Access &amp; Devices &gt; Posture</strong> on the paired iPhone.</p>
 
     <h2>Local Storage</h2>
@@ -55,11 +54,11 @@
     <p>Your preferences (goals, calibration baseline, notification settings) are stored locally in UserDefaults on your device.</p>
 
     <h2>Data Retention &amp; Deletion</h2>
-    <p>All data remains on your device until you delete the app. Deleting Posture removes all locally stored data. No data persists on any external server because no data is ever transmitted externally.</p>
+    <p>Your posture, motion, calibration, streak, and Health data stay on your device until you delete the app. Deleting Posture removes all locally stored data. None of this data is ever sent to an external server — the only information that leaves your device is the anonymous purchase data Apple and RevenueCat use to validate your subscription.</p>
     <p>To delete your data, you can either uninstall the app (which removes all stored data) or revoke motion and HealthKit access in Settings. No additional request is needed since no data exists outside your device.</p>
 
     <h2>Children's Privacy</h2>
-    <p>Posture does not knowingly collect information from children under 13. The app does not collect any information from any user.</p>
+    <p>Posture does not knowingly collect information from children under 13. The app does not collect personal information from any user; the only data processed off-device is anonymous purchase information handled by Apple and RevenueCat.</p>
 
     <h2>Changes to This Policy</h2>
     <p>If this privacy policy is updated, the changes will be reflected on this page with an updated date.</p>

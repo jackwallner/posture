@@ -173,9 +173,9 @@ final class AirpodsBackgroundMonitor {
         isConnected = true
 
         let calibration = calibrationService.current()
-        // AirPods motion lives in a different reference frame than the front
-        // camera. Prefer the AirPods baseline; fall back to camera only if
-        // calibration predates the AirPods path.
+        // Prefer the AirPods head-motion baseline; `basePitch` is the legacy
+        // calibration value retained for users whose calibration predates the
+        // AirPods path.
         let baseline = calibration?.airpodsPitch ?? calibration?.basePitch ?? 0
         let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
         let sensitivity = GoalSettings.shared.sensitivity
@@ -237,10 +237,14 @@ final class AirpodsBackgroundMonitor {
 
     private func startAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
+        // .mixWithOthers only — the silent keep-alive tone must be both
+        // inaudible AND non-interfering. .duckOthers would audibly lower the
+        // user's music/podcasts the entire time monitoring is armed, which is
+        // a real UX complaint and sharpens the 2.5.4 "no audible content" case.
         try session.setCategory(
             .playback,
             mode: .default,
-            options: [.mixWithOthers, .duckOthers]
+            options: [.mixWithOthers]
         )
         try session.setActive(true, options: .notifyOthersOnDeactivation)
     }

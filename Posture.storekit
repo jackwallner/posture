@@ -8,8 +8,8 @@
       "internalID" : "P-LIFETIME",
       "localizations" : [
         {
-          "description" : "All Posture Pro features forever.",
-          "displayName" : "Posture Pro Lifetime",
+          "description" : "All Posture+ features forever.",
+          "displayName" : "Posture+ Lifetime",
           "locale" : "en_US"
         }
       ],
@@ -46,8 +46,8 @@
           },
           "localizations" : [
             {
-              "description" : "All Posture Pro features, billed monthly.",
-              "displayName" : "Posture Pro Monthly",
+              "description" : "All Posture+ features, billed monthly.",
+              "displayName" : "Posture+ Monthly",
               "locale" : "en_US"
             }
           ],
@@ -71,8 +71,8 @@
           },
           "localizations" : [
             {
-              "description" : "All Posture Pro features, billed yearly.",
-              "displayName" : "Posture Pro Yearly",
+              "description" : "All Posture+ features, billed yearly.",
+              "displayName" : "Posture+ Yearly",
               "locale" : "en_US"
             }
           ],

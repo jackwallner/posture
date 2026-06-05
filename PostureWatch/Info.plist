@@ -25,9 +25,9 @@
 	<key>NSMotionUsageDescription</key>
 	<string>Posture reads wrist motion to detect when you slouch and gently nudge you with a haptic.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Posture reads your wrist orientation to detect slouching and provide real-time posture nudges throughout the day.</string>
+	<string>Posture starts a workout session on your Apple Watch so it can monitor your wrist position in the background. Your wrist motion is read on-device via motion sensors; no Health data is read.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Posture saves short posture-monitoring workouts to Apple Health so it can track your wrist position in the background.</string>
+	<string>Posture saves a short posture-monitoring workout to your Apple Health so watchOS keeps the background session and motion updates alive while it nudges you.</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKCompanionAppBundleIdentifier</key>
