@@ -167,6 +167,37 @@ final class AirpodsBackgroundMonitor {
         inBadBout = false
     }
 
+    // MARK: - Foreground read coordination
+
+    /// True while a foreground read (calibration or a check-in scan) has taken
+    /// over the head-motion stream. See `suspendForForegroundRead()`.
+    private var suspendedForForegroundRead = false
+
+    /// A foreground read — the AirPods calibration capture or the 3-second
+    /// check-in scan — spins up its OWN `CMHeadphoneMotionManager`. iOS does
+    /// not reliably deliver head motion to two managers at once: a live
+    /// background monitor starves the read's manager, so the scan/calibration
+    /// sits on "waiting for AirPods" and eventually shows "can't hear your
+    /// AirPods" even though they're connected and streaming to us. Suspend our
+    /// motion stream for the duration of the read so it has exclusive access.
+    /// Keeps any silent-audio session alive (no orange-dot churn); only the
+    /// motion updates pause. Idempotent.
+    func suspendForForegroundRead() {
+        guard isMonitoring, !suspendedForForegroundRead else { return }
+        suspendedForForegroundRead = true
+        headphoneService.stop()
+    }
+
+    /// Resume the background motion stream after a foreground read finishes.
+    /// No-op unless we actually suspended. Audio (if Pro/background) was never
+    /// torn down, so we only need to re-arm the motion updates.
+    func resumeAfterForegroundRead() {
+        guard suspendedForForegroundRead else { return }
+        suspendedForForegroundRead = false
+        guard isMonitoring else { return }
+        headphoneService.start()
+    }
+
     // MARK: - Sample handler
 
     private func onSample(pitch: Double, yaw: Double, roll: Double) {

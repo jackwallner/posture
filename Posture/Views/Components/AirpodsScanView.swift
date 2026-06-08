@@ -40,6 +40,7 @@ struct AirpodsScanView: View {
             countdownTask?.cancel()
             waitDeadlineTask?.cancel()
             airpods.stop()
+            AirpodsBackgroundMonitor.shared.resumeAfterForegroundRead()
         }
         .onChange(of: airpods.isConnected) { _, connected in
             if connected, phase == .waiting {
@@ -188,6 +189,11 @@ struct AirpodsScanView: View {
     // MARK: - Lifecycle
 
     private func begin() {
+        // Take exclusive ownership of the head-motion stream for the scan —
+        // the shared background monitor would otherwise starve this view's own
+        // CMHeadphoneMotionManager, leaving the scan stuck on "waiting".
+        // Resumed in onDisappear.
+        AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
         guard airpods.isAvailable else {
             phase = .noConnection
             return

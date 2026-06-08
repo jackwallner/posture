@@ -68,6 +68,7 @@ struct CalibrationView: View {
             waitDeadlineTask?.cancel()
             permissionWatchTask?.cancel()
             airpods.stop()
+            AirpodsBackgroundMonitor.shared.resumeAfterForegroundRead()
         }
     }
 
@@ -283,6 +284,10 @@ struct CalibrationView: View {
     // MARK: - State machine
 
     private func begin() {
+        // Take exclusive ownership of the head-motion stream — the shared
+        // background monitor would otherwise starve this capture's own
+        // CMHeadphoneMotionManager. Resumed in onDisappear.
+        AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
         airpods.start()
         // If AirPods are already in, the first sample arrives within a
         // tick and onChange flips us to capture. If not, give the user a
