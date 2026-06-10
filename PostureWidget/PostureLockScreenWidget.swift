@@ -72,9 +72,46 @@ struct PostureLockScreenWidgetView: View {
             rectangular
         case .accessoryInline:
             inline
+        case .systemSmall:
+            systemSmall
         default:
             inline
         }
+    }
+
+    private var systemSmall: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 5) {
+                Image(systemName: "figure.stand")
+                    .font(.subheadline.weight(.semibold))
+                Text("Posture")
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+            }
+            .foregroundStyle(Theme.ink)
+            Spacer(minLength: 0)
+            if let score = entry.todayScore {
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("\(score)")
+                        .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                        .foregroundStyle(Theme.ink)
+                    Text("/ 100")
+                        .font(.caption)
+                        .foregroundStyle(Theme.ink2)
+                }
+            } else {
+                Text("No check-in yet today")
+                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .foregroundStyle(Theme.ink2)
+            }
+            HStack(spacing: 4) {
+                Image(systemName: "flame.fill")
+                    .font(.caption2)
+                Text("\(entry.streak)-day streak")
+                    .font(.system(.caption, design: .rounded))
+            }
+            .foregroundStyle(Theme.ink2)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 
     private var circular: some View {
@@ -155,6 +192,7 @@ struct PostureWidget: Widget {
             .accessoryCircular,
             .accessoryInline,
             .accessoryRectangular,
+            .systemSmall,
         ])
     }
 }

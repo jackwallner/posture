@@ -68,6 +68,8 @@ targets:
         product: RevenueCat
       - target: PostureWatch
         embed: true
+      - target: PostureWidget
+        embed: true
 
   PostureWatch:
     type: application
