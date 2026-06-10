@@ -1,113 +1,66 @@
 # Astro ASO setup — Posture Check (US)
 
-Last optimized: **2026-05-25** · Astro temp app **Posture** (`104`) · ~85 targeted keywords
+Last optimized: **2026-06-09** (v3 final) · Astro temp app **Posture** (`104`)
 
-## Strategy (popularity × difficulty × fit)
+## Strategy (v3 — indie-winnable)
 
-| Tier | What to track | Why |
-|------|----------------|-----|
-| **ASC field** | Single tokens with highest search volume | Fills the 100-char keyword slot; compounds with name/subtitle |
-| **Priority phrases** | `posture reminder` (pop 16, diff 23) | Best prelaunch opportunity — matches core loop |
-| **Accessory head terms** | `apple watch`, `watch`, `airpods`, `reminder`, `habit`, `coach` | High pop (55–73); harder rank but essential for Watch/AirPods positioning |
-| **Low-diff phrases** | `slouch`, `tech neck`, `back straight`, `align posture`, `posture scan` | pop 5–6, diff 7–19 — realistic wins for a new app |
-| **Streak differentiation** | `habit tracker`, `streak tracker`, `duolingo streak`, `streak freeze` | Habit tracker pop 67; streak tracker 30 — unique vs generic posture apps |
-| **Skip** | Description fragments, `chin tuck`, generic `health tracker` alone | Removed 80+ junk terms via MCP |
+We compound name/subtitle terms with high-pop ASC field tokens. Apple indexes all three fields together, so every field token + name/subtitle word forms a searchable phrase for free.
 
-**Opportunity score** = `popularity ÷ difficulty` (higher is better).
+**Name** (28/30): `Posture Check - Active Daily`
+**Subtitle** (29/30): `Neck, desk & slouch coach`
 
-## App
+**Auto-indexed (free):** `posture`, `check`, `active`, `daily`, `neck`, `desk`, `slouch`, `coach`
 
-| Field | Value |
-|-------|-------|
-| ASC name | Posture Check - Active Daily |
-| ASC app ID | `6768514450` |
-| Astro (prelaunch) | **Posture** · `104` |
-| Bundle ID | `com.jackwallner.posture` |
-
-## ASC keyword field (updated locally)
-
+**ASC keyword field** (94/100):
 ```
-slouch,habit,airpods,watch,widget,neck,back,desk,coach,ergonomics,wellness,scan,tap,align,health,wfh
+reminder,habit,scan,health,body,back,care,spine,align,tracker,streak,airpods,watch,widget,text
 ```
 
-**100 characters exactly.** Comma-separated, no spaces (Apple format).
+(`wellness` — pop 9 / diff 72, low-volume and unwinnable — and `fit` — untracked,
+no data — were dropped in favor of `align` and `text`. `streak` kept: it unlocks
+streak tracker (30/60) and streak app (9/54) via the `tracker` token. Applied to
+en-US, en-AU, en-CA, en-GB.)
 
-**Do not repeat name/subtitle words** — `posture`, `reminder`, `streak`, `check`, `active`, `daily` are already indexed from:
+**Why each token earns its slot:**
 
-- **Name (28/30):** `Posture Check - Active Daily`
-- **Subtitle (29/30):** `Posture reminders and streaks`
+| Token | Pop | Diff | Standalone | Unlocked compounds |
+|-------|-----|------|-----------|-------------------|
+| `reminder` | 55 | 77 | ✅ High | posture reminder(16), daily reminder(9) |
+| `habit` | 60 | 70 | ✅ High | habit tracker(67), habit builder(17) |
+| `airpods` | 57 | 73 | ✅ High | airpods posture, airpods app(26) |
+| `watch` | 66 | 64 | ✅ High | apple watch(73), watch app(44) |
+| `back` | 20 | 61 | ✅ Medium | back posture, back care |
+| `scan` | 63 | 88 | ✅ High | posture scan(6), body scan(8) |
+| `tracker` | 52 | 81 | ✅ High | habit tracker(67), calorie tracker(74) |
+| `text` | 74 | 80 | ✅ High | text neck |
+| `widget` | 70 | 83 | ✅ High | posture widget |
+| `health` | 68 | 74 | ✅ High | daily health(21), health check(21), health coach(6) |
+| `body` | 53 | 70 | ✅ High | body scan(8), body tracker(17), body alignment(16) |
+| `care` | 54 | 70 | ✅ High | back care, neck care, self care(36) |
+| `wellness` | 9 | 72 | ✅ Low | wellness coach(12), wellness app(19) |
+| `spine` | 17 | 19 | ✅ Low | spine health, spine alignment |
+| `align` | 9 | 39 | ✅ Low | body alignment(16), align posture |
 
-Putting those again in the keyword field wastes slots.
+**Pop=5 keywords removed from Astro tracking:** 218 keywords pruned (slouch, tech neck, text neck, back straight, etc.). Only pop≥6 keywords tracked.
 
-Upload when ready:
-
-```bash
-./scripts/upload-appstore-metadata.sh
-```
-
-File: `fastlane/metadata/en-US/keywords.txt`
-
-## Top keywords to optimize first
-
-| Pop | Diff | Keyword | Notes |
-|-----|------|---------|--------|
-| 16 | 23 | **posture reminder** | #1 priority — subtitle + screenshots |
-| 67 | 68 | habit tracker | Streak/habit angle |
-| 66 | 64 | watch | Pair with Apple Watch creative |
-| 58 | 73 | airpods | Pro differentiator |
-| 57 | 77 | reminder | Core mechanic |
-| 30 | 60 | streak tracker | Duolingo-style positioning |
-| 6 | 13 | posture scan | QuickScan feature |
-| 5 | 7 | tech neck | Low difficulty phrase |
-| 5 | 9 | slouch / slouch alert | Brand-adjacent |
-| 5 | 17 | back straight | Added after probe — strong opp |
-
-## Tracked list
-
-Canonical: `scripts/astro-keywords-us.json` (~72 terms)  
-Report: `scripts/astro-keyword-report.json`
+**Keywords NOT chased (and why):**
+- `habit tracker` alone (pop 67, diff 68) — dominated by InnerGrow (141K reviews), but we index it via `habit` + `tracker` field tokens
+- `streak` (pop 7) — dropped from field, unlocks only streak tracker(30) via `tracker` compound
+- `posture` alone (pop 18, diff 42) — already in name, 232 competing apps
 
 ## Iterate
 
 ```bash
-# Re-score tracked keywords, remove junk, add seeds
+# Re-score tracked keywords
 PYTHONPATH=scripts python3 scripts/astro-optimize-keywords.py --analyze
-PYTHONPATH=scripts python3 scripts/astro-optimize-keywords.py --apply --remove-junk
 
-# Re-sync curated file only
+# Re-sync curated keyword file
 ./scripts/sync-astro-keywords.sh
 ```
 
 ## After App Store launch
 
 1. Add **Posture Check - Active Daily** in Astro by ID `6768514450`
-2. Re-run optimizer + `./scripts/astro-setup.sh --skip-pull`
+2. Re-run optimizer
 3. Retire temp **Posture** entry
-4. Watch rankings for **posture reminder** and **habit tracker** first
-
-## Name & subtitle (should optimize — not auto-changed)
-
-Apple limits: **name 30**, **subtitle 30**, **keywords 100** (comma-separated).
-
-| Field | Current | Chars |
-|-------|---------|-------|
-| Name | Posture Check - Active Daily | 28/30 |
-| Subtitle | Posture reminders and streaks | 29/30 |
-
-**Recommended subtitle tests** (pick one, A/B after launch):
-
-| Subtitle | Chars | Rationale |
-|----------|-------|-----------|
-| `AirPods & Watch Reminders` | 25 | High-pop accessories (58–73); clear differentiator |
-| `Slouch Alerts & Streaks` | 23 | `slouch` + streak mechanic; no wasted "posture" repeat |
-| `3-Sec Posture Checks` | 20 | Supports `posture scan` / QuickScan |
-
-**Name:** current is fine (brand + "Active Daily"). Optional at 30/30: `Posture Reminder: Daily Streak` — puts **reminder** + **streak** in the indexed title.
-
-**We optimized keywords locally; name/subtitle are still your prior ASC copy** until you edit and upload.
-
-## MCP prompts
-
-- "Posture US: keywords with popularity ≥ 10 and difficulty ≤ 40"
-- "Compare rank changes for posture reminder vs slouch alert"
-- "Search App Store for posture reminder — top 5 competitors"
+4. Watch **posture reminder** (pop 16, diff 23) and **daily health** (pop 21, diff 57) first

@@ -1,497 +1,497 @@
 {
   "ar-SA": {
     "keywords": {
-      "old": "",
-      "new": "رقبة,ظهر,جلوس,ارغونوميك,airpods,ساعة,ودجت,عادة,عمود,فقري,كتف,مكتب,عمل,منزلي,كاميرا,معايرة,صحة,مدرب",
-      "len": 98
+      "old": "تذكير,عادة,مسح,صحة,جسم,ظهر,رعاية,عمود,عافية,متتبع",
+      "new": "تذكير,عادة,مسح,صحة,جسم,ظهر,رعاية,عمود,عافية,متتبع,سلسلة,airpods,ساعة,ودجت,لياقة",
+      "len": 79
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "تدريب الرقبة والمكتب",
       "new": "تدريب الرقبة والمكتب"
     }
   },
   "bn-BD": {
     "keywords": {
-      "old": "",
-      "new": "ঘাড়,পিঠ,বসা,ইর্গোনমিক্স,airpods,ঘড়ি,উইজেট,অভ্যাস,মেরুদণ্ড,কাঁধ,ডেস্ক,বাড়ি,কাজ,ক্যামেরা",
-      "len": 89
+      "old": "মনেকরিয়ে,অভ্যাস,স্ক্যান,স্বাস্থ্য,শরীর,পিঠ,যত্ন,মেরুদণ্ড,কল্যাণ,ট্র্যাকার",
+      "new": "মনেকরিয়ে,অভ্যাস,স্ক্যান,স্বাস্থ্য,শরীর,পিঠ,যত্ন,মেরুদণ্ড,কল্যাণ,ট্র্যাকার,ধারাবাহিক,airpods,ঘড়ি",
+      "len": 97
     },
     "subtitle": {}
   },
   "ca": {
     "keywords": {
-      "old": "",
-      "new": "esquena,assegut,ergonomia,airpods,rellotge,widget,hàbit,columna,espatlles,oficina,telefeina,càmera",
-      "len": 98
+      "old": "recordatori,hàbit,escaneig,salut,cos,esquena,cura,columna,benestar,seguiment",
+      "new": "recordatori,hàbit,escaneig,salut,cos,esquena,cura,columna,benestar,seguiment,ratxa,airpods,rellotge",
+      "len": 99
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Coll, escriptori i postura",
       "new": "Coll, escriptori i postura"
     }
   },
   "cs": {
     "keywords": {
-      "old": "",
-      "new": "krk,záda,sedící,ergonomie,airpods,hodinky,widget,návyk,páteř,ramena,kancelář,homeoffice,kamera",
+      "old": "připomínka,návyk,sken,zdraví,tělo,záda,péče,páteř,blaho,sledování",
+      "new": "připomínka,návyk,sken,zdraví,tělo,záda,péče,páteř,blaho,sledování,série,airpods,hodinky,widget",
       "len": 94
     },
     "subtitle": {}
   },
   "da": {
     "keywords": {
-      "old": "",
-      "new": "ryg,siddende,ergonomi,airpods,ur,widget,vane,rygsøjle,skuldre,kontor,hjemmearbejde,kamera",
-      "len": 89
+      "old": "påmindelse,vane,scan,sundhed,krop,ryg,pleje,rygsøjle,velvære,sporing",
+      "new": "påmindelse,vane,scan,sundhed,krop,ryg,pleje,rygsøjle,velvære,sporing,serie,airpods,ur,widget,form",
+      "len": 97
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nakke, skrivebord & holdning",
       "new": "Nakke, skrivebord & holdning"
     }
   },
   "de-DE": {
     "keywords": {
-      "old": "",
-      "new": "rücken,sitz,ergonomie,airpods,uhr,widget,gewohnheit,wirbelsäule,schulter,büro,homeoffice,kamera",
+      "old": "erinnerung,gewohnheit,scan,gesundheit,körper,rücken,oase,wirbelsäule,wohlbefinden,tracker",
+      "new": "erinnerung,gewohnheit,scan,gesundheit,körper,rücken,oase,wirbelsäule,wohlbefinden,tracker,serie",
       "len": 95
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nacken- & Schreibtisch-Coach",
       "new": "Nacken- & Schreibtisch-Coach"
     }
   },
   "el": {
     "keywords": {
-      "old": "",
-      "new": "αυχένας,πλάτη,κάθισμα,εργονομία,airpods,ρολόι,widget,συνήθεια,σπονδυλική,ώμοι,γραφείο,τηλεργασία",
-      "len": 96
+      "old": "υπενθύμιση,συνήθεια,σάρωση,υγεία,σώμα,πλάτη,φροντίδα,σπονδυλική,ευεξία,παρακολούθηση",
+      "new": "υπενθύμιση,συνήθεια,σάρωση,υγεία,σώμα,πλάτη,φροντίδα,σπονδυλική,ευεξία,παρακολούθηση,σερί,airpods",
+      "len": 97
     },
     "subtitle": {}
   },
   "en-AU": {
     "keywords": {
-      "old": "",
-      "new": "back,spine,alignment,habit,airpods,watch,widget,ergonomics,sit,shoulders,office,wfh,camera",
-      "len": 90
+      "old": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker",
+      "new": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker,streak,airpods,watch,widget,fit",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Neck, desk & slouch coach",
       "new": "Neck, desk & slouch coach"
     }
   },
   "en-CA": {
     "keywords": {
-      "old": "",
-      "new": "back,spine,alignment,habit,airpods,watch,widget,ergonomics,sit,shoulders,office,wfh,camera",
-      "len": 90
+      "old": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker",
+      "new": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker,streak,airpods,watch,widget,fit",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Neck, desk & slouch coach",
       "new": "Neck, desk & slouch coach"
     }
   },
   "en-GB": {
     "keywords": {
-      "old": "",
-      "new": "back,spine,alignment,habit,airpods,watch,widget,ergonomics,sit,shoulders,office,wfh,camera",
-      "len": 90
+      "old": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker",
+      "new": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker,streak,airpods,watch,widget,fit",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Neck, desk & slouch coach",
       "new": "Neck, desk & slouch coach"
     }
   },
   "en-US": {
     "keywords": {
-      "old": "posture,slouch,neck,back,reminder,streak,habit,airpods,watch,wellness,ergonomics,coach,desk,sit",
-      "new": "back,spine,alignment,habit,airpods,watch,widget,ergonomics,sit,shoulders,office,wfh,camera",
-      "len": 90
+      "old": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker,streak,airpods,watch,widget,fit",
+      "new": "reminder,habit,scan,health,body,back,care,spine,wellness,tracker,streak,airpods,watch,widget,fit",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Neck, desk & slouch coach",
       "new": "Neck, desk & slouch coach"
     }
   },
   "es-ES": {
     "keywords": {
-      "old": "",
-      "new": "espalda,sentado,ergonomía,airpods,reloj,widget,hábito,columna,hombros,oficina,teletrabajo,cámara",
-      "len": 96
+      "old": "recordatorio,hábito,escaner,salud,cuerpo,espalda,cuidado,columna,bienestar,seguimiento",
+      "new": "recordatorio,hábito,escaner,salud,cuerpo,espalda,cuidado,columna,bienestar,seguimiento,racha,airpods",
+      "len": 100
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Cuello, escritorio y postura",
       "new": "Cuello, escritorio y postura"
     }
   },
   "es-MX": {
     "keywords": {
-      "old": "",
-      "new": "espalda,sentado,ergonomía,airpods,reloj,widget,hábito,columna,hombros,oficina,homeoffice,cámara",
-      "len": 95
+      "old": "recordatorio,hábito,escaner,salud,cuerpo,espalda,cuidado,columna,bienestar,seguimiento",
+      "new": "recordatorio,hábito,escaner,salud,cuerpo,espalda,cuidado,columna,bienestar,seguimiento,racha,airpods",
+      "len": 100
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Cuello, escritorio y postura",
       "new": "Cuello, escritorio y postura"
     }
   },
   "fi": {
     "keywords": {
-      "old": "",
-      "new": "selkä,istuminen,ergonomia,airpods,kello,widget,totuus,hartiat,toimisto,etätyö,kamera,kalibrointi",
-      "len": 96
+      "old": "muistutus,tapa,skannaus,terveys,keho,selkä,hoito,selkäranka,hyvinvointi,seuranta",
+      "new": "muistutus,tapa,skannaus,terveys,keho,selkä,hoito,selkäranka,hyvinvointi,seuranta,sarja,airpods,kello",
+      "len": 100
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Niska, työpöytä & asento",
       "new": "Niska, työpöytä & asento"
     }
   },
   "fr-CA": {
     "keywords": {
-      "old": "",
-      "new": "dos,assis,ergonomie,airpods,montre,widget,habitude,colonne,épaules,télétravail,caméra,calibration",
-      "len": 97
+      "old": "rappel,habitude,scan,santé,corps,dos,soin,colonne,bien-être,suivi",
+      "new": "rappel,habitude,scan,santé,corps,dos,soin,colonne,bien-être,suivi,série,airpods,montre,widget,forme",
+      "len": 99
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nuque, bureau & posture",
       "new": "Nuque, bureau & posture"
     }
   },
   "fr-FR": {
     "keywords": {
-      "old": "",
-      "new": "dos,assis,ergonomie,airpods,montre,widget,habitude,colonne,épaules,télétravail,caméra,calibration",
-      "len": 97
+      "old": "rappel,habitude,scan,santé,corps,dos,soin,colonne,bien-être,suivi",
+      "new": "rappel,habitude,scan,santé,corps,dos,soin,colonne,bien-être,suivi,série,airpods,montre,widget,forme",
+      "len": 99
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nuque, bureau & posture",
       "new": "Nuque, bureau & posture"
     }
   },
   "gu-IN": {
     "keywords": {
-      "old": "",
-      "new": "ગરદન,પીઠ,બેસવું,એર્ગોનોમિક્સ,airpods,ઘડિયાળ,વિજેટ,આદત,રીંઢ,ખભા,ડેસ્ક,ઘર,કામ,કેમેરા,કેલિબ્રેશન",
-      "len": 93
+      "old": "યાદ,આદત,સ્કેન,સ્વાસ્થ્ય,શરીર,પીઠ,સંભાળ,રીંઢ,કલ્યાણ,ટ્રેકર",
+      "new": "યાદ,આદત,સ્કેન,સ્વાસ્થ્ય,શરીર,પીઠ,સંભાળ,રીંઢ,કલ્યાણ,ટ્રેકર,સતત,airpods,ઘડિયાળ,વિજેટ,ફિટ",
+      "len": 86
     },
     "subtitle": {}
   },
   "he": {
     "keywords": {
-      "old": "",
-      "new": "צוואר,גב,ישיבה,ארגונומיה,airpods,שעון,ווידג'ט,הרגל,עמוד,שדרה,כתף,משרד,עבודה,מהבית,מצלמה,כיול,בריאות",
-      "len": 99
+      "old": "תזכורת,הרגל,סריקה,בריאות,גוף,גב,טיפול,עמוד,רווחה,עוקב",
+      "new": "תזכורת,הרגל,סריקה,בריאות,גוף,גב,טיפול,עמוד,רווחה,עוקב,רצף,airpods,שעון,ווידג'ט,כושר",
+      "len": 83
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "מאמן צוואר ושולחן",
       "new": "מאמן צוואר ושולחן"
     }
   },
   "hi": {
     "keywords": {
-      "old": "",
-      "new": "गर्दन,पीठ,बैठना,एर्गोनॉमिक्स,airpods,घड़ी,विजेट,आदत,रीढ़,कंधा,डेस्क,घर,से,काम,कैमरा,कैलिब्रेशन",
-      "len": 94
+      "old": "याद,आदत,स्कैन,स्वास्थ्य,शरीर,पीठ,देखभाल,रीढ़,कल्याण,ट्रैकर",
+      "new": "याद,आदत,स्कैन,स्वास्थ्य,शरीर,पीठ,देखभाल,रीढ़,कल्याण,ट्रैकर,लगातार,airpods,घड़ी,विजेट,फिट",
+      "len": 88
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "गर्दन, डेस्क व पोश्चर",
       "new": "गर्दन, डेस्क व पोश्चर"
     }
   },
   "hr": {
     "keywords": {
-      "old": "",
-      "new": "vrat,leđa,sjedeći,ergonomija,airpods,sat,widget,navika,kralježnica,ramena,ured,rad,od,kuće,kamera",
-      "len": 97
+      "old": "podsjetnik,navika,sken,zdravlje,tijelo,leđa,skrb,kralježnica,praćenje",
+      "new": "podsjetnik,navika,sken,zdravlje,tijelo,leđa,skrb,kralježnica,praćenje,serija,airpods,sat,widget",
+      "len": 95
     },
     "subtitle": {}
   },
   "hu": {
     "keywords": {
-      "old": "",
-      "new": "nyak,hát,ülés,ergonómia,airpods,óra,widget,szokás,gerinc,vállak,iroda,homeoffice,kamera,kalibráció",
-      "len": 98
+      "old": "emlékeztető,szokás,szkennelés,egészség,hát,gondoskodás,gerinc,jóllét,követés",
+      "new": "emlékeztető,szokás,szkennelés,egészség,hát,gondoskodás,gerinc,jóllét,követés,sorozat,airpods,óra",
+      "len": 96
     },
     "subtitle": {}
   },
   "id": {
     "keywords": {
-      "old": "",
-      "new": "punggung,duduk,ergonomi,airpods,jam,widget,kebiasaan,tulang,belakang,bahu,kantor,kerja,rumah,kamera",
-      "len": 99
+      "old": "pengingat,kebiasaan,scan,kesehatan,tubuh,punggung,perawatan,tulangbelakang,kesejahteraan,pelacak",
+      "new": "pengingat,kebiasaan,scan,kesehatan,tubuh,punggung,perawatan,tulangbelakang,kesejahteraan,pelacak",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Pelatih leher & meja",
       "new": "Pelatih leher & meja"
     }
   },
   "it": {
     "keywords": {
-      "old": "",
-      "new": "schiena,seduto,ergonomia,airpods,orologio,widget,abitudine,colonna,spalle,ufficio,smartworking",
-      "len": 94
+      "old": "promemoria,abitudine,scansione,salute,corpo,schiena,cura,colonna,benessere,tracciamento",
+      "new": "promemoria,abitudine,scansione,salute,corpo,schiena,cura,colonna,benessere,tracciamento,serie",
+      "len": 93
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Collo, scrivania e postura",
       "new": "Collo, scrivania e postura"
     }
   },
   "ja": {
     "keywords": {
-      "old": "",
-      "new": "首,背中,座り,エルゴノミクス,airpods,ウォッチ,ウィジェット,習慣,脊椎,肩,デスク,在宅,カメラ,キャリブレーション,健康,コーチ,姿勢改善,猫背",
-      "len": 79
+      "old": "リマインダー,習慣,スキャン,健康,身体,背中,ケア,脊椎,ウェルネス,トラッカー",
+      "new": "リマインダー,習慣,スキャン,健康,身体,背中,ケア,脊椎,ウェルネス,トラッカー,連続記録,airpods,ウォッチ,ウィジェット,フィット",
+      "len": 71
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "首・デスク・姿勢コーチ",
       "new": "首・デスク・姿勢コーチ"
     }
   },
   "kn-IN": {
     "keywords": {
-      "old": "",
-      "new": "ಕುತ್ತಿಗೆ,ಬೆನ್ನಿನ,ಕುಳಿತು,ಎರ್ಗೊನಾಮಿಕ್ಸ್,airpods,ಗಡಿಯಾರ,ವಿಜೆಟ್,ಅಭ್ಯಾಸ,ಮೂಳೆ,ಭುಜ,ಮೇಜು,ಮನೆ,ಕೆಲಸ,ಕ್ಯಾಮೆರಾ",
-      "len": 98
+      "old": "ಜ್ಞಾಪನೆ,ಅಭ್ಯಾಸ,ಸ್ಕ್ಯಾನ್,ಆರೋಗ್ಯ,ದೇಹ,ಬೆನ್ನಿನ,ಆರೈಕೆ,ಮೂಳೆ,ಕ್ಷೇಮ,ಟ್ರ್ಯಾಕರ್",
+      "new": "ಜ್ಞಾಪನೆ,ಅಭ್ಯಾಸ,ಸ್ಕ್ಯಾನ್,ಆರೋಗ್ಯ,ದೇಹ,ಬೆನ್ನಿನ,ಆರೈಕೆ,ಮೂಳೆ,ಕ್ಷೇಮ,ಟ್ರ್ಯಾಕರ್,ಸರಣಿ,airpods,ಗಡಿಯಾರ,ವಿಜೆಟ್",
+      "len": 96
     },
     "subtitle": {}
   },
   "ko": {
     "keywords": {
-      "old": "",
-      "new": "목,등,앉기,인체공학,airpods,워치,위젯,습관,척추,어깨,책상,재택,카메라,캘리브레이션,건강,코치,거북목,자세",
-      "len": 64
+      "old": "리마인더,습관,스캔,건강,신체,등,케어,척추,웰빙,트래커",
+      "new": "리마인더,습관,스캔,건강,신체,등,케어,척추,웰빙,트래커,연속,airpods,워치,위젯,핏",
+      "len": 50
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "목·책상·자세 코치",
       "new": "목·책상·자세 코치"
     }
   },
   "ml-IN": {
     "keywords": {
-      "old": "",
-      "new": "കഴുത്ത്,പുറം,ഇരിക്കൽ,എർഗോണോമിക്സ്,airpods,വാച്ച്,വിജറ്റ്,ശീലം,മുതൻ,തോൾ,ഡെസ്ക്,വീട്ടുജോലി,ക്യാമറ",
-      "len": 95
+      "old": "ഓർമ്മപ്പെടുത്തൽ,ശീലം,സ്കാൻ,ആരോഗ്യം,ശരീരം,പുറം,പരിചരണം,മുതൻ,ക്ഷേമം,ട്രാക്കർ",
+      "new": "ഓർമ്മപ്പെടുത്തൽ,ശീലം,സ്കാൻ,ആരോഗ്യം,ശരീരം,പുറം,പരിചരണം,മുതൻ,ക്ഷേമം,ട്രാക്കർ,തുടർച്ച,airpods,വാച്ച്",
+      "len": 97
     },
     "subtitle": {}
   },
   "mr-IN": {
     "keywords": {
-      "old": "",
-      "new": "मान,पाठ,बसणे,एर्गोनॉमिक्स,airpods,घड्याळ,विजेट,सवय,मणका,खांदा,डेस्क,घरून,काम,कॅमेरा,कॅलिब्रेशन",
-      "len": 94
+      "old": "आठवण,सवय,स्कॅन,आरोग्य,शरीर,पाठ,काळजी,मणका,कल्याण,ट्रॅकर",
+      "new": "आठवण,सवय,स्कॅन,आरोग्य,शरीर,पाठ,काळजी,मणका,कल्याण,ट्रॅकर,सलग,airpods,घड्याळ,विजेट,फिट",
+      "len": 84
     },
     "subtitle": {}
   },
   "ms": {
     "keywords": {
-      "old": "",
-      "new": "leher,belakang,duduk,ergonomi,airpods,jam,widget,tabiat,tulang,belakang,bahu,meja,kerja,rumah,kamera",
-      "len": 100
+      "old": "peringatan,tabiat,imbas,kesihatan,badan,belakang,penjagaan,tulangbelakang,kesejahteraan,penjejak",
+      "new": "peringatan,tabiat,imbas,kesihatan,badan,belakang,penjagaan,tulangbelakang,kesejahteraan,penjejak",
+      "len": 96
     },
     "subtitle": {}
   },
   "nl-NL": {
     "keywords": {
-      "old": "",
-      "new": "rug,zitten,ergonomie,airpods,horloge,widget,gewoonte,wervelkolom,schouders,kantoor,thuiswerk,camera",
-      "len": 99
+      "old": "herinnering,gewoonte,scan,gezondheid,lichaam,rug,zorg,wervelkolom,welzijn,tracker",
+      "new": "herinnering,gewoonte,scan,gezondheid,lichaam,rug,zorg,wervelkolom,welzijn,tracker,reeks,airpods",
+      "len": 95
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nek, bureau & houding",
       "new": "Nek, bureau & houding"
     }
   },
   "no": {
     "keywords": {
-      "old": "",
-      "new": "rygg,sittende,ergonomi,airpods,klokke,widget,vane,ryggrad,skuldre,kontor,hjemmekontor,kamera",
-      "len": 92
+      "old": "påminnelse,vane,skann,helse,kropp,rygg,pleie,ryggrad,velvære,sporing",
+      "new": "påminnelse,vane,skann,helse,kropp,rygg,pleie,ryggrad,velvære,sporing,serie,airpods,klokke,widget",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nakke, skrivebord & holdning",
       "new": "Nakke, skrivebord & holdning"
     }
   },
   "or-IN": {
     "keywords": {
-      "old": "",
-      "new": "ଗଲା,ପିଠି,ବସିବା,ଏର୍ଗୋନୋମିକ୍ସ,airpods,ଘଣ୍ଟା,ୱିଜେଟ,ଅଭ୍ୟାସ,ମେରୁଦଣ୍ଡ,କାନ୍ଧ,ଡେସ୍କ,ଘରୁ,କାମ,କ୍ୟାମେରା",
-      "len": 92
+      "old": "ସ୍ମରଣ,ଅଭ୍ୟାସ,ସ୍କାନ୍,ସ୍ୱାସ୍ଥ୍ୟ,ଶରୀର,ପିଠି,ଯତ୍ନ,ମେରୁଦଣ୍ଡ,ମଙ୍ଗଳ,ଟ୍ରାକର",
+      "new": "ସ୍ମରଣ,ଅଭ୍ୟାସ,ସ୍କାନ୍,ସ୍ୱାସ୍ଥ୍ୟ,ଶରୀର,ପିଠି,ଯତ୍ନ,ମେରୁଦଣ୍ଡ,ମଙ୍ଗଳ,ଟ୍ରାକର,ଧାରାବାହିକ,airpods,ଘଣ୍ଟା,ୱିଜେଟ",
+      "len": 96
     },
     "subtitle": {}
   },
   "pa-IN": {
     "keywords": {
-      "old": "",
-      "new": "ਗਰਦਨ,ਪਿੱਠ,ਬੈਠਣਾ,ਏਰਗੋਨੋਮਿਕਸ,airpods,ਘੜੀ,ਵਿਜੇਟ,ਆਦਤ,ਰੀੜ੍ਹ,ਕੰਧਾ,ਡੈਸਕ,ਘਰੋਂ,ਕੰਮ,ਕੈਮਰਾ,ਕੈਲੀਬ੍ਰੇਸ਼ਨ,ਸਿਹਤ,ਕੋਚ",
-      "len": 100
+      "old": "ਯਾਦ,ਆਦਤ,ਸਕੈਨ,ਸਿਹਤ,ਸਰੀਰ,ਪਿੱਠ,ਦੇਖਭਾਲ,ਰੀੜ੍ਹ,ਭਲਾਈ,ਟ੍ਰੈਕਰ",
+      "new": "ਯਾਦ,ਆਦਤ,ਸਕੈਨ,ਸਿਹਤ,ਸਰੀਰ,ਪਿੱਠ,ਦੇਖਭਾਲ,ਰੀੜ੍ਹ,ਭਲਾਈ,ਟ੍ਰੈਕਰ,ਲਗਾਤਾਰ,airpods,ਘੜੀ,ਵਿਜੇਟ,ਫਿਟ",
+      "len": 81
     },
     "subtitle": {}
   },
   "pl": {
     "keywords": {
-      "old": "",
-      "new": "plecy,siedzący,ergonomia,airpods,zegarek,widget,nawyk,kręgosłup,ramiona,biuro,praca,zdalna,kamera",
-      "len": 97
+      "old": "przypomnienie,nawyk,skan,zdrowie,ciało,plecy,opieka,kręgosłup,dobrostan,śledzenie",
+      "new": "przypomnienie,nawyk,skan,zdrowie,ciało,plecy,opieka,kręgosłup,dobrostan,śledzenie,seria,airpods",
+      "len": 95
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Szyja, biurko i postawa",
       "new": "Szyja, biurko i postawa"
     }
   },
   "pt-BR": {
     "keywords": {
-      "old": "",
-      "new": "costas,sentado,ergonomia,airpods,relógio,widget,hábito,coluna,ombros,escritório,homeoffice,câmera",
-      "len": 97
+      "old": "lembrete,hábito,escaneamento,saúde,corpo,costas,cuidado,coluna,bem-estar,rastreamento",
+      "new": "lembrete,hábito,escaneamento,saúde,corpo,costas,cuidado,coluna,bem-estar,rastreamento,série,airpods",
+      "len": 99
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Pescoço, mesa e postura",
       "new": "Pescoço, mesa e postura"
     }
   },
   "pt-PT": {
     "keywords": {
-      "old": "",
-      "new": "costas,sentado,ergonomia,airpods,relógio,widget,hábito,coluna,ombros,escritório,teletrabalho,câmara",
-      "len": 99
+      "old": "lembrete,hábito,digital,saúde,corpo,costas,cuidado,coluna,bem-estar,seguimento",
+      "new": "lembrete,hábito,digital,saúde,corpo,costas,cuidado,coluna,bem-estar,seguimento,série,airpods,relógio",
+      "len": 100
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Pescoço, secretária e postura",
       "new": "Pescoço, secretária e postura"
     }
   },
   "ro": {
     "keywords": {
-      "old": "",
-      "new": "gât,spate,așezat,ergonomie,airpods,ceas,widget,obicei,coloană,umeri,birou,telemuncă,cameră,calibrare",
-      "len": 100
+      "old": "memento,obicei,scan,sănătate,corp,spate,îngrijire,coloană,bunăstare,urmărire",
+      "new": "memento,obicei,scan,sănătate,corp,spate,îngrijire,coloană,bunăstare,urmărire,serie,airpods,ceas",
+      "len": 95
     },
     "subtitle": {}
   },
   "ru": {
     "keywords": {
-      "old": "",
-      "new": "шея,спина,сидение,эргономика,airpods,часы,widget,привычка,позвоночник,плечи,офис,удалёнка,камера",
-      "len": 96
+      "old": "напоминание,привычка,скан,здоровье,тело,спина,уход,позвоночник,благополучие,отслеживание",
+      "new": "напоминание,привычка,скан,здоровье,тело,спина,уход,позвоночник,благополучие,отслеживание,серия",
+      "len": 94
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Шея, стол и осанка",
       "new": "Шея, стол и осанка"
     }
   },
   "sk": {
     "keywords": {
-      "old": "",
-      "new": "krk,chrbát,sediaci,ergonómia,airpods,hodinky,widget,návyk,páteř,ramená,kancelária,homeoffice,kamera",
-      "len": 99
+      "old": "pripomienka,návyk,sken,zdravie,telo,chrbát,starostlivosť,chrbtica,blaho",
+      "new": "pripomienka,návyk,sken,zdravie,telo,chrbát,starostlivosť,chrbtica,blaho,séria,airpods,hodinky,widget",
+      "len": 100
     },
     "subtitle": {}
   },
   "sl-SI": {
     "keywords": {
-      "old": "",
-      "new": "vrat,hrbet,sedeči,ergonomija,airpods,ura,widget,navada,hrbtenica,ramena,pisarna,domače,delo,kamera",
-      "len": 98
+      "old": "opomnik,navada,skeniranje,zdravje,telo,hrbet,nega,hrbtenica,blaginja,sledilnik",
+      "new": "opomnik,navada,skeniranje,zdravje,telo,hrbet,nega,hrbtenica,blaginja,sledilnik,serija,airpods,ura",
+      "len": 97
     },
     "subtitle": {}
   },
   "sv": {
     "keywords": {
-      "old": "",
-      "new": "rygg,sittande,ergonomi,airpods,klocka,widget,vana,ryggrad,axlar,kontor,hemarbete,kamera,kalibrering",
-      "len": 99
+      "old": "påminnelse,vana,skanna,hälsa,kropp,rygg,omvårdnad,ryggrad,välmående,spårare",
+      "new": "påminnelse,vana,skanna,hälsa,kropp,rygg,omvårdnad,ryggrad,välmående,spårare,serie,airpods,klocka",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Nacke, skrivbord & hållning",
       "new": "Nacke, skrivbord & hållning"
     }
   },
   "ta-IN": {
     "keywords": {
-      "old": "",
-      "new": "கழுத்து,முதுகு,அமர்தல்,எர்கோனாமிக்ஸ்,airpods,கடிகாரம்,விட்ஜெட்,பழக்கம்,முதுகெலும்பு,தோள்,மேசை",
-      "len": 93
+      "old": "நினைவூட்டல்,பழக்கம்,ஸ்கேன்,ஆரோக்கியம்,உடல்,முதுகு,கவனிப்பு,முதுகெலும்பு,நல்வாழ்வு,டிராக்கர்",
+      "new": "நினைவூட்டல்,பழக்கம்,ஸ்கேன்,ஆரோக்கியம்,உடல்,முதுகு,கவனிப்பு,முதுகெலும்பு,நல்வாழ்வு,டிராக்கர்,தொடர்",
+      "len": 97
     },
     "subtitle": {}
   },
   "te-IN": {
     "keywords": {
-      "old": "",
-      "new": "మెడ,వెనుక,కూర్చోవడం,ఎర్గోనామిక్స్,airpods,గడియారం,విడ్జెట్,అలవాటు,మెడమూసు,భుజం,డెస్క్,ఇంటి,పని",
-      "len": 94
+      "old": "రిమైండర్,అలవాటు,స్కాన్,ఆరోగ్యం,శరీరం,వెనుక,సంరక్షణ,వెన్నెముక,శ్రేయస్సు,ట్రాకర్",
+      "new": "రిమైండర్,అలవాటు,స్కాన్,ఆరోగ్యం,శరీరం,వెనుక,సంరక్షణ,వెన్నెముక,శ్రేయస్సు,ట్రాకర్,వరుస,airpods,గడియారం",
+      "len": 99
     },
     "subtitle": {}
   },
   "th": {
     "keywords": {
-      "old": "",
-      "new": "คอ,หลัง,นั่ง,เออร์โก,airpods,นาฬิกา,วิดเจ็ต,นิสัย,กระดูกสันหลัง,ไหล่,โต๊ะ,ทำงาน,ที่บ้าน,กล้อง",
-      "len": 93
+      "old": "แจ้งเตือน,นิสัย,สแกน,สุขภาพ,ร่างกาย,หลัง,การดูแล,กระดูกสันหลัง,สุขภาวะ,ติดตาม",
+      "new": "แจ้งเตือน,นิสัย,สแกน,สุขภาพ,ร่างกาย,หลัง,การดูแล,กระดูกสันหลัง,สุขภาวะ,ติดตาม,ต่อเนื่อง,airpods",
+      "len": 95
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "โค้ชคอ โต๊ะ ท่านั่ง",
       "new": "โค้ชคอ โต๊ะ ท่านั่ง"
     }
   },
   "tr": {
     "keywords": {
-      "old": "",
-      "new": "sırt,oturma,ergonomi,airpods,saat,widget,alışkanlık,omurga,omuz,ofis,evden,çalışma,kamera",
-      "len": 89
+      "old": "hatırlatıcı,alışkanlık,tarama,sağlık,vücut,sırt,bakım,omurga,esenlik,takip",
+      "new": "hatırlatıcı,alışkanlık,tarama,sağlık,vücut,sırt,bakım,omurga,esenlik,takip,seri,airpods,saat,widget",
+      "len": 99
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Boyun, masa ve duruş",
       "new": "Boyun, masa ve duruş"
     }
   },
   "uk": {
     "keywords": {
-      "old": "",
-      "new": "шия,спина,сидіння,ергономіка,airpods,годинник,widget,звичка,хребет,плечі,офіс,віддалена,камера",
-      "len": 94
+      "old": "нагадування,звичка,скан,здоров'я,тіло,спина,догляд,хребет,благополуччя,відстеження",
+      "new": "нагадування,звичка,скан,здоров'я,тіло,спина,догляд,хребет,благополуччя,відстеження,серія,airpods",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Шия, стіл і постава",
       "new": "Шия, стіл і постава"
     }
   },
   "ur-PK": {
     "keywords": {
-      "old": "",
-      "new": "گردن,پیٹھ,بیٹھنا,ارگونومکس,airpods,گھڑی,وجیٹ,عادت,ریڑھ,کندھا,ڈیسک,گھر,سے,کام,کیمرہ,کیلیبریشن,صحت,کوچ",
-      "len": 100
+      "old": "یاددہانی,عادت,اسکین,صحت,جسم,پیٹھ,دیکھبھال,ریڑھ,بہبود,ٹریکر",
+      "new": "یاددہانی,عادت,اسکین,صحت,جسم,پیٹھ,دیکھبھال,ریڑھ,بہبود,ٹریکر,تسلسل,airpods,گھڑی,وجیٹ,فٹ",
+      "len": 85
     },
     "subtitle": {}
   },
   "vi": {
     "keywords": {
-      "old": "",
-      "new": "co,lung,ngoi,ergonomic,airpods,dongho,widget,thoiquen,cotsong,vai,ban,lamviectunha,camera,hieuchuan",
-      "len": 99
+      "old": "nhắcnhở,thóiquen,quét,sứckhỏe,cơthể,lưng,chămsóc,cộtsống,sứckhỏetốt,theodõi",
+      "new": "nhắcnhở,thóiquen,quét,sứckhỏe,cơthể,lưng,chămsóc,cộtsống,sứckhỏetốt,theodõi,chuỗi,airpods,đồnghồ",
+      "len": 96
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "Huấn luyện cổ & bàn",
       "new": "Huấn luyện cổ & bàn"
     }
   },
   "zh-Hans": {
     "keywords": {
-      "old": "",
-      "new": "颈椎,背部,坐姿,人体工学,airpods,手表,小组件,习惯,脊柱,肩膀,办公桌,居家办公,相机,校准,健康,教练,驼背,对齐",
-      "len": 64
+      "old": "提醒,习惯,扫描,健康,身体,背部,护理,脊柱,康管理,追踪器",
+      "new": "提醒,习惯,扫描,健康,身体,背部,护理,脊柱,康管理,追踪器,连续,airpods,手表,小组件,健身",
+      "len": 52
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "颈椎办公姿势教练",
       "new": "颈椎办公姿势教练"
     }
   },
   "zh-Hant": {
     "keywords": {
-      "old": "",
-      "new": "頸椎,背部,坐姿,人體工學,airpods,手錶,小工具,習慣,脊柱,肩膀,辦公桌,居家辦公,相機,校準,健康,教練,駝背,對齊",
-      "len": 64
+      "old": "提醒,習慣,掃描,健康,身體,背部,護理,脊柱,健康管理,追蹤器",
+      "new": "提醒,習慣,掃描,健康,身體,背部,護理,脊柱,健康管理,追蹤器,連續,airpods,手錶,小工具,健身",
+      "len": 53
     },
     "subtitle": {
-      "old": "Posture reminders and streaks",
+      "old": "頸椎辦公姿勢教練",
       "new": "頸椎辦公姿勢教練"
     }
   }

@@ -1,1 +1,1 @@
-
+O Posture agora lê a sua postura através do sensor de movimento dos AirPods. Registos mais rápidos, registo manual para quando está sem AirPods, design renovado — e a mesma abordagem privada, tudo no dispositivo.
