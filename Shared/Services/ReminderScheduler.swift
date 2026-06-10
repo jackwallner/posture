@@ -16,6 +16,11 @@ enum ReminderScheduler {
         if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") { return }
         #endif
         let settings = GoalSettings.shared
+        // Never fire the iOS notification prompt before onboarding has
+        // explained the nudge cadence — a cold launch posts
+        // willEnterForeground, which would otherwise put the system alert
+        // on top of the Welcome screen.
+        guard settings.hasCompletedOnboarding else { return }
         guard settings.reminderEnabled else {
             await NotificationService.cancelAllReminders()
             return
