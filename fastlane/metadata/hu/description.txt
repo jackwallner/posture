@@ -13,7 +13,7 @@ AZ INGYENES CSOMAG
 • Kézi bejelentkezés azokra az alkalmakra, amikor nincs nálad az AirPods
 • Személyes kalibrált kiindulóérték
 • Okos emlékeztetők az aktív óráidban
-• Duolingo-stílusú sorozatok fagyasztásvédelemmel
+• Napi sorozatok fagyasztásvédelemmel
 • Az elmúlt 7 nap testtartás-előzményei és trendjei
 • Lock Screen és Home Screen widgetek
 
@@ -29,7 +29,7 @@ A Posture az AirPods Pro (1. és 2. generáció), az AirPods (3. generáció), a
 
 ALAPÉRTÉKEN ADATVÉDŐ
 • Nincsenek fiókok, nincs regisztráció
-• Nincs analitika, nincsenek külső nyomkövetők, nincsenek hirdetések
+• Nincsenek hirdetések, és nincs alkalmazások közötti tevékenységkövetés
 • A fejmozgás adatait a készülék dolgozza fel, és soha nem hagyják el a telefonod
 • Az AirPods és az Apple Watch mozgásadatai a készüléken maradnak
 • A teljes alkalmazást használhatod anélkül, hogy valaha is fiókot hoznál létre

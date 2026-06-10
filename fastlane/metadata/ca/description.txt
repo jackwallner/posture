@@ -13,7 +13,7 @@ VERSIÓ GRATUÏTA
 • Registres manuals per quan no portis els AirPods posats
 • Referència de calibratge personal
 • Recordatoris intel·ligents durant les teves hores actives
-• Ratxes a l'estil Duolingo amb protecció de ratxa
+• Ratxes diàries amb protecció de ratxa
 • Els últims 7 dies del teu historial i tendències de postura
 • Ginys per a la pantalla de bloqueig i la pantalla d'inici
 
@@ -29,7 +29,7 @@ Posture llegeix el moviment del cap amb els AirPods Pro (1a i 2a generació), el
 
 PRIVADESA DES DEL DISSENY
 • Sense comptes ni registres
-• Sense analítiques, sense rastrejadors de tercers, sense anuncis
+• Sense anuncis i sense seguiment de la teva activitat entre apps
 • Les dades de moviment del cap es processen al dispositiu i mai surten del telèfon
 • Les dades de moviment dels AirPods i l'Apple Watch es queden al dispositiu
 • Pots fer servir tota l'app sense haver de crear mai cap compte

@@ -13,7 +13,7 @@ WERSJA DARMOWA
 • Ręczne zgłoszenia, gdy nie masz AirPods w uszach
 • Osobisty punkt odniesienia z kalibracji
 • Inteligentne przypomnienia w twoich aktywnych godzinach
-• Serie w stylu Duolingo z ochroną freeze
+• Codzienne serie z ochroną freeze
 • Historia i trendy postawy z ostatnich 7 dni
 • Widżety na Lock Screen i Home Screen
 
@@ -29,7 +29,7 @@ Posture odczytuje ruch głowy z AirPods Pro (1. i 2. generacji), AirPods (3. gen
 
 PRYWATNOŚĆ OD PODSTAW
 • Bez kont, bez rejestracji
-• Bez analityki, bez śledzących firm trzecich, bez reklam
+• Bez reklam i bez śledzenia Twojej aktywności między aplikacjami
 • Dane o ruchu głowy są przetwarzane na urządzeniu i nigdy nie opuszczają twojego telefonu
 • Dane o ruchu z AirPods i Apple Watch pozostają na urządzeniu
 • Możesz korzystać z całej aplikacji, nie zakładając konta

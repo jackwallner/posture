@@ -13,7 +13,7 @@ L'OFFRE GRATUITE
 • Saisies manuelles pour les moments où vous n'avez pas vos AirPods
 • Posture de référence personnalisée
 • Rappels intelligents pendant vos heures d'activité
-• Séries façon Duolingo avec protection par gel
+• Séries quotidiennes avec protection par gel
 • Vos 7 derniers jours d'historique et de tendances posturales
 • Widgets pour l'écran verrouillé et l'écran d'accueil
 
@@ -29,7 +29,7 @@ Posture lit les mouvements de la tête avec les AirPods Pro (1re et 2e générat
 
 CONÇU POUR LA CONFIDENTIALITÉ
 • Aucun compte, aucune inscription
-• Aucune analyse, aucun traceur tiers, aucune publicité
+• Aucune publicité et aucun suivi de votre activité entre les apps
 • Les données de mouvement de la tête sont traitées sur l'appareil et ne quittent jamais votre téléphone
 • Les données de mouvement des AirPods et de l'Apple Watch restent sur l'appareil
 • Vous pouvez utiliser toute l'application sans jamais créer de compte

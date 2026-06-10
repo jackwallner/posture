@@ -13,7 +13,7 @@ BREZPLAČNA RAZLIČICA
 • Ročne prijave za trenutke, ko nimate AirPods v ušesih
 • Osebno kalibracijsko izhodišče
 • Pametni opomniki med vašimi aktivnimi urami
-• Nizi v slogu Duolingo z zaščito z zamrznitvijo
+• Dnevni nizi z zaščito z zamrznitvijo
 • Zgodovina drže in trendi zadnjih 7 dni
 • Pripomočki za Lock Screen in Home Screen
 
@@ -29,7 +29,7 @@ Posture bere gibanje glave iz AirPods Pro (1. in 2. generacija), AirPods (3. gen
 
 ZASEBNO PO ZASNOVI
 • Brez računov, brez registracije
-• Brez analitike, brez sledilnikov tretjih oseb, brez oglasov
+• Brez oglasov in brez sledenja vaši dejavnosti med aplikacijami
 • Podatki o gibanju glave se obdelujejo na napravi in nikoli ne zapustijo vašega telefona
 • Podatki o gibanju iz AirPods in Apple Watch ostanejo na napravi
 • Celotno aplikacijo lahko uporabljate, ne da bi kdaj ustvarili račun

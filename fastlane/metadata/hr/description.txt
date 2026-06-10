@@ -29,7 +29,7 @@ Posture očitava pokrete glave putem AirPods Pro (1. i 2. generacija), AirPods (
 
 PRIVATNOST OD TEMELJA
 • Bez računa, bez registracije
-• Bez analitike, bez pratitelja trećih strana, bez oglasa
+• Bez oglasa i bez praćenja vaše aktivnosti među aplikacijama
 • Podaci o pokretima glave obrađuju se na uređaju i nikada ne napuštaju vaš telefon
 • Podaci o pokretima s AirPods i Apple Watch ostaju na uređaju
 • Cijelu aplikaciju možete koristiti bez ikakvog stvaranja računa

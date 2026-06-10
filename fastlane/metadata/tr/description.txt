@@ -13,7 +13,7 @@ NASIL ÇALIŞIR
 • AirPods'un takılı olmadığı anlar için elle kayıtlar
 • Kişisel kalibrasyon temel duruşu
 • Aktif saatlerin boyunca akıllı hatırlatıcılar
-• Dondurma korumalı, Duolingo tarzı seriler
+• Dondurma korumalı günlük seriler
 • Son 7 günlük duruş geçmişin ve trendlerin
 • Lock Screen ve Home Screen widget'ları
 
@@ -29,7 +29,7 @@ Posture, kafa hareketini AirPods Pro (1. ve 2. nesil), AirPods (3. nesil), Etkin
 
 TASARIM GEREĞİ ÖZEL
 • Hesap yok, kayıt yok
-• Analitik yok, üçüncü taraf izleyici yok, reklam yok
+• Reklam yok ve uygulamalar arasında etkinliğinizin izlenmesi yok
 • Kafa hareketi verisi cihazda işlenir ve telefonundan asla çıkmaz
 • AirPods ve Apple Watch hareket verisi cihazda kalır
 • Hiç hesap oluşturmadan uygulamanın tamamını kullanabilirsin

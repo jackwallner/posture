@@ -13,7 +13,7 @@ VERSIONE GRATUITA
 • Registrazioni manuali per quando non hai gli AirPods
 • Posizione di riferimento personale dalla calibrazione
 • Promemoria intelligenti durante le tue ore attive
-• Serie in stile Duolingo con protezione congela
+• Serie giornaliere con protezione congela
 • Cronologia e andamenti della postura degli ultimi 7 giorni
 • Widget per la Lock Screen e la Home Screen
 
@@ -29,7 +29,7 @@ Posture legge il movimento della testa con AirPods Pro (1ª e 2ª gen.), AirPods
 
 PRIVACY DALLA PROGETTAZIONE
 • Nessun account, nessuna registrazione
-• Nessuna analisi, nessun tracker di terze parti, nessuna pubblicità
+• Nessuna pubblicità e nessun tracciamento della tua attività tra le app
 • I dati sul movimento della testa vengono elaborati on-device e non lasciano mai il tuo telefono
 • I dati di movimento di AirPods e Apple Watch restano sul dispositivo
 • Puoi usare tutta l'app senza mai creare un account

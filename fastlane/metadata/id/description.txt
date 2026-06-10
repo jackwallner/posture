@@ -13,7 +13,7 @@ VERSI GRATIS
 • Cek manual untuk saat AirPods tidak terpasang
 • Patokan kalibrasi pribadi
 • Pengingat cerdas selama jam aktif Anda
-• Rangkaian harian gaya Duolingo dengan perlindungan beku
+• Rangkaian harian dengan perlindungan beku
 • Riwayat dan tren postur 7 hari terakhir Anda
 • Widget Lock Screen dan Home Screen
 
@@ -29,7 +29,7 @@ Posture membaca gerak kepala dari AirPods Pro (generasi pertama & kedua), AirPod
 
 PRIVAT SEJAK AWAL
 • Tanpa akun, tanpa pendaftaran
-• Tanpa analitik, tanpa pelacak pihak ketiga, tanpa iklan
+• Tanpa iklan dan tanpa pelacakan aktivitas Anda antar aplikasi
 • Data gerak kepala diproses langsung di perangkat dan tidak pernah keluar dari ponsel Anda
 • Data gerak AirPods dan Apple Watch tetap berada di perangkat
 • Anda dapat menggunakan seluruh aplikasi tanpa pernah membuat akun

@@ -13,7 +13,7 @@ KOSTENLOS
 • Manuelle Check-ins für Momente ohne AirPods
 • Persönliche Kalibrierung als Ausgangshaltung
 • Intelligente Erinnerungen während deiner aktiven Stunden
-• Serien im Duolingo-Stil mit Freeze-Schutz
+• Tägliche Serien mit Freeze-Schutz
 • Deine Haltungsdaten und Trends der letzten 7 Tage
 • Widgets für Lock Screen und Home Screen
 
@@ -29,7 +29,7 @@ Posture liest die Kopfbewegung über AirPods Pro (1. & 2. Generation), AirPods (
 
 PRIVAT VON GRUND AUF
 • Keine Konten, keine Anmeldung
-• Keine Analyse, keine Tracker von Dritten, keine Werbung
+• Keine Werbung und kein App-übergreifendes Tracking deiner Aktivitäten
 • Kopfbewegungsdaten werden auf dem Gerät verarbeitet und verlassen dein iPhone nie
 • Bewegungsdaten von AirPods und Apple Watch bleiben auf dem Gerät
 • Du kannst die gesamte App nutzen, ohne jemals ein Konto anzulegen

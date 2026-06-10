@@ -13,7 +13,7 @@ GRATISVERSJONEN
 • Manuelle innsjekkinger for når du ikke har AirPods i ørene
 • Personlig kalibrert utgangsstilling
 • Smarte påminnelser i de aktive timene dine
-• Rekker i Duolingo-stil med frysebeskyttelse
+• Daglige rekker med frysebeskyttelse
 • Holdningshistorikk og trender for de siste 7 dagene
 • Widgets for Lock Screen og Home Screen
 
@@ -29,7 +29,7 @@ Posture leser hodebevegelse fra AirPods Pro (1. og 2. generasjon), AirPods (3. g
 
 PRIVAT FRA BUNNEN AV
 • Ingen kontoer, ingen registrering
-• Ingen analyse, ingen tredjepartssporing, ingen annonser
+• Ingen annonser og ingen sporing av aktiviteten din på tvers av apper
 • Hodebevegelsesdata behandles på enheten og forlater aldri telefonen din
 • Bevegelsesdata fra AirPods og Apple Watch blir værende på enheten
 • Du kan bruke hele appen uten noen gang å opprette en konto

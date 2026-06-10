@@ -13,7 +13,7 @@ GRATIS
 • Manuella incheckningar för när dina AirPods inte sitter i
 • Personlig kalibrering som utgångshållning
 • Smarta påminnelser under dina aktiva timmar
-• Streaks i Duolingo-stil med frysskydd
+• Dagliga streaks med frysskydd
 • Dina senaste 7 dagars hållningshistorik och trender
 • Widgetar för Lock Screen och Home Screen
 
@@ -29,7 +29,7 @@ Posture läser av huvudrörelser från AirPods Pro (1:a och 2:a generationen), A
 
 PRIVAT FRÅN GRUNDEN
 • Inga konton, ingen registrering
-• Ingen analys, inga tredjepartsspårare, ingen reklam
+• Ingen reklam och ingen spårning av din aktivitet mellan appar
 • Huvudrörelsedata bearbetas på enheten och lämnar aldrig din telefon
 • Rörelsedata från AirPods och Apple Watch stannar på enheten
 • Du kan använda hela appen utan att någonsin skapa ett konto

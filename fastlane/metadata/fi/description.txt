@@ -13,7 +13,7 @@ ILMAINEN VERSIO
 • Manuaaliset kirjaukset, kun AirPodsit eivät ole korvilla
 • Henkilökohtainen kalibroitu lähtötaso
 • Älykkäät muistutukset aktiivisina tunteinasi
-• Duolingo-tyyliset putket suojauksella
+• Päivittäiset putket suojauksella
 • Viimeisten 7 päivän ryhtihistoria ja suuntaukset
 • Lukitusnäytön ja Koti-valikon widgetit
 
@@ -29,7 +29,7 @@ Posture lukee pään liikkeen AirPods Prosta (1. ja 2. sukupolvi), AirPods (3. s
 
 YKSITYISYYS LÄHTÖKOHTANA
 • Ei tilejä, ei rekisteröitymistä
-• Ei analytiikkaa, ei kolmannen osapuolen seurantaa, ei mainoksia
+• Ei mainoksia eikä toimintasi seurantaa sovellusten välillä
 • Pään liiketiedot käsitellään laitteella eivätkä ne koskaan poistu puhelimestasi
 • AirPodsien ja Apple Watchin liiketiedot pysyvät laitteella
 • Voit käyttää koko sovellusta ilman, että luot koskaan tiliä

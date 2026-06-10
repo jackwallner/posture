@@ -13,7 +13,7 @@ PERINGKAT PERCUMA
 • Daftar masuk manual untuk waktu AirPods anda tiada di telinga
 • Garis dasar kalibrasi peribadi
 • Peringatan pintar sepanjang waktu aktif anda
-• Streak gaya Duolingo dengan perlindungan freeze
+• Streak harian dengan perlindungan freeze
 • Sejarah dan trend postur 7 hari terakhir anda
 • Widget Lock Screen dan Home Screen
 
@@ -29,7 +29,7 @@ Posture membaca gerakan kepala daripada AirPods Pro (generasi ke-1 & ke-2), AirP
 
 PRIVASI SEJAK REKAAN
 • Tiada akaun, tiada pendaftaran
-• Tiada analitik, tiada penjejak pihak ketiga, tiada iklan
+• Tiada iklan dan tiada penjejakan aktiviti anda merentas aplikasi
 • Data gerakan kepala diproses pada peranti dan tidak pernah meninggalkan telefon anda
 • Data gerakan AirPods dan Apple Watch kekal pada peranti
 • Anda boleh menggunakan keseluruhan app tanpa perlu mencipta akaun

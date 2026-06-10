@@ -13,7 +13,7 @@ GRATUIT
 • Verificări manuale pentru momentele în care nu ai AirPods în urechi
 • Postură personală de referință prin calibrare
 • Mementouri inteligente în orele tale active
-• Serii în stil Duolingo cu protecție freeze
+• Serii zilnice cu protecție freeze
 • Istoricul și tendințele posturii din ultimele 7 zile
 • Widgeturi pentru Lock Screen și Home Screen
 
@@ -29,7 +29,7 @@ Posture citește mișcarea capului de la AirPods Pro (generația 1 și 2), AirPo
 
 CONFIDENȚIAL PRIN CONCEPȚIE
 • Fără conturi, fără înregistrare
-• Fără analize, fără trackere terțe, fără reclame
+• Fără reclame și fără urmărirea activității tale între aplicații
 • Datele de mișcare a capului sunt procesate pe dispozitiv și nu părăsesc niciodată telefonul tău
 • Datele de mișcare de la AirPods și Apple Watch rămân pe dispozitiv
 • Poți folosi întreaga aplicație fără să creezi vreodată un cont

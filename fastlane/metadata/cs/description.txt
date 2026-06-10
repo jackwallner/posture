@@ -29,7 +29,7 @@ Posture čte pohyb hlavy z AirPods Pro (1. a 2. generace), AirPods (3. generace)
 
 SOUKROMÍ NA PRVNÍM MÍSTĚ
 • Žádné účty, žádná registrace
-• Žádná analytika, žádné sledovače třetích stran, žádné reklamy
+• Žádné reklamy a žádné sledování vaší aktivity napříč aplikacemi
 • Data o pohybu hlavy se zpracovávají přímo v zařízení a nikdy ho neopustí
 • Data o pohybu z AirPods a Apple Watch zůstávají v zařízení
 • Celou aplikaci můžete používat, aniž byste si kdy zakládali účet
