@@ -472,6 +472,9 @@ struct CalibrationView: View {
             capturedYaw = yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count)
             capturedRoll = roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
 
+            // Reset before the view renders — otherwise the slouch circle
+            // briefly shows the upright countdown's final "1".
+            countdown = 3
             phase = .capturingSlouch
             startSlouchCapture()
         }
@@ -501,6 +504,10 @@ struct CalibrationView: View {
                 if let p = airpods.lastPitch { pitch.append(p) }
                 try? await Task.sleep(nanoseconds: 100_000_000)
             }
+
+            // Skip tapped mid-sampling already saved with the default range —
+            // don't save a second Calibration row on top of it.
+            guard !Task.isCancelled else { return }
 
             guard pitch.count >= 5, let upright = capturedPitch else {
                 finishWithDefaultSlouch()
