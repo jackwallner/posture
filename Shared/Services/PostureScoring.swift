@@ -25,6 +25,15 @@ enum PostureScoring {
         return .bad
     }
 
+    /// Personal slouch reference from a two-pose calibration (upright, then
+    /// slouched). Floored so a half-hearted calibration slouch can't make the
+    /// thresholds hair-trigger, and capped so a theatrical one can't make
+    /// real slouching read as "good".
+    static func calibratedSlouchDelta(uprightPitch: Double, slouchedPitch: Double) -> Double {
+        let delta = abs(slouchedPitch - uprightPitch)
+        return min(max(delta, .pi / 24), .pi / 8)  // 7.5°…22.5°
+    }
+
     /// Aggregate session score 0-100 from time-in-each-quality.
     /// Good = 1.0, borderline = 0.5, bad = 0.0
     static func sessionScore(goodSeconds: Int, borderlineSeconds: Int, badSeconds: Int) -> Int {

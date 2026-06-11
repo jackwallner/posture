@@ -28,6 +28,7 @@ struct CalibrationView: View {
     @State private var capturedPitch: Double?
     @State private var capturedYaw: Double?
     @State private var capturedRoll: Double?
+    @State private var capturedSlouchDelta: Double?
     @State private var captureTask: Task<Void, Never>?
     @State private var waitDeadlineTask: Task<Void, Never>?
     @State private var permissionWatchTask: Task<Void, Never>?
@@ -35,6 +36,7 @@ struct CalibrationView: View {
     enum Phase {
         case waiting          // AirPods not yet sending samples
         case capturing        // got first sample, running countdown
+        case capturingSlouch  // upright captured, now reading the user's slouch
         case unsupported      // gave up — show the gate
         case permissionDenied // motion access is off, not missing hardware
         case done             // saved
@@ -51,6 +53,7 @@ struct CalibrationView: View {
             switch phase {
             case .waiting: waitingStep
             case .capturing: capturingStep
+            case .capturingSlouch: capturingSlouchStep
             case .unsupported: unsupportedStep
             case .permissionDenied: permissionDeniedStep
             case .done: doneStep
@@ -154,6 +157,42 @@ struct CalibrationView: View {
                 .lineSpacing(3)
 
             Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var capturingSlouchStep: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Spacer()
+            ZStack {
+                Circle()
+                    .fill(Theme.clayTint)
+                    .frame(width: 200, height: 200)
+                Text("\(countdown)")
+                    .font(Theme.displaySerif(96))
+                    .foregroundStyle(Theme.clay)
+                    .contentTransition(.numericText())
+                    .animation(.default, value: countdown)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text("Now, slouch.")
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 24)
+
+            Text("Settle into the slump you usually catch yourself in, and hold it. The distance between the two poses becomes your personal range.")
+                .font(.system(.body, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            Spacer()
+
+            Button { finishWithDefaultSlouch() } label: { Text("Skip — use the standard range") }
+                .buttonStyle(.plain)
+                .daylightCTA(.ghost)
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
@@ -270,7 +309,9 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 28)
 
-            Text("We've learned your aligned posture. From here on, every check-in is just three quiet seconds.")
+            Text(capturedSlouchDelta != nil
+                 ? "We've learned your aligned posture — and your slouch. Every check-in is scored against your own range, three quiet seconds at a time."
+                 : "We've learned your aligned posture. From here on, every check-in is just three quiet seconds.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
@@ -431,9 +472,56 @@ struct CalibrationView: View {
             capturedYaw = yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count)
             capturedRoll = roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
 
+            phase = .capturingSlouch
+            startSlouchCapture()
+        }
+    }
+
+    /// Second pose: read the user's natural slouch so scoring thresholds
+    /// scale to their real range instead of a one-size-fits-all constant.
+    /// Any failure here (AirPods drop, too few samples) falls back to the
+    /// default range — the upright baseline is already in hand, so the user
+    /// is never rewound or stranded on this step.
+    private func startSlouchCapture() {
+        captureTask?.cancel()
+        captureTask = Task {
+            for i in stride(from: 3, through: 1, by: -1) {
+                guard !Task.isCancelled else { return }
+                guard airpods.isConnected else {
+                    finishWithDefaultSlouch()
+                    return
+                }
+                countdown = i
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+            }
+
+            var pitch: [Double] = []
+            for _ in 0..<10 {
+                guard !Task.isCancelled else { return }
+                if let p = airpods.lastPitch { pitch.append(p) }
+                try? await Task.sleep(nanoseconds: 100_000_000)
+            }
+
+            guard pitch.count >= 5, let upright = capturedPitch else {
+                finishWithDefaultSlouch()
+                return
+            }
+
+            let slouchPitch = pitch.reduce(0, +) / Double(pitch.count)
+            capturedSlouchDelta = PostureScoring.calibratedSlouchDelta(
+                uprightPitch: upright,
+                slouchedPitch: slouchPitch
+            )
             save()
             phase = .done
         }
+    }
+
+    private func finishWithDefaultSlouch() {
+        captureTask?.cancel()
+        capturedSlouchDelta = nil
+        save()
+        phase = .done
     }
 
     private func save() {
@@ -445,7 +533,7 @@ struct CalibrationView: View {
             basePitch: 0,
             baseYaw: 0,
             baseRoll: 0,
-            slouchPitchDelta: .pi / 24,
+            slouchPitchDelta: capturedSlouchDelta ?? .pi / 24,
             airpodsPitch: pitch,
             airpodsRoll: capturedRoll,
             airpodsYaw: capturedYaw

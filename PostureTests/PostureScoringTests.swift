@@ -16,6 +16,30 @@ final class PostureScoringTests: XCTestCase {
         XCTAssertEqual(PostureScoring.quality(deviation: 0.01, slouchDelta: 0.001), .good)
     }
 
+    func testCalibratedSlouchDeltaTypical() {
+        // 17° slouch below a 5° upright baseline → personal range of 17°
+        let delta = PostureScoring.calibratedSlouchDelta(uprightPitch: 0.087, slouchedPitch: 0.087 - 0.30)
+        XCTAssertEqual(delta, 0.30, accuracy: 0.001)
+    }
+
+    func testCalibratedSlouchDeltaDirectionAgnostic() {
+        let down = PostureScoring.calibratedSlouchDelta(uprightPitch: 0.1, slouchedPitch: -0.2)
+        let up = PostureScoring.calibratedSlouchDelta(uprightPitch: -0.2, slouchedPitch: 0.1)
+        XCTAssertEqual(down, up)
+    }
+
+    func testCalibratedSlouchDeltaFloor() {
+        // Barely moving during the slouch pose can't produce hair-trigger thresholds
+        let delta = PostureScoring.calibratedSlouchDelta(uprightPitch: 0.0, slouchedPitch: 0.01)
+        XCTAssertEqual(delta, .pi / 24, accuracy: 0.0001)
+    }
+
+    func testCalibratedSlouchDeltaCap() {
+        // A theatrical calibration slouch can't make real slouching read as good
+        let delta = PostureScoring.calibratedSlouchDelta(uprightPitch: 0.0, slouchedPitch: 1.2)
+        XCTAssertEqual(delta, .pi / 8, accuracy: 0.0001)
+    }
+
     func testSessionScorePerfect() {
         XCTAssertEqual(PostureScoring.sessionScore(goodSeconds: 60, borderlineSeconds: 0, badSeconds: 0), 100)
     }
