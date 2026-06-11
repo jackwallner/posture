@@ -124,8 +124,11 @@ struct SettingsView: View {
                 // MARK: - Calibration
 
                 Section("calibration") {
+                    // Don't clear the old calibration here — if the user
+                    // cancels the sheet they'd be left scoring against a
+                    // zero baseline. A completed capture supersedes the old
+                    // row anyway (`current()` returns the newest).
                     Button("Recalibrate") {
-                        CalibrationService(context: context).clear()
                         showingQuickRecalibrate = true
                     }
                     .foregroundStyle(Theme.sage)

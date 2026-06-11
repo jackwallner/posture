@@ -407,8 +407,12 @@ struct PaywallView: View {
             defer { isPurchasing = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     break
+                case .pending:
+                    // Ask to Buy / deferred — without this the sheet just
+                    // sits there as if the tap did nothing.
+                    restoreMessage = "Purchase is pending approval. Posture+ unlocks as soon as it's approved."
                 case .cancelled:
                     errorMessage = nil
                 }

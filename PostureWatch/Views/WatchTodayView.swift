@@ -10,7 +10,7 @@ struct WatchTodayView: View {
 
     /// Display-only — never insert a StreakState during body evaluation
     /// (audit P1-10). Creation is owned by StreakService on the phone.
-    private var currentStreak: Int { streaks.first?.currentStreak ?? 0 }
+    private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
 
     var body: some View {
         NavigationStack {

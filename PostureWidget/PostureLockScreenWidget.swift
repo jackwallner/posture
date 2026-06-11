@@ -33,7 +33,9 @@ struct PostureWidgetProvider: TimelineProvider {
             return PostureWidgetEntry(date: .now, streak: 0, todayScore: nil, hasCalibrated: false)
         }
         let context = ModelContext(container)
-        let streak = (try? context.fetch(FetchDescriptor<StreakState>()))?.first?.currentStreak ?? 0
+        let streak = StreakService.displayStreak(
+            for: (try? context.fetch(FetchDescriptor<StreakState>()))?.first
+        )
 
         // Today's best camera check-in (PostureSession is no longer written).
         let startOfDay = Calendar.current.startOfDay(for: .now)

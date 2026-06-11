@@ -32,7 +32,9 @@ struct TodayView: View {
 
     /// Display-only streak. Does not insert a StreakState during body
     /// evaluation (audit P1-10) — creation is owned by StreakService.
-    private var currentStreak: Int { streaks.first?.currentStreak ?? 0 }
+    /// `displayStreak` zeroes out a run that already lapsed, so we never
+    /// show "12 days" when the streak is dead.
+    private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
 
     /// Display-only freeze count — so users know their streak has a safety net.
     private var freezesAvailable: Int { streaks.first?.freezesAvailable ?? 0 }
@@ -224,7 +226,7 @@ struct TodayView: View {
     private var weekCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("this week")
+                Text("today, hour by hour")
                     .font(.system(.footnote, design: .rounded).weight(.semibold))
                     .tracking(1.2)
                     .foregroundStyle(Theme.ink3)

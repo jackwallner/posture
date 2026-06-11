@@ -16,6 +16,11 @@ struct PostureApp: App {
         #endif
         SubscriptionService.shared.configure()
         NotificationService.registerCategories()
+        // The delegate must be in place before launch finishes, or the tap
+        // that cold-launched the app is never delivered to didReceive. The
+        // tap is buffered in the delegate until the root view wires up
+        // `onReceive`.
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         WatchSyncService.shared.activate()
         ReviewPromptTracker.recordAppLaunch()
     }
@@ -64,7 +69,6 @@ private struct AirpodsRootView: View {
                 // trick. P1-7: a cold launch fires no onChange hooks, so
                 // do the right thing here.
                 startMonitoringForCurrentTier(monitor)
-                UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
                 NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
                     ackNotificationIndex = index
@@ -140,9 +144,19 @@ private struct AckCover: Identifiable {
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @unchecked Sendable {
     static let shared = NotificationDelegate()
 
+    /// A tap that arrived before the root view assigned `onReceive` — i.e.
+    /// the notification cold-launched the app. Replayed on assignment.
+    @MainActor private var pendingTap: (scheduledAt: Date, index: Int)?
+
     /// Called when a posture-reminder notification is tapped. Invoked on
     /// the main actor — it mutates SwiftUI state.
-    var onReceive: (@MainActor (Date, Int) -> Void)?
+    @MainActor var onReceive: (@MainActor (Date, Int) -> Void)? {
+        didSet {
+            guard let onReceive, let tap = pendingTap else { return }
+            pendingTap = nil
+            onReceive(tap.scheduledAt, tap.index)
+        }
+    }
 
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -151,11 +165,25 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
     ) {
         let userInfo = response.notification.request.content.userInfo
         if userInfo["type"] as? String == "posture-reminder" {
-            let scheduledAt = Date(timeIntervalSince1970: userInfo["scheduledAt"] as? TimeInterval ?? 0)
+            let stored = Date(timeIntervalSince1970: userInfo["scheduledAt"] as? TimeInterval ?? 0)
             let index = userInfo["index"] as? Int ?? 0
+            // Repeating triggers carry the date they were *scheduled*, which
+            // can be days old if the app hasn't been foregrounded since. Only
+            // the slot's time-of-day is meaningful — pin it to today so the
+            // check-in screen and the saved record show the right day.
+            let slot = Calendar.current.dateComponents([.hour, .minute], from: stored)
+            let scheduledAt = Calendar.current.date(
+                bySettingHour: slot.hour ?? 0, minute: slot.minute ?? 0, second: 0, of: Date()
+            ) ?? stored
             // P1-6: hop to the main actor — this delegate fires on UN's
             // private queue and the callback touches @State.
-            Task { @MainActor in onReceive?(scheduledAt, index) }
+            Task { @MainActor in
+                if let onReceive = self.onReceive {
+                    onReceive(scheduledAt, index)
+                } else {
+                    self.pendingTap = (scheduledAt, index)
+                }
+            }
         }
         completionHandler()
     }
@@ -248,6 +276,10 @@ struct MainTabView: View {
             }
         }
         .sheet(isPresented: $showReviewPrompt, onDismiss: {
+            // Swipe-to-dismiss skips every button path — start the cooldown
+            // here too, or the prompt can come back at the next positive
+            // moment. Redundant after a button outcome, which is harmless.
+            ReviewPromptTracker.markShown()
             if pendingNativeReviewAfterDismiss {
                 pendingNativeReviewAfterDismiss = false
                 requestReview()
@@ -272,12 +304,14 @@ struct MainTabView: View {
               !settings.calibrationDeferred,
               hasCompletedSetup
         else { return }
-        settings.hasSeenIntroPaywall = true
         Task { @MainActor in
             // Let the Today screen settle in first so the paywall reads as a
             // moment, not an interruption of the setup transition.
             try? await Task.sleep(nanoseconds: 700_000_000)
             guard !showReviewPrompt, !showIntroPaywall else { return }
+            // Consume the one-shot only when the paywall actually presents —
+            // otherwise a colliding sheet would burn it unseen.
+            settings.hasSeenIntroPaywall = true
             showIntroPaywall = true
         }
     }

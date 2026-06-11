@@ -27,22 +27,27 @@ final class StreakService {
     /// Call after the user completes a qualifying session. Returns the updated state.
     @discardableResult
     func recordSessionCompleted(at date: Date = .now) -> StreakState {
-        let state = currentState()
-        StreakService.refillFreezesIfNeeded(state, at: date)
-        StreakService.applySession(to: state, at: date)
-        StreakService.awardMilestoneFreezes(state, at: date)
-        try? context.save()
-        return state
+        record(at: date)
     }
 
     /// Call after the user acknowledges a posture reminder (camera scan or manual).
     /// Counts as a streak day if this is the first acknowledgment today.
     @discardableResult
     func recordAcknowledgment(at date: Date = .now) -> StreakState {
+        record(at: date)
+    }
+
+    private func record(at date: Date) -> StreakState {
         let state = currentState()
         StreakService.refillFreezesIfNeeded(state, at: date)
+        let streakBefore = state.currentStreak
         StreakService.applySession(to: state, at: date)
-        StreakService.awardMilestoneFreezes(state, at: date)
+        // Award the milestone bonus only when this check-in advanced the
+        // streak — otherwise every same-day repeat on a milestone day
+        // stacks another free freeze.
+        if state.currentStreak != streakBefore {
+            StreakService.awardMilestoneFreezes(state, at: date)
+        }
         try? context.save()
         return state
     }
@@ -102,8 +107,10 @@ final class StreakService {
         let gap = DateHelpers.daysBetween(lastDay, today)
 
         switch gap {
-        case 0:
-            // Same day — streak unchanged
+        case ...0:
+            // Same day — streak unchanged. Also covers a *negative* gap
+            // (clock set back, or travel west across the date line), which
+            // must not reset an active streak.
             return
         case 1:
             state.currentStreak += 1
@@ -117,6 +124,23 @@ final class StreakService {
         state.longestStreak = max(state.longestStreak, state.currentStreak)
         state.lastActiveDay = today
         state.dailyGoalSeconds = StreakService.dailyGoalSeconds(forStreak: state.currentStreak)
+    }
+
+    /// The streak to *display*. `currentStreak` is only updated when a
+    /// check-in is recorded, so after a lapse it keeps showing the old run
+    /// until the next check-in resets it. A streak that can no longer be
+    /// continued (missed more days than a freeze can cover) reads as 0.
+    nonisolated static func displayStreak(for state: StreakState?, at date: Date = .now) -> Int {
+        guard let state, let last = state.lastActiveDay else { return 0 }
+        let gap = DateHelpers.daysBetween(DateHelpers.startOfDay(last), DateHelpers.startOfDay(date))
+        switch gap {
+        case ...1:
+            return state.currentStreak
+        case 2 where state.freezesAvailable > 0:
+            return state.currentStreak
+        default:
+            return 0
+        }
     }
 
     /// Daily goal pacing: 60s on day 1, +30s every 3 streak days, capped at 5 min.

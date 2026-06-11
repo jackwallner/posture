@@ -66,11 +66,15 @@ struct HistoryView: View {
         }
     }
 
-    private var weekScored: [Int] {
+    /// The query spans 14 days (for the vs-last-week delta); this is just
+    /// the current 7-day window.
+    private var weekAcks: [AcknowledgmentRecord] {
         let weekStart = weekDays.first ?? DateHelpers.startOfDay()
-        return acknowledgments
-            .filter { $0.timestamp >= weekStart }
-            .compactMap { $0.quality.map(qualityScore) }
+        return acknowledgments.filter { $0.timestamp >= weekStart }
+    }
+
+    private var weekScored: [Int] {
+        weekAcks.compactMap { $0.quality.map(qualityScore) }
     }
 
     private var weekAlignmentPercent: Int {
@@ -150,7 +154,7 @@ struct HistoryView: View {
                 .font(.caption.weight(.semibold))
                 .tracking(2)
                 .foregroundStyle(Theme.ink3)
-            Text(HistoryNarrative.sentence(for: acknowledgments))
+            Text(HistoryNarrative.sentence(for: weekAcks))
                 .font(Theme.displaySerif(24))
                 .foregroundStyle(Theme.ink)
                 .fixedSize(horizontal: false, vertical: true)

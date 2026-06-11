@@ -65,6 +65,47 @@ final class StreakServiceTests: XCTestCase {
         XCTAssertEqual(s.longestStreak, 3)
     }
 
+    func testClockMovedBackwardsDoesNotResetStreak() {
+        // Travel west across the date line / manual clock change: a check-in
+        // dated *before* the last active day must not reset the streak.
+        let s = StreakState()
+        StreakService.applySession(to: s, at: day(2026, 5, 11))
+        StreakService.applySession(to: s, at: day(2026, 5, 12))
+        StreakService.applySession(to: s, at: day(2026, 5, 11))
+        XCTAssertEqual(s.currentStreak, 2)
+        XCTAssertEqual(s.lastActiveDay, Calendar.current.startOfDay(for: day(2026, 5, 12)))
+    }
+
+    // MARK: - Display streak
+
+    func testDisplayStreakShowsLiveRun() {
+        let s = StreakState(currentStreak: 5, freezesAvailable: 0)
+        s.lastActiveDay = day(2026, 5, 11)
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 11)), 5)
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 12)), 5)
+    }
+
+    func testDisplayStreakZeroesALapsedRun() {
+        let s = StreakState(currentStreak: 5, freezesAvailable: 0)
+        s.lastActiveDay = day(2026, 5, 11)
+        // Missed a full day with no freeze to cover it — the run is dead.
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 13)), 0)
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 20)), 0)
+    }
+
+    func testDisplayStreakKeepsRunCoverableByFreeze() {
+        let s = StreakState(currentStreak: 5, freezesAvailable: 1)
+        s.lastActiveDay = day(2026, 5, 11)
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 13)), 5)
+        // Two missed days is beyond what a freeze covers.
+        XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 14)), 0)
+    }
+
+    func testDisplayStreakNilState() {
+        XCTAssertEqual(StreakService.displayStreak(for: nil, at: day(2026, 5, 11)), 0)
+        XCTAssertEqual(StreakService.displayStreak(for: StreakState(), at: day(2026, 5, 11)), 0)
+    }
+
     func testDailyGoalPacing() {
         XCTAssertEqual(StreakService.dailyGoalSeconds(forStreak: 0), 60)
         XCTAssertEqual(StreakService.dailyGoalSeconds(forStreak: 2), 60)

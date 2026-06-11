@@ -32,7 +32,9 @@ struct PostureWatchProvider: TimelineProvider {
             return PostureWatchWidgetEntry(date: .now, streak: 0, todayScore: nil)
         }
         let context = ModelContext(container)
-        let streak = (try? context.fetch(FetchDescriptor<StreakState>()))?.first?.currentStreak ?? 0
+        let streak = StreakService.displayStreak(
+            for: (try? context.fetch(FetchDescriptor<StreakState>()))?.first
+        )
         let startOfDay = Calendar.current.startOfDay(for: .now)
         let ackPredicate = #Predicate<AcknowledgmentRecord> { ack in
             ack.timestamp >= startOfDay && ack.qualityRaw != nil

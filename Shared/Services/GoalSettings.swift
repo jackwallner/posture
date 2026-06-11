@@ -134,7 +134,13 @@ final class GoalSettings {
         let oldEnabled = defaults.object(forKey: Key.dailyReminderEnabled) as? Bool ?? true
         reminderEnabled = oldEnabled
         if let oldHour = defaults.object(forKey: Key.dailyReminderHour) as? Int {
-            activeHoursStart = oldHour
+            // Clamp to the Settings stepper range (6...22) and keep the
+            // window valid — an evening reminder hour (e.g. 21) would
+            // otherwise produce start >= end, which schedules nothing.
+            activeHoursStart = min(max(oldHour, 6), 22)
+            if activeHoursEnd <= activeHoursStart {
+                activeHoursEnd = activeHoursStart + 1
+            }
         }
         defaults.removeObject(forKey: Key.dailyReminderEnabled)
         defaults.removeObject(forKey: Key.dailyReminderHour)
