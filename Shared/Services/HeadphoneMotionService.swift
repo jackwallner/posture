@@ -9,9 +9,11 @@ import Observation
 @MainActor
 @Observable
 final class HeadphoneMotionService {
-    /// `isDeviceMotionAvailable` reflects whether *currently-connected* headphones report
-    /// motion. It can flip false→true when supported AirPods come into range, so we read
-    /// it live instead of caching at init.
+    /// `isDeviceMotionAvailable` is *device* capability — "does this iPhone support
+    /// headphone motion at all". It is true on any real iOS 14+ device even with no
+    /// headphones anywhere in sight (and false on the simulator). It says nothing
+    /// about whether AirPods are currently connected; connection truth comes from
+    /// the delegate callbacks and from samples actually arriving.
     var isAvailable: Bool { manager.isDeviceMotionAvailable }
 
     /// True when the user has denied (or is restricted from) motion access, so a
@@ -76,12 +78,14 @@ final class HeadphoneMotionService {
 
     func start() {
         wantsToRun = true
-        // If AirPods are already in when we attach (e.g. cold launch with the
-        // user already wearing them), the delegate's didConnect doesn't fire.
-        // Reflect the truth synchronously so the UI doesn't sit on "waiting."
-        if manager.isDeviceMotionAvailable, !isConnected {
-            isConnected = true
-        }
+        // Do NOT infer connection from `isDeviceMotionAvailable` — that's device
+        // capability and is always true on a real iPhone, AirPods or not. Forcing
+        // `isConnected = true` here made the calibration/scan views start a capture
+        // against headphones that weren't there, and because the flag never changed
+        // again their `.onChange(of: isConnected)` transitions went permanently
+        // dead. If AirPods are already worn, the first motion sample (and usually
+        // a didConnect callback) lands within ~a second of beginMotionUpdates()
+        // and flips `isConnected` through the normal path.
         guard manager.isDeviceMotionAvailable else { return }
         guard !manager.isDeviceMotionActive else { return }
         beginMotionUpdates()

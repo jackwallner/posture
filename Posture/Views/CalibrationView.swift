@@ -63,6 +63,15 @@ struct CalibrationView: View {
                 startCapture()
             }
         }
+        // Samples are the ground truth that AirPods are in and streaming —
+        // `isConnected` can already be true (so onChange never re-fires) when a
+        // capture rewound to .waiting, e.g. because the Motion & Fitness
+        // permission dialog swallowed the first capture window.
+        .onChange(of: airpods.lastPitch) { _, pitch in
+            if pitch != nil, phase == .waiting {
+                startCapture()
+            }
+        }
         .onDisappear {
             captureTask?.cancel()
             waitDeadlineTask?.cancel()
@@ -386,8 +395,10 @@ struct CalibrationView: View {
             for i in stride(from: 5, through: 1, by: -1) {
                 guard !Task.isCancelled else { return }
                 guard airpods.isConnected else {
-                    // AirPods popped out mid-countdown — rewind to waiting.
+                    // AirPods popped out mid-countdown — rewind to waiting and
+                    // re-arm the deadlines so the screen can never dead-end.
                     phase = .waiting
+                    armWaiting()
                     return
                 }
                 countdown = i
@@ -407,7 +418,12 @@ struct CalibrationView: View {
             }
 
             guard pitch.count >= 5 else {
+                // Too few samples (AirPods dropped, or the permission dialog
+                // was up the whole window). Rewind, but re-arm the skip hint /
+                // deadline tasks — without this the user was stranded on a
+                // static "Pop in your AirPods" with no escape.
                 phase = .waiting
+                armWaiting()
                 return
             }
 

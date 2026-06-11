@@ -47,6 +47,15 @@ struct AirpodsScanView: View {
                 runScan()
             }
         }
+        // First sample = AirPods verifiably streaming. Covers the case where
+        // `isConnected` flipped true before this view appeared (no onChange)
+        // and the permission-dialog race where connect fires but samples only
+        // start once the user grants Motion & Fitness.
+        .onChange(of: airpods.lastPitch) { _, pitch in
+            if pitch != nil, phase == .waiting {
+                runScan()
+            }
+        }
     }
 
     // MARK: - Scan
