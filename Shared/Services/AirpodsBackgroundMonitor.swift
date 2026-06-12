@@ -27,6 +27,33 @@ final class AirpodsBackgroundMonitor {
     private(set) var currentQuality: PostureQuality = .good
     private(set) var lastError: String?
 
+    // MARK: - Activity visibility
+
+    /// When the most recent head-motion sample arrived. Published at most
+    /// once per second — samples land at ~25 Hz and republishing each one
+    /// would re-render every observing view at that rate.
+    private(set) var lastSampleAt: Date?
+
+    /// Motion samples processed since the start of today. Same 1 Hz publish
+    /// throttle as `lastSampleAt`.
+    private(set) var samplesToday = 0
+
+    /// Running log of monitor activity (newest first, capped). In-memory
+    /// only — it answers "is this thing actually working?", not history.
+    private(set) var events: [MonitorEvent] = []
+
+    private var unpublishedSampleCount = 0
+    private var lastSamplePublishAt: Date = .distantPast
+    private var sampleCountDay: Date = DateHelpers.startOfDay()
+    private static let maxEvents = 60
+
+    private func logEvent(_ kind: MonitorEvent.Kind) {
+        events.insert(MonitorEvent(timestamp: .now, kind: kind), at: 0)
+        if events.count > Self.maxEvents {
+            events.removeLast(events.count - Self.maxEvents)
+        }
+    }
+
     // MARK: - Dependencies
 
     private let headphoneService: HeadphoneMotionService
@@ -91,6 +118,9 @@ final class AirpodsBackgroundMonitor {
     )
 
     private func handleConnect(_ connected: Bool) {
+        if connected != isConnected, isMonitoring {
+            logEvent(connected ? .connected : .disconnected)
+        }
         isConnected = connected
         if !connected {
             currentQuality = .good
@@ -126,6 +156,7 @@ final class AirpodsBackgroundMonitor {
         isMonitoring = true
         isBackground = background
         lastError = nil
+        logEvent(.armed(background: background))
         activateMotion()
         return true
     }
@@ -149,6 +180,7 @@ final class AirpodsBackgroundMonitor {
                 }
             } catch {
                 lastError = "Audio setup failed: \(error.localizedDescription)"
+                logEvent(.error(lastError ?? "audio error"))
                 return
             }
         }
@@ -156,6 +188,7 @@ final class AirpodsBackgroundMonitor {
     }
 
     func stop() {
+        if isMonitoring { logEvent(.stopped) }
         isMonitoring = false
         isBackground = false
         headphoneService.stop()
@@ -201,7 +234,14 @@ final class AirpodsBackgroundMonitor {
     // MARK: - Sample handler
 
     private func onSample(pitch: Double, yaw: Double, roll: Double) {
-        isConnected = true
+        // Guard the publishes — samples land at ~25 Hz, and every write to an
+        // @Observable property re-renders observers even when the value is
+        // unchanged.
+        if !isConnected {
+            if isMonitoring { logEvent(.connected) }
+            isConnected = true
+        }
+        countSample()
 
         let calibration = calibrationService.current()
         // Prefer the AirPods head-motion baseline; `basePitch` is the legacy
@@ -217,11 +257,12 @@ final class AirpodsBackgroundMonitor {
             slouchDelta: slouchDelta,
             sensitivity: sensitivity
         )
-        currentQuality = quality
+        if quality != currentQuality { currentQuality = quality }
 
         let now = Date.now
         switch quality {
         case .good:
+            if inBadBout { logEvent(.recovered) }
             firstBadAt = nil
             inBadBout = false
         case .borderline:
@@ -253,6 +294,24 @@ final class AirpodsBackgroundMonitor {
         )
         modelContext.insert(sample)
         try? modelContext.save()
+        logEvent(.slouchLogged)
+    }
+
+    /// Tally a motion sample, publishing the observable count + freshness
+    /// stamp at most once per second.
+    private func countSample() {
+        unpublishedSampleCount += 1
+        let now = Date.now
+        guard now.timeIntervalSince(lastSamplePublishAt) >= 1 else { return }
+        lastSamplePublishAt = now
+        let today = DateHelpers.startOfDay()
+        if today != sampleCountDay {
+            sampleCountDay = today
+            samplesToday = 0
+        }
+        samplesToday += unpublishedSampleCount
+        unpublishedSampleCount = 0
+        lastSampleAt = now
     }
 
     // MARK: - Haptic
@@ -330,7 +389,7 @@ final class AirpodsBackgroundMonitor {
         switch type {
         case .began:
             // Engine has stopped. Nothing to do until .ended fires.
-            break
+            if isMonitoring, isBackground { logEvent(.audioInterrupted) }
         case .ended:
             guard isMonitoring, isBackground else { return }
             resumeSilentAudio()
@@ -357,8 +416,10 @@ final class AirpodsBackgroundMonitor {
                 try startSilentAudio()
             }
             lastError = nil
+            logEvent(.audioResumed)
         } catch {
             lastError = "Could not resume audio: \(error.localizedDescription)"
+            logEvent(.error(lastError ?? "audio error"))
         }
     }
 
@@ -394,6 +455,27 @@ final class AirpodsBackgroundMonitor {
         audioPlayer = nil
         audioEngine = nil
     }
+}
+
+// MARK: - Activity log entries
+
+/// One line in the monitor's running activity log. In-memory, newest first.
+struct MonitorEvent: Identifiable, Sendable {
+    enum Kind: Sendable {
+        case armed(background: Bool)
+        case stopped
+        case connected
+        case disconnected
+        case slouchLogged
+        case recovered
+        case audioInterrupted
+        case audioResumed
+        case error(String)
+    }
+
+    let id = UUID()
+    let timestamp: Date
+    let kind: Kind
 }
 
 // MARK: - Errors
