@@ -49,8 +49,7 @@ struct OnboardingView: View {
                     settings.hasAirpods = true
                     settings.hasCompletedOnboarding = true
                 } label: { Text("Get Started") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.primary)
+                    .buttonStyle(.daylight(.primary))
                     .padding(.bottom, 28)
             }
             .padding(.horizontal, 24)

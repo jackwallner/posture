@@ -245,8 +245,7 @@ struct PaywallView: View {
                     }
                 }
             }
-            .buttonStyle(.plain)
-            .daylightCTA(.primary)
+            .buttonStyle(.daylight(.primary))
             .disabled(isPurchasing || selectedPackage == nil)
 
             if let disclosure = disclosureText {

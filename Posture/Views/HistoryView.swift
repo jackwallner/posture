@@ -230,8 +230,7 @@ struct HistoryView: View {
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
             Button { showingAck = true } label: { Text("check in now") }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
+                .buttonStyle(.daylight(.primary))
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)

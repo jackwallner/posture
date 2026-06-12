@@ -96,8 +96,7 @@ struct AirpodsScanView: View {
 
             if phase == .waiting {
                 Button { onFallback() } label: { Text("check in by hand") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
                     .padding(.bottom, 12)
             }
         }
@@ -186,8 +185,7 @@ struct AirpodsScanView: View {
             Spacer(minLength: 24)
 
             Button { onFallback() } label: { Text("check in by hand") }
-                .buttonStyle(.plain)
-                .daylightCTA(.secondary)
+                .buttonStyle(.daylight(.secondary))
                 .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)

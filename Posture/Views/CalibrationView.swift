@@ -116,14 +116,12 @@ struct CalibrationView: View {
             // manual "check in by hand" loop works without calibration.
             if showSkipHint && mode == .onboarding {
                 Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             }
 
             if mode == .quickRecalibrate {
                 Button { dismiss() } label: { Text("Cancel") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             }
         }
         .padding(.horizontal, 24)
@@ -191,8 +189,7 @@ struct CalibrationView: View {
             Spacer()
 
             Button { finishWithDefaultSlouch() } label: { Text("Skip — use the standard range") }
-                .buttonStyle(.plain)
-                .daylightCTA(.ghost)
+                .buttonStyle(.daylight(.ghost))
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
@@ -225,20 +222,17 @@ struct CalibrationView: View {
             Spacer()
 
             Button { retry() } label: { Text("Try Again") }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
+                .buttonStyle(.daylight(.primary))
 
             // B1: an escape so a user/reviewer without compatible AirPods is
             // never dead-ended at the gate. Drops them into the app on a
             // neutral baseline; the manual check-in loop works without AirPods.
             if mode == .onboarding {
                 Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             } else {
                 Button { dismiss() } label: { Text("Cancel") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             }
         }
         .padding(.horizontal, 24)
@@ -272,17 +266,14 @@ struct CalibrationView: View {
             Spacer()
 
             Button { openSettings() } label: { Text("Open Settings") }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
+                .buttonStyle(.daylight(.primary))
 
             if mode == .onboarding {
                 Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             } else {
                 Button { dismiss() } label: { Text("Cancel") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             }
         }
         .padding(.horizontal, 24)
@@ -324,8 +315,7 @@ struct CalibrationView: View {
             } label: {
                 Text(mode == .quickRecalibrate ? "Done" : "Let's go")
             }
-            .buttonStyle(.plain)
-            .daylightCTA(.primary)
+            .buttonStyle(.daylight(.primary))
             .padding(.bottom, 28)
         }
         .padding(.horizontal, 24)

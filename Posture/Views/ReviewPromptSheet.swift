@@ -114,14 +114,12 @@ struct ReviewPromptSheet: View {
                 Button { step = .reviewPitch } label: {
                     Text("Yes, I'm enjoying it")
                 }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
+                .buttonStyle(.daylight(.primary))
 
                 Button { step = .feedback } label: {
                     Text("Not really")
                 }
-                .buttonStyle(.plain)
-                .daylightCTA(.ghost)
+                .buttonStyle(.daylight(.ghost))
             }
         }
         .padding(.horizontal, 24)
@@ -151,8 +149,7 @@ struct ReviewPromptSheet: View {
                 } label: {
                     Text("Rate on the App Store")
                 }
-                .buttonStyle(.plain)
-                .daylightCTA(.primary)
+                .buttonStyle(.daylight(.primary))
 
                 Button {
                     ReviewPromptTracker.markShown()
@@ -160,8 +157,7 @@ struct ReviewPromptSheet: View {
                 } label: {
                     Text("Maybe later")
                 }
-                .buttonStyle(.plain)
-                .daylightCTA(.ghost)
+                .buttonStyle(.daylight(.ghost))
             }
         }
         .padding(.horizontal, 24)
@@ -190,8 +186,7 @@ struct ReviewPromptSheet: View {
             Button { sendFeedback() } label: {
                 Text("Send feedback")
             }
-            .buttonStyle(.plain)
-            .daylightCTA(.primary)
+            .buttonStyle(.daylight(.primary))
             .disabled(feedbackText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             .opacity(feedbackText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1)
         }

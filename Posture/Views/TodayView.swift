@@ -10,6 +10,7 @@ struct TodayView: View {
 
     @State private var showingAck = false
     @State private var showingRecalibrate = false
+    @State private var showingMonitorLog = false
     @State private var nextReminderText = "—"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
@@ -71,8 +72,7 @@ struct TodayView: View {
 
                     VStack(spacing: 12) {
                         Button { showingAck = true } label: { Text("check in now") }
-                            .buttonStyle(.plain)
-                            .daylightCTA(.primary)
+                            .buttonStyle(.daylight(.primary))
                         metaRow
                     }
                     .padding(.top, 4)
@@ -115,6 +115,9 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showingRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
+            }
+            .sheet(isPresented: $showingMonitorLog) {
+                MonitoringLogView()
             }
             .task { await refreshReminderStatus() }
             .onChange(of: settings.reminderEnabled) { _, _ in
@@ -249,21 +252,50 @@ struct TodayView: View {
 
     private func monitoringPill(monitor: AirpodsBackgroundMonitor) -> some View {
         let live = monitor.isConnected
-        return HStack(spacing: 10) {
-            Circle()
-                .fill(live ? Theme.sage : Theme.sand)
-                .frame(width: 7, height: 7)
-            Text(live ? "AirPods linked · listening" : "waiting for AirPods")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
-                .foregroundStyle(live ? Theme.sage : Theme.ink2)
-            Spacer(minLength: 0)
+        return Button { showingMonitorLog = true } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(live ? Theme.sage : Theme.sand)
+                        .frame(width: 7, height: 7)
+                    Text(live ? "AirPods linked · listening" : "waiting for AirPods")
+                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .foregroundStyle(live ? Theme.sage : Theme.ink2)
+                    Spacer(minLength: 0)
+                    HStack(spacing: 3) {
+                        Text("activity")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.system(.caption2, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.ink3)
+                }
+                if live {
+                    // Ticks every second so "last reading Xs ago" visibly
+                    // counts — the proof-of-life the static pill never gave.
+                    TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                        Text(monitorActivityLine(monitor: monitor, now: timeline.date))
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(Theme.ink3)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(live ? Theme.sageTint : Theme.sandTint)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(live ? Theme.sageTint : Theme.sandTint)
-        )
+        .buttonStyle(.plain)
+        .accessibilityLabel("AirPods monitoring activity")
+    }
+
+    private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {
+        guard let last = monitor.lastSampleAt else { return "waiting for the first reading…" }
+        let ago = max(0, Int(now.timeIntervalSince(last)))
+        let agoText = ago <= 2 ? "just now" : "\(ago)s ago"
+        return "\(monitor.samplesToday.formatted()) readings today · last \(agoText)"
     }
 
     // MARK: - Soft banner

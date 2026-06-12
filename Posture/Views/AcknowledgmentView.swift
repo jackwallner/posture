@@ -21,6 +21,8 @@ struct AcknowledgmentView: View {
     @State private var recordedMethod: AcknowledgmentMethod?
     @State private var currentTip: PostureTip?
     @State private var earnedReviewPositiveMoment = false
+    @State private var todayCheckInCount = 0
+    @State private var streakAfterRecord = 0
 
     enum Phase { case choice, scanning, done }
 
@@ -79,8 +81,7 @@ struct AcknowledgmentView: View {
             } label: {
                 Text("scan with AirPods")
             }
-            .buttonStyle(.plain)
-            .daylightCTA(.primary)
+            .buttonStyle(.daylight(.primary))
 
             // Manual self-report — works without AirPods and still records a
             // real posture quality, so the alignment score and history fill in.
@@ -179,6 +180,14 @@ struct AcknowledgmentView: View {
                         .font(.body)
                         .foregroundStyle(Theme.ink2)
                         .fixedSize(horizontal: false, vertical: true)
+                    // The receipt — what this check-in just added, so a
+                    // three-second ritual never feels like it vanished.
+                    if todayCheckInCount > 0 {
+                        Text(tallyLine)
+                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .foregroundStyle(Theme.ink3)
+                            .padding(.top, 2)
+                    }
                 }
                 HorizonMeter(quality: recordedQuality)
                     .frame(height: 48)
@@ -188,8 +197,7 @@ struct AcknowledgmentView: View {
                 }
                 Spacer()
                 Button { dismiss() } label: { Text("done") }
-                    .buttonStyle(.plain)
-                    .daylightCTA(.ghost)
+                    .buttonStyle(.daylight(.ghost))
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 32)
@@ -250,6 +258,14 @@ struct AcknowledgmentView: View {
         }
     }
 
+    private var tallyLine: String {
+        let count = todayCheckInCount == 1
+            ? "your first check-in today"
+            : "\(todayCheckInCount) check-ins today"
+        guard streakAfterRecord > 0 else { return count }
+        return "\(count) · day \(streakAfterRecord) of your streak"
+    }
+
     private var doneEyebrow: String {
         guard recordedQuality != nil else { return "noted" }
         let verb = recordedMethod == .airpods ? "scanned" : "logged"
@@ -283,6 +299,13 @@ struct AcknowledgmentView: View {
         let streakService = StreakService(context: context)
         let streakBefore = streakService.currentState().currentStreak
         let state = streakService.recordAcknowledgment(at: .now)
+        streakAfterRecord = state.currentStreak
+
+        let todayStart = DateHelpers.startOfDay()
+        let todayDescriptor = FetchDescriptor<AcknowledgmentRecord>(
+            predicate: #Predicate { $0.timestamp >= todayStart }
+        )
+        todayCheckInCount = (try? context.fetchCount(todayDescriptor)) ?? 0
 
         if quality == .good {
             earnedReviewPositiveMoment = true

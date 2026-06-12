@@ -54,6 +54,27 @@ extension View {
     }
 }
 
+/// Button style that applies the CTA chrome to the *label*, so the whole
+/// styled card is the hit target. Applying `.daylightCTA` outside a
+/// `Button` leaves only the bare text tappable — the visible 56-pt card
+/// ignores any touch that misses the label (TF feedback: "check in now
+/// does nothing").
+struct DaylightButtonStyle: ButtonStyle {
+    let style: DaylightCTA.Style
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .modifier(DaylightCTA(style: style))
+            .opacity(configuration.isPressed ? 0.7 : 1)
+    }
+}
+
+extension ButtonStyle where Self == DaylightButtonStyle {
+    static func daylight(_ style: DaylightCTA.Style = .primary) -> DaylightButtonStyle {
+        DaylightButtonStyle(style: style)
+    }
+}
+
 #Preview {
     VStack(spacing: 14) {
         Text("check in now").daylightCTA(.primary)
