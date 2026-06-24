@@ -244,10 +244,18 @@ final class AirpodsBackgroundMonitor {
         countSample()
 
         let calibration = calibrationService.current()
-        // Prefer the AirPods head-motion baseline; `basePitch` is the legacy
-        // calibration value retained for users whose calibration predates the
-        // AirPods path.
-        let baseline = calibration?.airpodsPitch ?? calibration?.basePitch ?? 0
+        // Honest scoring needs a real AirPods baseline. Without one, `pitch - 0`
+        // treats raw head pitch (often ~0.2 rad just sitting normally) as a
+        // slouch and the monitor flags/buzzes constantly. Keep publishing
+        // liveness (samples are flowing) but don't score or record until the
+        // user has calibrated with AirPods in. `basePitch` is the legacy camera
+        // baseline and is 0 for every AirPods-era user, so it can't stand in.
+        guard let baseline = calibration?.airpodsPitch else {
+            if currentQuality != .good { currentQuality = .good }
+            firstBadAt = nil
+            inBadBout = false
+            return
+        }
         let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
         let sensitivity = GoalSettings.shared.sensitivity
 

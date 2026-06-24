@@ -69,32 +69,30 @@ struct AcknowledgmentView: View {
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
 
-            Text("A three-second scan with your AirPods. Or just tell us — we trust you.")
+            Text("Tap how you're sitting — we trust you. Or run a quick AirPods scan.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
 
             Spacer()
 
-            Button {
-                phase = .scanning
-            } label: {
-                Text("scan with AirPods")
+            // Self-report is the primary, fastest check-in. The continuous
+            // AirPods monitor is the objective signal now, so the on-demand
+            // scan moved below to a secondary action.
+            HStack(spacing: 10) {
+                selfReportChip(label: "aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
+                selfReportChip(label: "drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
+                selfReportChip(label: "resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
             }
-            .buttonStyle(.daylight(.primary))
 
-            // Manual self-report — works without AirPods and still records a
-            // real posture quality, so the alignment score and history fill in.
-            VStack(spacing: 8) {
-                Text("or tell us how you're sitting")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Theme.ink3)
-                    .frame(maxWidth: .infinity)
-                HStack(spacing: 10) {
-                    selfReportChip(label: "aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
-                    selfReportChip(label: "drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
-                    selfReportChip(label: "resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+            VStack(spacing: 10) {
+                Button {
+                    phase = .scanning
+                } label: {
+                    Text("scan with AirPods instead")
                 }
+                .buttonStyle(.daylight(.ghost))
+
                 Button {
                     recordManual(quality: nil)
                 } label: {
@@ -103,8 +101,8 @@ struct AcknowledgmentView: View {
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
-                .padding(.top, 2)
             }
+            .padding(.top, 10)
             .padding(.bottom, 16)
         }
         .padding(.horizontal, 24)

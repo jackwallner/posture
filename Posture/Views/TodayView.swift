@@ -22,6 +22,25 @@ struct TodayView: View {
         return passiveSamples.contains { $0.timestamp >= today }
     }
 
+    private var passiveSamplesToday: Int {
+        let today = DateHelpers.startOfDay()
+        return passiveSamples.filter { $0.timestamp >= today }.count
+    }
+
+    /// A real AirPods calibration baseline exists — required before the live
+    /// monitor can honestly score posture.
+    private var hasAirpodsBaseline: Bool {
+        calibrations.first?.airpodsPitch != nil
+    }
+
+    /// The continuous monitor when it's actually producing a trustworthy live
+    /// reading: armed, AirPods connected, and calibrated. This is the primary
+    /// posture signal — the on-demand scan is now the fallback.
+    private var liveMonitor: AirpodsBackgroundMonitor? {
+        guard let m = airpodsMonitor, m.isMonitoring, m.isConnected, hasAirpodsBaseline else { return nil }
+        return m
+    }
+
     /// Show a soft prompt to recalibrate after 30+ days — head pose drifts
     /// against the saved baseline (especially with AirPods which sit
     /// differently each time).
@@ -64,7 +83,11 @@ struct TodayView: View {
 
                     alignmentCard
 
-                    if let monitor = airpodsMonitor, monitor.isMonitoring {
+                    // When the live hero is up it already shows status + links
+                    // to the activity log, so only surface the pill while we're
+                    // armed but not yet showing a live reading (waiting for
+                    // AirPods, or not yet calibrated).
+                    if let monitor = airpodsMonitor, monitor.isMonitoring, liveMonitor == nil {
                         monitoringPill(monitor: monitor)
                     }
 
@@ -177,7 +200,112 @@ struct TodayView: View {
 
     // MARK: - Alignment card
 
+    @ViewBuilder
     private var alignmentCard: some View {
+        if let monitor = liveMonitor {
+            liveAlignmentCard(monitor: monitor)
+        } else {
+            checkInAlignmentCard
+        }
+    }
+
+    // MARK: - Live alignment card (continuous monitor — primary signal)
+
+    private func liveAlignmentCard(monitor: AirpodsBackgroundMonitor) -> some View {
+        let quality = monitor.currentQuality
+        return Button { showingMonitorLog = true } label: {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 7) {
+                    Circle()
+                        .fill(liveColor(quality))
+                        .frame(width: 7, height: 7)
+                    Text("right now")
+                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .tracking(1.2)
+                        .foregroundStyle(Theme.ink3)
+                    Spacer(minLength: 0)
+                    HStack(spacing: 3) {
+                        Text("activity")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.system(.caption2, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.ink3)
+                }
+                HStack(alignment: .center, spacing: 18) {
+                    ZStack {
+                        Circle()
+                            .stroke(Theme.ringTrack, lineWidth: 8)
+                        Circle()
+                            .trim(from: 0, to: liveRingFraction(quality))
+                            .stroke(liveColor(quality), style: .init(lineWidth: 8, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .animation(.easeOut(duration: 0.5), value: quality)
+                        Image(systemName: liveIcon(quality))
+                            .font(.system(size: 30, weight: .regular))
+                            .foregroundStyle(liveColor(quality))
+                    }
+                    .frame(width: 96, height: 96)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(liveWord(quality))
+                            .font(Theme.displaySerif(20))
+                            .foregroundStyle(liveColor(quality))
+                        Text(liveSubtitle)
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(Theme.ink2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 0)
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .dawnCard()
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Posture right now: \(liveWord(quality)). Tap for activity.")
+    }
+
+    private func liveColor(_ q: PostureQuality) -> Color {
+        switch q {
+        case .good: return Theme.sage
+        case .borderline: return Theme.sand
+        case .bad: return Theme.clay
+        }
+    }
+
+    private func liveRingFraction(_ q: PostureQuality) -> Double {
+        switch q {
+        case .good: return 0.92
+        case .borderline: return 0.55
+        case .bad: return 0.22
+        }
+    }
+
+    private func liveIcon(_ q: PostureQuality) -> String {
+        switch q {
+        case .good: return "checkmark"
+        case .borderline: return "chevron.down"
+        case .bad: return "exclamationmark"
+        }
+    }
+
+    private func liveWord(_ q: PostureQuality) -> String {
+        switch q {
+        case .good: return "aligned"
+        case .borderline: return "drifting"
+        case .bad: return "slouching"
+        }
+    }
+
+    private var liveSubtitle: String {
+        let resets = passiveSamplesToday
+        guard resets > 0 else { return "monitoring your posture live." }
+        return "\(resets) slouch\(resets == 1 ? "" : "es") caught today."
+    }
+
+    // MARK: - Check-in alignment card (fallback — discrete check-ins)
+
+    private var checkInAlignmentCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("today's alignment")
                 .font(.system(.footnote, design: .rounded).weight(.semibold))

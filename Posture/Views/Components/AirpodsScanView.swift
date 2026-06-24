@@ -21,6 +21,7 @@ struct AirpodsScanView: View {
     @State private var phase: Phase = .waiting
     @State private var countdownTask: Task<Void, Never>?
     @State private var waitDeadlineTask: Task<Void, Never>?
+    @State private var beginTask: Task<Void, Never>?
 
     enum Phase { case waiting, scanning, noConnection }
 
@@ -37,6 +38,7 @@ struct AirpodsScanView: View {
         }
         .task { begin() }
         .onDisappear {
+            beginTask?.cancel()
             countdownTask?.cancel()
             waitDeadlineTask?.cancel()
             airpods.stop()
@@ -84,7 +86,7 @@ struct AirpodsScanView: View {
 
             scanHero
 
-            Text(phase == .scanning ? "hold still. look straight ahead."
+            Text(phase == .scanning ? "hold still — sit how you've been sitting."
                                     : "pop your AirPods in to begin.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
@@ -200,22 +202,43 @@ struct AirpodsScanView: View {
         // the shared background monitor would otherwise starve this view's own
         // CMHeadphoneMotionManager, leaving the scan stuck on "waiting".
         // Resumed in onDisappear.
-        AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
+        let monitor = AirpodsBackgroundMonitor.shared
+        // If the always-on monitor was already streaming, the AirPods are
+        // definitely in-ear — carry that so a slow stream handoff doesn't get
+        // misread as "no AirPods".
+        let airpodsKnownPresent = monitor.isMonitoring && monitor.isConnected
+        monitor.suspendForForegroundRead()
+
         guard airpods.isAvailable else {
             phase = .noConnection
             return
         }
-        airpods.start()
-        if airpods.isConnected {
-            runScan()
-            return
-        }
-        // M6: don't wait on "pop your AirPods in" indefinitely.
-        waitDeadlineTask?.cancel()
-        waitDeadlineTask = Task {
-            try? await Task.sleep(nanoseconds: UInt64(waitDeadlineSeconds * 1_000_000_000))
-            guard !Task.isCancelled else { return }
-            if phase == .waiting { phase = .noConnection }
+
+        beginTask?.cancel()
+        beginTask = Task {
+            // iOS doesn't reassign head-motion to a second manager instantly.
+            // When AirPods were already streaming to the background monitor,
+            // give it a beat to release before we claim the stream — otherwise
+            // the first scan after foregrounding starves and falsely shows
+            // "can't hear your AirPods".
+            if airpodsKnownPresent {
+                try? await Task.sleep(nanoseconds: 350_000_000)
+                guard !Task.isCancelled, phase == .waiting else { return }
+            }
+            airpods.start()
+            if airpods.isConnected {
+                runScan()
+                return
+            }
+            // M6: don't wait on "pop your AirPods in" indefinitely. Known-present
+            // AirPods earn a longer leash, since we know they're there.
+            let deadline = airpodsKnownPresent ? waitDeadlineSeconds * 2 : waitDeadlineSeconds
+            waitDeadlineTask?.cancel()
+            waitDeadlineTask = Task {
+                try? await Task.sleep(nanoseconds: UInt64(deadline * 1_000_000_000))
+                guard !Task.isCancelled else { return }
+                if phase == .waiting { phase = .noConnection }
+            }
         }
     }
 
@@ -247,7 +270,12 @@ struct AirpodsScanView: View {
             }
 
             let calibration = CalibrationService(context: context).current()
-            let baseline = calibration?.airpodsPitch ?? calibration?.basePitch ?? 0
+            // No AirPods baseline → scoring against 0 is meaningless. Record the
+            // check-in as manual rather than inventing a quality.
+            guard let baseline = calibration?.airpodsPitch else {
+                onFallback()
+                return
+            }
             let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
 
             let recent = samples.suffix(5)

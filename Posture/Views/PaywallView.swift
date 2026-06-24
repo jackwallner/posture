@@ -26,7 +26,7 @@ struct PaywallView: View {
     @State private var restoreMessage: String?
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(alignment: .top) {
             Theme.paper.ignoresSafeArea()
 
             #if HAS_REVENUECAT
@@ -35,8 +35,14 @@ struct PaywallView: View {
             } else if subscriptions.products.isEmpty {
                 emptyState
             } else {
+                // safeAreaInset reserves exactly the CTA's height, so the plan
+                // cards never slide under it. The old approach laid the CTA as a
+                // ZStack sibling with a hardcoded 170pt reserved space — smaller
+                // than the CTA's real height once the renewal disclosure wraps,
+                // so the Yearly/Monthly cards rendered behind it and couldn't be
+                // tapped.
                 content
-                stickyCTA
+                    .safeAreaInset(edge: .bottom, spacing: 0) { stickyCTA }
             }
             #else
             offlinePlaceholder
@@ -123,7 +129,7 @@ struct PaywallView: View {
             }
             .padding(.horizontal, 24)
             .padding(.top, displayCloseButton ? 52 : 20)
-            .padding(.bottom, stickyCTAReservedSpace)
+            .padding(.bottom, 8)
         }
     }
 
@@ -231,8 +237,6 @@ struct PaywallView: View {
 
     // MARK: - Sticky CTA
 
-    private var stickyCTAReservedSpace: CGFloat { 170 }
-
     @ViewBuilder
     private var stickyCTA: some View {
         VStack(spacing: 10) {
@@ -309,20 +313,24 @@ struct PaywallView: View {
     }
 
     private var closeButton: some View {
-        VStack {
-            HStack {
-                Spacer()
-                Button { dismiss() } label: {
-                    Image(systemName: "xmark")
-                        .font(.body.weight(.medium))
-                        .foregroundStyle(Theme.ink3)
-                        .padding(20)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Close")
-            }
+        HStack {
             Spacer()
+            Button { dismiss() } label: {
+                Image(systemName: "xmark")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(Theme.ink2)
+                    .frame(width: 30, height: 30)
+                    .background(Theme.paper2, in: Circle())
+                    // Pad the hit area out past the visible chip so the whole
+                    // top-right corner closes the sheet — the bare glyph was a
+                    // ~13pt target that routinely missed.
+                    .padding(12)
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close")
         }
+        .frame(maxWidth: .infinity, alignment: .topTrailing)
     }
 
     private var offlinePlaceholder: some View {
