@@ -1,1 +1,1 @@
-Тепер Posture зчитує поставу через датчик руху AirPods. Швидші чек-іни, ручна відмітка, коли AirPods не з вами, оновлений дизайн — і той самий приватний підхід: усе на пристрої.
+Performance improvements and polish across Today, history, and Apple Watch. Thank you for helping us build a calmer posture habit.

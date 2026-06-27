@@ -1,1 +1,1 @@
-Posture は AirPods のモーションセンサーで姿勢を読み取るようになりました。チェックインがより速く、AirPods を着けていないときの手動セルフ申告にも対応。デザインも一新しつつ、端末内ですべてを処理するプライバシー重視の方針はそのままです。
+Performance improvements and polish across Today, history, and Apple Watch. Thank you for helping us build a calmer posture habit.

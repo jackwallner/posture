@@ -1,1 +1,1 @@
-O Posture agora lê sua postura pelo sensor de movimento dos AirPods. Check-ins mais rápidos, registro manual para quando estiver sem os AirPods, visual renovado — e a mesma abordagem privada, tudo no aparelho.
+Performance improvements and polish across Today, history, and Apple Watch. Thank you for helping us build a calmer posture habit.

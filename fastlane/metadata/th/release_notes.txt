@@ -1,1 +1,1 @@
-ตอนนี้ Posture อ่านท่าทางของคุณผ่านเซ็นเซอร์ตรวจจับการเคลื่อนไหวของ AirPods เช็กอินเร็วขึ้น บันทึกเองได้เมื่อไม่มี AirPods ดีไซน์ใหม่ — และแนวทางความเป็นส่วนตัวแบบเดิม ประมวลผลบนเครื่องทั้งหมด
+Performance improvements and polish across Today, history, and Apple Watch. Thank you for helping us build a calmer posture habit.
