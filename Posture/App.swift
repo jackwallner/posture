@@ -27,16 +27,21 @@ struct PostureApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if let mode = PaywallScreenshotMode.current {
+                PaywallScreenshotHarness(mode: mode)
+                    .environment(settings)
+                    .preferredColorScheme(.light)
+            } else {
+                AirpodsRootView()
+                    .environment(settings)
+                    .preferredColorScheme(.light)
+            }
+            #else
             AirpodsRootView()
                 .environment(settings)
-                // The Daylight palette is a fixed light-only set of literal
-                // colors (no adaptive asset variants). Without locking the
-                // scheme, system-drawn surfaces — .ultraThinMaterial in
-                // dawnCard/dawnCapsule, sheet/nav backgrounds, default button
-                // chrome — render dark on a dark-mode device while our
-                // hardcoded colors stay light, giving the "half light, half
-                // black" mismatch. Lock the app to light.
                 .preferredColorScheme(.light)
+            #endif
         }
         .modelContainer(DataService.sharedModelContainer)
     }

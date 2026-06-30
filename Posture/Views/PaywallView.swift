@@ -35,14 +35,7 @@ struct PaywallView: View {
             } else if subscriptions.products.isEmpty {
                 emptyState
             } else {
-                // safeAreaInset reserves exactly the CTA's height, so the plan
-                // cards never slide under it. The old approach laid the CTA as a
-                // ZStack sibling with a hardcoded 170pt reserved space — smaller
-                // than the CTA's real height once the renewal disclosure wraps,
-                // so the Yearly/Monthly cards rendered behind it and couldn't be
-                // tapped.
-                content
-                    .safeAreaInset(edge: .bottom, spacing: 0) { stickyCTA }
+                paywallContent
             }
             #else
             offlinePlaceholder
@@ -118,41 +111,58 @@ struct PaywallView: View {
         .padding(.horizontal, 24)
     }
 
-    private var content: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 16) {
-                header
-                trustStrip
-                featureList
-                backgroundAudioNote
-                planCards
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, displayCloseButton ? 52 : 20)
-            .padding(.bottom, 8)
+    /// Single viewport — no scroll. CTA + plans always visible on one screen.
+    private var paywallContent: some View {
+        VStack(spacing: 10) {
+            header
+            trustStrip
+            compactFeatureList
+            planCards
+            Spacer(minLength: 0)
+            purchaseBlock
+            legalFooter
         }
+        .padding(.horizontal, 22)
+        .padding(.top, displayCloseButton ? 48 : 16)
+        .padding(.bottom, 14)
+        .frame(maxHeight: .infinity)
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 6) {
             Text("POSTURE+")
-                .font(.caption.weight(.semibold))
+                .font(.caption2.weight(.semibold))
                 .tracking(2)
                 .foregroundStyle(Theme.ink3)
             Text(headlineText)
-                .font(Theme.displaySerif(32))
+                .font(Theme.displaySerif(26))
                 .foregroundStyle(Theme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-            Text("Stop guessing when you slip. See the hours you drift, hold a streak, and keep every month.")
-                .font(.subheadline)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+            Text(subtitleText)
+                .font(.footnote)
                 .foregroundStyle(Theme.ink2)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
         }
+    }
+
+    /// Under the trial headline, anchor the "then $X" price so the cost after the
+    /// free week is clear up front (not buried in the fine print).
+    private var subtitleText: String {
+        #if HAS_REVENUECAT
+        if let package = selectedPackage,
+           package.posturePackageKind != .lifetime,
+           subscriptions.isEligibleForIntroOffer(package) {
+            return "Then \(package.posturePriceLabel), cancel anytime."
+        }
+        #endif
+        return "Unlock every Posture+ feature."
     }
 
     private var headlineText: String {
         #if HAS_REVENUECAT
-        if let pkg = selectedPackage,
+        if let pkg = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
            subscriptions.isEligibleForIntroOffer(pkg),
            let trial = pkg.postureIntroOfferLabel {
             return "Try Posture+\n\(trial)."
@@ -183,36 +193,28 @@ struct PaywallView: View {
         }
     }
 
-    private var featureList: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            benefitRow(
-                icon: "clock.arrow.circlepath",
-                title: "See your day, hour by hour",
-                subtitle: "The 24-hour rhythm shows exactly when you drift, like after lunch or that 3pm meeting."
-            )
-            benefitRow(
-                icon: "airpods.gen3",
-                title: "Quiet AirPods background coaching",
-                subtitle: "Wear your Pros and Posture nudges you without a glance at the phone."
-            )
-            benefitRow(
-                icon: "calendar",
-                title: "Keep every month, not just a week",
-                subtitle: "Free shows your last 7 days. Posture+ keeps the whole story, so streaks actually mean something.",
-                isLast: true
-            )
+    private var compactFeatureList: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            compactBenefit(icon: "clock.arrow.circlepath", title: "Drift rhythm: see exactly when you slip, hour by hour")
+            compactBenefit(icon: "airpods.gen3", title: "AirPods coaching: quiet nudges without glancing at your phone")
+            compactBenefit(icon: "calendar", title: "Full history: keep every month, not just seven days")
         }
-        .padding(.top, 2)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// Honesty on the conversion screen: the background feature above is the
-    /// silent-tone mechanism that lights the orange dot. Keeps the "private"
-    /// trust strip from reading as deceptive next to it.
-    private var backgroundAudioNote: some View {
-        Text("Background coaching keeps the AirPods sensor awake with a silent tone, so iOS shows an orange dot. No audio is recorded, and motion stays on your device.")
-            .font(.caption2)
-            .foregroundStyle(Theme.ink3)
-            .fixedSize(horizontal: false, vertical: true)
+    private func compactBenefit(icon: String, title: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Theme.sage)
+                .frame(width: 24)
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(Theme.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+            Spacer(minLength: 0)
+        }
     }
 
     #if HAS_REVENUECAT
@@ -235,30 +237,45 @@ struct PaywallView: View {
     private var planCards: some View { EmptyView() }
     #endif
 
-    // MARK: - Sticky CTA
+    // MARK: - Purchase
 
-    @ViewBuilder
-    private var stickyCTA: some View {
-        VStack(spacing: 10) {
+    private var purchaseBlock: some View {
+        VStack(spacing: 8) {
             Button(action: startPurchase) {
                 ZStack {
                     Text(ctaTitle)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
                         .opacity(isPurchasing ? 0 : 1)
                     if isPurchasing {
                         ProgressView().tint(Theme.paper)
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
             }
             .buttonStyle(.daylight(.primary))
             .disabled(isPurchasing || selectedPackage == nil)
 
-            if let disclosure = disclosureText {
-                Text(disclosure)
-                    .font(.caption2)
-                    .foregroundStyle(Theme.ink3)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text(trialReassuranceLine ?? " ")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Theme.sage)
+                .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .frame(minHeight: 18)
+                .opacity(trialReassuranceLine == nil ? 0 : 1)
+                .accessibilityHidden(trialReassuranceLine == nil)
+
+            Text(disclosureText ?? " ")
+                .font(.caption2)
+                .foregroundStyle(Theme.ink3)
+                .multilineTextAlignment(.center)
+                .lineLimit(4)
+                .minimumScaleFactor(0.9)
+                .frame(minHeight: 56, alignment: .top)
+                .opacity(disclosureText == nil ? 0 : 1)
+                .accessibilityHidden(disclosureText == nil)
 
             if let errorMessage {
                 Text(errorMessage)
@@ -272,21 +289,7 @@ struct PaywallView: View {
                     .foregroundStyle(Theme.ink2)
                     .multilineTextAlignment(.center)
             }
-
-            legalFooter
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 14)
-        .padding(.bottom, 18)
-        .frame(maxWidth: .infinity)
-        .background(
-            LinearGradient(
-                colors: [Theme.paper.opacity(0), Theme.paper, Theme.paper],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .allowsHitTesting(false)
-        )
     }
 
     /// Restore + legal links. Required by 3.1.2 to be present on the paywall in
@@ -334,23 +337,22 @@ struct PaywallView: View {
     }
 
     private var offlinePlaceholder: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                header
-                trustStrip
-                featureList
-                Text("Connect to load plans")
-                    .font(.caption)
-                    .foregroundStyle(Theme.ink3)
-                    .frame(maxWidth: .infinity)
-                legalFooter
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 8)
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, displayCloseButton ? 52 : 24)
-            .padding(.bottom, 32)
+        VStack(alignment: .leading, spacing: 12) {
+            header
+            trustStrip
+            compactFeatureList
+            Spacer()
+            Text("Connect to load plans")
+                .font(.caption)
+                .foregroundStyle(Theme.ink3)
+                .frame(maxWidth: .infinity)
+            legalFooter
+                .frame(maxWidth: .infinity)
         }
+        .padding(.horizontal, 22)
+        .padding(.top, displayCloseButton ? 48 : 20)
+        .padding(.bottom, 14)
+        .frame(maxHeight: .infinity)
     }
 
     // MARK: - Copy
@@ -359,7 +361,10 @@ struct PaywallView: View {
         #if HAS_REVENUECAT
         guard let package = selectedPackage else { return "Continue" }
         if package.posturePackageKind == .lifetime { return "Unlock Lifetime" }
-        if subscriptions.isEligibleForIntroOffer(package) { return "Start Free Trial" }
+        // Name the trial length in the button — answers "what am I agreeing to?"
+        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
+            return "Start My \(trial.capitalized)"
+        }
         return "Start Posture+"
         #else
         return "Continue"
@@ -383,10 +388,55 @@ struct PaywallView: View {
         #endif
     }
 
+    /// Blinkist-style timeline transparency under the CTA: when the reminder
+    /// arrives and when billing starts. Lifts trial conversion, cuts complaints.
+    private var trialReassuranceLine: String? {
+        #if HAS_REVENUECAT
+        guard let package = selectedPackage,
+              subscriptions.isEligibleForIntroOffer(package),
+              let days = trialDays else { return nil }
+        let reminderDay = max(1, days - 2)
+        return "No payment today · Reminder day \(reminderDay) · Billing day \(days)"
+        #else
+        return nil
+        #endif
+    }
+
+    /// Free-trial length in days, read straight from the intro offer.
+    private var trialDays: Int? {
+        #if HAS_REVENUECAT
+        guard let intro = selectedPackage?.storeProduct.introductoryDiscount,
+              intro.paymentMode == .freeTrial else { return nil }
+        let period = intro.subscriptionPeriod
+        switch period.unit {
+        case .day: return period.value
+        case .week: return period.value * 7
+        case .month: return period.value * 30
+        case .year: return period.value * 365
+        @unknown default: return nil
+        }
+        #else
+        return nil
+        #endif
+    }
+
     // MARK: - Actions
 
     #if HAS_REVENUECAT
     private func selectDefaultPackageIfNeeded() {
+        #if DEBUG
+        if let mode = PaywallScreenshotMode.current, !subscriptions.products.isEmpty {
+            switch mode {
+            case .monthly:
+                selectedPackage = subscriptions.products.first { $0.posturePackageKind == .monthly }
+            case .lifetime:
+                selectedPackage = subscriptions.products.first { $0.posturePackageKind == .lifetime }
+            case .yearly, .trial:
+                selectedPackage = subscriptions.products.first { $0.posturePackageKind == .yearly }
+            }
+            return
+        }
+        #endif
         guard selectedPackage == nil, !subscriptions.products.isEmpty else { return }
         selectedPackage = subscriptions.products.first { $0.posturePackageKind == .yearly }
             ?? subscriptions.products.first
@@ -445,29 +495,6 @@ struct PaywallView: View {
     private func startPurchase() {}
     private func startRestore() {}
     #endif
-
-    private func benefitRow(icon: String, title: String, subtitle: String, isLast: Bool = false) -> some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(Theme.sage)
-                    .frame(width: 24, height: 24, alignment: .center)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Theme.ink)
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(Theme.ink2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(.vertical, 12)
-            if !isLast { Divider().background(Theme.paper3) }
-        }
-    }
 }
 
 #if HAS_REVENUECAT
@@ -535,7 +562,7 @@ private struct PosturePlanCard: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.vertical, 11)
             .background(Theme.paper2, in: RoundedRectangle(cornerRadius: 14))
             .overlay {
                 RoundedRectangle(cornerRadius: 14)
