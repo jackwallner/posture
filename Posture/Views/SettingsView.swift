@@ -194,7 +194,7 @@ struct SettingsView: View {
                 Text("Keep the whole year.\nSee your slouch hours.")
                     .font(Theme.displaySerif(22))
                     .foregroundStyle(Theme.ink)
-                Text("try 7 days · $29.99/yr →")
+                Text(proPostcardPriceLine)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Theme.sage)
             }
@@ -203,6 +203,22 @@ struct SettingsView: View {
             .background(Theme.sageTint, in: .rect(cornerRadius: 14))
         }
         .buttonStyle(.plain)
+    }
+
+    /// Price line for the Posture+ postcard, read from the loaded store
+    /// products so the copy is right in every storefront currency and only
+    /// promises a trial to users who are actually eligible. Hardcoding
+    /// "$29.99/yr" here showed USD to everyone.
+    private var proPostcardPriceLine: String {
+        #if HAS_REVENUECAT
+        if let yearly = subscriptions.products.first(where: { $0.posturePackageKind == .yearly }) {
+            if subscriptions.isEligibleForIntroOffer(yearly), let trial = yearly.postureIntroOfferLabel {
+                return "\(trial) · \(yearly.posturePriceLabel) →"
+            }
+            return "\(yearly.posturePriceLabel) →"
+        }
+        #endif
+        return "see plans →"
     }
 
     private func refreshNotificationStatus() async {
