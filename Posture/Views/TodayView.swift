@@ -143,6 +143,13 @@ struct TodayView: View {
                 MonitoringLogView()
             }
             .task { await refreshReminderStatus() }
+            // The cold-launch reschedule rewrites the pending-notification
+            // queue while our .task above is reading it, so the first read
+            // often lands mid-rewrite and shows "0 more today". Re-read once
+            // the scheduler says the queue is settled.
+            .onReceive(NotificationCenter.default.publisher(for: .postureRemindersRescheduled)) { _ in
+                Task { await refreshReminderStatus() }
+            }
             .onChange(of: settings.reminderEnabled) { _, _ in
                 Task { await refreshReminderStatus() }
             }

@@ -3,6 +3,14 @@ import Foundation
 import UserNotifications
 #endif
 
+extension Notification.Name {
+    /// Posted after `ReminderScheduler.reschedule()` finishes rewriting the
+    /// pending notification queue. UI that displays reminder status (next
+    /// time, remaining count) must re-read on this — reading while the
+    /// queue is mid-rewrite sees a partial (often empty) list.
+    static let postureRemindersRescheduled = Notification.Name("com.jackwallner.posture.remindersRescheduled")
+}
+
 /// Orchestrates posture reminder scheduling. Handles setting changes,
 /// app foreground events, and provides status for the UI.
 enum ReminderScheduler {
@@ -21,6 +29,7 @@ enum ReminderScheduler {
         // willEnterForeground, which would otherwise put the system alert
         // on top of the Welcome screen.
         guard settings.hasCompletedOnboarding else { return }
+        defer { NotificationCenter.default.post(name: .postureRemindersRescheduled, object: nil) }
         guard settings.reminderEnabled else {
             await NotificationService.cancelAllReminders()
             return
