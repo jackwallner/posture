@@ -117,14 +117,12 @@ private struct AirpodsRootView: View {
             }
     }
 
-    /// Free users with AirPods get foreground-only coaching. Pro + toggle
-    /// gets the silent-audio background extension. Users without AirPods
-    /// get nothing.
+    /// Every user past the hard paywall is a subscriber, so AirPods owners get
+    /// live coaching; the always-on toggle adds the silent-audio background
+    /// extension. Users on the camera fallback (no AirPods) get nothing here.
     private func startMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
-        guard settings.hasAirpods == true else { return }
-        let allowBackground = settings.airpodsBackgroundEnabled
-            && subscriptions.isProSubscriber
-        _ = m.start(background: allowBackground)
+        guard settings.hasAirpods == true, subscriptions.isProSubscriber else { return }
+        _ = m.start(background: settings.airpodsBackgroundEnabled)
     }
 
     private func restartMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
@@ -208,6 +206,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
 
 struct RootView: View {
     @Environment(GoalSettings.self) private var settings
+    @State private var subscriptions = SubscriptionService.shared
     @State private var didMigrate = false
 
     var body: some View {
@@ -216,6 +215,13 @@ struct RootView: View {
                 OnboardingView()
             } else if !settings.hasCalibrated {
                 CalibrationView()
+            } else if !subscriptions.isProSubscriber {
+                // Hard paywall: after setup, the app is gated until the user
+                // starts the trial or subscribes. Non-dismissible — there is no
+                // close button and it isn't presented as a sheet, so the only
+                // way past is a successful purchase (which flips isProSubscriber
+                // and re-renders this into MainTabView).
+                PaywallView(displayCloseButton: false, paywallImpressionId: "posture_gate")
             } else {
                 MainTabView()
             }
@@ -236,10 +242,8 @@ struct RootView: View {
 struct MainTabView: View {
     @Environment(GoalSettings.self) private var settings
     @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
-    @State private var subscriptions = SubscriptionService.shared
     @State private var selectedTab = 0
     @State private var showReviewPrompt = false
-    @State private var showIntroPaywall = false
     @State private var reviewPromptInitialStep: ReviewPromptSheet.Step = .enjoyment
     @State private var reviewPromptShownThisSession = false
     @State private var pendingNativeReviewAfterDismiss = false
@@ -291,33 +295,6 @@ struct MainTabView: View {
             }
         }) {
             ReviewPromptSheet(initialStep: reviewPromptInitialStep, onFinish: handleReviewPromptFinish)
-        }
-        .sheet(isPresented: $showIntroPaywall) {
-            PaywallView(paywallImpressionId: "posture_intro")
-        }
-        .task { maybeShowIntroPaywall() }
-    }
-
-    /// H2: make sure every new user sees the trial offer at least once. Show the
-    /// paywall on the first entry to the main app, for non-subscribers who have
-    /// working AirPods (Pro is AirPods-centric, so we skip users who deferred
-    /// calibration without compatible AirPods). Dismissible — the free tier stays
-    /// fully usable.
-    private func maybeShowIntroPaywall() {
-        guard !settings.hasSeenIntroPaywall,
-              !subscriptions.isProSubscriber,
-              !settings.calibrationDeferred,
-              hasCompletedSetup
-        else { return }
-        Task { @MainActor in
-            // Let the Today screen settle in first so the paywall reads as a
-            // moment, not an interruption of the setup transition.
-            try? await Task.sleep(nanoseconds: 700_000_000)
-            guard !showReviewPrompt, !showIntroPaywall else { return }
-            // Consume the one-shot only when the paywall actually presents —
-            // otherwise a colliding sheet would burn it unseen.
-            settings.hasSeenIntroPaywall = true
-            showIntroPaywall = true
         }
     }
 

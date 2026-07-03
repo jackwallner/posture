@@ -12,9 +12,11 @@ enum PurchaseState {
 
 #if HAS_REVENUECAT
 enum PosturePackageKind: Int {
-    case lifetime = 0
-    case yearly = 1
-    case monthly = 2
+    // Yearly first so the trial-led annual plan is the default selection and
+    // sits at the top of the card stack (matches the hard-paywall ordering).
+    case yearly = 0
+    case monthly = 1
+    case lifetime = 2
     case other = 3
 }
 
