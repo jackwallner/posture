@@ -1,11 +1,11 @@
-Ryhdistäydy — ja pidä siitä myös kiinni.
+Ryhdistäydy, ja pidä siitä myös kiinni.
 
 Posture on lempeä ryhtivalmentaja iPhonelle, AirPodsille ja Apple Watchille, ja kaikki tapahtuu suoraan laitteellasi. Sen sijaan, että se jankuttaisi koko päivän, se muistuttaa muutaman kerran päivässä tekemään nopean ryhtitarkistuksen. Pidä putki katkeamatta ja näe, miten tapa kasvaa.
 
 NÄIN SE TOIMII
 • Kalibroi kerran. Istu juuri niin kuin haluat istua, ja AirPodsisi oppivat henkilökohtaisen lähtötasosi muutamassa sekunnissa.
 • Valitse oma rytmisi. Päätä, montako muistutusta päivässä haluat ja mihin aikoihin ne tulevat.
-• Napauta muistutusta. 3 sekunnin AirPods-tarkistus lukee pään asentosi ja kertoo, oletko ryhdissä, lipsumassa vai lysähtänyt — tai kerro itse käsin, miten istut.
+• Napauta muistutusta. 3 sekunnin AirPods-tarkistus lukee pään asentosi ja kertoo, oletko ryhdissä, lipsumassa vai lysähtänyt, tai kerro itse käsin, miten istut.
 • Kasvata putkea. Joka päivä, kun vastaat muistutuksiin, liekkisi kasvaa. Suojaus pelastaa väliin jäävät päivät.
 
 ILMAINEN VERSIO
@@ -18,10 +18,10 @@ ILMAINEN VERSIO
 • Lukitusnäytön ja Koti-valikon widgetit
 
 POSTURE+
-• Hiljainen, koko päivän kestävä AirPods-valmennus taustalla — lempeä tönäisy, kun alat lysähtää, vaikka puhelin olisi taskussa
+• Hiljainen, koko päivän kestävä AirPods-valmennus taustalla, lempeä tönäisy, kun alat lysähtää, vaikka puhelin olisi taskussa
 • Apple Watch -sovelluskumppani taustavalmennuksella
-• Koko ryhtihistoriasi tunti tunnilta — näe tarkalleen, milloin lipsut
-• Jatkuva seuranta — laita päälle ja unohda
+• Koko ryhtihistoriasi tunti tunnilta, näe tarkalleen, milloin lipsut
+• Jatkuva seuranta, laita päälle ja unohda
 • Etusijalla oleva tuki
 
 MITKÄ AIRPODSIT TOIMIVAT

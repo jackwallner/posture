@@ -1,11 +1,11 @@
-Siéntate erguido — y mantén el hábito de verdad.
+Siéntate erguido, y mantén el hábito de verdad.
 
 Posture es un entrenador de postura discreto que funciona en tu dispositivo, con iPhone, AirPods y Apple Watch. En lugar de darte la lata todo el día, te avisa unas pocas veces al día para que hagas una comprobación rápida de tu postura. Mantén una buena racha y verás crecer tu hábito.
 
 CÓMO FUNCIONA
 • Calíbrate una vez. Siéntate como quieres sentarte y tus AirPods aprenden tu referencia personal en unos segundos.
 • Elige tu ritmo. Decide cuántos recordatorios quieres al día y en qué horas prefieres recibirlos.
-• Toca un recordatorio. Una comprobación de 3 segundos con los AirPods detecta la posición de tu cabeza y te dice si estás erguido, desviándote o encorvado — o simplemente indícanos a mano cómo estás sentado.
+• Toca un recordatorio. Una comprobación de 3 segundos con los AirPods detecta la posición de tu cabeza y te dice si estás erguido, desviándote o encorvado, o simplemente indícanos a mano cómo estás sentado.
 • Construye la racha. Cada día que respondes a tus recordatorios, tu llama crece. La protección de congelación cubre los días que fallas.
 
 VERSIÓN GRATUITA
@@ -18,10 +18,10 @@ VERSIÓN GRATUITA
 • Widgets en la pantalla bloqueada y en la pantalla de inicio
 
 POSTURE+
-• Coaching discreto de AirPods en segundo plano durante todo el día — un aviso suave cuando empiezas a encorvarte, incluso con el teléfono en el bolsillo
+• Coaching discreto de AirPods en segundo plano durante todo el día, un aviso suave cuando empiezas a encorvarte, incluso con el teléfono en el bolsillo
 • App complementaria para Apple Watch con coaching en segundo plano
-• Tu historial de postura completo, hora a hora — descubre exactamente cuándo te desvías
-• Monitorización siempre activa — configúralo y olvídate
+• Tu historial de postura completo, hora a hora, descubre exactamente cuándo te desvías
+• Monitorización siempre activa, configúralo y olvídate
 • Soporte prioritario
 
 QUÉ AIRPODS FUNCIONAN

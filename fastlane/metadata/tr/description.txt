@@ -1,11 +1,11 @@
-Dik otur — ve gerçekten sürdür.
+Dik otur, ve gerçekten sürdür.
 
 Posture, iPhone, AirPods ve Apple Watch için cihaz üzerinde çalışan nazik bir duruş koçudur. Tüm gün seni rahatsız etmek yerine, günde birkaç kez hızlı bir duruş kontrolü yapman için seni dürter. Serini koru ve alışkanlığının büyümesini izle.
 
 NASIL ÇALIŞIR
 • Bir kez kalibre et. İstediğin gibi otur, AirPods'un birkaç saniye içinde sana özel temel duruşunu öğrensin.
 • Ritmini seç. Günde kaç hatırlatıcı istediğini ve hangi saatlerde gelmelerini istediğini belirle.
-• Bir hatırlatıcıya dokun. 3 saniyelik AirPods kontrolü kafa konumunu okur ve dik mi durduğunu, yavaşça kaydığını mı yoksa kamburlaştığını mı söyler — ya da nasıl oturduğunu basitçe elinle bildir.
+• Bir hatırlatıcıya dokun. 3 saniyelik AirPods kontrolü kafa konumunu okur ve dik mi durduğunu, yavaşça kaydığını mı yoksa kamburlaştığını mı söyler, ya da nasıl oturduğunu basitçe elinle bildir.
 • Seriyi oluştur. Hatırlatıcılarına yanıt verdiğin her gün alevin büyür. Dondurma koruması boş günlerini güvence altına alır.
 
 ÜCRETSİZ SÜRÜM
@@ -18,10 +18,10 @@ NASIL ÇALIŞIR
 • Lock Screen ve Home Screen widget'ları
 
 POSTURE+
-• Gün boyu sessiz AirPods arka plan koçluğu — telefon cebinde olsa bile kamburlaşmaya başladığında nazik bir dürtme
+• Gün boyu sessiz AirPods arka plan koçluğu, telefon cebinde olsa bile kamburlaşmaya başladığında nazik bir dürtme
 • Arka plan koçluğu sunan Apple Watch eşlik uygulaması
-• Saat saat tam duruş geçmişin — tam olarak ne zaman kaydığını gör
-• Sürekli açık izleme — ayarla ve unut
+• Saat saat tam duruş geçmişin, tam olarak ne zaman kaydığını gör
+• Sürekli açık izleme, ayarla ve unut
 • Öncelikli destek
 
 HANGİ AIRPODS ÇALIŞIR
