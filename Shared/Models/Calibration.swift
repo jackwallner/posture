@@ -11,10 +11,24 @@ final class Calibration {
     var baseYaw: Double
     var baseRoll: Double
 
-    // AirPods baseline (radians) — nil if AirPods weren't connected during calibration
+    // AirPods baseline (radians) — nil if AirPods weren't connected during calibration.
+    // `airpodsPitch` is the effective baseline scoring reads: the mean of the
+    // standing + sitting aligned captures (they're both "head level", so a
+    // single robust number, cross-checked across two postures).
     var airpodsPitch: Double?
     var airpodsRoll: Double?
     var airpodsYaw: Double?
+
+    // Per-posture aligned baselines, captured separately during onboarding so we
+    // can teach + verify good posture standing AND sitting. nil on legacy rows
+    // or a single-pose recalibration.
+    var airpodsStandingPitch: Double?
+    var airpodsSittingPitch: Double?
+
+    // How steady the aligned captures were (0…1). A tight, still hold scores
+    // near 1; a fidgety capture scores low. Surfaced to the user and used to
+    // decide whether the baseline is trustworthy enough to judge against.
+    var baselineConfidence: Double?
 
     // Watch wrist gravity baseline — nil if watch wasn't worn
     var watchGravityX: Double?
@@ -34,6 +48,9 @@ final class Calibration {
         airpodsPitch: Double? = nil,
         airpodsRoll: Double? = nil,
         airpodsYaw: Double? = nil,
+        airpodsStandingPitch: Double? = nil,
+        airpodsSittingPitch: Double? = nil,
+        baselineConfidence: Double? = nil,
         watchGravityX: Double? = nil,
         watchGravityY: Double? = nil,
         watchGravityZ: Double? = nil
@@ -47,6 +64,9 @@ final class Calibration {
         self.airpodsPitch = airpodsPitch
         self.airpodsRoll = airpodsRoll
         self.airpodsYaw = airpodsYaw
+        self.airpodsStandingPitch = airpodsStandingPitch
+        self.airpodsSittingPitch = airpodsSittingPitch
+        self.baselineConfidence = baselineConfidence
         self.watchGravityX = watchGravityX
         self.watchGravityY = watchGravityY
         self.watchGravityZ = watchGravityZ

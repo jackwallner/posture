@@ -61,4 +61,35 @@ enum PostureScoring {
         guard let previous else { return sample }
         return previous * (1 - alpha) + sample * alpha
     }
+
+    // MARK: - Baseline confidence
+
+    /// Sample spread (population standard deviation, radians). Our proxy for how
+    /// steady a calibration hold was: a still head has tight spread, a fidgeting
+    /// one is wide. Returns 0 for fewer than two samples.
+    static func standardDeviation(_ samples: [Double]) -> Double {
+        guard samples.count > 1 else { return 0 }
+        let mean = samples.reduce(0, +) / Double(samples.count)
+        let variance = samples.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Double(samples.count)
+        return variance.squareRoot()
+    }
+
+    /// A hold this steady (radians of spread) or tighter is trusted as a clean
+    /// aligned capture; anything wider means "hold still, let's try again".
+    static let stableCaptureThreshold = 0.06  // ~3.4°
+
+    /// Map a capture's spread to a 0…1 confidence. A rock-still hold is ~1; at or
+    /// beyond `confidenceCeiling` of spread it's 0.
+    static func captureConfidence(standardDeviation sd: Double) -> Double {
+        let confidenceCeiling = 0.12  // ~6.9°
+        return max(0, min(1, 1 - sd / confidenceCeiling))
+    }
+
+    /// Fold several aligned pose captures (standing, sitting) into the single
+    /// baseline scoring reads. Both are "head level", so their mean is a more
+    /// robust baseline than either alone. Returns nil for an empty set.
+    static func combinedBaseline(_ poseMeans: [Double]) -> Double? {
+        guard !poseMeans.isEmpty else { return nil }
+        return poseMeans.reduce(0, +) / Double(poseMeans.count)
+    }
 }

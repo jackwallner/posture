@@ -142,6 +142,15 @@ final class SubscriptionService: NSObject {
     }
 
     func configure() {
+        #if DEBUG
+        // Simulator/screenshot/UI-test hook: keep the local override authoritative
+        // and skip RevenueCat entirely so a customerInfo refresh can't undo it.
+        // Lets automated runs walk past the hard paywall gate.
+        if ProcessInfo.processInfo.arguments.contains("-PostureProOverride") {
+            isProSubscriber = true
+            return
+        }
+        #endif
         #if HAS_REVENUECAT
         guard !isConfigured else { return }
         Purchases.configure(withAPIKey: Self.apiKey)

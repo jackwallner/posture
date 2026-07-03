@@ -36,6 +36,11 @@ struct AcknowledgmentView: View {
         }
         .onAppear {
             currentTip = PostureTipService.randomTip()
+            // AirPods owners get an objective scan as the check-in — no
+            // self-report. Manual self-report is the no-AirPods mode only.
+            if settings.hasAirpods == true, phase == .choice {
+                phase = .scanning
+            }
             if let idx = notificationIndex {
                 UNUserNotificationCenter.current().removeDeliveredNotifications(
                     withIdentifiers: ["posture.reminder.\(idx)"]
@@ -64,46 +69,26 @@ struct AcknowledgmentView: View {
             .padding(.top, 12)
             .padding(.bottom, 40)
 
-            Text("how's your posture\nright now?")
+            Text("How's your posture\nright now?")
                 .font(Theme.displaySerif(42))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
 
-            Text("Tap how you're sitting — we trust you. Or run a quick AirPods scan.")
+            Text("Sit tall, then tell us how you're holding it. Your check-in keeps your streak alive.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
 
             Spacer()
 
-            // Self-report is the primary, fastest check-in. The continuous
-            // AirPods monitor is the objective signal now, so the on-demand
-            // scan moved below to a secondary action.
+            // No AirPods, so self-report is the check-in. AirPods owners never
+            // see this screen; their check-in is an objective scan.
             HStack(spacing: 10) {
-                selfReportChip(label: "aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
-                selfReportChip(label: "drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
-                selfReportChip(label: "resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+                selfReportChip(label: "Aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
+                selfReportChip(label: "Drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
+                selfReportChip(label: "Resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
             }
-
-            VStack(spacing: 10) {
-                Button {
-                    phase = .scanning
-                } label: {
-                    Text("scan with AirPods instead")
-                }
-                .buttonStyle(.daylight(.ghost))
-
-                Button {
-                    recordManual(quality: nil)
-                } label: {
-                    Text("just log it →")
-                        .font(.caption)
-                        .foregroundStyle(Theme.ink3)
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.top, 10)
-            .padding(.bottom, 16)
+            .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -122,7 +107,7 @@ struct AcknowledgmentView: View {
                 .background(tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("I'm sitting \(label)")
+        .accessibilityLabel("I'm sitting \(label.lowercased())")
     }
 
     private func recordManual(quality: PostureQuality?) {

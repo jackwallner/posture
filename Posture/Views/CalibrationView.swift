@@ -1,10 +1,12 @@
 import SwiftData
 import SwiftUI
 
-/// AirPods-only calibration. We start the headphone motion service and
-/// drive a small state machine: waiting (no AirPods yet) → capture (3s
-/// stable samples) → done. If after a generous timeout no motion ever
-/// arrives, we surface the "compatible AirPods required" gate.
+/// AirPods calibration. We start the headphone motion service and capture the
+/// user's aligned posture twice, standing then sitting, each behind a
+/// steadiness gate so a fidgety hold is retried rather than baked into the
+/// baseline. A slouch pose then sets the personal range. The two aligned reads
+/// are averaged into one high-confidence baseline. If no motion ever arrives we
+/// surface the "compatible AirPods required" gate.
 struct CalibrationView: View {
     enum Mode {
         case onboarding
@@ -25,18 +27,32 @@ struct CalibrationView: View {
     @State private var phase: Phase = .waiting
     @State private var countdown: Int = 5
     @State private var showSkipHint = false
-    @State private var capturedPitch: Double?
-    @State private var capturedYaw: Double?
-    @State private var capturedRoll: Double?
+    @State private var showSteadyRetry = false
+
+    // Aligned captures accumulate here as the sequence advances.
+    @State private var standingCapture: PoseCapture?
+    @State private var sittingCapture: PoseCapture?
     @State private var capturedSlouchDelta: Double?
-    @State private var captureTask: Task<Void, Never>?
+    @State private var savedConfidence: Double?
+
+    @State private var sequenceTask: Task<Void, Never>?
     @State private var waitDeadlineTask: Task<Void, Never>?
     @State private var permissionWatchTask: Task<Void, Never>?
 
+    /// One steady read of a pose: its mean pitch, how tight the hold was, and
+    /// the accompanying yaw/roll means (kept from the sitting read).
+    private struct PoseCapture {
+        let pitch: Double
+        let standardDeviation: Double
+        let yaw: Double?
+        let roll: Double?
+    }
+
     enum Phase {
         case waiting          // AirPods not yet sending samples
-        case capturing        // got first sample, running countdown
-        case capturingSlouch  // upright captured, now reading the user's slouch
+        case standing         // capturing standing-upright
+        case sitting          // capturing sitting-upright
+        case slouch           // reading the user's slouch
         case unsupported      // gave up — show the gate
         case permissionDenied // motion access is off, not missing hardware
         case done             // saved
@@ -47,13 +63,28 @@ struct CalibrationView: View {
     /// After this long with no AirPods, offer an escape so a user (or reviewer)
     /// without compatible AirPods is never trapped on a static screen.
     private let skipHintSeconds: Double = 6
+    /// Settle countdown before each read, and how many times a too-jittery
+    /// aligned read is retried before we accept the best-effort hold.
+    private let settleSeconds = 4
+    private let maxAlignedAttempts = 2
 
     var body: some View {
         Group {
             switch phase {
             case .waiting: waitingStep
-            case .capturing: capturingStep
-            case .capturingSlouch: capturingSlouchStep
+            case .standing: alignedCaptureStep(
+                eyebrow: "Aligned · standing",
+                title: "Stand tall.",
+                instruction: "Stack your ears over your shoulders, shoulders over hips. Lengthen up through the crown of your head, chin level. Hold still while we read it.",
+                accent: Theme.sage, wash: Theme.sageTint
+            )
+            case .sitting: alignedCaptureStep(
+                eyebrow: "Aligned · sitting",
+                title: "Now sit tall.",
+                instruction: "Sit back so your hips fill the seat, both feet flat. Same long spine, ears over shoulders, chin level. Hold still.",
+                accent: Theme.sage, wash: Theme.sageTint
+            )
+            case .slouch: slouchStep
             case .unsupported: unsupportedStep
             case .permissionDenied: permissionDeniedStep
             case .done: doneStep
@@ -63,7 +94,7 @@ struct CalibrationView: View {
         .task { begin() }
         .onChange(of: airpods.isConnected) { _, connected in
             if connected, phase == .waiting {
-                startCapture()
+                startSequence()
             }
         }
         // Samples are the ground truth that AirPods are in and streaming —
@@ -72,11 +103,11 @@ struct CalibrationView: View {
         // permission dialog swallowed the first capture window.
         .onChange(of: airpods.lastPitch) { _, pitch in
             if pitch != nil, phase == .waiting {
-                startCapture()
+                startSequence()
             }
         }
         .onDisappear {
-            captureTask?.cancel()
+            sequenceTask?.cancel()
             waitDeadlineTask?.cancel()
             permissionWatchTask?.cancel()
             airpods.stop()
@@ -84,7 +115,7 @@ struct CalibrationView: View {
         }
     }
 
-    // MARK: - States
+    // MARK: - Steps
 
     private var waitingStep: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -104,18 +135,17 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 24)
 
-            Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone — iOS will ask permission to read motion.")
+            Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone. iOS will ask permission to read motion.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
             Spacer()
 
-            // M5: never leave the user stranded on a static screen. After a
-            // few seconds, offer a way into the app without AirPods. The
-            // manual "check in by hand" loop works without calibration.
+            // Never leave the user stranded on a static screen. After a few
+            // seconds, offer a way into the app without AirPods.
             if showSkipHint && mode == .onboarding {
-                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                Button { skipWithoutAirpods() } label: { Text("I don't have AirPods") }
                     .buttonStyle(.daylight(.ghost))
             }
 
@@ -129,30 +159,42 @@ struct CalibrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var capturingStep: some View {
+    private func alignedCaptureStep(eyebrow: String, title: String, instruction: String, accent: Color, wash: Color) -> some View {
         VStack(alignment: .leading, spacing: 18) {
+            Text(eyebrow.uppercased())
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .tracking(1.5)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 8)
             Spacer()
             ZStack {
                 Circle()
-                    .fill(Theme.sageTint)
+                    .fill(wash)
                     .frame(width: 200, height: 200)
                 Text("\(countdown)")
                     .font(Theme.displaySerif(96))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(accent)
                     .contentTransition(.numericText())
                     .animation(.default, value: countdown)
             }
             .frame(maxWidth: .infinity)
 
-            Text("Sit upright.")
+            Text(title)
                 .font(.system(size: 32, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
-                .padding(.top, 24)
+                .padding(.top, 12)
 
-            Text("Look straight ahead and hold still. We're learning your aligned posture.")
+            Text(instruction)
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
+
+            if showSteadyRetry {
+                Label("That read was a little shaky. Hold as still as you can.", systemImage: "hand.raised.slash")
+                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .foregroundStyle(Theme.sand)
+                    .padding(.top, 2)
+            }
 
             Spacer()
         }
@@ -161,8 +203,13 @@ struct CalibrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private var capturingSlouchStep: some View {
+    private var slouchStep: some View {
         VStack(alignment: .leading, spacing: 18) {
+            Text("YOUR RANGE")
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .tracking(1.5)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 8)
             Spacer()
             ZStack {
                 Circle()
@@ -176,19 +223,19 @@ struct CalibrationView: View {
             }
             .frame(maxWidth: .infinity)
 
-            Text("Now, slouch.")
+            Text("Now let go.")
                 .font(.system(size: 32, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
-                .padding(.top, 24)
+                .padding(.top, 12)
 
-            Text("Settle into the slump you usually catch yourself in, and hold it. The distance between the two poses becomes your personal range.")
+            Text("Settle into the slump you usually catch yourself in, and hold it. The distance between tall and slumped becomes your personal range.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
             Spacer()
 
-            Button { finishWithDefaultSlouch() } label: { Text("Skip — use the standard range") }
+            Button { finishWithDefaultSlouch() } label: { Text("Skip, use the standard range") }
                 .buttonStyle(.daylight(.ghost))
         }
         .padding(.horizontal, 24)
@@ -214,7 +261,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
-            Text("Posture reads alignment from the head-motion sensor in AirPods Pro (1st & 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again.")
+            Text("Posture reads alignment from the head-motion sensor in AirPods Pro (1st and 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
@@ -224,11 +271,11 @@ struct CalibrationView: View {
             Button { retry() } label: { Text("Try Again") }
                 .buttonStyle(.daylight(.primary))
 
-            // B1: an escape so a user/reviewer without compatible AirPods is
-            // never dead-ended at the gate. Drops them into the app on a
-            // neutral baseline; the manual check-in loop works without AirPods.
+            // An escape so a user/reviewer without compatible AirPods is never
+            // dead-ended at the gate. Drops them into the no-AirPods (manual
+            // check-in) mode on a neutral baseline.
             if mode == .onboarding {
-                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                Button { skipWithoutAirpods() } label: { Text("I don't have AirPods") }
                     .buttonStyle(.daylight(.ghost))
             } else {
                 Button { dismiss() } label: { Text("Cancel") }
@@ -258,7 +305,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
-            Text("Posture needs permission to read your AirPods' motion sensor. Turn on Motion & Fitness for Posture in Settings, then try again.")
+            Text("Posture needs permission to read your AirPods' motion sensor. Turn on Motion and Fitness for Posture in Settings, then try again.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
@@ -269,7 +316,7 @@ struct CalibrationView: View {
                 .buttonStyle(.daylight(.primary))
 
             if mode == .onboarding {
-                Button { skipWithoutAirpods() } label: { Text("Continue without AirPods") }
+                Button { skipWithoutAirpods() } label: { Text("I don't have AirPods") }
                     .buttonStyle(.daylight(.ghost))
             } else {
                 Button { dismiss() } label: { Text("Cancel") }
@@ -300,13 +347,16 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 28)
 
-            Text(capturedSlouchDelta != nil
-                 ? "We've learned your aligned posture — and your slouch. Every check-in is scored against your own range, three quiet seconds at a time."
-                 : "We've learned your aligned posture. From here on, every check-in is just three quiet seconds.")
+            Text(doneSubtitle)
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
                 .padding(.top, 10)
+
+            if let confidence = savedConfidence {
+                ConfidenceBar(confidence: confidence)
+                    .padding(.top, 20)
+            }
 
             Spacer()
 
@@ -321,6 +371,12 @@ struct CalibrationView: View {
         .padding(.horizontal, 24)
     }
 
+    private var doneSubtitle: String {
+        let base = "We've learned your aligned posture standing and sitting"
+        let range = capturedSlouchDelta != nil ? ", and your slouch." : "."
+        return base + range + " Every check-in is scored against your own range."
+    }
+
     // MARK: - State machine
 
     private func begin() {
@@ -329,21 +385,17 @@ struct CalibrationView: View {
         // CMHeadphoneMotionManager. Resumed in onDisappear.
         AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
         airpods.start()
-        // If AirPods are already in, the first sample arrives within a
-        // tick and onChange flips us to capture. If not, give the user a
-        // generous window to physically put them in before showing the
-        // unsupported gate.
         if airpods.isConnected {
-            startCapture()
+            startSequence()
             return
         }
         armWaiting()
     }
 
     /// Start (or restart) the no-AirPods countdowns: a short timer that reveals
-    /// the "Continue without AirPods" escape, and the longer deadline that
-    /// surfaces the unsupported gate. A parallel watcher catches a denied
-    /// motion permission so we show the right message (not "need AirPods").
+    /// the "I don't have AirPods" escape, and the longer deadline that surfaces
+    /// the unsupported gate. A parallel watcher catches a denied motion
+    /// permission so we show the right message (not "need AirPods").
     private func armWaiting() {
         showSkipHint = false
 
@@ -362,8 +414,6 @@ struct CalibrationView: View {
 
         permissionWatchTask?.cancel()
         permissionWatchTask = Task {
-            // Poll briefly so a "Don't Allow" tap surfaces the permission
-            // state quickly rather than after the full connect deadline.
             for _ in 0..<60 {
                 try? await Task.sleep(nanoseconds: 500_000_000)
                 guard !Task.isCancelled else { return }
@@ -381,17 +431,18 @@ struct CalibrationView: View {
         airpods.stop()
         airpods.start()
         if airpods.isConnected {
-            startCapture()
+            startSequence()
             return
         }
         armWaiting()
     }
 
-    /// B1: leave the AirPods gate without being trapped. Save a neutral
-    /// baseline (scans fall back to a 0 baseline) and flag setup as deferred so
-    /// Today can nudge the user to finish calibrating once AirPods are around.
+    /// Leave the AirPods gate without being trapped. Save a neutral baseline
+    /// (scoring falls back to a 0 baseline; the no-AirPods mode uses manual
+    /// check-ins) and flag setup as deferred + no-AirPods so the app routes to
+    /// self-report instead of AirPods reads.
     private func skipWithoutAirpods() {
-        captureTask?.cancel()
+        sequenceTask?.cancel()
         waitDeadlineTask?.cancel()
         permissionWatchTask?.cancel()
         airpods.stop()
@@ -403,6 +454,7 @@ struct CalibrationView: View {
             slouchPitchDelta: .pi / 24
         )
         CalibrationService(context: context).save(cal)
+        settings.hasAirpods = false
         settings.calibrationDeferred = true
         if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
     }
@@ -413,133 +465,187 @@ struct CalibrationView: View {
         }
     }
 
-    private func startCapture() {
+    /// Run the full standing → sitting → slouch capture sequence. Each aligned
+    /// pose is retried if the hold was too shaky; a mid-sequence AirPods drop
+    /// rewinds cleanly to the waiting screen so we never dead-end.
+    private func startSequence() {
+        guard phase == .waiting else { return }
         waitDeadlineTask?.cancel()
         permissionWatchTask?.cancel()
-        phase = .capturing
         AnalyticsService.calibrateStarted(mode: mode == .quickRecalibrate ? "quick" : "full")
 
-        captureTask?.cancel()
-        captureTask = Task {
-            // 5-second countdown so the user can settle into an aligned
-            // posture before the read.
-            for i in stride(from: 5, through: 1, by: -1) {
-                guard !Task.isCancelled else { return }
-                guard airpods.isConnected else {
-                    // AirPods popped out mid-countdown — rewind to waiting and
-                    // re-arm the deadlines so the screen can never dead-end.
-                    phase = .waiting
-                    armWaiting()
-                    return
-                }
+        sequenceTask?.cancel()
+        sequenceTask = Task {
+            guard let standing = await captureAlignedPose(phase: .standing) else {
+                rewindToWaiting(); return
+            }
+            standingCapture = standing
+            guard let sitting = await captureAlignedPose(phase: .sitting) else {
+                rewindToWaiting(); return
+            }
+            sittingCapture = sitting
+
+            countdown = 3
+            showSteadyRetry = false
+            phase = .slouch
+            await captureSlouch(uprightSitting: sitting.pitch)
+        }
+    }
+
+    /// Capture one aligned pose, retrying up to `maxAlignedAttempts` times when
+    /// the hold is shakier than the steadiness threshold. Returns nil only when
+    /// AirPods drop or never deliver enough samples (caller rewinds).
+    private func captureAlignedPose(phase target: Phase) async -> PoseCapture? {
+        for attempt in 0..<maxAlignedAttempts {
+            phase = target
+            showSteadyRetry = attempt > 0
+
+            for i in stride(from: settleSeconds, through: 1, by: -1) {
+                guard !Task.isCancelled else { return nil }
+                guard airpods.isConnected else { return nil }
                 countdown = i
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
             }
 
-            // Sample 10 readings over ~1 second and average them.
             var pitch: [Double] = []
             var yaw: [Double] = []
             var roll: [Double] = []
-            for _ in 0..<10 {
-                guard !Task.isCancelled else { return }
+            // ~2s window at 10 Hz — enough to measure the spread of the hold.
+            for _ in 0..<20 {
+                guard !Task.isCancelled else { return nil }
                 if let p = airpods.lastPitch { pitch.append(p) }
                 if let y = airpods.lastYaw { yaw.append(y) }
                 if let r = airpods.lastRoll { roll.append(r) }
                 try? await Task.sleep(nanoseconds: 100_000_000)
             }
 
-            guard pitch.count >= 5 else {
-                // Too few samples (AirPods dropped, or the permission dialog
-                // was up the whole window). Rewind, but re-arm the skip hint /
-                // deadline tasks — without this the user was stranded on a
-                // static "Pop in your AirPods" with no escape.
-                phase = .waiting
-                armWaiting()
-                return
+            guard pitch.count >= 10 else { return nil }
+
+            let mean = pitch.reduce(0, +) / Double(pitch.count)
+            let sd = PostureScoring.standardDeviation(pitch)
+            let steady = sd <= PostureScoring.stableCaptureThreshold
+            if steady || attempt == maxAlignedAttempts - 1 {
+                return PoseCapture(
+                    pitch: mean,
+                    standardDeviation: sd,
+                    yaw: yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count),
+                    roll: roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
+                )
             }
-
-            capturedPitch = pitch.reduce(0, +) / Double(pitch.count)
-            capturedYaw = yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count)
-            capturedRoll = roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
-
-            // Reset before the view renders — otherwise the slouch circle
-            // briefly shows the upright countdown's final "1".
-            countdown = 3
-            phase = .capturingSlouch
-            startSlouchCapture()
+            // Too shaky and attempts remain — loop and re-read this pose.
         }
+        return nil
     }
 
-    /// Second pose: read the user's natural slouch so scoring thresholds
-    /// scale to their real range instead of a one-size-fits-all constant.
-    /// Any failure here (AirPods drop, too few samples) falls back to the
-    /// default range — the upright baseline is already in hand, so the user
-    /// is never rewound or stranded on this step.
-    private func startSlouchCapture() {
-        captureTask?.cancel()
-        captureTask = Task {
-            for i in stride(from: 3, through: 1, by: -1) {
-                guard !Task.isCancelled else { return }
-                guard airpods.isConnected else {
-                    finishWithDefaultSlouch()
-                    return
-                }
-                countdown = i
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-            }
-
-            var pitch: [Double] = []
-            for _ in 0..<10 {
-                guard !Task.isCancelled else { return }
-                if let p = airpods.lastPitch { pitch.append(p) }
-                try? await Task.sleep(nanoseconds: 100_000_000)
-            }
-
-            // Skip tapped mid-sampling already saved with the default range —
-            // don't save a second Calibration row on top of it.
+    /// Second-stage slouch read. Any failure (drop, too few samples) falls back
+    /// to the default range — both aligned reads are already in hand, so the
+    /// user is never rewound from here.
+    private func captureSlouch(uprightSitting: Double) async {
+        for i in stride(from: 3, through: 1, by: -1) {
             guard !Task.isCancelled else { return }
-
-            guard pitch.count >= 5, let upright = capturedPitch else {
-                finishWithDefaultSlouch()
-                return
-            }
-
-            let slouchPitch = pitch.reduce(0, +) / Double(pitch.count)
-            capturedSlouchDelta = PostureScoring.calibratedSlouchDelta(
-                uprightPitch: upright,
-                slouchedPitch: slouchPitch
-            )
-            save()
-            phase = .done
+            guard airpods.isConnected else { finishWithDefaultSlouch(); return }
+            countdown = i
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
+
+        var pitch: [Double] = []
+        for _ in 0..<10 {
+            guard !Task.isCancelled else { return }
+            if let p = airpods.lastPitch { pitch.append(p) }
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+
+        guard !Task.isCancelled else { return }
+        guard pitch.count >= 5 else { finishWithDefaultSlouch(); return }
+
+        let slouchPitch = pitch.reduce(0, +) / Double(pitch.count)
+        capturedSlouchDelta = PostureScoring.calibratedSlouchDelta(
+            uprightPitch: uprightSitting,
+            slouchedPitch: slouchPitch
+        )
+        save()
+        phase = .done
+    }
+
+    private func rewindToWaiting() {
+        guard !Task.isCancelled else { return }
+        phase = .waiting
+        showSteadyRetry = false
+        armWaiting()
     }
 
     private func finishWithDefaultSlouch() {
-        captureTask?.cancel()
+        sequenceTask?.cancel()
         capturedSlouchDelta = nil
         save()
         phase = .done
     }
 
     private func save() {
-        guard let pitch = capturedPitch else { return }
-        // Camera baseline (`basePitch`) stays at 0 — the legacy camera
-        // scan path is gone, so nothing reads it. AirPods pitch/yaw/roll
-        // are the live baseline.
+        guard let sitting = sittingCapture else { return }
+        let standing = standingCapture
+        // Both aligned reads are "head level", so their mean is a more robust
+        // baseline than either alone; confidence is how tight the two holds were.
+        let poseMeans = [standing?.pitch, sitting.pitch].compactMap { $0 }
+        let baseline = PostureScoring.combinedBaseline(poseMeans) ?? sitting.pitch
+        let confidences = [standing?.standardDeviation, sitting.standardDeviation]
+            .compactMap { $0 }
+            .map { PostureScoring.captureConfidence(standardDeviation: $0) }
+        let confidence = confidences.isEmpty
+            ? nil
+            : confidences.reduce(0, +) / Double(confidences.count)
+        savedConfidence = confidence
+
         let cal = Calibration(
             basePitch: 0,
             baseYaw: 0,
             baseRoll: 0,
             slouchPitchDelta: capturedSlouchDelta ?? .pi / 24,
-            airpodsPitch: pitch,
-            airpodsRoll: capturedRoll,
-            airpodsYaw: capturedYaw
+            airpodsPitch: baseline,
+            airpodsRoll: sitting.roll,
+            airpodsYaw: sitting.yaw,
+            airpodsStandingPitch: standing?.pitch,
+            airpodsSittingPitch: sitting.pitch,
+            baselineConfidence: confidence
         )
         CalibrationService(context: context).save(cal)
-        // A real AirPods capture happened — clear any deferred-setup flag so
-        // Today stops nudging the user to finish calibration.
+        // A real AirPods capture happened — clear any deferred/no-AirPods flags.
         settings.calibrationDeferred = false
+        settings.hasAirpods = true
         AnalyticsService.calibrateCompleted()
         airpods.stop()
+    }
+}
+
+// MARK: - Confidence bar
+
+/// A quiet strength meter on the done screen so the user can see how solid
+/// their baseline is (and reassures that we captured a real, steady read).
+private struct ConfidenceBar: View {
+    let confidence: Double  // 0…1
+
+    private var label: String {
+        switch confidence {
+        case 0.8...: return "Strong baseline"
+        case 0.5..<0.8: return "Good baseline"
+        default: return "Baseline saved"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .foregroundStyle(Theme.ink2)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Theme.paper3)
+                    Capsule()
+                        .fill(Theme.sage)
+                        .frame(width: max(8, geo.size.width * confidence))
+                }
+            }
+            .frame(height: 8)
+        }
     }
 }

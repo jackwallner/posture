@@ -12,7 +12,9 @@ final class NewUserWalkthroughUITests: XCTestCase {
     override func setUp() {
         continueAfterFailure = true
         app = XCUIApplication()
-        app.launchArguments += ["UITEST_FRESH"]
+        // Pro override walks past the hard paywall gate so the no-AirPods
+        // journey (Today → check-in → History → Settings) is reachable.
+        app.launchArguments += ["UITEST_FRESH", "-PostureProOverride"]
         app.launch()
     }
 
@@ -24,16 +26,20 @@ final class NewUserWalkthroughUITests: XCTestCase {
     }
 
     func testNewUserNoAirpodsJourney() {
-        // 1 — Welcome
-        let begin = app.buttons["Get Started"]
+        // 1 — Welcome (paged teach-good-posture walkthrough)
+        let begin = app.buttons["Continue"]
         XCTAssertTrue(begin.waitForExistence(timeout: 20), "welcome never appeared")
         shot("01-welcome")
-        begin.tap()
+        for _ in 0..<3 {
+            if app.buttons["Continue"].exists { app.buttons["Continue"].tap() }
+        }
+        let finish = app.buttons["Set up my baseline"]
+        if finish.waitForExistence(timeout: 6) { finish.tap() }
 
         // 2 — Calibration parks on the AirPods waiting state; the no-AirPods
         // escape fades in after a few seconds. A user/reviewer must never be
         // trapped here.
-        let skip = app.buttons["Continue without AirPods"]
+        let skip = app.buttons["I don't have AirPods"]
         XCTAssertTrue(skip.waitForExistence(timeout: 25), "no-AirPods escape never appeared — user could be trapped")
         shot("02-calibration-waiting")
         skip.tap()
