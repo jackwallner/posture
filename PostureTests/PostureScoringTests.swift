@@ -3,12 +3,36 @@ import XCTest
 
 final class PostureScoringTests: XCTestCase {
     func testQualityClassification() {
+        // Normal sensitivity thresholds: good < 0.50, borderline < 0.90 of the
+        // personal slouch range. Deliberately forgiving so ordinary shifts read
+        // as good and only a real, deep slouch reads as bad.
         let slouch = 0.30  // ~17°
         XCTAssertEqual(PostureScoring.quality(deviation: 0.0, slouchDelta: slouch), .good)
-        XCTAssertEqual(PostureScoring.quality(deviation: 0.05, slouchDelta: slouch), .good)
-        XCTAssertEqual(PostureScoring.quality(deviation: 0.15, slouchDelta: slouch), .borderline)
-        XCTAssertEqual(PostureScoring.quality(deviation: 0.25, slouchDelta: slouch), .bad)
-        XCTAssertEqual(PostureScoring.quality(deviation: -0.25, slouchDelta: slouch), .bad)
+        XCTAssertEqual(PostureScoring.quality(deviation: 0.10, slouchDelta: slouch), .good)
+        XCTAssertEqual(PostureScoring.quality(deviation: 0.20, slouchDelta: slouch), .borderline)
+        XCTAssertEqual(PostureScoring.quality(deviation: 0.30, slouchDelta: slouch), .bad)
+        XCTAssertEqual(PostureScoring.quality(deviation: -0.30, slouchDelta: slouch), .bad)
+    }
+
+    func testSensitivityOrdering() {
+        // The same middling deviation gets stricter as sensitivity rises.
+        let slouch = 0.30
+        let dev = 0.18  // ratio 0.6
+        XCTAssertEqual(PostureScoring.quality(deviation: dev, slouchDelta: slouch, sensitivity: 0), .good)
+        XCTAssertEqual(PostureScoring.quality(deviation: dev, slouchDelta: slouch, sensitivity: 1), .borderline)
+        XCTAssertEqual(PostureScoring.quality(deviation: dev, slouchDelta: slouch, sensitivity: 2), .borderline)
+    }
+
+    func testAggregateDeviationUsesMedian() {
+        // One outlier glance-down should not move the verdict off the median.
+        let baseline = 0.10
+        let samples = [0.11, 0.10, 0.12, 0.11, 0.55]  // last is a spike
+        let dev = PostureScoring.aggregateDeviation(samples: samples, baseline: baseline)
+        XCTAssertEqual(dev ?? 0, 0.01, accuracy: 0.0001)  // median 0.11 - 0.10
+    }
+
+    func testAggregateDeviationEmpty() {
+        XCTAssertNil(PostureScoring.aggregateDeviation(samples: [], baseline: 0.1))
     }
 
     func testSlouchDeltaFloor() {

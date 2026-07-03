@@ -278,8 +278,15 @@ struct AirpodsScanView: View {
             }
             let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
 
-            let recent = samples.suffix(5)
-            let deviation = (recent.reduce(0, +) / Double(recent.count)) - baseline
+            // Judge the whole hold, not the final instant: the median across
+            // every sample means a single glance down at second three can't
+            // flip an otherwise-upright check-in to "bad".
+            guard let deviation = PostureScoring.aggregateDeviation(
+                samples: samples, baseline: baseline
+            ) else {
+                onFallback()
+                return
+            }
             let quality = PostureScoring.quality(
                 deviation: deviation,
                 slouchDelta: slouchDelta,

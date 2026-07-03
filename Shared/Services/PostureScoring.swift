@@ -16,13 +16,26 @@ enum PostureScoring {
         let safeSlouch = max(slouchDelta, .pi / 24)  // floor at 7.5°
         let ratio = absDev / safeSlouch
         let (goodThreshold, borderlineThreshold): (Double, Double) = switch sensitivity {
-        case 0: (0.50, 1.00)  // Relaxed — only flag major slouches
-        case 2: (0.20, 0.40)  // Strict — catch even slight deviations
-        default: (0.35, 0.70) // Normal
+        case 0: (0.65, 1.15)  // Relaxed, only flag major slouches
+        case 2: (0.35, 0.65)  // Strict, catch even slight deviations
+        default: (0.50, 0.90) // Normal
         }
         if ratio < goodThreshold { return .good }
         if ratio < borderlineThreshold { return .borderline }
         return .bad
+    }
+
+    /// Robust deviation for a *window* of pose samples. Uses the median so a
+    /// single glance down (or up) inside the window can't swing the verdict the
+    /// way a mean would. Returns nil for an empty window.
+    static func aggregateDeviation(samples: [Double], baseline: Double) -> Double? {
+        guard !samples.isEmpty else { return nil }
+        let sorted = samples.sorted()
+        let mid = sorted.count / 2
+        let median = sorted.count.isMultiple(of: 2)
+            ? (sorted[mid - 1] + sorted[mid]) / 2
+            : sorted[mid]
+        return median - baseline
     }
 
     /// Personal slouch reference from a two-pose calibration (upright, then

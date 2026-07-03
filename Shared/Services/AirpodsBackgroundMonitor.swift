@@ -68,15 +68,32 @@ final class AirpodsBackgroundMonitor {
 
     // MARK: - Slouch detection (time-based)
 
+    /// Exponentially smoothed head pitch. A raw ~25 Hz stream jitters enough
+    /// that any instantaneous threshold flickers between buckets; we score off
+    /// this instead so a momentary head turn or nod never reads as a slouch.
+    private var smoothedPitch: Double?
+    private let smoothingAlpha = 0.15
+
     /// When the user first entered `.bad`. Reset on `.good` or on AirPods
     /// disconnect. We trigger a haptic + record a sample after this much
-    /// continuous bad posture.
+    /// *continuous* bad posture — long enough that leaning to grab something or
+    /// glancing down at a doorway never nudges. Borderline drift does not reset
+    /// the clock, but also does not advance it.
     private var firstBadAt: Date?
-    private let badDurationThreshold: TimeInterval = 3.0
+    private let slouchNudgeSeconds: TimeInterval = 25
+
+    /// Displayed-quality hysteresis. The Today hero reads `currentQuality`, so
+    /// we only *show* a slouch after it has been sustained (`badConfirmSeconds`)
+    /// and only relax back to good after posture has held (`goodConfirmSeconds`).
+    /// Without this the hero strobes between good/bad on ordinary head motion.
+    private var badStreakStart: Date?
+    private var goodStreakStart: Date?
+    private let badConfirmSeconds: TimeInterval = 12
+    private let goodConfirmSeconds: TimeInterval = 5
 
     /// Have we already fired the slouch event for the current bad bout?
     /// Keeps a long slouch from spamming `PosturePassiveSample` rows every
-    /// 3 seconds. Reset on `.good` or disconnect.
+    /// few seconds. Reset on `.good` or disconnect.
     private var inBadBout = false
 
     /// Haptic debounce so we don't buzz the user every few seconds.
@@ -124,8 +141,7 @@ final class AirpodsBackgroundMonitor {
         isConnected = connected
         if !connected {
             currentQuality = .good
-            firstBadAt = nil
-            inBadBout = false
+            resetDetectionState()
             return
         }
         // AirPods just became available. If start() previously returned
@@ -196,8 +212,17 @@ final class AirpodsBackgroundMonitor {
         stopAudioSession()
         isConnected = false
         currentQuality = .good
+        resetDetectionState()
+    }
+
+    /// Clear all smoothing + streak state so the next bout starts clean. Called
+    /// on stop, on AirPods disconnect, and whenever we lack a real baseline.
+    private func resetDetectionState() {
+        smoothedPitch = nil
         firstBadAt = nil
         inBadBout = false
+        badStreakStart = nil
+        goodStreakStart = nil
     }
 
     // MARK: - Foreground read coordination
@@ -252,33 +277,74 @@ final class AirpodsBackgroundMonitor {
         // baseline and is 0 for every AirPods-era user, so it can't stand in.
         guard let baseline = calibration?.airpodsPitch else {
             if currentQuality != .good { currentQuality = .good }
-            firstBadAt = nil
-            inBadBout = false
+            resetDetectionState()
             return
         }
         let slouchDelta = calibration?.slouchPitchDelta ?? (.pi / 24)
         let sensitivity = GoalSettings.shared.sensitivity
 
-        let deviation = pitch - baseline
-        let quality = PostureScoring.quality(
+        // Score off the smoothed pitch, not the raw sample, so ordinary head
+        // motion doesn't flicker the verdict.
+        smoothedPitch = PostureScoring.smoothed(
+            previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
+        )
+        let deviation = (smoothedPitch ?? pitch) - baseline
+        let instant = PostureScoring.quality(
             deviation: deviation,
             slouchDelta: slouchDelta,
             sensitivity: sensitivity
         )
-        if quality != currentQuality { currentQuality = quality }
 
         let now = Date.now
-        switch quality {
+        updateDisplayedQuality(instant: instant, now: now)
+        updateSlouchNudge(instant: instant, now: now)
+    }
+
+    /// Hysteresis for the *shown* verdict: a slouch has to persist for
+    /// `badConfirmSeconds` before the hero turns clay, and posture has to hold
+    /// for `goodConfirmSeconds` before it eases back to sage. Borderline is
+    /// shown immediately since it's already the gentle middle state.
+    private func updateDisplayedQuality(instant: PostureQuality, now: Date) {
+        switch instant {
+        case .bad:
+            goodStreakStart = nil
+            let started = badStreakStart ?? now
+            badStreakStart = started
+            if currentQuality != .bad,
+               now.timeIntervalSince(started) >= badConfirmSeconds {
+                currentQuality = .bad
+            }
+        case .good:
+            badStreakStart = nil
+            let started = goodStreakStart ?? now
+            goodStreakStart = started
+            if currentQuality != .good,
+               now.timeIntervalSince(started) >= goodConfirmSeconds {
+                currentQuality = .good
+            }
+        case .borderline:
+            badStreakStart = nil
+            goodStreakStart = nil
+            // Ease a shown slouch down to the middle state right away, but
+            // don't jump straight from good to bad on a brief dip.
+            if currentQuality == .bad { currentQuality = .borderline }
+        }
+    }
+
+    /// The nudge (haptic + recorded sample) fires only after a long *continuous*
+    /// slouch. Borderline drift neither advances nor resets the clock; good
+    /// resets it and re-arms the next bout.
+    private func updateSlouchNudge(instant: PostureQuality, now: Date) {
+        switch instant {
         case .good:
             if inBadBout { logEvent(.recovered) }
             firstBadAt = nil
             inBadBout = false
         case .borderline:
-            // Drifting — don't restart the clock, but don't trigger either.
             break
         case .bad:
             if let started = firstBadAt {
-                if !inBadBout, now.timeIntervalSince(started) >= badDurationThreshold {
+                if !inBadBout, now.timeIntervalSince(started) >= slouchNudgeSeconds {
                     recordSlouchEvent(severity: 1.0)
                     triggerHaptic()
                     // One record + buzz per bout. Re-arms when posture
