@@ -36,7 +36,7 @@ struct MonitoringLogView: View {
                 .padding(.bottom, 32)
             }
             .dawnBackground()
-            .navigationTitle("monitoring")
+            .navigationTitle("Monitoring")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -112,7 +112,7 @@ struct MonitoringLogView: View {
     private func statusLine(_ monitor: AirpodsBackgroundMonitor) -> String {
         if !monitor.isMonitoring { return "monitoring is off" }
         if monitor.isConnected { return "listening through your AirPods" }
-        return "armed — waiting for AirPods"
+        return "Armed, waiting for AirPods"
     }
 
     private func statusColor(_ monitor: AirpodsBackgroundMonitor) -> Color {
@@ -121,7 +121,7 @@ struct MonitoringLogView: View {
     }
 
     private func lastReadingText(_ monitor: AirpodsBackgroundMonitor, now: Date) -> String {
-        guard let last = monitor.lastSampleAt else { return "—" }
+        guard let last = monitor.lastSampleAt else { return "–" }
         let ago = max(0, Int(now.timeIntervalSince(last)))
         if ago <= 2 { return "just now" }
         if ago < 60 { return "\(ago)s ago" }
@@ -139,7 +139,7 @@ struct MonitoringLogView: View {
     // MARK: - How it works
 
     private var howItWorks: some View {
-        Text("While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for three seconds gets one log entry and a gentle buzz — at most once a minute.")
+        Text("While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for three seconds gets one log entry and a gentle buzz, at most once a minute.")
             .font(.system(.footnote, design: .rounded))
             .foregroundStyle(Theme.ink2)
             .lineSpacing(2)
@@ -155,7 +155,7 @@ struct MonitoringLogView: View {
 
     private func eventFeed(_ monitor: AirpodsBackgroundMonitor) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("activity")
+            Text("Activity")
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
                 .tracking(1.2)
                 .foregroundStyle(Theme.ink3)
@@ -198,14 +198,14 @@ struct MonitoringLogView: View {
     private func describe(_ kind: MonitorEvent.Kind) -> (String, Color) {
         switch kind {
         case .armed(let background):
-            return (background ? "monitoring armed — runs in the background"
-                               : "monitoring armed — while the app is open", Theme.sage)
+            return (background ? "Monitoring armed, runs in the background"
+                               : "Monitoring armed, while the app is open", Theme.sage)
         case .stopped: return ("monitoring stopped", Theme.ink3)
         case .connected: return ("AirPods connected", Theme.sage)
         case .disconnected: return ("AirPods disconnected", Theme.sand)
         case .slouchLogged: return ("slouch logged · gentle nudge", Theme.clay)
         case .recovered: return ("back to aligned", Theme.sage)
-        case .audioInterrupted: return ("paused — another app took the audio session", Theme.sand)
+        case .audioInterrupted: return ("Paused, another app took the audio session", Theme.sand)
         case .audioResumed: return ("listening again", Theme.sage)
         case .error(let message): return (message, Theme.clay)
         }
@@ -214,6 +214,6 @@ struct MonitoringLogView: View {
     private func timeString(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm:ss a"
-        return formatter.string(from: date).lowercased()
+        return formatter.string(from: date)
     }
 }

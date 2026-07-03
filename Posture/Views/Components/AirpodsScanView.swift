@@ -86,8 +86,8 @@ struct AirpodsScanView: View {
 
             scanHero
 
-            Text(phase == .scanning ? "hold still — sit how you've been sitting."
-                                    : "pop your AirPods in to begin.")
+            Text(phase == .scanning ? "Hold still, sit how you've been sitting."
+                                    : "Pop your AirPods in to begin.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -97,7 +97,7 @@ struct AirpodsScanView: View {
             Spacer(minLength: 24)
 
             if phase == .waiting {
-                Button { onFallback() } label: { Text("check in by hand") }
+                Button { onFallback() } label: { Text("Check in by hand") }
                     .buttonStyle(.daylight(.ghost))
                     .padding(.bottom, 12)
             }
@@ -170,7 +170,7 @@ struct AirpodsScanView: View {
             }
             .frame(maxWidth: .infinity)
 
-            Text("can't hear your AirPods.")
+            Text("Can't hear your AirPods.")
                 .font(.system(size: 28, weight: .regular, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -186,7 +186,7 @@ struct AirpodsScanView: View {
 
             Spacer(minLength: 24)
 
-            Button { onFallback() } label: { Text("check in by hand") }
+            Button { onFallback() } label: { Text("Check in by hand") }
                 .buttonStyle(.daylight(.secondary))
                 .padding(.bottom, 28)
         }
@@ -305,6 +305,6 @@ struct AirpodsScanView: View {
     private var eyebrow: String {
         let f = DateFormatter()
         f.dateFormat = "EEEE · h:mm a"
-        return f.string(from: scheduledAt).lowercased()
+        return f.string(from: scheduledAt)
     }
 }

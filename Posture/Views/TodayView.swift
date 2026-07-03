@@ -11,7 +11,7 @@ struct TodayView: View {
     @State private var showingAck = false
     @State private var showingRecalibrate = false
     @State private var showingMonitorLog = false
-    @State private var nextReminderText = "—"
+    @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
     @Query(sort: \Calibration.capturedAt, order: .reverse) private var calibrations: [Calibration]
@@ -94,7 +94,7 @@ struct TodayView: View {
                     weekCard
 
                     VStack(spacing: 12) {
-                        Button { showingAck = true } label: { Text("check in now") }
+                        Button { showingAck = true } label: { Text("Check in now") }
                             .buttonStyle(.daylight(.primary))
                         metaRow
                     }
@@ -168,7 +168,7 @@ struct TodayView: View {
                     .font(.system(.caption, design: .rounded).weight(.semibold))
                     .tracking(1.5)
                     .foregroundStyle(Theme.ink3)
-                Text("today")
+                Text("Today")
                     .font(.system(size: 34, weight: .regular, design: .rounded))
                     .foregroundStyle(Theme.ink)
             }
@@ -226,13 +226,13 @@ struct TodayView: View {
                     Circle()
                         .fill(liveColor(quality))
                         .frame(width: 7, height: 7)
-                    Text("right now")
+                    Text("Right now")
                         .font(.system(.footnote, design: .rounded).weight(.semibold))
                         .tracking(1.2)
                         .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
                     HStack(spacing: 3) {
-                        Text("activity")
+                        Text("Activity")
                         Image(systemName: "chevron.right")
                     }
                     .font(.system(.caption2, design: .rounded).weight(.semibold))
@@ -314,7 +314,7 @@ struct TodayView: View {
 
     private var checkInAlignmentCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("today's alignment")
+            Text("Today's alignment")
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
                 .tracking(1.2)
                 .foregroundStyle(Theme.ink3)
@@ -327,7 +327,7 @@ struct TodayView: View {
                         .stroke(Theme.ringSweep, style: .init(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.6), value: alignmentScore)
-                    Text(alignmentScore.map { "\($0)" } ?? "—")
+                    Text(alignmentScore.map { "\($0)" } ?? "–")
                         .font(.system(size: 34, weight: .regular, design: .rounded))
                         .foregroundStyle(Theme.ink)
                 }
@@ -364,7 +364,7 @@ struct TodayView: View {
     private var weekCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("today, hour by hour")
+                Text("Today, hour by hour")
                     .font(.system(.footnote, design: .rounded).weight(.semibold))
                     .tracking(1.2)
                     .foregroundStyle(Theme.ink3)
@@ -398,7 +398,7 @@ struct TodayView: View {
                         .foregroundStyle(live ? Theme.sage : Theme.ink2)
                     Spacer(minLength: 0)
                     HStack(spacing: 3) {
-                        Text("activity")
+                        Text("Activity")
                         Image(systemName: "chevron.right")
                     }
                     .font(.system(.caption2, design: .rounded).weight(.semibold))
@@ -496,19 +496,19 @@ struct TodayView: View {
     @ViewBuilder
     private var metaRow: some View {
         if settings.reminderEnabled {
-            Text("next reminder \(nextReminderText.lowercased()) · \(remainingReminders) more today")
+            Text("Next reminder \(nextReminderText) · \(remainingReminders) more today")
                 .font(.system(.caption, design: .rounded))
                 .foregroundStyle(Theme.ink3)
         } else {
             HStack(spacing: 6) {
-                Text("reminders are off.")
+                Text("Reminders are off.")
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(Theme.ink3)
                 Button {
                     settings.reminderEnabled = true
                     Task { await ReminderScheduler.reschedule() }
                 } label: {
-                    Text("turn on →")
+                    Text("Turn on →")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Theme.sage)
                 }
@@ -533,7 +533,7 @@ struct TodayView: View {
             nextReminderText = next.map { formatReminderTime($0) } ?? "later today"
             remainingReminders = await ReminderScheduler.remainingCount()
         } else {
-            nextReminderText = "—"
+            nextReminderText = "–"
             remainingReminders = 0
         }
     }

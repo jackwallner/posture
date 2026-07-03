@@ -72,7 +72,7 @@ struct PaywallView: View {
         VStack(spacing: 14) {
             Spacer()
             ProgressView().tint(Theme.sage)
-            Text("loading plans…")
+            Text("Loading plans…")
                 .font(.system(.subheadline, design: .rounded))
                 .foregroundStyle(Theme.ink2)
             Spacer()
@@ -88,7 +88,7 @@ struct PaywallView: View {
             Image(systemName: "wifi.exclamationmark")
                 .font(.system(size: 40))
                 .foregroundStyle(Theme.ink3)
-            Text("couldn't load plans")
+            Text("Couldn't load plans")
                 .font(.system(.headline, design: .rounded))
                 .foregroundStyle(Theme.ink2)
             Text(subscriptions.lastError ?? "Check your connection and try again.")
@@ -96,7 +96,7 @@ struct PaywallView: View {
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            Button("try again") {
+            Button("Try Again") {
                 Task {
                     await subscriptions.fetchProducts()
                     selectDefaultPackageIfNeeded()

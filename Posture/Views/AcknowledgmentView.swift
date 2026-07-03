@@ -179,7 +179,7 @@ struct AcknowledgmentView: View {
                     TipLine(tip: tip)
                 }
                 Spacer()
-                Button { dismiss() } label: { Text("done") }
+                Button { dismiss() } label: { Text("Done") }
                     .buttonStyle(.daylight(.ghost))
             }
             .padding(.horizontal, 24)
@@ -203,10 +203,10 @@ struct AcknowledgmentView: View {
 
     private var resultWord: String {
         switch recordedQuality {
-        case .good: return "aligned"
-        case .borderline: return "drifting"
-        case .bad: return "resting"
-        case nil: return "noted"
+        case .good: return "Aligned"
+        case .borderline: return "Drifting"
+        case .bad: return "Resting"
+        case nil: return "Noted"
         }
     }
 
@@ -258,13 +258,13 @@ struct AcknowledgmentView: View {
     private func eyebrow(_ date: Date) -> String {
         let f = DateFormatter()
         f.dateFormat = "EEEE · h:mm a"
-        return f.string(from: date).lowercased()
+        return f.string(from: date)
     }
 
     private func timeString(_ date: Date) -> String {
         let f = DateFormatter()
         f.dateFormat = "h:mm a"
-        return f.string(from: date).lowercased()
+        return f.string(from: date)
     }
 
     // MARK: - Recording

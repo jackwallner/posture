@@ -58,12 +58,12 @@ struct SettingsView: View {
                             .listRowBackground(Color.clear)
                     }
                 } header: {
-                    Text("posture+")
+                    Text("Posture+")
                 }
 
                 // MARK: - Reminders
 
-                Section("reminders") {
+                Section("Reminders") {
                     Toggle("Remind me throughout the day", isOn: $settings.reminderEnabled)
                         .onChange(of: settings.reminderEnabled) { _, _ in
                             Task {
@@ -109,7 +109,7 @@ struct SettingsView: View {
 
                 // MARK: - Sensitivity
 
-                Section("sensitivity") {
+                Section("Sensitivity") {
                     Picker("Sensitivity", selection: $settings.sensitivity) {
                         Text("Relaxed").tag(0)
                         Text("Normal").tag(1)
@@ -123,7 +123,7 @@ struct SettingsView: View {
 
                 // MARK: - Calibration
 
-                Section("calibration") {
+                Section("Calibration") {
                     // Don't clear the old calibration here — if the user
                     // cancels the sheet they'd be left scoring against a
                     // zero baseline. A completed capture supersedes the old
@@ -136,7 +136,7 @@ struct SettingsView: View {
 
                 // MARK: - Help
 
-                Section("help") {
+                Section("Help") {
                     Button {
                         ReviewPromptCoordinator.shared.requestEnjoymentPrompt()
                     } label: {
@@ -155,13 +155,13 @@ struct SettingsView: View {
 
                 // MARK: - About
 
-                Section("about") {
-                    LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")
+                Section("About") {
+                    LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
                 }
             }
             .scrollContentBackground(.hidden)
             .dawnBackground()
-            .navigationTitle("settings")
+            .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .task { await refreshNotificationStatus() }
             .sheet(isPresented: $showingPaywall) {
@@ -264,9 +264,9 @@ private struct AirpodsStatusChip: View {
 
     private var label: String {
         switch state {
-        case .live: return "live · airpods linked"
-        case .armed: return "ready · waiting for airpods"
-        case .off: return "monitoring off"
+        case .live: return "Live · AirPods linked"
+        case .armed: return "Ready · waiting for AirPods"
+        case .off: return "Monitoring off"
         }
     }
     private var dotColor: Color {

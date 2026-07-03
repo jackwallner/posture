@@ -45,7 +45,7 @@ final class NewUserWalkthroughUITests: XCTestCase {
         skip.tap()
 
         // 3 — Today (running on a deferred/neutral baseline)
-        let checkIn = app.buttons["check in now"]
+        let checkIn = app.buttons["Check in now"]
         XCTAssertTrue(checkIn.waitForExistence(timeout: 15), "did not land on Today after skipping calibration")
         shot("03-today")
         checkIn.tap()
@@ -62,7 +62,7 @@ final class NewUserWalkthroughUITests: XCTestCase {
         // 5 — Done / acknowledgment result
         sleep(2)
         shot("05-checkin-done")
-        let done = app.buttons["done"]
+        let done = app.buttons["Done"]
         if done.waitForExistence(timeout: 8) {
             done.tap()
         } else {

@@ -83,11 +83,11 @@ extension PostureBanner {
         PostureBanner(tone: .warn,
                       title: "Notifications are off.",
                       message: "Reminders won't fire until you allow notifications.",
-                      action: ("allow", {}))
+                      action: ("Allow", {}))
         PostureBanner(tone: .error,
                       title: "Can't hear your AirPods.",
                       message: "Pop them back in to scan, or log this one by hand.",
-                      action: ("check in by hand", {}))
+                      action: ("Check in by hand", {}))
     }
     .padding(24)
     .background(Theme.paper)

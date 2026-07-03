@@ -28,7 +28,7 @@ struct PassiveTimelineView: View {
 
     private var peakLabel: String? {
         guard let peak = hourBuckets.max(by: { $0.value < $1.value })?.key else { return nil }
-        return "\(hourString(peak)) — \(hourString(peak + 1))"
+        return "\(hourString(peak))–\(hourString(peak + 1))"
     }
 
     var body: some View {

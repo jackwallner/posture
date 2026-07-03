@@ -88,7 +88,7 @@ struct HistoryView: View {
         let prev = acknowledgments
             .filter { $0.timestamp >= prevStart && $0.timestamp < weekStart }
             .compactMap { $0.quality.map(qualityScore) }
-        guard !prev.isEmpty, !weekScored.isEmpty else { return "—" }
+        guard !prev.isEmpty, !weekScored.isEmpty else { return "–" }
         let prevMean = Double(prev.reduce(0, +)) / Double(prev.count)
         let delta = Double(weekAlignmentPercent) - prevMean
         let rounded = Int(delta.rounded())
@@ -99,7 +99,7 @@ struct HistoryView: View {
         let f = DateFormatter()
         f.dateFormat = "MMM d"
         guard let first = weekDays.first, let last = weekDays.last else { return "" }
-        return "\(f.string(from: first)) — \(f.string(from: last))".uppercased()
+        return "\(f.string(from: first))–\(f.string(from: last))".uppercased()
     }
 
     var body: some View {
@@ -137,7 +137,7 @@ struct HistoryView: View {
                 }
             }
             .dawnBackground()
-            .navigationTitle("history")
+            .navigationTitle("History")
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
@@ -204,7 +204,7 @@ struct HistoryView: View {
                 Text("Posture+ adds an hour-by-hour rhythm from AirPods and Watch.")
                     .font(.caption)
                     .foregroundStyle(Theme.ink2)
-                Text("see your rhythm →")
+                Text("See your rhythm →")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Theme.sage)
                     .padding(.top, 2)
@@ -229,7 +229,7 @@ struct HistoryView: View {
             Text("We need a few days before patterns are worth showing. Until then, today is plenty.")
                 .font(.body)
                 .foregroundStyle(Theme.ink2)
-            Button { showingAck = true } label: { Text("check in now") }
+            Button { showingAck = true } label: { Text("Check in now") }
                 .buttonStyle(.daylight(.primary))
         }
         .padding(24)
@@ -256,6 +256,6 @@ struct HistoryView: View {
     private func timeString(_ date: Date) -> String {
         let f = DateFormatter()
         f.dateFormat = "h:mm a"
-        return f.string(from: date).lowercased()
+        return f.string(from: date)
     }
 }

@@ -77,10 +77,10 @@ extension ButtonStyle where Self == DaylightButtonStyle {
 
 #Preview {
     VStack(spacing: 14) {
-        Text("check in now").daylightCTA(.primary)
-        Text("quick — 5 seconds").daylightCTA(.secondary)
-        Text("see your slouch hours").daylightCTA(.tonal)
-        Text("maybe later").daylightCTA(.ghost)
+        Text("Check in now").daylightCTA(.primary)
+        Text("Quick · 5 seconds").daylightCTA(.secondary)
+        Text("See your slouch hours").daylightCTA(.tonal)
+        Text("Maybe later").daylightCTA(.ghost)
     }
     .padding(24)
     .background(Theme.paper)
