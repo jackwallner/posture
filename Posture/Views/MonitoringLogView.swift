@@ -110,8 +110,8 @@ struct MonitoringLogView: View {
     }
 
     private func statusLine(_ monitor: AirpodsBackgroundMonitor) -> String {
-        if !monitor.isMonitoring { return "monitoring is off" }
-        if monitor.isConnected { return "listening through your AirPods" }
+        if !monitor.isMonitoring { return "Monitoring is off" }
+        if monitor.isConnected { return "Listening through your AirPods" }
         return "Armed, waiting for AirPods"
     }
 
@@ -130,9 +130,9 @@ struct MonitoringLogView: View {
 
     private func qualityWord(_ quality: PostureQuality) -> String {
         switch quality {
-        case .good: return "aligned"
-        case .borderline: return "drifting"
-        case .bad: return "resting"
+        case .good: return "Aligned"
+        case .borderline: return "Drifting"
+        case .bad: return "Resting"
         }
     }
 

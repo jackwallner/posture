@@ -250,7 +250,7 @@ struct AcknowledgmentView: View {
     }
 
     private var doneEyebrow: String {
-        guard recordedQuality != nil else { return "noted" }
+        guard recordedQuality != nil else { return "Noted" }
         let verb = recordedMethod == .airpods ? "scanned" : "logged"
         return "\(timeString(scheduledAt)) · \(verb)"
     }

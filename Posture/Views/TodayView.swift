@@ -169,10 +169,10 @@ struct TodayView: View {
     private var timeOfDayGreeting: String {
         let hour = Calendar.current.component(.hour, from: .now)
         switch hour {
-        case 5..<12: return "good morning"
-        case 12..<17: return "good afternoon"
-        case 17..<22: return "good evening"
-        default: return "hello, night owl"
+        case 5..<12: return "Good morning"
+        case 12..<17: return "Good afternoon"
+        case 17..<22: return "Good evening"
+        default: return "Hello, night owl"
         }
     }
 
@@ -343,15 +343,15 @@ struct TodayView: View {
 
     private func liveWord(_ q: PostureQuality) -> String {
         switch q {
-        case .good: return "aligned"
-        case .borderline: return "drifting"
-        case .bad: return "slouching"
+        case .good: return "Aligned"
+        case .borderline: return "Drifting"
+        case .bad: return "Slouching"
         }
     }
 
     private var liveSubtitle: String {
         let resets = passiveSamplesToday
-        guard resets > 0 else { return "monitoring your posture live." }
+        guard resets > 0 else { return "Monitoring your posture live." }
         return "\(resets) slouch\(resets == 1 ? "" : "es") caught today."
     }
 
@@ -527,7 +527,7 @@ struct TodayView: View {
     }
 
     private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {
-        guard let last = monitor.lastSampleAt else { return "waiting for the first reading…" }
+        guard let last = monitor.lastSampleAt else { return "Waiting for the first reading…" }
         let ago = max(0, Int(now.timeIntervalSince(last)))
         let agoText = ago <= 2 ? "just now" : "\(ago)s ago"
         return "\(monitor.samplesToday.formatted()) readings today · last \(agoText)"
@@ -574,18 +574,18 @@ struct TodayView: View {
 
     private var readoutLabel: String {
         guard let s = alignmentScore else {
-            return todayAcks.isEmpty ? "no scans yet" : "checked in"
+            return todayAcks.isEmpty ? "No scans yet" : "Checked in"
         }
         switch s {
-        case 70...: return "aligned"
-        case 40..<70: return "drifting"
-        default: return "resting"
+        case 70...: return "Aligned"
+        case 40..<70: return "Drifting"
+        default: return "Resting"
         }
     }
 
     private var readoutSubtitle: String {
         if scoredAcks.isEmpty {
-            return todayAcks.isEmpty ? "your first reading lands after a scan." : "manual check-ins only"
+            return todayAcks.isEmpty ? "Your first reading lands after a scan." : "Manual check-ins only"
         }
         let onTrack = scoredAcks.filter { $0.quality == .good }.count
         return "\(onTrack) of \(scoredAcks.count) scans on track"

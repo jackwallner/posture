@@ -70,10 +70,10 @@ struct PassiveTimelineView: View {
 
             HStack(spacing: 8) {
                 if airpodsCount > 0 {
-                    chip("\(airpodsCount) airpods", tint: Theme.sage, bg: Theme.sageTint)
+                    chip("\(airpodsCount) AirPods", tint: Theme.sage, bg: Theme.sageTint)
                 }
                 if watchCount > 0 {
-                    chip("\(watchCount) watch", tint: Theme.ink2, bg: Theme.paper3)
+                    chip("\(watchCount) Watch", tint: Theme.ink2, bg: Theme.paper3)
                 }
             }
         }

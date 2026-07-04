@@ -13,9 +13,9 @@ struct QualityChip: View {
     private var label: String {
         if let labelOverride { return labelOverride }
         switch quality {
-        case .good: return "aligned"
-        case .borderline: return "drifting"
-        case .bad: return "resting"
+        case .good: return "Aligned"
+        case .borderline: return "Drifting"
+        case .bad: return "Resting"
         }
     }
 

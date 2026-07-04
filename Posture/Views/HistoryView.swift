@@ -243,12 +243,12 @@ struct HistoryView: View {
         case .airpods: method = "AirPods scan"
         case .manual: method = "logged"
         }
-        guard let q = ack.quality else { return "noted · \(method)" }
+        guard let q = ack.quality else { return "Noted · \(method)" }
         let word: String
         switch q {
-        case .good: word = "aligned"
-        case .borderline: word = "drifting"
-        case .bad: word = "resting"
+        case .good: word = "Aligned"
+        case .borderline: word = "Drifting"
+        case .bad: word = "Resting"
         }
         return "\(word) · \(method)"
     }
