@@ -39,6 +39,11 @@ struct CalibrationView: View {
     @State private var waitDeadlineTask: Task<Void, Never>?
     @State private var permissionWatchTask: Task<Void, Never>?
 
+    /// Set by the per-pose "I'm ready" confirm button; the capture sequence
+    /// waits on this before counting down so we only ever read a pose the user
+    /// says they're actually holding.
+    @State private var poseConfirmed = false
+
     /// One steady read of a pose: its mean pitch, how tight the hold was, and
     /// the accompanying yaw/roll means (kept from the sitting read).
     private struct PoseCapture {
@@ -50,8 +55,11 @@ struct CalibrationView: View {
 
     enum Phase {
         case waiting          // AirPods not yet sending samples
+        case standingPrep     // "get standing", wait for confirm
         case standing         // capturing standing-upright
+        case sittingPrep      // "get sitting", wait for confirm
         case sitting          // capturing sitting-upright
+        case slouchPrep       // "now slouch", wait for confirm
         case slouch           // reading the user's slouch
         case unsupported      // gave up — show the gate
         case permissionDenied // motion access is off, not missing hardware
@@ -72,17 +80,38 @@ struct CalibrationView: View {
         Group {
             switch phase {
             case .waiting: waitingStep
+            case .standingPrep: prepStep(
+                eyebrow: "Aligned · standing",
+                title: "Stand up tall.",
+                instruction: "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below.",
+                confirm: "I'm standing tall",
+                icon: "figure.stand"
+            )
             case .standing: alignedCaptureStep(
                 eyebrow: "Aligned · standing",
-                title: "Stand tall.",
-                instruction: "Stack your ears over your shoulders, shoulders over hips. Lengthen up through the crown of your head, chin level. Hold still while we read it.",
+                title: "Hold it.",
+                instruction: "Stay tall and still, looking straight ahead, while we read your standing posture.",
                 accent: Theme.sage, wash: Theme.sageTint
+            )
+            case .sittingPrep: prepStep(
+                eyebrow: "Aligned · sitting",
+                title: "Now sit down tall.",
+                instruction: "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below.",
+                confirm: "I'm sitting tall",
+                icon: "figure.seated.side"
             )
             case .sitting: alignedCaptureStep(
                 eyebrow: "Aligned · sitting",
-                title: "Now sit tall.",
-                instruction: "Sit back so your hips fill the seat, both feet flat. Same long spine, ears over shoulders, chin level. Hold still.",
+                title: "Hold it.",
+                instruction: "Stay tall and still, looking straight ahead, while we read your sitting posture.",
                 accent: Theme.sage, wash: Theme.sageTint
+            )
+            case .slouchPrep: prepStep(
+                eyebrow: "Your range",
+                title: "Now let go and slouch.",
+                instruction: "Settle into the slump you usually catch yourself in, however you're sitting now. When you're in your natural slouch, tap below.",
+                confirm: "I'm slouched",
+                icon: "figure.seated.side"
             )
             case .slouch: slouchStep
             case .unsupported: unsupportedStep
@@ -197,6 +226,56 @@ struct CalibrationView: View {
             }
 
             Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func prepStep(eyebrow: String, title: String, instruction: String, confirm: String, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text(eyebrow.uppercased())
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .tracking(1.5)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 8)
+            Spacer()
+            ZStack {
+                Circle()
+                    .fill(Theme.lavenderTint)
+                    .frame(width: 160, height: 160)
+                Image(systemName: icon)
+                    .font(.system(size: 68, weight: .regular))
+                    .foregroundStyle(Theme.lavender)
+            }
+            .frame(maxWidth: .infinity)
+
+            Text(title)
+                .font(.system(size: 32, weight: .semibold, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 12)
+
+            Text(instruction)
+                .font(.system(.body, design: .rounded))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            if showSteadyRetry {
+                Label("That read was a little shaky. Re-settle, then tap when you're steady.", systemImage: "hand.raised.slash")
+                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .foregroundStyle(Theme.sand)
+                    .padding(.top, 2)
+            }
+
+            Spacer()
+
+            Button { poseConfirmed = true } label: { Text(confirm) }
+                .buttonStyle(.daylight(.primary))
+
+            if phase == .slouchPrep {
+                Button { finishWithDefaultSlouch() } label: { Text("Skip, use the standard range") }
+                    .buttonStyle(.daylight(.ghost))
+            }
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
@@ -476,15 +555,18 @@ struct CalibrationView: View {
 
         sequenceTask?.cancel()
         sequenceTask = Task {
-            guard let standing = await captureAlignedPose(phase: .standing) else {
+            guard let standing = await captureAlignedPose(prep: .standingPrep, capture: .standing) else {
                 rewindToWaiting(); return
             }
             standingCapture = standing
-            guard let sitting = await captureAlignedPose(phase: .sitting) else {
+            guard let sitting = await captureAlignedPose(prep: .sittingPrep, capture: .sitting) else {
                 rewindToWaiting(); return
             }
             sittingCapture = sitting
 
+            // Slouch: confirm the user is actually slouched before reading.
+            phase = .slouchPrep
+            guard await waitForPoseConfirm() else { return }
             countdown = 3
             showSteadyRetry = false
             phase = .slouch
@@ -492,13 +574,32 @@ struct CalibrationView: View {
         }
     }
 
+    /// Park on a prep screen until the user taps "I'm ready" (sets
+    /// `poseConfirmed`). Returns false if the task was cancelled or the slouch
+    /// step was skipped (which already saved + moved to .done) so the caller
+    /// bails cleanly.
+    private func waitForPoseConfirm() async -> Bool {
+        poseConfirmed = false
+        while !poseConfirmed {
+            guard !Task.isCancelled else { return false }
+            // Skipping the slouch calls finishWithDefaultSlouch → phase .done.
+            if phase == .done { return false }
+            try? await Task.sleep(nanoseconds: 80_000_000)
+        }
+        return true
+    }
+
     /// Capture one aligned pose, retrying up to `maxAlignedAttempts` times when
     /// the hold is shakier than the steadiness threshold. Returns nil only when
     /// AirPods drop or never deliver enough samples (caller rewinds).
-    private func captureAlignedPose(phase target: Phase) async -> PoseCapture? {
+    private func captureAlignedPose(prep: Phase, capture: Phase) async -> PoseCapture? {
         for attempt in 0..<maxAlignedAttempts {
-            phase = target
+            // Prep gate before every attempt: wait until the user says they're
+            // in the pose (a retry sends them back here to re-settle).
             showSteadyRetry = attempt > 0
+            phase = prep
+            guard await waitForPoseConfirm() else { return nil }
+            phase = capture
 
             for i in stride(from: settleSeconds, through: 1, by: -1) {
                 guard !Task.isCancelled else { return nil }

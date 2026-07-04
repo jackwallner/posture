@@ -82,15 +82,6 @@ final class AirpodsBackgroundMonitor {
     private var firstBadAt: Date?
     private let slouchNudgeSeconds: TimeInterval = 25
 
-    /// Displayed-quality hysteresis. The Today hero reads `currentQuality`, so
-    /// we only *show* a slouch after it has been sustained (`badConfirmSeconds`)
-    /// and only relax back to good after posture has held (`goodConfirmSeconds`).
-    /// Without this the hero strobes between good/bad on ordinary head motion.
-    private var badStreakStart: Date?
-    private var goodStreakStart: Date?
-    private let badConfirmSeconds: TimeInterval = 12
-    private let goodConfirmSeconds: TimeInterval = 5
-
     /// Have we already fired the slouch event for the current bad bout?
     /// Keeps a long slouch from spamming `PosturePassiveSample` rows every
     /// few seconds. Reset on `.good` or disconnect.
@@ -221,8 +212,6 @@ final class AirpodsBackgroundMonitor {
         smoothedPitch = nil
         firstBadAt = nil
         inBadBout = false
-        badStreakStart = nil
-        goodStreakStart = nil
     }
 
     // MARK: - Foreground read coordination
@@ -295,40 +284,12 @@ final class AirpodsBackgroundMonitor {
             sensitivity: sensitivity
         )
 
-        let now = Date.now
-        updateDisplayedQuality(instant: instant, now: now)
-        updateSlouchNudge(instant: instant, now: now)
-    }
-
-    /// Hysteresis for the *shown* verdict: a slouch has to persist for
-    /// `badConfirmSeconds` before the hero turns clay, and posture has to hold
-    /// for `goodConfirmSeconds` before it eases back to sage. Borderline is
-    /// shown immediately since it's already the gentle middle state.
-    private func updateDisplayedQuality(instant: PostureQuality, now: Date) {
-        switch instant {
-        case .bad:
-            goodStreakStart = nil
-            let started = badStreakStart ?? now
-            badStreakStart = started
-            if currentQuality != .bad,
-               now.timeIntervalSince(started) >= badConfirmSeconds {
-                currentQuality = .bad
-            }
-        case .good:
-            badStreakStart = nil
-            let started = goodStreakStart ?? now
-            goodStreakStart = started
-            if currentQuality != .good,
-               now.timeIntervalSince(started) >= goodConfirmSeconds {
-                currentQuality = .good
-            }
-        case .borderline:
-            badStreakStart = nil
-            goodStreakStart = nil
-            // Ease a shown slouch down to the middle state right away, but
-            // don't jump straight from good to bad on a brief dip.
-            if currentQuality == .bad { currentQuality = .borderline }
-        }
+        // The "right now" readout tracks the current (smoothed) position with
+        // no delay — it's a quick glance, not a verdict. The EMA above already
+        // absorbs raw jitter, so this won't strobe. Sustained-time logic lives
+        // only in the nudge below (buzz/record), never in what's displayed.
+        if instant != currentQuality { currentQuality = instant }
+        updateSlouchNudge(instant: instant, now: Date.now)
     }
 
     /// The nudge (haptic + recorded sample) fires only after a long *continuous*
