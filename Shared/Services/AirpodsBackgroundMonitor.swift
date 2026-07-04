@@ -91,6 +91,11 @@ final class AirpodsBackgroundMonitor {
     private var lastHapticAt: Date = .distantPast
     private let hapticDebounceSeconds: TimeInterval = 60
 
+    /// The day we last credited the streak from passive monitoring. Wearing
+    /// AirPods and being monitored keeps the streak alive, so the habit no
+    /// longer depends on remembering to tap a manual check-in.
+    private var lastStreakCreditDay: Date?
+
     // MARK: - Init
 
     init(modelContext: ModelContext) {
@@ -284,6 +289,10 @@ final class AirpodsBackgroundMonitor {
             sensitivity: sensitivity
         )
 
+        // A real scored reading means the user is wearing AirPods and being
+        // monitored today — that keeps the streak alive on its own.
+        creditStreakDayIfNeeded()
+
         // The "right now" readout tracks the current (smoothed) position with
         // no delay — it's a quick glance, not a verdict. The EMA above already
         // absorbs raw jitter, so this won't strobe. Sustained-time logic lives
@@ -321,6 +330,16 @@ final class AirpodsBackgroundMonitor {
     }
 
     // MARK: - Recording
+
+    /// Credit today's streak once from passive monitoring. Updates only the
+    /// `StreakState` (no `AcknowledgmentRecord`), so History's check-in counts
+    /// stay honest while the streak reflects everyday monitored use.
+    private func creditStreakDayIfNeeded() {
+        let today = DateHelpers.startOfDay()
+        guard lastStreakCreditDay != today else { return }
+        lastStreakCreditDay = today
+        _ = StreakService(context: modelContext).recordAcknowledgment(at: .now)
+    }
 
     private func recordSlouchEvent(severity: Double) {
         let sample = PosturePassiveSample(

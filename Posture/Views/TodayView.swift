@@ -11,6 +11,7 @@ struct TodayView: View {
     @State private var showingAck = false
     @State private var showingRecalibrate = false
     @State private var showingMonitorLog = false
+    @State private var showingEnableConfirm = false
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
@@ -81,46 +82,10 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     headerGreeting
 
-                    alignmentCard
-
-                    // When the live hero is up it already shows status + links
-                    // to the activity log, so only surface the pill while we're
-                    // armed but not yet showing a live reading (waiting for
-                    // AirPods, or not yet calibrated).
-                    if let monitor = airpodsMonitor, monitor.isMonitoring, liveMonitor == nil {
-                        monitoringPill(monitor: monitor)
-                    }
-
-                    weekCard
-
-                    VStack(spacing: 12) {
-                        Button { showingAck = true } label: { Text("Check in now") }
-                            .buttonStyle(.daylight(.primary))
-                        metaRow
-                    }
-                    .padding(.top, 4)
-
-                    if settings.calibrationDeferred {
-                        softBanner(
-                            title: "Finish setting up.",
-                            body: "Calibrate with your AirPods to unlock scored scans. Until then, check in by hand to keep your streak.",
-                            actionLabel: "calibrate with AirPods",
-                            action: { showingRecalibrate = true }
-                        )
-                    } else if needsRecalibration {
-                        softBanner(
-                            title: "Time for a quick recalibrate.",
-                            body: "AirPods sit a little differently over time, and posture shifts too. A five-second reset keeps scans honest.",
-                            actionLabel: "recalibrate",
-                            action: { showingRecalibrate = true }
-                        )
-                    } else if todayAcks.isEmpty {
-                        softBanner(
-                            title: "A new habit, gently.",
-                            body: "Check in a couple of times today. The pattern shows up in about a week.",
-                            actionLabel: "do your first check-in",
-                            action: { showingAck = true }
-                        )
+                    if isAirpodsUser {
+                        airpodsTodayContent
+                    } else {
+                        manualTodayContent
                     }
 
                     tipCard(tip: currentTip)
@@ -141,6 +106,12 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showingMonitorLog) {
                 MonitoringLogView()
+            }
+            .alert("Turn on all-day monitoring?", isPresented: $showingEnableConfirm) {
+                Button("Cancel", role: .cancel) { }
+                Button("Turn on") { settings.airpodsBackgroundEnabled = true }
+            } message: {
+                Text("Posture plays a silent tone to keep the AirPods sensor awake, so it can watch your posture with your phone in your pocket. iOS shows an orange dot while it listens. No audio is recorded. This uses extra battery.")
             }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
@@ -205,14 +176,88 @@ struct TodayView: View {
         }
     }
 
-    // MARK: - Alignment card
+    /// AirPods owners are the core experience: continuous monitoring is the
+    /// product, so the manual check-in is demoted to a tiny link.
+    private var isAirpodsUser: Bool { settings.hasAirpods == true }
+
+    // MARK: - AirPods (monitoring-first) content
 
     @ViewBuilder
-    private var alignmentCard: some View {
+    private var airpodsTodayContent: some View {
+        monitoringHero
+
+        // The core action: go hands-free all day. Nudge until it's on.
+        if !settings.airpodsBackgroundEnabled {
+            softBanner(
+                title: "Go hands-free all day.",
+                body: "Turn on all-day monitoring and Posture keeps watching your posture with your phone in your pocket, nudging you when you slouch.",
+                actionLabel: "Turn on all-day monitoring",
+                action: { showingEnableConfirm = true }
+            )
+        }
+
+        todayReportCard
+
+        if needsRecalibration {
+            softBanner(
+                title: "Time for a quick recalibrate.",
+                body: "AirPods sit a little differently over time, and posture shifts too. A quick reset keeps readings honest.",
+                actionLabel: "Recalibrate",
+                action: { showingRecalibrate = true }
+            )
+        }
+
+        // Manual check-in is a minor escape hatch here, not the main event.
+        Button { showingAck = true } label: {
+            Text("Log a manual check-in")
+                .font(.system(.footnote, design: .rounded).weight(.medium))
+                .foregroundStyle(Theme.ink3)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+        .padding(.top, 2)
+    }
+
+    @ViewBuilder
+    private var monitoringHero: some View {
         if let monitor = liveMonitor {
             liveAlignmentCard(monitor: monitor)
+        } else if let m = airpodsMonitor, m.isMonitoring {
+            armedCard(monitor: m)
         } else {
-            checkInAlignmentCard
+            enableMonitoringCard
+        }
+    }
+
+    // MARK: - No-AirPods (manual) content — the compliance exception
+
+    @ViewBuilder
+    private var manualTodayContent: some View {
+        checkInAlignmentCard
+
+        weekCard
+
+        VStack(spacing: 12) {
+            Button { showingAck = true } label: { Text("Check in now") }
+                .buttonStyle(.daylight(.primary))
+            metaRow
+        }
+        .padding(.top, 4)
+
+        if settings.calibrationDeferred {
+            softBanner(
+                title: "Get AirPods for the full experience.",
+                body: "With AirPods, Posture watches your posture all day on its own. Without them, log how you're sitting to keep your streak.",
+                actionLabel: "Set up AirPods",
+                action: { showingRecalibrate = true }
+            )
+        } else if todayAcks.isEmpty {
+            softBanner(
+                title: "A new habit, gently.",
+                body: "Check in a couple of times today. The pattern shows up in about a week.",
+                actionLabel: "Do your first check-in",
+                action: { showingAck = true }
+            )
         }
     }
 
@@ -383,19 +428,23 @@ struct TodayView: View {
         .dawnCard()
     }
 
-    // MARK: - Monitoring pill
+    // MARK: - Armed card (monitoring on, waiting for a live reading)
 
-    private func monitoringPill(monitor: AirpodsBackgroundMonitor) -> some View {
-        let live = monitor.isConnected
+    /// Shown when monitoring is armed but not yet producing a scored reading
+    /// (AirPods out of ear, or no baseline yet). Reassures the user it's on and
+    /// waiting rather than broken.
+    private func armedCard(monitor: AirpodsBackgroundMonitor) -> some View {
+        let needsBaseline = monitor.isConnected && !hasAirpodsBaseline
         return Button { showingMonitorLog = true } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 7) {
                     Circle()
-                        .fill(live ? Theme.sage : Theme.sand)
+                        .fill(Theme.sand)
                         .frame(width: 7, height: 7)
-                    Text(live ? "AirPods linked · listening" : "waiting for AirPods")
+                    Text("Monitoring on")
                         .font(.system(.footnote, design: .rounded).weight(.semibold))
-                        .foregroundStyle(live ? Theme.sage : Theme.ink2)
+                        .tracking(1.2)
+                        .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
                     HStack(spacing: 3) {
                         Text("Activity")
@@ -404,9 +453,16 @@ struct TodayView: View {
                     .font(.system(.caption2, design: .rounded).weight(.semibold))
                     .foregroundStyle(Theme.ink3)
                 }
-                if live {
-                    // Ticks every second so "last reading Xs ago" visibly
-                    // counts — the proof-of-life the static pill never gave.
+                Text(needsBaseline ? "Calibrate to start reading." : "Waiting for your AirPods.")
+                    .font(Theme.displaySerif(22))
+                    .foregroundStyle(Theme.ink)
+                Text(needsBaseline
+                     ? "Pop in your AirPods and recalibrate, and live posture readings begin."
+                     : "Put your AirPods in and Posture starts watching your posture automatically.")
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(Theme.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+                if monitor.isConnected {
                     TimelineView(.periodic(from: .now, by: 1)) { timeline in
                         Text(monitorActivityLine(monitor: monitor, now: timeline.date))
                             .font(.system(.caption, design: .rounded))
@@ -414,16 +470,60 @@ struct TodayView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(live ? Theme.sageTint : Theme.sandTint)
-            )
-            .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .dawnCard()
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("AirPods monitoring activity")
+        .accessibilityLabel("Monitoring is on, waiting for AirPods")
+    }
+
+    // MARK: - Enable monitoring card (monitoring not running)
+
+    private var enableMonitoringCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("YOUR POSTURE, ALL DAY")
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .tracking(1.5)
+                .foregroundStyle(Theme.sage)
+            Text("Let Posture watch for you.")
+                .font(Theme.displaySerif(24))
+                .foregroundStyle(Theme.ink)
+            Text("Turn on all-day monitoring and your AirPods quietly track your posture in the background, with a gentle nudge whenever you start to slouch.")
+                .font(.system(.footnote, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .fixedSize(horizontal: false, vertical: true)
+            Button { showingEnableConfirm = true } label: {
+                Text("Turn on monitoring")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.daylight(.primary))
+            .padding(.top, 4)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard()
+    }
+
+    // MARK: - Today report card (all-day rhythm + summary)
+
+    private var todayReportCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(monitoringSummaryLine)
+                .font(.system(.footnote, design: .rounded).weight(.medium))
+                .foregroundStyle(Theme.ink2)
+            PassiveTimelineView()
+        }
+    }
+
+    private var monitoringSummaryLine: String {
+        let slouches = passiveSamplesToday
+        if slouches == 0 {
+            return hasPassiveSamplesToday
+                ? "Steady so far today. Nice."
+                : "Your posture report builds as the day goes on."
+        }
+        return "\(slouches) slouch\(slouches == 1 ? "" : "es") caught today."
     }
 
     private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {
