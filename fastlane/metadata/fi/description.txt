@@ -1,40 +1,31 @@
-Ryhdistäydy, ja pidä siitä myös kiinni.
+Istu ryhdikkäästi, ajattelematta sitä edes.
 
-Posture on lempeä ryhtivalmentaja iPhonelle, AirPodsille ja Apple Watchille, ja kaikki tapahtuu suoraan laitteellasi. Sen sijaan, että se jankuttaisi koko päivän, se muistuttaa muutaman kerran päivässä tekemään nopean ryhtitarkistuksen. Pidä putki katkeamatta ja näe, miten tapa kasvaa.
+Posture muuttaa jo omistamasi AirPodsit aina päällä olevaksi ryhtivalmentajaksi. Laita ne korviisi, ja Posture tarkkailee huomaamattomasi pään asentoasi koko päivän, noin 25 mittausta sekunnissa, ja antaa sinulle lempeän vihjeen heti kun todella lysähdät. Ei kameraa suunnattuna sinuun, ei laitetta ostettavaksi, ei tarvetta muistaa tarkistaa itse.
+
+Ei enää tech neckiä tai tekstiniskaa. Olitpa sitten työpöydän ääressä, sohvalla tai etätöissä, Posture huomaa lysähtämisen juuri silloin kun se tapahtuu, kun voit vielä korjata sen.
 
 NÄIN SE TOIMII
-• Kalibroi kerran. Istu juuri niin kuin haluat istua, ja AirPodsisi oppivat henkilökohtaisen lähtötasosi muutamassa sekunnissa.
-• Valitse oma rytmisi. Päätä, montako muistutusta päivässä haluat ja mihin aikoihin ne tulevat.
-• Napauta muistutusta. 3 sekunnin AirPods-tarkistus lukee pään asentosi ja kertoo, oletko ryhdissä, lipsumassa vai lysähtänyt, tai kerro itse käsin, miten istut.
-• Kasvata putkea. Joka päivä, kun vastaat muistutuksiin, liekkisi kasvaa. Suojaus pelastaa väliin jäävät päivät.
+• Kalibroi kerran. Seiso ryhdikkäästi, istu ryhdikkäästi ja lysähdä sitten tarkoituksella. AirPodsisi oppivat henkilökohtaisen liikealueesi alle minuutissa.
+• Käytä AirPodseja kuten yleensäkin. Posture tarkkailee taustalla, vaikka puhelin olisi taskussa.
+• Tunne vihje. Jos lysähdät hetkeksi, saat lempeän värinän. Suorista itsesi, ja se lakkaa. Siinä on koko totuttava tapa.
+• Katso päiväsi täyttyvän. Jokainen tarkkailtu minuutti kertyy päiväraporttiisi: kuinka suuri osa päivästä oli hyvässä asennossa, tunti tunnilta -rytmi, parhaat jaksot, havaitut lysähdykset.
 
-ILMAINEN VERSIO
-• Nopeat 3 sekunnin ryhtitarkistukset AirPodsien liiketunnistimella
-• Manuaaliset kirjaukset, kun AirPodsit eivät ole korvilla
-• Henkilökohtainen kalibroitu lähtötaso
-• Älykkäät muistutukset aktiivisina tunteinasi
-• Päivittäiset putket suojauksella
-• Viimeisten 7 päivän ryhtihistoria ja suuntaukset
-• Lukitusnäytön ja Koti-valikon widgetit
-
-POSTURE+
-• Hiljainen, koko päivän kestävä AirPods-valmennus taustalla, lempeä tönäisy, kun alat lysähtää, vaikka puhelin olisi taskussa
-• Apple Watch -sovelluskumppani taustavalmennuksella
-• Koko ryhtihistoriasi tunti tunnilta, näe tarkalleen, milloin lipsut
-• Jatkuva seuranta, laita päälle ja unohda
-• Etusijalla oleva tuki
+MITÄ SAAT
+• Koko päivän taustalla tapahtuva ryhdin seuranta AirPodsien avulla
+• Ryhdin tila reaaliajassa: kohdillaan, ajautumassa tai lysähtäneenä
+• Päiväraportti, joka perustuu todelliseen istumiseesi, ei pistokokeisiin
+• Viikoittaiset trendit: näe, minä päivinä ja tunteina ryhtisi pysyy parhaana
+• Päivittäiset putket jäädytyssuojalla, jokainen tarkkailtu päivä lasketaan
+• Lempeät muistutukset aktiivisina tunteinasi, jos haluat niitä
+• Apple Watch -kumppanisovellus ja lukitusnäytön widgetit
+• Ohjattu kierros, joka opettaa koko rutiinin minuutissa
 
 MITKÄ AIRPODSIT TOIMIVAT
-Posture lukee pään liikkeen AirPods Prosta (1. ja 2. sukupolvi), AirPods (3. sukupolvi) -malleista, AirPods 4:stä, jossa on aktiivinen vastamelu, sekä AirPods Maxista. Eikö AirPodseja ole käsillä? Voit silti kirjata tarkistukset käsin ja pitää putkesi elossa.
+Posture lukee pään liikettä AirPods Prosta (1. ja 2. sukupolvi), AirPodsista (3. sukupolvi), AirPods 4:stä aktiivisella melunvaimennuksella, tai AirPods Maxista. Ei yhteensopivia AirPodseja? Voit kirjata ryhtitarkistukset käsin ja pitää putkesi hengissä.
 
-YKSITYISYYS LÄHTÖKOHTANA
+YKSITYISYYS ALUSTA ASTI
 • Ei tilejä, ei rekisteröitymistä
-• Ei mainoksia eikä toimintasi seurantaa sovellusten välillä
-• Pään liiketiedot käsitellään laitteella eivätkä ne koskaan poistu puhelimestasi
-• AirPodsien ja Apple Watchin liiketiedot pysyvät laitteella
-• Voit käyttää koko sovellusta ilman, että luot koskaan tiliä
+• Ei mainoksia eikä sovellusten välistä seurantaa
+• Pään liikedata käsitellään laitteella eikä poistu puhelimestasi koskaan
 
-Posture+ on automaattisesti uusiutuva tilaus, jossa on kuukausi- ja vuosivaihtoehdot sekä kertamaksullinen elinikäinen avaus. Tilauksissa on saatavilla maksuton kokeilujakso; kokeilun jälkeen tilaus uusiutuu ilmoitettuun hintaan, ellei sitä peruuteta. Hallitse tai peruuta tilaus milloin tahansa kohdassa Asetukset › Apple ID › Tilaukset. Maksu veloitetaan Apple ID:ltäsi oston vahvistuksen yhteydessä. Tilaukset uusiutuvat automaattisesti, ellei niitä poisteta käytöstä vähintään 24 tuntia ennen kuluvan jakson päättymistä.
-
-Tietosuojakäytäntö: https://jackwallner.github.io/posture/privacy-policy.html
-Käyttöehdot (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ on automaattisesti uusiutuva tilaus, jossa on kuukausi- ja vuosivaihtoehdot sekä kertamaksullinen elinikäinen avaus. Tilaussuunnitelmissa on saatavilla ilmainen kokeilujakso; kokeilun jälkeen tilaus uusiutuu ilmoitettuun hintaan, ellei sitä peruuteta. Hallinnoi tai peruuta milloin tahansa kohdasta Asetukset › Apple-tunnus › Tilaukset. Maksu veloitetaan Apple-tunnukseltasi oston vahvistuksen yhteydessä. Tilaukset uusiutuvat automaattisesti, ellei niitä poisteta käytöstä vähintään 24 tuntia ennen kuluvan jakson päättymistä.

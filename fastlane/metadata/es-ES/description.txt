@@ -1,40 +1,31 @@
-Siéntate erguido, y mantén el hábito de verdad.
+Siéntate erguido, sin ni siquiera pensarlo.
 
-Posture es un entrenador de postura discreto que funciona en tu dispositivo, con iPhone, AirPods y Apple Watch. En lugar de darte la lata todo el día, te avisa unas pocas veces al día para que hagas una comprobación rápida de tu postura. Mantén una buena racha y verás crecer tu hábito.
+Posture convierte los AirPods que ya tienes en un entrenador de postura siempre activo. Póntelos y Posture observa discretamente la posición de tu cabeza durante todo el día, unas 25 mediciones por segundo, y te da un ligero aviso en cuanto te encorvas de verdad. Sin cámara apuntándote, sin dispositivo adicional que comprar, sin tener que acordarte de comprobarlo.
+
+Se acabó el "tech neck" o el cuello de texto. Ya sea en el escritorio, en el sofá o teletrabajando, Posture detecta el encorvamiento mientras ocurre, cuando todavía puedes corregirlo.
 
 CÓMO FUNCIONA
-• Calíbrate una vez. Siéntate como quieres sentarte y tus AirPods aprenden tu referencia personal en unos segundos.
-• Elige tu ritmo. Decide cuántos recordatorios quieres al día y en qué horas prefieres recibirlos.
-• Toca un recordatorio. Una comprobación de 3 segundos con los AirPods detecta la posición de tu cabeza y te dice si estás erguido, desviándote o encorvado, o simplemente indícanos a mano cómo estás sentado.
-• Construye la racha. Cada día que respondes a tus recordatorios, tu llama crece. La protección de congelación cubre los días que fallas.
+• Calibra una sola vez. Ponte de pie erguido, siéntate erguido y luego encórvate a propósito. Tus AirPods aprenden tu rango personal en menos de un minuto.
+• Lleva tus AirPods como siempre. Posture supervisa en segundo plano, incluso con el teléfono en el bolsillo.
+• Siente el aviso. Si te encorvas un rato, recibes una leve vibración. Endereza la espalda y se detiene. Esa es toda la costumbre que hay que crear.
+• Observa cómo se completa tu día. Cada minuto supervisado alimenta tu informe diario: porcentaje del día bien alineado, ritmo hora a hora, mejores tramos, encorvamientos detectados.
 
-VERSIÓN GRATUITA
-• Comprobaciones rápidas de postura de 3 segundos con el sensor de movimiento de tus AirPods
-• Registros manuales para cuando no llevas los AirPods puestos
-• Referencia de calibración personal
-• Recordatorios inteligentes durante tus horas activas
-• Rachas diarias con protección de congelación
-• Tus últimos 7 días de historial y tendencias de postura
-• Widgets en la pantalla bloqueada y en la pantalla de inicio
-
-POSTURE+
-• Coaching discreto de AirPods en segundo plano durante todo el día, un aviso suave cuando empiezas a encorvarte, incluso con el teléfono en el bolsillo
-• App complementaria para Apple Watch con coaching en segundo plano
-• Tu historial de postura completo, hora a hora, descubre exactamente cuándo te desvías
-• Monitorización siempre activa, configúralo y olvídate
-• Soporte prioritario
+LO QUE OBTIENES
+• Supervisión de postura en segundo plano durante todo el día con los AirPods
+• Estado de postura en directo: alineado, a la deriva o encorvado, en tiempo real
+• Un informe diario basado en cómo te sientas de verdad, no en comprobaciones puntuales
+• Tendencias semanales: descubre en qué días y horas se mantiene mejor tu postura
+• Rachas diarias con protección de congelación, cada día supervisado cuenta
+• Recordatorios suaves durante tus horas activas, si los quieres
+• Aplicación complementaria para Apple Watch y widgets de pantalla bloqueada
+• Un tutorial guiado que explica todo el proceso en un minuto
 
 QUÉ AIRPODS FUNCIONAN
-Posture lee el movimiento de la cabeza con los AirPods Pro (1.ª y 2.ª generación), los AirPods (3.ª generación), los AirPods 4 con Cancelación Activa de Ruido o los AirPods Max. ¿No tienes los AirPods a mano? Puedes seguir registrando comprobaciones a mano y mantener tu racha viva.
+Posture lee el movimiento de la cabeza con AirPods Pro (1.ª y 2.ª generación), AirPods (3.ª generación), AirPods 4 con cancelación activa de ruido o AirPods Max. ¿No tienes unos AirPods compatibles? Puedes registrar tus controles de postura a mano y mantener viva tu racha.
 
-PRIVADO POR DISEÑO
+PRIVACIDAD POR DISEÑO
 • Sin cuentas, sin registro
-• Sin anuncios y sin rastreo de tu actividad entre apps
+• Sin anuncios y sin seguimiento entre aplicaciones
 • Los datos de movimiento de la cabeza se procesan en el dispositivo y nunca salen de tu teléfono
-• Los datos de movimiento de los AirPods y el Apple Watch se quedan en el dispositivo
-• Puedes usar toda la app sin crear nunca una cuenta
 
-Posture+ es una suscripción de renovación automática con opciones mensual y anual, además de un desbloqueo de por vida con un único pago. Hay una prueba gratuita disponible en los planes de suscripción; tras la prueba se renueva al precio indicado salvo que la canceles. Gestiona o cancela cuando quieras en Ajustes › Apple ID › Suscripciones. El pago se carga a tu Apple ID al confirmar la compra. Las suscripciones se renuevan automáticamente salvo que las desactives al menos 24 horas antes del final del periodo actual.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ es una suscripción de renovación automática con opciones mensuales y anuales, además de un desbloqueo de por vida de pago único. Hay una prueba gratuita disponible en los planes de suscripción; tras la prueba, se renueva al precio indicado salvo que se cancele. Gestiónala o cancélala cuando quieras en Ajustes › ID de Apple › Suscripciones. El pago se cobra a tu ID de Apple al confirmar la compra. Las suscripciones se renuevan automáticamente salvo que se desactiven al menos 24 horas antes de que finalice el periodo actual.

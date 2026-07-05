@@ -1,40 +1,31 @@
-Tenez-vous droit, et tenez bon, vraiment.
+Se tenir droit, sans même y penser.
 
-Posture est un coach de posture discret, qui fonctionne directement sur votre appareil, pour iPhone, AirPods et Apple Watch. Plutôt que de vous harceler toute la journée, l'app vous invite quelques fois par jour à faire une vérification posturale rapide. Maintenez une belle série et regardez votre habitude prendre forme.
+Posture transforme les AirPods que vous possédez déjà en coach de posture toujours actif. Mettez-les, et Posture surveille discrètement la position de votre tête toute la journée, environ 25 mesures par seconde, puis vous envoie une légère vibration dès que vous vous affaissez vraiment. Pas de caméra braquée sur vous, pas d'accessoire à acheter, pas besoin de penser à vérifier.
+
+Fini le "tech neck" ou le cou penché sur l'écran. Que vous soyez au bureau, sur le canapé ou en télétravail, Posture repère l'affaissement au moment où il se produit, pendant que vous pouvez encore le corriger.
 
 COMMENT ÇA MARCHE
-• Calibrez une seule fois. Installez-vous comme vous aimez vous tenir, et en quelques secondes vos AirPods apprennent votre posture de référence personnelle.
-• Choisissez votre rythme. Décidez du nombre de rappels par jour et des heures auxquelles vous voulez les recevoir.
-• Touchez un rappel. Une vérification de 3 secondes via vos AirPods analyse la position de votre tête et vous dit si vous êtes droit, en train de glisser ou avachi, ou indiquez simplement à la main comment vous êtes assis.
-• Construisez votre série. Chaque jour où vous répondez à vos rappels, votre flamme grandit. La protection par gel couvre vos jours de repos.
+• Calibrez une seule fois. Tenez-vous droit debout, puis assis, puis affaissez-vous volontairement. Vos AirPods apprennent votre amplitude personnelle en moins d'une minute.
+• Portez vos AirPods comme d'habitude. Posture surveille en arrière-plan, même avec votre téléphone dans la poche.
+• Ressentez la vibration. Restez affaissé un moment et vous recevez un léger signal. Redressez-vous et il s'arrête. C'est toute l'habitude à prendre.
+• Regardez votre journée se remplir. Chaque minute surveillée alimente votre rapport quotidien : pourcentage de la journée bien aligné, rythme heure par heure, meilleures périodes, affaissements détectés.
 
-L'OFFRE GRATUITE
-• Vérifications posturales rapides de 3 secondes grâce au capteur de mouvement de vos AirPods
-• Saisies manuelles pour les moments où vous n'avez pas vos AirPods
-• Posture de référence personnalisée
-• Rappels intelligents pendant vos heures d'activité
-• Séries quotidiennes avec protection par gel
-• Vos 7 derniers jours d'historique et de tendances posturales
-• Widgets pour l'écran verrouillé et l'écran d'accueil
-
-POSTURE+
-• Coaching AirPods discret en arrière-plan toute la journée, un léger rappel dès que vous commencez à vous avachir, même téléphone dans la poche
-• Application compagnon Apple Watch avec coaching en arrière-plan
-• Votre historique postural complet, heure par heure, voyez exactement quand vous décrochez
-• Suivi permanent, réglez-le une fois et oubliez-le
-• Assistance prioritaire
+CE QUE VOUS OBTENEZ
+• Surveillance de posture en arrière-plan toute la journée via AirPods
+• Statut de posture en direct : aligné, en dérive ou affaissé, en temps réel
+• Un rapport quotidien basé sur votre position réelle, pas des contrôles ponctuels
+• Tendances hebdomadaires : voyez quels jours et quelles heures votre posture tient bon
+• Séries quotidiennes avec protection de gel, chaque jour surveillé compte
+• Rappels doux pendant vos heures actives, si vous le souhaitez
+• Application compagnon Apple Watch et widgets pour l'écran verrouillé
+• Un guide pas à pas qui explique la routine en une minute
 
 QUELS AIRPODS FONCTIONNENT
-Posture lit les mouvements de la tête avec les AirPods Pro (1re et 2e génération), les AirPods (3e génération), les AirPods 4 avec réduction de bruit active ou les AirPods Max. Pas d'AirPods sous la main ? Vous pouvez quand même enregistrer vos saisies manuellement et garder votre série en vie.
+Posture lit les mouvements de tête depuis les AirPods Pro (1re et 2e génération), les AirPods (3e génération), les AirPods 4 avec réduction active du bruit, ou les AirPods Max. Pas d'AirPods compatibles ? Vous pouvez enregistrer vos contrôles de posture manuellement et garder votre série intacte.
 
-CONÇU POUR LA CONFIDENTIALITÉ
+CONFIDENTIALITÉ PAR CONCEPTION
 • Aucun compte, aucune inscription
-• Aucune publicité et aucun suivi de votre activité entre les apps
-• Les données de mouvement de la tête sont traitées sur l'appareil et ne quittent jamais votre téléphone
-• Les données de mouvement des AirPods et de l'Apple Watch restent sur l'appareil
-• Vous pouvez utiliser toute l'application sans jamais créer de compte
+• Aucune publicité et aucun suivi entre applications
+• Les données de mouvement de tête sont traitées sur l'appareil et ne quittent jamais votre téléphone
 
-Posture+ est un abonnement à renouvellement automatique proposé en formule mensuelle et annuelle, ainsi qu'un déblocage à vie en achat unique. Un essai gratuit est disponible sur les formules d'abonnement ; à l'issue de l'essai, il se renouvelle au prix indiqué sauf annulation. Gérez ou annulez à tout moment dans Réglages › Apple ID › Abonnements. Le paiement est débité sur votre Apple ID lors de la confirmation de l'achat. Les abonnements se renouvellent automatiquement sauf désactivation au moins 24 heures avant la fin de la période en cours.
-
-Politique de confidentialité : https://jackwallner.github.io/posture/privacy-policy.html
-Conditions d'utilisation (CLUF) : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ est un abonnement à renouvellement automatique avec des options mensuelles et annuelles, ainsi qu'un déblocage à vie en paiement unique. Un essai gratuit est proposé sur les formules d'abonnement ; à l'issue de l'essai, il se renouvelle au prix indiqué sauf annulation. Gérez ou annulez à tout moment dans Réglages › Apple ID › Abonnements. Le paiement est débité de votre identifiant Apple à la confirmation de l'achat. Les abonnements se renouvellent automatiquement sauf désactivation au moins 24 heures avant la fin de la période en cours.

@@ -1,40 +1,31 @@
-Posa't recte de debò, i mantingues l'hàbit.
+Seu dret, sense ni tan sols pensar-hi.
 
-Posture és un entrenador d'esquena delicat que funciona al teu dispositiu, pensat per a l'iPhone, els AirPods i l'Apple Watch. En lloc d'empipar-te tot el dia, et convida unes quantes vegades al dia a fer una comprovació ràpida de la postura. Encadena bons dies i mira com creix el teu hàbit.
+Posture converteix els AirPods que ja tens en un entrenador de postura sempre actiu. Posa-te'ls i Posture observa discretament la posició del teu cap tot el dia, unes 25 lectures per segon, i et dona un avís suau just quan t'ajups de veritat. Sense càmera apuntant-te, sense cap altre dispositiu per comprar, sense haver de recordar comprovar res.
+
+S'ha acabat el "tech neck" o el coll de text. Tant si ets a l'escriptori, al sofà o teletreballant, Posture detecta l'ajupiment mentre passa, quan encara el pots corregir.
 
 COM FUNCIONA
-• Calibra una sola vegada. Asseu-te com vols asseure't i, en pocs segons, els teus AirPods aprenen la teva referència personal.
-• Tria el teu ritme. Decideix quants recordatoris vols al dia i a quines hores prefereixes rebre'ls.
-• Toca un recordatori. Una comprovació de 3 segons amb els AirPods llegeix la posició del cap i et diu si estàs recte, si t'estàs desviant o si t'encorbes; o simplement indica'ns a mà com estàs assegut.
-• Crea la teva ratxa. Cada dia que respons als recordatoris, la teva flama creix. La protecció de ratxa cobreix els dies que en fas festa.
+• Calibra un cop. Posa't dret dempeus, seu dret assegut i després ajup-te expressament. Els teus AirPods aprenen el teu rang personal en menys d'un minut.
+• Porta els AirPods com ja fas. Posture supervisa en segon pla, fins i tot amb el telèfon a la butxaca.
+• Sent l'avís. Si t'ajups una estona, reps una lleu vibració. Redreça't i s'atura. Aquest és tot l'hàbit a crear.
+• Mira com s'omple el teu dia. Cada minut supervisat s'afegeix al teu informe diari: percentatge del dia amb bona postura, ritme hora a hora, millors trams, ajupiments detectats.
 
-VERSIÓ GRATUÏTA
-• Comprovacions ràpides de postura de 3 segons amb el sensor de moviment dels AirPods
-• Registres manuals per quan no portis els AirPods posats
-• Referència de calibratge personal
-• Recordatoris intel·ligents durant les teves hores actives
-• Ratxes diàries amb protecció de ratxa
-• Els últims 7 dies del teu historial i tendències de postura
-• Ginys per a la pantalla de bloqueig i la pantalla d'inici
-
-POSTURE+
-• Entrenament discret amb els AirPods en segon pla tot el dia: un avís suau quan comences a encorbar-te, fins i tot amb el telèfon a la butxaca
-• App complementària per a l'Apple Watch amb entrenament en segon pla
-• El teu historial de postura complet, hora a hora: veu exactament quan et desvies
-• Monitoratge sempre actiu: configura'l i oblida-te'n
-• Suport prioritari
+QUÈ OBTENS
+• Supervisió de postura en segon pla tot el dia mitjançant AirPods
+• Estat de postura en directe: alineat, a la deriva o ajupit, en temps real
+• Un informe diari basat en com seus realment, no en comprovacions puntuals
+• Tendències setmanals: descobreix en quins dies i hores la teva postura es manté millor
+• Ratxes diàries amb protecció de congelació, cada dia supervisat compta
+• Recordatoris suaus durant les teves hores actives, si els vols
+• Aplicació complementària per a l'Apple Watch i widgets de pantalla bloquejada
+• Un tutorial guiat que ensenya tot el procés en un minut
 
 QUINS AIRPODS FUNCIONEN
-Posture llegeix el moviment del cap amb els AirPods Pro (1a i 2a generació), els AirPods (3a generació), els AirPods 4 amb cancel·lació activa de soroll o els AirPods Max. No tens els AirPods a mà? Pots seguir registrant les comprovacions manualment i mantenir viva la teva ratxa.
+Posture llegeix el moviment del cap amb AirPods Pro (1a i 2a generació), AirPods (3a generació), AirPods 4 amb cancel·lació activa de soroll, o AirPods Max. No tens AirPods compatibles? Pots registrar els controls de postura a mà i mantenir la teva ratxa viva.
 
 PRIVADESA DES DEL DISSENY
-• Sense comptes ni registres
-• Sense anuncis i sense seguiment de la teva activitat entre apps
-• Les dades de moviment del cap es processen al dispositiu i mai surten del telèfon
-• Les dades de moviment dels AirPods i l'Apple Watch es queden al dispositiu
-• Pots fer servir tota l'app sense haver de crear mai cap compte
+• Sense comptes, sense registre
+• Sense anuncis i sense seguiment entre aplicacions
+• Les dades de moviment del cap es processen al dispositiu i mai surten del teu telèfon
 
-Posture+ és una subscripció de renovació automàtica amb opcions mensuals i anuals, a més d'un desbloqueig vitalici de pagament únic. Les modalitats de subscripció inclouen una prova gratuïta; un cop acaba la prova, es renova al preu indicat tret que la cancel·lis. Pots gestionar-la o cancel·lar-la quan vulguis a Configuració › Apple ID › Subscripcions. El càrrec es fa al teu Apple ID en confirmar la compra. Les subscripcions es renoven automàticament tret que les desactivis com a mínim 24 hores abans que acabi el període actual.
-
-Política de privadesa: https://jackwallner.github.io/posture/privacy-policy.html
-Condicions d'ús (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ és una subscripció de renovació automàtica amb opcions mensuals i anuals, a més d'un desbloqueig de per vida amb pagament únic. Hi ha disponible una prova gratuïta als plans de subscripció; després de la prova, es renova al preu indicat llevat que se cancel·li. Gestiona-la o cancel·la-la quan vulguis a Configuració › ID d'Apple › Subscripcions. El pagament es carrega al teu ID d'Apple en confirmar la compra. Les subscripcions es renoven automàticament llevat que es desactivin almenys 24 hores abans que finalitzi el període actual.

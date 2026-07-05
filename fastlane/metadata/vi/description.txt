@@ -1,40 +1,31 @@
-Ngồi thẳng, và thật sự duy trì được.
+Ngồi thẳng lưng mà không cần phải nghĩ đến điều đó.
 
-Posture là một huấn luyện viên tư thế nhẹ nhàng, xử lý ngay trên thiết bị, dành cho iPhone, AirPods và Apple Watch. Thay vì cằn nhằn cả ngày, app chỉ nhắc bạn vài lần mỗi ngày để kiểm tra tư thế thật nhanh. Giữ vững chuỗi ngày và nhìn thói quen của bạn lớn dần.
+Posture biến chiếc AirPods bạn đã có sẵn thành một huấn luyện viên tư thế luôn hoạt động. Chỉ cần đeo vào, Posture sẽ âm thầm theo dõi vị trí đầu của bạn suốt cả ngày, khoảng 25 lần đo mỗi giây, và nhẹ nhàng nhắc bạn ngay khi bạn thực sự khom lưng. Không camera chĩa vào bạn, không cần mua thêm thiết bị đeo, không phải nhớ để kiểm tra.
+
+Không còn "cổ công nghệ" hay cổ cúi vì điện thoại nữa. Dù đang ngồi bàn làm việc, trên ghế sofa, hay làm việc tại nhà, Posture sẽ phát hiện tư thế khom lưng ngay khi nó xảy ra, lúc bạn vẫn còn có thể chỉnh lại.
 
 CÁCH HOẠT ĐỘNG
-• Hiệu chuẩn một lần. Hãy ngồi đúng theo cách bạn muốn ngồi, và AirPods sẽ học tư thế chuẩn của riêng bạn chỉ trong vài giây.
-• Chọn nhịp độ của bạn. Quyết định số lần nhắc mỗi ngày và những khung giờ bạn muốn nhận chúng.
-• Chạm vào một lời nhắc. Một lần kiểm tra AirPods 3 giây sẽ đọc tư thế đầu của bạn và cho biết bạn đang ngồi thẳng, bắt đầu xiêu vẹo hay đã gù lưng, hoặc bạn chỉ cần tự báo bằng tay cách mình đang ngồi.
-• Xây dựng chuỗi ngày. Mỗi ngày bạn phản hồi lời nhắc, ngọn lửa của bạn lại lớn thêm. Tính năng bảo vệ đóng băng sẽ che chở cho những ngày bạn nghỉ.
+• Chỉ cần hiệu chỉnh một lần. Đứng thẳng, ngồi thẳng, rồi cố tình khom lưng. AirPods của bạn sẽ học được phạm vi cá nhân của bạn trong chưa đầy một phút.
+• Đeo AirPods như bạn vẫn thường làm. Posture theo dõi trong nền, ngay cả khi điện thoại nằm trong túi.
+• Cảm nhận tín hiệu nhắc nhở. Khom lưng một lúc, bạn sẽ nhận được một rung nhẹ. Ngồi thẳng lại, rung sẽ dừng. Đó là toàn bộ thói quen cần tạo.
+• Theo dõi ngày của bạn dần được lấp đầy. Mỗi phút được theo dõi sẽ góp vào báo cáo hằng ngày của bạn: tỷ lệ phần trăm thời gian trong ngày giữ tư thế đúng, nhịp độ theo từng giờ, khoảng thời gian tốt nhất, số lần khom lưng bị phát hiện.
 
-BẢN MIỄN PHÍ
-• Kiểm tra tư thế nhanh trong 3 giây bằng cảm biến chuyển động của AirPods
-• Tự ghi nhận bằng tay khi bạn không đeo AirPods
-• Tư thế chuẩn được hiệu chuẩn riêng cho bạn
-• Lời nhắc thông minh trong những giờ bạn hoạt động
-• Chuỗi ngày hằng ngày cùng tính năng bảo vệ đóng băng
-• Lịch sử và xu hướng tư thế của 7 ngày gần nhất
-• Widget cho Lock Screen và Home Screen
+BẠN SẼ NHẬN ĐƯỢC GÌ
+• Theo dõi tư thế nền suốt cả ngày qua AirPods
+• Trạng thái tư thế trực tiếp: đúng chuẩn, lệch dần, hoặc khom lưng, theo thời gian thực
+• Báo cáo hằng ngày dựa trên tư thế ngồi thực tế, không phải kiểm tra ngẫu nhiên
+• Xu hướng hằng tuần: xem ngày nào và giờ nào tư thế của bạn duy trì tốt nhất
+• Chuỗi ngày liên tục có bảo vệ đóng băng, mỗi ngày được theo dõi đều được tính
+• Nhắc nhở nhẹ nhàng trong giờ hoạt động của bạn, nếu bạn muốn
+• Ứng dụng đồng hành cho Apple Watch và tiện ích màn hình khóa
+• Hướng dẫn từng bước giúp bạn hiểu toàn bộ quy trình trong một phút
 
-POSTURE+
-• Huấn luyện nền qua AirPods cả ngày một cách lặng lẽ, một cú nhắc nhẹ nhàng ngay khi bạn bắt đầu gù lưng, kể cả khi iPhone nằm trong túi
-• Ứng dụng đồng hành trên Apple Watch với huấn luyện nền
-• Toàn bộ lịch sử tư thế của bạn, theo từng giờ, thấy chính xác lúc nào bạn xiêu vẹo
-• Giám sát luôn bật, cài đặt một lần rồi quên đi
-• Hỗ trợ ưu tiên
+NHỮNG AIRPODS NÀO HOẠT ĐỘNG ĐƯỢC
+Posture đọc chuyển động đầu từ AirPods Pro (thế hệ 1 và 2), AirPods (thế hệ 3), AirPods 4 có Chống ồn chủ động, hoặc AirPods Max. Không có AirPods tương thích? Bạn vẫn có thể ghi lại kiểm tra tư thế theo cách thủ công và giữ chuỗi ngày của mình không bị gián đoạn.
 
-AIRPODS NÀO DÙNG ĐƯỢC
-Posture đọc chuyển động đầu từ AirPods Pro (đời 1 & đời 2), AirPods (đời 3), AirPods 4 có Chống ồn Chủ động, hoặc AirPods Max. Không có AirPods bên cạnh? Bạn vẫn có thể tự ghi nhận bằng tay và giữ cho chuỗi ngày của mình tiếp tục.
-
-RIÊNG TƯ NGAY TỪ THIẾT KẾ
-• Không tài khoản, không đăng ký
-• Không quảng cáo và không theo dõi hoạt động của bạn giữa các ứng dụng
+QUYỀN RIÊNG TƯ NGAY TỪ THIẾT KẾ
+• Không cần tài khoản, không cần đăng ký
+• Không quảng cáo và không theo dõi giữa các ứng dụng
 • Dữ liệu chuyển động đầu được xử lý ngay trên thiết bị và không bao giờ rời khỏi điện thoại của bạn
-• Dữ liệu chuyển động của AirPods và Apple Watch luôn ở trên thiết bị
-• Bạn có thể dùng toàn bộ app mà không cần tạo tài khoản
 
-Posture+ là gói đăng ký tự động gia hạn với lựa chọn theo tháng và theo năm, cùng một lần mở khóa trọn đời. Các gói đăng ký có bản dùng thử miễn phí; sau khi hết thời gian dùng thử, gói sẽ gia hạn theo mức giá niêm yết trừ khi bị hủy. Bạn có thể quản lý hoặc hủy bất cứ lúc nào tại Cài đặt › Apple ID › Đăng ký. Khoản thanh toán sẽ được tính vào Apple ID của bạn khi xác nhận mua. Các gói đăng ký tự động gia hạn trừ khi được tắt ít nhất 24 giờ trước khi kết thúc kỳ hiện tại.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ là gói đăng ký tự động gia hạn với các tùy chọn theo tháng và theo năm, cùng với gói mở khóa trọn đời trả một lần. Có bản dùng thử miễn phí cho các gói đăng ký; sau thời gian dùng thử, gói sẽ tự động gia hạn theo giá đã niêm yết trừ khi bị hủy. Bạn có thể quản lý hoặc hủy bất cứ lúc nào trong Cài đặt › Apple ID › Các gói đăng ký. Khoản thanh toán sẽ được tính vào Apple ID của bạn khi xác nhận mua hàng. Các gói đăng ký sẽ tự động gia hạn trừ khi được tắt ít nhất 24 giờ trước khi kết thúc kỳ hiện tại.

@@ -1,40 +1,31 @@
-Stai drept, și chiar menține obiceiul.
+Stai drept, fără să te gândești măcar la asta.
 
-Posture este un coach de postură blând, care funcționează direct pe dispozitiv, pentru iPhone, AirPods și Apple Watch. În loc să te bată la cap toată ziua, te îndeamnă de câteva ori pe zi să faci o verificare rapidă a posturii. Menține o serie bună și privește cum crește obiceiul tău.
+Posture transformă AirPods-urile pe care le ai deja într-un antrenor de postură mereu activ. Pune-ți-le și Posture îți urmărește discret poziția capului toată ziua, aproximativ 25 de măsurători pe secundă, oferindu-ți un semnal blând chiar în momentul în care te aduni cu adevărat. Fără cameră îndreptată spre tine, fără un alt dispozitiv de cumpărat, fără nimic de reținut ca să verifici.
+
+Gata cu "tech neck" sau gâtul de la telefon. Fie că stai la birou, pe canapea sau lucrezi de acasă, Posture surprinde aplecarea chiar în momentul în care se întâmplă, când încă o mai poți corecta.
 
 CUM FUNCȚIONEAZĂ
-• Calibrează o dată. Așază-te așa cum vrei să stai, iar AirPods învață în câteva secunde postura ta personală de referință.
-• Alege-ți ritmul. Stabilește câte mementouri pe zi vrei și în ce ore să apară.
-• Atinge un memento. O verificare de 3 secunde prin AirPods citește poziția capului și îți spune dacă stai drept, dacă începi să te lași sau dacă te-ai cocoșat, sau pur și simplu indică manual cum stai.
-• Construiește seria. În fiecare zi în care răspunzi la mementouri, flacăra ta crește. Protecția freeze acoperă zilele libere.
+• Calibrează o singură dată. Stai drept în picioare, stai drept așezat, apoi apleacă-te intenționat. AirPods-urile tale îți învață intervalul personal în mai puțin de un minut.
+• Poartă-ți AirPods-urile ca de obicei. Posture monitorizează în fundal, chiar și cu telefonul în buzunar.
+• Simte semnalul. Dacă rămâi aplecat o vreme, primești o vibrație blândă. Îndreaptă-te și se oprește. Acesta este întregul obicei de format.
+• Urmărește-ți ziua completându-se. Fiecare minut monitorizat alimentează raportul tău zilnic: procentul din zi cu postură corectă, ritmul oră cu oră, cele mai bune perioade, aplecările surprinse.
 
-GRATUIT
-• Verificări rapide de postură în 3 secunde folosind senzorul de mișcare al AirPods
-• Verificări manuale pentru momentele în care nu ai AirPods în urechi
-• Postură personală de referință prin calibrare
-• Mementouri inteligente în orele tale active
-• Serii zilnice cu protecție freeze
-• Istoricul și tendințele posturii din ultimele 7 zile
-• Widgeturi pentru Lock Screen și Home Screen
+CE PRIMEȘTI
+• Monitorizare a posturii în fundal pe toată durata zilei, prin AirPods
+• Status live al posturii: aliniată, în derivă sau aplecată, în timp real
+• Un raport zilnic construit pe baza felului în care stai cu adevărat, nu pe verificări punctuale
+• Tendințe săptămânale: vezi în ce zile și ore postura ta se menține cel mai bine
+• Serii zilnice cu protecție de înghețare, fiecare zi monitorizată contează
+• Mementouri blânde în orele tale active, dacă le dorești
+• Aplicație companion pentru Apple Watch și widgeturi pentru ecranul de blocare
+• Un ghid pas cu pas care explică întregul proces într-un minut
 
-POSTURE+
-• Coaching discret prin AirPods în fundal toată ziua, un îndemn blând când începi să te cocoșezi, chiar și cu telefonul în buzunar
-• Aplicație companion pentru Apple Watch cu coaching în fundal
-• Istoricul complet al posturii, oră de oră, vezi exact când te lași
-• Monitorizare permanentă, setează și uită
-• Suport prioritar
+CE AIRPODS-URI FUNCȚIONEAZĂ
+Posture citește mișcarea capului de la AirPods Pro (generația 1 și 2), AirPods (generația 3), AirPods 4 cu anulare activă a zgomotului, sau AirPods Max. Nu ai AirPods compatibile? Poți înregistra manual verificările de postură și îți poți menține seria activă.
 
-CE AIRPODS FUNCȚIONEAZĂ
-Posture citește mișcarea capului de la AirPods Pro (generația 1 și 2), AirPods (generația 3), AirPods 4 cu Anulare Activă a Zgomotului sau AirPods Max. Nu ai AirPods la îndemână? Poți în continuare să-ți înregistrezi verificările manual și să-ți menții seria.
-
-CONFIDENȚIAL PRIN CONCEPȚIE
+CONFIDENȚIALITATE PRIN DESIGN
 • Fără conturi, fără înregistrare
-• Fără reclame și fără urmărirea activității tale între aplicații
-• Datele de mișcare a capului sunt procesate pe dispozitiv și nu părăsesc niciodată telefonul tău
-• Datele de mișcare de la AirPods și Apple Watch rămân pe dispozitiv
-• Poți folosi întreaga aplicație fără să creezi vreodată un cont
+• Fără reclame și fără urmărire între aplicații
+• Datele despre mișcarea capului sunt procesate pe dispozitiv și nu părăsesc niciodată telefonul tău
 
-Posture+ este un abonament cu reînnoire automată, cu opțiuni lunare și anuale, plus o deblocare pe viață cu plată unică. O perioadă de probă gratuită este disponibilă pentru planurile de abonament; după probă, se reînnoiește la prețul afișat dacă nu este anulat. Gestionează sau anulează oricând din Setări › Apple ID › Abonamente. Plata este percepută din contul tău Apple ID la confirmarea achiziției. Abonamentele se reînnoiesc automat dacă nu sunt dezactivate cu cel puțin 24 de ore înainte de sfârșitul perioadei curente.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ este un abonament cu reînnoire automată, cu opțiuni lunare și anuale, plus o deblocare pe viață cu plată unică. O perioadă de probă gratuită este disponibilă pentru planurile de abonament; după perioada de probă, se reînnoiește la prețul afișat, dacă nu este anulat. Gestionează sau anulează oricând din Setări › ID Apple › Abonamente. Plata este taxată pe ID-ul tău Apple la confirmarea achiziției. Abonamentele se reînnoiesc automat, dacă nu sunt dezactivate cu cel puțin 24 de ore înainte de sfârșitul perioadei curente.

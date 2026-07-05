@@ -1,40 +1,31 @@
-Duduk tegak, dan benar-benar pertahankannya.
+Duduk tegak, tanpa perlu memikirkannya.
 
-Posture ialah pelatih postur yang lembut dan berfungsi terus pada peranti anda, untuk iPhone, AirPods, dan Apple Watch. Daripada membebel sepanjang hari, ia hanya menyenggol anda beberapa kali sehari untuk pemeriksaan postur ringkas. Kekalkan streak yang baik dan saksikan tabiat anda berkembang.
+Posture menukar AirPods yang anda sudah miliki menjadi jurulatih postur yang sentiasa aktif. Pakai sahaja, dan Posture akan senyap-senyap memerhati kedudukan kepala anda sepanjang hari, kira-kira 25 bacaan sesaat, dan memberi anda isyarat lembut sebaik sahaja anda benar-benar bongkok. Tiada kamera yang menghala kepada anda, tiada peranti tambahan untuk dibeli, tiada apa yang perlu diingati untuk disemak.
+
+Tiada lagi "tech neck" atau leher tegang akibat telefon. Sama ada anda di meja kerja, di sofa, atau bekerja dari rumah, Posture menangkap postur bongkok sebaik sahaja ia berlaku, semasa anda masih boleh membetulkannya.
 
 CARA IA BERFUNGSI
-• Kalibrasi sekali sahaja. Duduk dengan cara yang anda mahu duduk, dan AirPods anda akan mempelajari garis dasar peribadi anda dalam beberapa saat.
-• Pilih rentak anda. Tetapkan berapa banyak peringatan setiap hari dan pada waktu mana anda mahu ia muncul.
-• Ketik peringatan. Pemeriksaan AirPods selama 3 saat membaca kedudukan kepala anda dan memberitahu sama ada anda tegak, mula merosot, atau sedang bongkok, atau sekadar beritahu kami cara anda duduk secara manual.
-• Bina streak. Setiap hari anda bertindak balas terhadap peringatan, api anda akan membesar. Perlindungan freeze menampung hari-hari rehat anda.
+• Tentukur sekali sahaja. Berdiri tegak, duduk tegak, kemudian bongkokkan badan dengan sengaja. AirPods anda akan mempelajari julat peribadi anda dalam masa kurang seminit.
+• Pakai AirPods anda seperti biasa. Posture memantau di latar belakang, walaupun telefon berada dalam poket anda.
+• Rasai isyarat itu. Jika anda kekal bongkok seketika, anda akan menerima getaran lembut. Tegakkan semula, dan getaran akan berhenti. Itulah keseluruhan tabiat yang perlu dibina.
+• Lihat hari anda dipenuhi. Setiap minit yang dipantau akan disumbangkan kepada laporan harian anda: peratusan hari dengan postur tegak, rentak setiap jam, tempoh terbaik, momen bongkok yang dikesan.
 
-PERINGKAT PERCUMA
-• Pemeriksaan postur ringkas selama 3 saat menggunakan penderia gerakan AirPods anda
-• Daftar masuk manual untuk waktu AirPods anda tiada di telinga
-• Garis dasar kalibrasi peribadi
-• Peringatan pintar sepanjang waktu aktif anda
-• Streak harian dengan perlindungan freeze
-• Sejarah dan trend postur 7 hari terakhir anda
-• Widget Lock Screen dan Home Screen
+APA YANG ANDA DAPAT
+• Pemantauan postur latar belakang sepanjang hari melalui AirPods
+• Status postur langsung: tegak, beralih, atau bongkok, secara masa nyata
+• Laporan harian berdasarkan kedudukan duduk sebenar anda, bukan pemeriksaan rawak
+• Trend mingguan: lihat pada hari dan waktu mana postur anda paling terjaga
+• Rentetan harian dengan perlindungan freeze, setiap hari yang dipantau dikira
+• Peringatan lembut sepanjang waktu aktif anda, jika anda mahukannya
+• Aplikasi pendamping Apple Watch dan widget skrin kunci
+• Panduan langkah demi langkah yang menerangkan keseluruhan proses dalam satu minit
 
-POSTURE+
-• Bimbingan AirPods latar belakang sepanjang hari yang senyap, senggolan lembut sebaik anda mula bongkok, walaupun telefon di dalam poket
-• App teman Apple Watch dengan bimbingan latar belakang
-• Sejarah postur penuh anda, jam demi jam, lihat dengan tepat bila anda mula merosot
-• Pemantauan sentiasa aktif, tetapkan sekali dan lupakan
-• Sokongan keutamaan
+AIRPODS MANA YANG BERFUNGSI
+Posture membaca pergerakan kepala daripada AirPods Pro (generasi ke-1 & ke-2), AirPods (generasi ke-3), AirPods 4 dengan Peredaman Bunyi Aktif, atau AirPods Max. Tiada AirPods yang serasi? Anda boleh merekod semakan postur secara manual dan mengekalkan rentetan harian anda.
 
-AIRPODS YANG BERFUNGSI
-Posture membaca gerakan kepala daripada AirPods Pro (generasi ke-1 & ke-2), AirPods (generasi ke-3), AirPods 4 dengan Active Noise Cancellation, atau AirPods Max. Tiada AirPods di tangan? Anda masih boleh mencatat daftar masuk secara manual dan mengekalkan streak anda.
-
-PRIVASI SEJAK REKAAN
+PRIVASI SEJAK REKA BENTUK
 • Tiada akaun, tiada pendaftaran
-• Tiada iklan dan tiada penjejakan aktiviti anda merentas aplikasi
-• Data gerakan kepala diproses pada peranti dan tidak pernah meninggalkan telefon anda
-• Data gerakan AirPods dan Apple Watch kekal pada peranti
-• Anda boleh menggunakan keseluruhan app tanpa perlu mencipta akaun
+• Tiada iklan dan tiada penjejakan merentas aplikasi
+• Data pergerakan kepala diproses pada peranti dan tidak pernah meninggalkan telefon anda
 
-Posture+ ialah langganan yang diperbaharui secara automatik dengan pilihan bulanan dan tahunan, serta buka kunci seumur hidup sekali bayar. Percubaan percuma tersedia pada pelan langganan; selepas percubaan, ia diperbaharui pada harga yang disenaraikan melainkan dibatalkan. Urus atau batalkan pada bila-bila masa di Tetapan › Apple ID › Langganan. Pembayaran dikenakan pada Apple ID anda apabila pembelian disahkan. Langganan diperbaharui secara automatik melainkan dimatikan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ ialah langganan pembaharuan automatik dengan pilihan bulanan dan tahunan, serta pembukaan seumur hidup sekali bayar. Percubaan percuma tersedia untuk pelan langganan; selepas tempoh percubaan, ia akan diperbaharui pada harga yang disenaraikan melainkan dibatalkan. Urus atau batalkan pada bila-bila masa di Tetapan › Apple ID › Langganan. Bayaran akan dicaj ke Apple ID anda semasa pengesahan pembelian. Langganan akan diperbaharui secara automatik melainkan dimatikan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa.

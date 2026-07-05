@@ -1,40 +1,31 @@
-Sid rankt, og hold fast i det.
+Sid oprejst, uden overhovedet at tænke over det.
 
-Posture er en nænsom holdningscoach på enheden til iPhone, AirPods og Apple Watch. I stedet for at brokke sig hele dagen giver den dig et lille puf et par gange om dagen til at tage et hurtigt holdningstjek. Hold din streak i gang, og se vanen vokse.
+Posture forvandler de AirPods, du allerede har, til en altid aktiv holdningscoach. Sæt dem i, og Posture holder stille øje med din hovedposition hele dagen, omkring 25 målinger i sekundet, og giver dig et blidt praj, lige så snart du for alvor synker sammen. Intet kamera rettet mod dig, ingen wearable at købe, ingen grund til at huske at tjekke.
 
-SÅDAN VIRKER DET
-• Kalibrer én gang. Sæt dig, som du gerne vil sidde, og dine AirPods lærer din personlige udgangsstilling på få sekunder.
-• Vælg din rytme. Bestem hvor mange påmindelser du vil have om dagen, og i hvilke timer de skal komme.
-• Tryk på en påmindelse. Et 3-sekunders AirPods-tjek aflæser din hovedstilling og fortæller dig, om du sidder rankt, er ved at synke sammen eller hænger helt, eller fortæl os selv, hvordan du sidder, med et tryk.
-• Byg din streak. Hver dag du svarer på dine påmindelser, vokser din flamme. Frysebeskyttelse dækker de dage, du springer over.
+Farvel til tech neck og tekstnakke. Uanset om du sidder ved skrivebordet, på sofaen eller arbejder hjemmefra, opdager Posture den dårlige holdning, mens den sker, mens du stadig kan rette den.
 
-GRATIS
-• Hurtige 3-sekunders holdningstjek med bevægelsessensoren i dine AirPods
-• Manuelle tjek-ind til de gange, dine AirPods ikke er i
-• Personlig kalibrering af din udgangsstilling
-• Smarte påmindelser i dine aktive timer
-• Daglige streaks med frysebeskyttelse
-• Dine seneste 7 dages holdningshistorik og tendenser
-• Widgets til Lock Screen og hjemmeskærmen
+SÅDAN FUNGERER DET
+• Kalibrér én gang. Stå oprejst, sid oprejst, og læn dig så bevidst ned i en dårlig holdning. Dine AirPods lærer dit personlige spænd på under et minut.
+• Bær dine AirPods som du plejer. Posture overvåger i baggrunden, selv med telefonen i lommen.
+• Mærk praj'et. Sidder du sammensunket et stykke tid, får du en blid vibration. Ret dig op, og den stopper. Det er hele vanen.
+• Se din dag blive fyldt ud. Hvert overvåget minut bliver en del af din daglige rapport: hvor stor en andel af dagen du var korrekt oprejst, time-for-time-rytme, bedste perioder, opfangede sammensynkninger.
 
-POSTURE+
-• Stille AirPods-coaching i baggrunden hele dagen, et nænsomt puf, når du begynder at synke sammen, selv med telefonen i lommen
-• Apple Watch-app med coaching i baggrunden
-• Hele din holdningshistorik, time for time, se præcis, hvornår du falder sammen
-• Altid-tændt overvågning, sæt det op, og glem alt om det
-• Prioriteret support
+HVAD DU FÅR
+• Heldags baggrundsovervågning af holdning via AirPods
+• Live holdningsstatus: oprejst, glidende eller sammensunket, i realtid
+• En daglig rapport bygget på, hvordan du faktisk sidder, ikke stikprøver
+• Ugentlige tendenser: se hvilke dage og timer din holdning holder bedst
+• Daglige stimer med frysebeskyttelse, hver overvåget dag tæller
+• Blide påmindelser i dine aktive timer, hvis du ønsker det
+• Apple Watch-companion-app og låseskærmswidgets
+• En guidet gennemgang, der lærer dig rutinen på et minut
 
 HVILKE AIRPODS VIRKER
-Posture aflæser hovedbevægelser fra AirPods Pro (1. og 2. generation), AirPods (3. generation), AirPods 4 med aktiv støjreduktion eller AirPods Max. Ingen AirPods ved hånden? Du kan stadig registrere tjek-ind manuelt og holde din streak i live.
+Posture læser hovedbevægelser fra AirPods Pro (1. og 2. generation), AirPods (3. generation), AirPods 4 med aktiv støjreduktion, eller AirPods Max. Har du ikke kompatible AirPods? Du kan logge holdningstjek manuelt og holde din stime i live.
 
-PRIVAT FRA BUNDEN
+PRIVATLIV FRA BUNDEN
 • Ingen konti, ingen tilmelding
-• Ingen reklamer og ingen sporing af din aktivitet på tværs af apps
-• Data om hovedbevægelser behandles på enheden og forlader aldrig din telefon
-• Bevægelsesdata fra AirPods og Apple Watch bliver på enheden
-• Du kan bruge hele appen uden nogensinde at oprette en konto
+• Ingen annoncer og ingen sporing på tværs af apps
+• Hovedbevægelsesdata behandles på enheden og forlader aldrig din telefon
 
-Posture+ er et abonnement med automatisk fornyelse med måneds- og årsmuligheder samt en engangsoplåsning på livstid. Der er en gratis prøveperiode på abonnementerne; efter prøveperioden fornyes det til den oplyste pris, medmindre det opsiges. Administrer eller opsig når som helst under Indstillinger › Apple ID › Abonnementer. Betalingen trækkes på dit Apple ID ved bekræftelse af købet. Abonnementer fornyes automatisk, medmindre de slås fra mindst 24 timer før udgangen af den aktuelle periode.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Posture+ er et abonnement med automatisk fornyelse med månedlige og årlige muligheder samt en engangs livstidsoplåsning. En gratis prøveperiode er tilgængelig på abonnementsplanerne; efter prøveperioden fornyes det til den angivne pris, medmindre det opsiges. Administrer eller opsig når som helst under Indstillinger › Apple ID › Abonnementer. Betalingen trækkes på dit Apple ID ved bekræftelse af købet. Abonnementer fornyes automatisk, medmindre de slås fra mindst 24 timer før udgangen af den aktuelle periode.
