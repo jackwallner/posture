@@ -102,7 +102,7 @@ struct PaywallView: View {
                     selectDefaultPackageIfNeeded()
                 }
             }
-            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+            .font(Theme.font(.subheadline, weight: .semibold))
             .foregroundStyle(Theme.sage)
             Spacer()
             legalFooter

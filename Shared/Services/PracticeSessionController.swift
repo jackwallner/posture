@@ -137,7 +137,7 @@ final class PracticeSessionController {
     // Live Activity: countdown + current alignment in the Dynamic Island
     // while the user switches apps. The countdown renders off `endDate`, so
     // only quality flips and pauses need pushes. We keep the id, not the
-    // `Activity` object — it isn't Sendable, and each push looks it up
+    // `Activity` object - it isn't Sendable, and each push looks it up
     // fresh inside its own task region.
     private var liveActivityID: String?
     private var lastActivityQuality: PostureQuality = .good
