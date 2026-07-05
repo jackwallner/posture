@@ -131,6 +131,83 @@ enum PostureScoring {
         return aggregateDeviation(samples: recent.map(\.pitch), baseline: baseline)
     }
 
+    // MARK: - Chin-tuck reps
+
+    /// Guided chin-tuck warm-up at the start of a practice session. Constants
+    /// are the tuning knobs for `ChinTuckRepDetector`.
+    enum ChinTuck {
+        /// Pitch excursion from baseline that counts as a real retraction (~4.5°).
+        static let minExcursionRadians: Double = 0.08
+        /// Back within this of baseline counts as "returned" (~2.3°).
+        static let returnToleranceRadians: Double = 0.04
+        /// Cycles faster than this are fidgeting, not a rep.
+        static let minRepDurationSeconds: Double = 0.8
+        /// Cycles longer than this are a stuck hold, not a rep.
+        static let maxRepDurationSeconds: Double = 6.0
+        /// Reps per practice warm-up.
+        static let defaultRepsTarget: Int = 5
+        /// Smoothing for the rep stream (matches the practice EMA).
+        static let smoothingAlpha: Double = 0.15
+    }
+}
+
+/// Stateful chin-tuck cycle detector. Feed it every (t, pitch) sample with the
+/// calibrated baseline; it returns 1 when a full retract-and-return cycle
+/// completes, 0 otherwise. Direction-agnostic: the first excursion past the
+/// threshold latches the rep's direction, so AirPods pitch-sign differences
+/// across models can't break counting, and oscillation through the baseline
+/// can't double-count.
+struct ChinTuckRepDetector: Sendable {
+    private enum State { case neutral, excursion }
+
+    private var state: State = .neutral
+    private var excursionStartedAt: TimeInterval?
+    private var excursionSign: Double = 0
+    private var smoothed: Double?
+
+    init() {}
+
+    /// Ingest one sample. Returns the number of newly completed reps (0 or 1).
+    mutating func ingest(t: TimeInterval, pitch: Double, baseline: Double) -> Int {
+        smoothed = PostureScoring.smoothed(
+            previous: smoothed, sample: pitch, alpha: PostureScoring.ChinTuck.smoothingAlpha
+        )
+        let deviation = (smoothed ?? pitch) - baseline
+
+        switch state {
+        case .neutral:
+            if abs(deviation) >= PostureScoring.ChinTuck.minExcursionRadians {
+                state = .excursion
+                excursionStartedAt = t
+                excursionSign = deviation > 0 ? 1 : -1
+            }
+            return 0
+        case .excursion:
+            guard let started = excursionStartedAt else {
+                state = .neutral
+                return 0
+            }
+            let elapsed = t - started
+            if elapsed > PostureScoring.ChinTuck.maxRepDurationSeconds {
+                // Stuck out there — treat as a new neutral once they return.
+                if abs(deviation) <= PostureScoring.ChinTuck.returnToleranceRadians {
+                    state = .neutral
+                    excursionStartedAt = nil
+                }
+                return 0
+            }
+            if abs(deviation) <= PostureScoring.ChinTuck.returnToleranceRadians {
+                state = .neutral
+                excursionStartedAt = nil
+                // Too quick to be a deliberate rep — ignore the cycle.
+                return elapsed >= PostureScoring.ChinTuck.minRepDurationSeconds ? 1 : 0
+            }
+            return 0
+        }
+    }
+}
+
+extension PostureScoring {
     // MARK: - Baseline confidence
 
     /// Sample spread (population standard deviation, radians). Our proxy for how

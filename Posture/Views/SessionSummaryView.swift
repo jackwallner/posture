@@ -121,7 +121,11 @@ struct SessionSummaryView: View {
                             text: "Target met. That counts toward Level \(result.newLevel + 1).")
             } else if result.completed {
                 receiptLine(icon: "circle.dashed", color: Theme.ink3,
-                            text: "Finished, under target. Streak safe — the level waits for a taller day.")
+                            text: "Finished, under target. Streak safe. The level waits for a taller day.")
+            }
+            ForEach(result.newAchievementTitles, id: \.self) { title in
+                receiptLine(icon: "rosette", color: Theme.lavender,
+                            text: "New badge: \(title)")
             }
         }
     }

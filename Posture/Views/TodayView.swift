@@ -15,8 +15,7 @@ struct TodayView: View {
     @State private var showingLevelPaywall = false
     @State private var showingWalk = false
     @State private var showingWalkPaywall = false
-    @State private var tourActive = false
-    @State private var tourIndex = 0
+    @State private var showingAchievements = false
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
@@ -134,19 +133,10 @@ struct TodayView: View {
             }
             .dawnBackground()
             .navigationBarHidden(true)
-            .trainingTourOverlay(
-                steps: Self.tourSteps,
-                index: $tourIndex,
-                isActive: tourActive,
-                liveQuality: liveMonitor?.currentQuality,
-                onFinish: {
-                    tourActive = false
-                    settings.hasSeenTrainingTour = true
-                }
-            )
-            .onReceive(NotificationCenter.default.publisher(for: .postureReplayTrainingTour)) { _ in
-                tourIndex = 0
-                tourActive = true
+            // Settings' "Replay practice coach marks" resets the flag and
+            // relaunches a session so the marks run again.
+            .onReceive(NotificationCenter.default.publisher(for: .postureReplaySessionCoachMarks)) { _ in
+                showingSession = true
             }
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
@@ -168,6 +158,9 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showingLevelPaywall) {
                 PaywallView(paywallImpressionId: "posture_level_gate")
+            }
+            .sheet(isPresented: $showingAchievements) {
+                AchievementsView()
             }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
@@ -244,38 +237,13 @@ struct TodayView: View {
     /// product, so the manual check-in is demoted to a tiny link.
     private var isAirpodsUser: Bool { settings.hasAirpods == true }
 
-    // MARK: - AirPods (monitoring-first) content
-
-    /// Tour copy. Step 3 is the live one — its body swaps to a success state
-    /// the moment the monitor reads `.bad`.
-    static let tourSteps: [TrainingTourStep] = [
-        TrainingTourStep(
-            anchorID: "tour.hero",
-            title: "This is your posture, live.",
-            body: "With AirPods in, this card reads your head position about 25 times a second. Green means aligned, amber means drifting, coral means slouching."
-        ),
-        TrainingTourStep(
-            anchorID: "tour.rhythm",
-            title: "Your day writes itself.",
-            body: "Every monitored minute lands here. By tonight you'll see the % of your day you sat tall, and which hours slipped."
-        ),
-        TrainingTourStep(
-            anchorID: nil,
-            title: "Now slouch. On purpose.",
-            body: "Really let go — chin toward your chest, shoulders forward. Hold it for a few seconds and watch the card above flip.",
-            isLiveSlouchStep: true
-        ),
-        TrainingTourStep(
-            anchorID: nil,
-            title: "That's the whole habit.",
-            body: "Keep your AirPods in while you work and Posture handles the rest: quiet nudges when you slouch, a streak for every monitored day. Aim for a few hours a day."
-        ),
-    ]
+    // MARK: - AirPods (practice-first) content
 
     @ViewBuilder
     private var airpodsTodayContent: some View {
         practiceHero
-            .trainingTourAnchor("tour.hero")
+
+        achievementsRow
 
         walkCard
 
@@ -735,7 +703,51 @@ struct TodayView: View {
 
     private var todayReportCard: some View {
         PassiveTimelineView()
-            .trainingTourAnchor("tour.rhythm")
+    }
+
+    // MARK: - Achievements teaser
+
+    /// Compact badge strip: the latest earned badge or the next one worth
+    /// chasing. Tap for the full badge wall.
+    private var achievementsRow: some View {
+        let latest = AchievementCatalog.all(streak: streaks.first, sessions: sessions)
+            .filter(\.isEarned)
+            .max { ($0.earnedAt ?? .distantPast) < ($1.earnedAt ?? .distantPast) }
+        let next = AchievementCatalog.nextUp(streak: streaks.first, sessions: sessions)
+        return Button { showingAchievements = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: latest?.systemImage ?? "rosette")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Theme.lavender)
+                    .frame(width: 32, height: 32)
+                    .background(Theme.lavenderTint, in: Circle())
+                VStack(alignment: .leading, spacing: 1) {
+                    if let latest {
+                        Text("Latest badge: \(latest.title)")
+                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .foregroundStyle(Theme.ink)
+                    } else {
+                        Text("Badges")
+                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .foregroundStyle(Theme.ink)
+                    }
+                    if let next {
+                        Text("Next up: \(next.title)")
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(Theme.ink3)
+                    }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .dawnCard(cornerRadius: 16)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Badges. Tap to see all badges.")
     }
 
     private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {

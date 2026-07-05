@@ -38,7 +38,7 @@ struct WalkSessionView: View {
     private var isLive: Bool {
         guard let phase = controller?.phase else { return false }
         switch phase {
-        case .running, .waiting, .paused: return true
+        case .running, .waiting, .paused, .reps: return true
         case .idle, .finished: return false
         }
     }
@@ -48,7 +48,9 @@ struct WalkSessionView: View {
         switch controller.phase {
         case .idle:
             preStartView(controller)
-        case .waiting, .running, .paused:
+        // Walks never do the chin-tuck warm-up; .reps is unreachable here
+        // but the switch must cover it.
+        case .waiting, .running, .paused, .reps:
             liveView(controller)
         case .finished:
             if let result = controller.result {

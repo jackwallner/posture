@@ -26,6 +26,8 @@ final class PracticeSessionController {
 
     enum Phase: Equatable {
         case idle
+        /// Guided chin-tuck warm-up reps before the timed hold (practice only).
+        case reps
         /// Armed, waiting for the first scored AirPods sample.
         case waiting
         case running
@@ -38,6 +40,12 @@ final class PracticeSessionController {
         let targetSeconds: Int
         let targetPercent: Int
         let level: Int
+        /// Chin-tuck warm-up reps before the hold. 0 skips the warm-up
+        /// (walks always pass 0).
+        var repsTarget: Int = 0
+        /// False for custom-length sessions that shouldn't advance the level
+        /// ladder — they still credit the streak.
+        var countsForLevel: Bool = true
     }
 
     struct Result: Sendable {
@@ -55,6 +63,8 @@ final class PracticeSessionController {
         let newLevel: Int
         let leveledUp: Bool
         let streakDays: Int
+        /// Titles of badges this session newly earned, for the summary line.
+        let newAchievementTitles: [String]
     }
 
     // MARK: - Observable state
@@ -65,6 +75,11 @@ final class PracticeSessionController {
     private(set) var result: Result?
     private(set) var config: Config?
     private(set) var lastError: String?
+
+    /// Chin-tuck warm-up progress (only meaningful while `phase == .reps`).
+    private(set) var repsCompleted = 0
+    var repsTarget: Int { config?.repsTarget ?? 0 }
+    private var repDetector = ChinTuckRepDetector()
 
     var remainingSeconds: Int {
         guard let config else { return 0 }
@@ -171,7 +186,8 @@ final class PracticeSessionController {
             kind: .practice,
             targetSeconds: PracticeProgression.sessionSeconds(forLevel: level),
             targetPercent: PracticeProgression.targetPercent(forLevel: level),
-            level: level
+            level: level,
+            repsTarget: PostureScoring.ChinTuck.defaultRepsTarget
         )
     }
 
@@ -200,6 +216,8 @@ final class PracticeSessionController {
         walkSamples = []
         lastWalkVerdictAt = 0
         currentQuality = .good
+        repsCompleted = 0
+        repDetector = ChinTuckRepDetector()
         if config.kind == .walk {
             segmentLength = 60
             slouchNudgeSeconds = PostureScoring.Walk.nudgeSustainSeconds
@@ -209,7 +227,7 @@ final class PracticeSessionController {
             slouchNudgeSeconds = 15
             hapticDebounceSeconds = 20
         }
-        phase = .waiting
+        phase = (config.kind == .practice && config.repsTarget > 0) ? .reps : .waiting
 
         // Take exclusive ownership of the head-motion stream — iOS starves a
         // second CMHeadphoneMotionManager while the monitor's is live.
@@ -274,6 +292,9 @@ final class PracticeSessionController {
     /// Internal (not private) so tests can drive synthetic streams.
     func ingest(pitch: Double, at now: Date) {
         switch phase {
+        case .reps:
+            ingestRep(pitch: pitch, at: now)
+            return
         case .waiting, .paused(.airpodsOut):
             phase = .running
         case .running:
@@ -330,6 +351,46 @@ final class PracticeSessionController {
             finish(completed: true)
         }
     }
+
+    /// Chin-tuck warm-up: count retract-and-return cycles against the
+    /// standing baseline. No session time or scoring accrues here — the
+    /// clock starts with the hold.
+    private func ingestRep(pitch: Double, at now: Date) {
+        guard let calibration = calibrationService.current(),
+              let baseline = calibration.airpodsStandingPitch ?? calibration.airpodsPitch else { return }
+        let counted = repDetector.ingest(
+            t: now.timeIntervalSinceReferenceDate, pitch: pitch, baseline: baseline
+        )
+        guard counted > 0 else { return }
+        repsCompleted += counted
+        AudioServicesPlaySystemSound(1519)
+        if repsCompleted >= repsTarget {
+            // Hand off to the hold; the next scored sample flips to .running.
+            AnalyticsService.chinTuckWarmupCompleted(reps: repsCompleted)
+            smoothedPitch = nil
+            phase = .waiting
+        }
+    }
+
+    /// Escape hatch for a warm-up that isn't detecting (bad fit, odd pitch
+    /// response) — jump straight to the hold.
+    func skipReps() {
+        guard phase == .reps else { return }
+        smoothedPitch = nil
+        phase = .waiting
+    }
+
+    #if DEBUG
+    /// Manual rep advance for simulator work — no motion stream there.
+    func debugCountRep() {
+        guard phase == .reps else { return }
+        repsCompleted += 1
+        if repsCompleted >= repsTarget {
+            smoothedPitch = nil
+            phase = .waiting
+        }
+    }
+    #endif
 
     /// Walk verdict: median head pitch over the rolling window, judged
     /// against the standing baseline with relaxed thresholds. Recomputes at
@@ -409,12 +470,19 @@ final class PracticeSessionController {
         let alignedPercent = PostureScoring.sessionScore(
             goodSeconds: good, borderlineSeconds: borderline, badSeconds: bad
         )
-        // `passed` means level credit, which only practice can earn.
-        let passed = config.kind == .practice && completed
+        // `passed` means level credit, which only practice can earn — and
+        // only at the ladder's own duration (custom lengths are streak-only).
+        let passed = config.kind == .practice && completed && config.countsForLevel
             && alignedPercent >= config.targetPercent
 
         let passedBefore = Self.passedPracticeCount(context: context)
         let levelBefore = PracticeProgression.level(passedSessions: passedBefore)
+
+        // Snapshot the badge set before this session lands, so the summary
+        // can celebrate anything newly earned.
+        let sessionsBefore = (try? context.fetch(FetchDescriptor<PostureSession>())) ?? []
+        let streakBefore = try? context.fetch(FetchDescriptor<StreakState>()).first
+        let earnedBefore = AchievementCatalog.earnedIDs(streak: streakBefore, sessions: sessionsBefore)
 
         let row = PostureSession(
             durationSeconds: Int(elapsedSeconds.rounded()),
@@ -441,10 +509,15 @@ final class PracticeSessionController {
         }
 
         // Walks never advance the practice level.
-        let countsForLevel = config.kind == .practice && passed
         let newLevel = PracticeProgression.level(
-            passedSessions: passedBefore + (countsForLevel ? 1 : 0)
+            passedSessions: passedBefore + (passed ? 1 : 0)
         )
+
+        let sessionsAfter = (try? context.fetch(FetchDescriptor<PostureSession>())) ?? []
+        let streakAfter = try? context.fetch(FetchDescriptor<StreakState>()).first
+        let newAchievements = AchievementCatalog.all(streak: streakAfter, sessions: sessionsAfter)
+            .filter { $0.isEarned && !earnedBefore.contains($0.id) }
+            .map(\.title)
 
         result = Result(
             kind: config.kind,
@@ -458,7 +531,8 @@ final class PracticeSessionController {
             level: config.level,
             newLevel: newLevel,
             leveledUp: newLevel > levelBefore,
-            streakDays: streakDays
+            streakDays: streakDays,
+            newAchievementTitles: newAchievements
         )
         phase = .finished
         AnalyticsService.sessionCompleted(

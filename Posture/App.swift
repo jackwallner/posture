@@ -318,9 +318,10 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .posturePositiveMomentForReview)) { _ in
             scheduleReviewPromptAfterPositiveMoment()
         }
-        // Settings' "Replay the Walkthrough" — the tour lives on Today, so
-        // switch there; TodayView receives the same notification and starts it.
-        .onReceive(NotificationCenter.default.publisher(for: .postureReplayTrainingTour)) { _ in
+        // Settings' "Replay practice coach marks" — the session opens from
+        // Today, so switch there; TodayView receives the same notification
+        // and presents the session.
+        .onReceive(NotificationCenter.default.publisher(for: .postureReplaySessionCoachMarks)) { _ in
             selectedTab = 0
         }
         .onChange(of: selectedTab) { _, tab in

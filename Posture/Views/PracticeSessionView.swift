@@ -16,6 +16,7 @@ struct PracticeSessionView: View {
     @State private var showingEndConfirm = false
     @State private var coachStep: CoachStep? = nil
     @State private var coachSlouchFelt = false
+    @State private var showRepsSkip = false
 
     private enum CoachStep: Int {
         case ring, slouch, hold
@@ -48,7 +49,7 @@ struct PracticeSessionView: View {
     private var isLive: Bool {
         guard let phase = controller?.phase else { return false }
         switch phase {
-        case .running, .waiting, .paused: return true
+        case .running, .waiting, .paused, .reps: return true
         case .idle, .finished: return false
         }
     }
@@ -58,6 +59,8 @@ struct PracticeSessionView: View {
         switch controller.phase {
         case .idle:
             preStartView(controller)
+        case .reps:
+            repsView(controller)
         case .waiting, .running, .paused:
             liveView(controller)
         case .finished:
@@ -87,7 +90,7 @@ struct PracticeSessionView: View {
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
 
-            Text("Sit or stand tall for \(minutesLabel(config.targetSeconds)) with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
+            Text("A quick chin-tuck warm-up, then \(minutesLabel(config.targetSeconds)) held tall with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(3)
@@ -110,9 +113,6 @@ struct PracticeSessionView: View {
 
             Button {
                 controller.start(config: config)
-                if !settings.hasSeenSessionCoachMarks {
-                    coachStep = .ring
-                }
             } label: {
                 Text("Begin")
                     .frame(maxWidth: .infinity)
@@ -123,6 +123,114 @@ struct PracticeSessionView: View {
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
+    }
+
+    // MARK: - Chin-tuck warm-up
+
+    private func repsView(_ controller: PracticeSessionController) -> some View {
+        let done = controller.repsCompleted
+        let target = max(controller.repsTarget, 1)
+        return VStack(spacing: 0) {
+            HStack {
+                warmupChip
+                Spacer()
+                Button {
+                    controller.cancel()
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(Theme.ink3)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("End session")
+            }
+            .padding(.top, 16)
+
+            Spacer()
+
+            ZStack {
+                Circle()
+                    .stroke(Theme.ringTrack, lineWidth: 10)
+                Circle()
+                    .trim(from: 0, to: Double(done) / Double(target))
+                    .stroke(Theme.lavender, style: .init(lineWidth: 10, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeOut(duration: 0.4), value: done)
+                VStack(spacing: 6) {
+                    Text("\(done)")
+                        .font(.system(size: 64, weight: .regular, design: .rounded))
+                        .foregroundStyle(Theme.ink)
+                        .contentTransition(.numericText())
+                        .animation(.easeOut(duration: 0.2), value: done)
+                    Text("of \(target) reps")
+                        .font(Theme.display(19))
+                        .foregroundStyle(Theme.lavender)
+                }
+            }
+            .frame(width: 240, height: 240)
+            .accessibilityLabel("\(done) of \(target) chin tucks done")
+
+            VStack(spacing: 10) {
+                Text("Warm up your neck.")
+                    .font(Theme.display(24))
+                    .foregroundStyle(Theme.ink)
+                Text(controller.isAirpodsConnected
+                     ? "Gently draw your chin straight back, like a small double chin, then return to level. Slow and easy."
+                     : "Pop your AirPods in to begin. Reps count from your first reading.")
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(Theme.ink2)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+            .padding(.top, 26)
+
+            Spacer()
+
+            if showRepsSkip {
+                Button {
+                    AnalyticsService.chinTuckWarmupSkipped(repsCompleted: done)
+                    controller.skipReps()
+                } label: {
+                    Text("Skip the warm-up")
+                }
+                .buttonStyle(.daylight(.ghost))
+                .padding(.bottom, 8)
+            }
+            #if DEBUG
+            Button { controller.debugCountRep() } label: {
+                Text("Done with this rep (debug)")
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 20)
+            #else
+            Color.clear.frame(height: 20)
+            #endif
+        }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .dawnBackground()
+        .task {
+            // If detection isn't landing (odd AirPods pitch response, wrong
+            // fit), never dead-end the session behind the warm-up.
+            try? await Task.sleep(nanoseconds: 25_000_000_000)
+            if controller.phase == .reps { withAnimation { showRepsSkip = true } }
+        }
+    }
+
+    private var warmupChip: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "figure.flexibility")
+                .font(.system(size: 11, weight: .semibold))
+            Text("Warm-up")
+                .font(.system(.footnote, design: .rounded).weight(.semibold))
+        }
+        .foregroundStyle(Theme.lavender)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Theme.lavenderTint, in: .capsule)
     }
 
     // MARK: - Live
@@ -191,6 +299,12 @@ struct PracticeSessionView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .dawnBackground()
+        .onAppear {
+            // First session: the coach marks teach the hold, after the warm-up.
+            if !settings.hasSeenSessionCoachMarks, coachStep == nil {
+                coachStep = .ring
+            }
+        }
         .onChange(of: quality) { _, newQuality in
             if coachStep == .slouch, newQuality == .bad {
                 withAnimation { coachSlouchFelt = true }

@@ -35,6 +35,14 @@ enum AnalyticsService {
         track("session_cancelled")
     }
 
+    static func chinTuckWarmupCompleted(reps: Int) {
+        track("chin_tuck_reps_completed", properties: ["reps": reps])
+    }
+
+    static func chinTuckWarmupSkipped(repsCompleted: Int) {
+        track("chin_tuck_warmup_skipped", properties: ["reps": repsCompleted])
+    }
+
     static func calibrateStarted(mode: String) {
         track("calibrate_started", properties: ["mode": mode])
     }

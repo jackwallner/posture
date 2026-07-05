@@ -164,10 +164,12 @@ struct SettingsView: View {
 
                 Section("Help") {
                     Button {
-                        // MainTabView flips to the Today tab; TodayView starts the tour.
-                        NotificationCenter.default.post(name: .postureReplayTrainingTour, object: nil)
+                        // Reset the one-shot, then let Today open a session —
+                        // the coach marks run on the next live hold.
+                        settings.hasSeenSessionCoachMarks = false
+                        NotificationCenter.default.post(name: .postureReplaySessionCoachMarks, object: nil)
                     } label: {
-                        Label("Replay the Walkthrough", systemImage: "sparkles")
+                        Label("Replay practice coach marks", systemImage: "sparkles")
                     }
                     .foregroundStyle(Theme.ink)
 
