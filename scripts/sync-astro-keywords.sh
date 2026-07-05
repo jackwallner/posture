@@ -41,7 +41,6 @@ result = add_keywords(
     app_id,
     store,
     keywords,
-    app_name=astro_app_name or None,
 )
 for i, batch in enumerate(result["batches"]):
     if isinstance(batch, dict):

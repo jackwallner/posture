@@ -1,66 +1,61 @@
-# Astro ASO setup — Posture Check (US)
+# Astro ASO setup — Posture
 
-Last optimized: **2026-06-09** (v3 final) · Astro temp app **Posture** (`104`)
+Last optimized: **2026-07-04** · Astro temp app **Posture** (`104`) · ASC `6768514450`
 
-## Strategy (v3 — indie-winnable)
+## Astro scope (normal setup — not 91 stores)
 
-We compound name/subtitle terms with high-pop ASC field tokens. Apple indexes all three fields together, so every field token + name/subtitle word forms a searchable phrase for free.
+**Do not run `astro-sync-all-stores.sh` / `astro-finish-sync.py` for Posture.** Those scripts are for the one-off `astro-global-aso-go-2026.md` pipeline (Headaches ran it once). Day-to-day Astro for Jack's live apps uses:
 
-**Name** (28/30): `Posture Check - Active Daily`
-**Subtitle** (29/30): `Neck, desk & slouch coach`
+| Pattern | Stores | How |
+|---------|--------|-----|
+| **Standard (Headache, Vitals, Fitness Habits, …)** | **36** tier-1 Search Ads countries | Curated keyword list + `sync-astro-keywords.sh` per store |
+| **Posture (pre-launch temp app)** | **18** stores already in Astro | Same curated-list workflow; expand to 36 when swapping to live App Store ID |
 
-**Auto-indexed (free):** `posture`, `check`, `active`, `daily`, `neck`, `desk`, `slouch`, `coach`
+Re-sync US keywords after ASC field changes:
 
+```bash
+./scripts/sync-astro-keywords.sh
+```
+
+Full re-setup (pull ASC + rebuild keyword file + push):
+
+```bash
+./scripts/astro-setup.sh
+```
+
+## Strategy (monitoring-first, v4)
+
+Product positioning: always-on AirPods background monitoring, hard paywall after calibration.
+
+**Name** (26/30): `Posture Check: Neck & Back`  
+**Subtitle** (28/30): `Fix slouch & sit up straight`  
 **ASC keyword field** (94/100):
+
 ```
-reminder,habit,scan,health,body,back,care,spine,align,tracker,streak,airpods,watch,widget,text
+corrector,reminder,spine,align,stretch,ergonomic,monitor,hunch,desk,stand,health,habit,airpods,watch
 ```
 
-(`wellness` — pop 9 / diff 72, low-volume and unwinnable — and `fit` — untracked,
-no data — were dropped in favor of `align` and `text`. `streak` kept: it unlocks
-streak tracker (30/60) and streak app (9/54) via the `tracker` token. Applied to
-en-US, en-AU, en-CA, en-GB.)
+**Auto-indexed from name/subtitle:** `posture`, `airpods`, `coach`, `always`, `on`, `slouch`, `alerts`
 
-**Why each token earns its slot:**
-
-| Token | Pop | Diff | Standalone | Unlocked compounds |
-|-------|-----|------|-----------|-------------------|
-| `reminder` | 55 | 77 | ✅ High | posture reminder(16), daily reminder(9) |
-| `habit` | 60 | 70 | ✅ High | habit tracker(67), habit builder(17) |
-| `airpods` | 57 | 73 | ✅ High | airpods posture, airpods app(26) |
-| `watch` | 66 | 64 | ✅ High | apple watch(73), watch app(44) |
-| `back` | 20 | 61 | ✅ Medium | back posture, back care |
-| `scan` | 63 | 88 | ✅ High | posture scan(6), body scan(8) |
-| `tracker` | 52 | 81 | ✅ High | habit tracker(67), calorie tracker(74) |
-| `text` | 74 | 80 | ✅ High | text neck |
-| `widget` | 70 | 83 | ✅ High | posture widget |
-| `health` | 68 | 74 | ✅ High | daily health(21), health check(21), health coach(6) |
-| `body` | 53 | 70 | ✅ High | body scan(8), body tracker(17), body alignment(16) |
-| `care` | 54 | 70 | ✅ High | back care, neck care, self care(36) |
-| `wellness` | 9 | 72 | ✅ Low | wellness coach(12), wellness app(19) |
-| `spine` | 17 | 19 | ✅ Low | spine health, spine alignment |
-| `align` | 9 | 39 | ✅ Low | body alignment(16), align posture |
-
-**Pop=5 keywords removed from Astro tracking:** 218 keywords pruned (slouch, tech neck, text neck, back straight, etc.). Only pop≥6 keywords tracked.
-
-**Keywords NOT chased (and why):**
-- `habit tracker` alone (pop 67, diff 68) — dominated by InnerGrow (141K reviews), but we index it via `habit` + `tracker` field tokens
-- `streak` (pop 7) — dropped from field, unlocks only streak tracker(30) via `tracker` compound
-- `posture` alone (pop 18, diff 42) — already in name, 232 competing apps
+**Why `monitor` replaced `text`:** ASC field pivoted from text-neck / reminder-check-in copy to always-on monitoring. Astro still tracks compound phrases (`text neck`, `posture reminder`) for rank research, but the ASC field no longer wastes chars on `text`.
 
 ## Iterate
 
 ```bash
-# Re-score tracked keywords
-PYTHONPATH=scripts python3 scripts/astro-optimize-keywords.py --analyze
-
-# Re-sync curated keyword file
+# Re-push curated list to Astro (US)
 ./scripts/sync-astro-keywords.sh
+
+# Re-score tracked keywords (if script present)
+PYTHONPATH=scripts python3 scripts/astro-optimize-keywords.py --analyze
 ```
 
 ## After App Store launch
 
-1. Add **Posture Check - Active Daily** in Astro by ID `6768514450`
-2. Re-run optimizer
-3. Retire temp **Posture** entry
-4. Watch **posture reminder** (pop 16, diff 23) and **daily health** (pop 21, diff 57) first
+1. Add **Posture: AirPods Posture Coach** in Astro by ID `6768514450`
+2. Copy keyword sets to the standard **36-store** list (same as Headache / Total Calories)
+3. Retire temp **Posture** (`104`)
+4. Watch **airpods posture**, **posture monitor**, **slouch** first
+
+## Optional: full global ASO pass
+
+Only when explicitly asked to run `astro-global-aso-go-2026.md` **go** — optimizes all 50 ASC locales + 91 Astro Search Ads countries. Not the default workflow.
