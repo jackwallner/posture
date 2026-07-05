@@ -13,6 +13,8 @@ struct TodayView: View {
     @State private var showingMonitorLog = false
     @State private var showingSession = false
     @State private var showingLevelPaywall = false
+    @State private var showingWalk = false
+    @State private var showingWalkPaywall = false
     @State private var tourActive = false
     @State private var tourIndex = 0
     @State private var nextReminderText = "–"
@@ -152,6 +154,12 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
             }
+            .fullScreenCover(isPresented: $showingWalk) {
+                WalkSessionView()
+            }
+            .sheet(isPresented: $showingWalkPaywall) {
+                PaywallView(paywallImpressionId: "posture_walk_gate")
+            }
             .sheet(isPresented: $showingRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
             }
@@ -268,6 +276,8 @@ struct TodayView: View {
     private var airpodsTodayContent: some View {
         practiceHero
             .trainingTourAnchor("tour.hero")
+
+        walkCard
 
         // One-time explainer for users who learned the old monitoring-first
         // loop: the streak now comes from the daily practice.
@@ -389,6 +399,48 @@ struct TodayView: View {
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .dawnCard()
+    }
+
+    /// Walk mode entry (Pro). Free users see it locked — tapping opens the
+    /// walk paywall, so the feature sells itself.
+    private var walkCard: some View {
+        Button {
+            if subscriptions.isProSubscriber {
+                showingWalk = true
+            } else {
+                showingWalkPaywall = true
+            }
+        } label: {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Theme.sageTint)
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "figure.walk")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(Theme.sage)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Take it for a walk")
+                        .font(.system(.body, design: .rounded).weight(.semibold))
+                        .foregroundStyle(Theme.ink)
+                    Text("See how tall you carry yourself out there.")
+                        .font(.system(.footnote, design: .rounded))
+                        .foregroundStyle(Theme.ink2)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: subscriptions.isProSubscriber ? "chevron.right" : "lock.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .dawnCard()
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(subscriptions.isProSubscriber
+            ? "Start a posture walk"
+            : "Posture walks, a Posture plus feature")
     }
 
     private var levelBadge: some View {

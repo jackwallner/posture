@@ -41,13 +41,15 @@ final class PracticeSessionController {
     }
 
     struct Result: Sendable {
+        let kind: PostureSessionKind
         let alignedPercent: Int
         let completed: Bool
         let passed: Bool
         let goodSeconds: Int
         let borderlineSeconds: Int
         let badSeconds: Int
-        /// Aligned fraction per 10-second segment, for the summary strip.
+        /// Aligned fraction per segment (10s for practice, 60s for walks),
+        /// for the summary strip.
         let timeline: [Double]
         let level: Int
         let newLevel: Int
@@ -90,19 +92,25 @@ final class PracticeSessionController {
     private var badSeconds: Double = 0
     private var minuteBucket = MinuteBucket()
 
-    // Per-10s timeline for the summary strip.
+    // Segment timeline for the summary strip (10s practice, 60s walk —
+    // a 30-min walk at 10s segments would be an unreadable 180 bars).
     private var timeline: [Double] = []
     private var segmentSeconds: Double = 0
     private var segmentAligned: Double = 0
-    private static let segmentLength: Double = 10
+    private var segmentLength: Double = 10
 
     // In-session slouch nudge: tighter than the all-day monitor — the whole
-    // point of practice is immediate feedback.
+    // point of practice is immediate feedback. Walks nudge slower and rarer.
     private var firstBadAt: Date?
     private var inBadBout = false
     private var lastHapticAt: Date = .distantPast
-    private let slouchNudgeSeconds: TimeInterval = 15
-    private let hapticDebounceSeconds: TimeInterval = 20
+    private var slouchNudgeSeconds: TimeInterval = 15
+    private var hapticDebounceSeconds: TimeInterval = 20
+
+    // Walk mode: rolling window of raw samples; the verdict recomputes at
+    // most once a second off the window median (gait bob cancels out).
+    private var walkSamples: [(t: TimeInterval, pitch: Double)] = []
+    private var lastWalkVerdictAt: TimeInterval = 0
 
     /// Sessions under this long aren't worth a row — an instant cancel is
     /// noise, not an attempt.
@@ -189,6 +197,18 @@ final class PracticeSessionController {
         firstBadAt = nil
         inBadBout = false
         minuteBucket = MinuteBucket()
+        walkSamples = []
+        lastWalkVerdictAt = 0
+        currentQuality = .good
+        if config.kind == .walk {
+            segmentLength = 60
+            slouchNudgeSeconds = PostureScoring.Walk.nudgeSustainSeconds
+            hapticDebounceSeconds = PostureScoring.Walk.nudgeDebounceSeconds
+        } else {
+            segmentLength = 10
+            slouchNudgeSeconds = 15
+            hapticDebounceSeconds = 20
+        }
         phase = .waiting
 
         // Take exclusive ownership of the head-motion stream — iOS starves a
@@ -265,21 +285,26 @@ final class PracticeSessionController {
         guard let config, let calibration = calibrationService.current(),
               let baseline = calibration.airpodsPitch else { return }
 
-        smoothedPitch = PostureScoring.smoothed(
-            previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
-        )
-        let scoredPitch = smoothedPitch ?? pitch
-        let referenceBaseline = PostureScoring.nearestBaseline(
-            pitch: scoredPitch,
-            standing: calibration.airpodsStandingPitch,
-            sitting: calibration.airpodsSittingPitch,
-            combined: baseline
-        )
-        let quality = PostureScoring.quality(
-            deviation: scoredPitch - referenceBaseline,
-            slouchDelta: calibration.slouchPitchDelta,
-            sensitivity: GoalSettings.shared.sensitivity
-        )
+        let quality: PostureQuality
+        if config.kind == .walk {
+            quality = walkQuality(pitch: pitch, at: now, calibration: calibration, combined: baseline)
+        } else {
+            smoothedPitch = PostureScoring.smoothed(
+                previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
+            )
+            let scoredPitch = smoothedPitch ?? pitch
+            let referenceBaseline = PostureScoring.nearestBaseline(
+                pitch: scoredPitch,
+                standing: calibration.airpodsStandingPitch,
+                sitting: calibration.airpodsSittingPitch,
+                combined: baseline
+            )
+            quality = PostureScoring.quality(
+                deviation: scoredPitch - referenceBaseline,
+                slouchDelta: calibration.slouchPitchDelta,
+                sensitivity: GoalSettings.shared.sensitivity
+            )
+        }
         if quality != currentQuality { currentQuality = quality }
 
         // Elapsed accrues from observed sample gaps (clamped), never a Timer —
@@ -288,17 +313,49 @@ final class PracticeSessionController {
         let (credited, flush) = minuteBucket.accumulate(quality: quality, at: now)
         persistFlush(flush)
         elapsedSeconds += credited
-        switch quality {
-        case .good: goodSeconds += credited
-        case .borderline: borderlineSeconds += credited
-        case .bad: badSeconds += credited
+        // A walk's first stretch (pocketing the phone, finding stride) runs
+        // the clock but stays out of the score and timeline.
+        let inWarmup = config.kind == .walk && elapsedSeconds <= PostureScoring.Walk.warmupSeconds
+        if !inWarmup {
+            switch quality {
+            case .good: goodSeconds += credited
+            case .borderline: borderlineSeconds += credited
+            case .bad: badSeconds += credited
+            }
+            accrueTimeline(credited: credited, quality: quality)
         }
-        accrueTimeline(credited: credited, quality: quality)
         updateSlouchNudge(quality: quality, now: now)
 
         if Int(elapsedSeconds) >= config.targetSeconds {
             finish(completed: true)
         }
+    }
+
+    /// Walk verdict: median head pitch over the rolling window, judged
+    /// against the standing baseline with relaxed thresholds. Recomputes at
+    /// most once a second; between verdicts the last one holds.
+    private func walkQuality(
+        pitch: Double, at now: Date, calibration: Calibration, combined: Double
+    ) -> PostureQuality {
+        let t = now.timeIntervalSinceReferenceDate
+        walkSamples.append((t, pitch))
+        let cutoff = t - PostureScoring.Walk.windowSeconds
+        if let firstKeep = walkSamples.firstIndex(where: { $0.t >= cutoff }), firstKeep > 0 {
+            walkSamples.removeFirst(firstKeep)
+        }
+        guard t - lastWalkVerdictAt >= 1 else { return currentQuality }
+        // Walking is standing — judge against the standing baseline when we
+        // have one instead of the sitting-blurred combined number.
+        let walkBaseline = calibration.airpodsStandingPitch ?? combined
+        guard let deviation = PostureScoring.walkWindowDeviation(
+            samples: walkSamples, baseline: walkBaseline, now: t
+        ) else { return currentQuality }
+        lastWalkVerdictAt = t
+        return PostureScoring.quality(
+            deviation: deviation,
+            slouchDelta: calibration.slouchPitchDelta,
+            sensitivity: PostureScoring.Walk.sensitivity
+        )
     }
 
     private func accrueTimeline(credited: Double, quality: PostureQuality) {
@@ -308,7 +365,7 @@ final class PracticeSessionController {
         case .borderline: segmentAligned += credited * 0.5
         case .bad: break
         }
-        if segmentSeconds >= Self.segmentLength {
+        if segmentSeconds >= segmentLength {
             timeline.append(segmentAligned / segmentSeconds)
             segmentSeconds = 0
             segmentAligned = 0
@@ -352,7 +409,9 @@ final class PracticeSessionController {
         let alignedPercent = PostureScoring.sessionScore(
             goodSeconds: good, borderlineSeconds: borderline, badSeconds: bad
         )
-        let passed = completed && alignedPercent >= config.targetPercent
+        // `passed` means level credit, which only practice can earn.
+        let passed = config.kind == .practice && completed
+            && alignedPercent >= config.targetPercent
 
         let passedBefore = Self.passedPracticeCount(context: context)
         let levelBefore = PracticeProgression.level(passedSessions: passedBefore)
@@ -388,6 +447,7 @@ final class PracticeSessionController {
         )
 
         result = Result(
+            kind: config.kind,
             alignedPercent: alignedPercent,
             completed: completed,
             passed: passed,
@@ -406,7 +466,7 @@ final class PracticeSessionController {
         )
 
         if completed, isAppInBackground {
-            postCompletionNotification(alignedPercent: alignedPercent, passed: passed)
+            postCompletionNotification(kind: config.kind, alignedPercent: alignedPercent, passed: passed)
         }
     }
 
@@ -433,9 +493,13 @@ final class PracticeSessionController {
 
     /// The session hit its target while the phone was locked or backgrounded —
     /// tell the user it's done so they aren't sitting tall for nothing.
-    private func postCompletionNotification(alignedPercent: Int, passed: Bool) {
+    private func postCompletionNotification(kind: PostureSessionKind, alignedPercent: Int, passed: Bool) {
         let content = UNMutableNotificationContent()
-        content.title = passed ? "practice done. target met." : "practice done."
+        if kind == .walk {
+            content.title = "walk done."
+        } else {
+            content.title = passed ? "practice done. target met." : "practice done."
+        }
         content.body = "\(alignedPercent)% aligned today. Your streak is safe."
         content.sound = .default
         let request = UNNotificationRequest(

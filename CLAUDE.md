@@ -87,7 +87,11 @@ pipeline in the app.
     practice session).
   - `Views/PracticeSessionView.swift` — the session screen (pre-start → live
     ring → paused → summary); first session shows in-session coach marks
-  - `Views/SessionSummaryView.swift` — pass/fail receipt, per-10s timeline
+  - `Views/WalkSessionView.swift` — walk mode (Pro): 10/20/30-min walking
+    session, rolling-median walk scoring (`PostureScoring.Walk`), 30s warmup
+    excluded from the score; credits the streak, never the level
+  - `Views/SessionSummaryView.swift` — kind-aware receipt (pass/fail + level
+    for practice, % tall for walks), segment timeline
   - `Views/AcknowledgmentView.swift` — the fullscreen check-in on reminder tap
   - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
     PostureBanner, QualityChip, TipLine, DaylightCTA, AirpodsScanView,

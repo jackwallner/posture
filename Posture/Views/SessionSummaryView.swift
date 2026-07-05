@@ -51,6 +51,8 @@ struct SessionSummaryView: View {
 
     // MARK: - Sections
 
+    private var isWalk: Bool { result.kind == .walk }
+
     private var scoreRow: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
@@ -66,10 +68,10 @@ struct SessionSummaryView: View {
             .dawnCard()
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(targetLabel)%")
+                Text(isWalk ? minutesLabel : "\(targetLabel)%")
                     .font(.system(size: 34, weight: .regular, design: .rounded))
                     .foregroundStyle(Theme.ink)
-                Text("target")
+                Text(isWalk ? "held tall" : "target")
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(Theme.ink3)
             }
@@ -79,10 +81,11 @@ struct SessionSummaryView: View {
         }
     }
 
-    /// One bar per 10 seconds of practice, colored by how tall it was held.
+    /// One bar per segment (10s of practice, minute of walk), colored by how
+    /// tall it was held.
     private var timelineStrip: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("The session, ten seconds at a time")
+            Text(isWalk ? "The walk, minute by minute" : "The session, ten seconds at a time")
                 .font(.system(.caption, design: .rounded).weight(.semibold))
                 .tracking(0.6)
                 .foregroundStyle(Theme.ink3)
@@ -108,7 +111,9 @@ struct SessionSummaryView: View {
                 receiptLine(icon: "flame.fill", color: Theme.sand,
                             text: "Day \(result.streakDays) of your streak.")
             }
-            if result.leveledUp {
+            if isWalk {
+                // Walks carry no level stakes — the streak line is the receipt.
+            } else if result.leveledUp {
                 receiptLine(icon: "chevron.up.2", color: Theme.sage,
                             text: "Level \(result.newLevel) unlocked — tomorrow's practice grows a little.")
             } else if result.passed {
@@ -135,6 +140,7 @@ struct SessionSummaryView: View {
     // MARK: - Copy
 
     private var headline: String {
+        if isWalk { return result.completed ? "Walked tall" : "Walk ended" }
         if !result.completed { return "Ended early" }
         if result.leveledUp { return "Level up" }
         if result.passed { return "Held tall" }
@@ -142,6 +148,12 @@ struct SessionSummaryView: View {
     }
 
     private var subtitle: String {
+        if isWalk {
+            if !result.completed {
+                return "The minutes you walked still count in today's timeline."
+            }
+            return "You held tall for \(result.alignedPercent)% of the walk (after finding your stride)."
+        }
         if !result.completed {
             return "The minutes you held still count in today's timeline. Come back for the full practice."
         }
@@ -152,17 +164,26 @@ struct SessionSummaryView: View {
     }
 
     private var eyebrow: String {
-        result.completed ? "practice complete" : "practice ended"
+        if isWalk { return result.completed ? "walk complete" : "walk ended" }
+        return result.completed ? "practice complete" : "practice ended"
     }
 
     private var accent: Color {
         if !result.completed { return Theme.ink3 }
+        if isWalk { return result.alignedPercent >= 60 ? Theme.sage : Theme.sand }
         return result.passed ? Theme.sage : Theme.sand
     }
 
     private var tint: Color {
         if !result.completed { return Theme.paper2 }
+        if isWalk { return result.alignedPercent >= 60 ? Theme.sageTint : Theme.sandTint }
         return result.passed ? Theme.sageTint : Theme.sandTint
+    }
+
+    private var minutesLabel: String {
+        let total = result.goodSeconds + result.borderlineSeconds + result.badSeconds
+        let minutes = max(1, Int((Double(total) / 60).rounded()))
+        return "\(minutes)m"
     }
 
     private var targetLabel: Int {

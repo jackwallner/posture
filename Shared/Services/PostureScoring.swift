@@ -94,6 +94,43 @@ enum PostureScoring {
         return previous * (1 - alpha) + sample * alpha
     }
 
+    // MARK: - Walk mode
+
+    /// Walking injects rhythmic head bob that the live EMA (α 0.15) only
+    /// partly absorbs, so walk scoring judges the *median over a rolling
+    /// window* instead of the smoothed instant — gait oscillation cancels
+    /// out of a median, a real sustained slump doesn't.
+    enum Walk {
+        /// Rolling window the walk verdict is computed over.
+        static let windowSeconds: Double = 7
+        /// The first stretch of a walk (pocketing the phone, finding stride)
+        /// is excluded from the session's aligned score and timeline.
+        static let warmupSeconds: Double = 30
+        /// Walks score with relaxed thresholds — heads move more out there.
+        static let sensitivity = 0
+        /// Windowed quality must stay bad this long before a nudge.
+        static let nudgeSustainSeconds: Double = 10
+        /// Walk nudges are rarer than desk nudges.
+        static let nudgeDebounceSeconds: Double = 45
+        /// A verdict needs at least this much of the window observed.
+        static var minSpanSeconds: Double { windowSeconds / 2 }
+    }
+
+    /// Median deviation of the time-stamped samples inside the walk window.
+    /// Returns nil until at least `Walk.minSpanSeconds` of the window is
+    /// covered — never judge a stride off a fraction of a second.
+    static func walkWindowDeviation(
+        samples: [(t: TimeInterval, pitch: Double)],
+        baseline: Double,
+        now: TimeInterval
+    ) -> Double? {
+        let cutoff = now - Walk.windowSeconds
+        let recent = samples.filter { $0.t >= cutoff }
+        guard let first = recent.first, let last = recent.last,
+              last.t - first.t >= Walk.minSpanSeconds else { return nil }
+        return aggregateDeviation(samples: recent.map(\.pitch), baseline: baseline)
+    }
+
     // MARK: - Baseline confidence
 
     /// Sample spread (population standard deviation, radians). Our proxy for how
