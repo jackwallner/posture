@@ -36,10 +36,15 @@ the app schedules N reminders per day in the user's active window, each tap open
 `PostureSession` model is retained for back-compat reads but no longer written.
 
 - `Shared/Models/` — `AcknowledgmentRecord` (current), `PostureSession` (legacy),
-  `PosturePassiveSample`, `Calibration`, `StreakState`, `BeforeAfterPhoto`
+  `PosturePassiveSample` (slouch events), `PostureMinuteSample` (per-minute
+  good/borderline/bad aggregates from the live monitor — powers % of day
+  aligned, wear time, hour rhythm), `Calibration`, `StreakState`, `BeforeAfterPhoto`
 - `Shared/Services/`
   - `DataService` — App Group SwiftData container
-  - `PostureScoring` — pure scoring (testable)
+  - `PostureScoring` — pure scoring (testable). Scores against the *nearer* of
+    the standing/sitting baselines; the slouch reference is capped at π/16 at
+    scoring time so small-amplitude standing slouches register
+  - `PostureDayStats` — pure aggregation over minute samples (testable)
   - `StreakService` — streak math + freeze logic. `currentState()` is the *only*
     get-or-create path for `StreakState`; views must never insert in `body`.
   - `CalibrationService` — baseline storage
@@ -57,8 +62,13 @@ the app schedules N reminders per day in the user's active window, each tap open
     Holds the AirPods monitor and the notification-tap fullScreenCover.
   - `Views/AcknowledgmentView.swift` — the fullscreen sheet shown on reminder tap
   - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
-    WeekStrip, PostureBanner, QualityChip, TipLine, DaylightCTA, QuickScanView,
-    CameraPreview, PostureRing, StreakFlame)
+    PostureBanner, QualityChip, TipLine, DaylightCTA, QuickScanView,
+    CameraPreview, PostureRing, StreakFlame, PoseDiagram, TrainingTour).
+    `TrainingTour` is the first-run spotlight walkthrough on Today (replayable
+    from Settings). `PoseDiagram` renders drawn pose visuals and auto-swaps to
+    `Illo*` asset-catalog images when present — generate them with
+    `scripts/generate-illustrations.py` (needs a billed Gemini key).
+    Type rule: no serif italics anywhere; rounded SF via `Theme.display(_:)`.
 - `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets, read
   `AcknowledgmentRecord` from the shared App Group container
 - `PostureWatch/` — companion watch app
