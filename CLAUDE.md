@@ -30,47 +30,75 @@ After adding/removing any `.swift` file, rerun `xcodegen generate`.
 
 ## Architecture
 
-The product pivoted from timed camera *sessions* to a reminder/acknowledgment loop:
-the app schedules N reminders per day in the user's active window, each tap opens a
-~3 second QuickScan, and the result is written as an `AcknowledgmentRecord`. Old
-`PostureSession` model is retained for back-compat reads but no longer written.
+The core loop (2026-07 practice pivot) is a **bounded daily practice session**:
+a few minutes of AirPods-coached posture holding, auto-ramping from 3 to 15
+minutes via a level system. Completing the session credits the streak; meeting
+the session's aligned-% target marks it `passed` and advances the level
+(`PracticeProgression`, pure function of passed-session count). All-day
+monitoring still exists but is a demoted opt-in Pro extra (Settings toggle,
+off by default) and no longer credits the streak. No-AirPods users keep the
+self-report check-in loop (`AcknowledgmentRecord`). There is NO camera/Vision
+pipeline in the app.
 
-- `Shared/Models/` — `AcknowledgmentRecord` (current), `PostureSession` (legacy),
-  `PosturePassiveSample` (slouch events), `PostureMinuteSample` (per-minute
-  good/borderline/bad aggregates from the live monitor — powers % of day
-  aligned, wear time, hour rhythm), `Calibration`, `StreakState`, `BeforeAfterPhoto`
+- `Shared/Models/` — `PostureSession` (practice/walk/legacy via `kindRaw`;
+  practice rows carry target/aligned %, `completed`, `passed`),
+  `AcknowledgmentRecord` (check-ins), `PosturePassiveSample` (slouch events),
+  `PostureMinuteSample` (per-minute good/borderline/bad aggregates from monitor
+  AND sessions — powers % of day aligned, wear time, hour rhythm),
+  `Calibration`, `StreakState`, `BeforeAfterPhoto`
 - `Shared/Services/`
-  - `DataService` — App Group SwiftData container
+  - `DataService` — App Group SwiftData container. Widget targets MUST mirror
+    its schema exactly (they open the same store).
+  - `PracticeProgression` — pure level ramp: passed sessions → level →
+    session length + target %. Free tier caps at level 5.
+  - `PracticeSessionController` — drives one bounded session: owns the motion
+    stream (suspends the monitor), scores at ~25 Hz, accrues elapsed from
+    observed sample dt (never a Timer), writes `PostureSession` +
+    minute samples, credits the streak on completion.
+  - `MinuteBucket` — pure per-minute aggregation shared by monitor + sessions
+    (dt clamp 2s, ≥1s flush floor).
+  - `AudioKeepAlive` — refcounted silent-audio engine (`acquire`/`release`)
+    keeping CoreMotion alive in background; held by the monitor (indefinite,
+    Pro toggle) and by sessions (bounded).
   - `PostureScoring` — pure scoring (testable). Scores against the *nearer* of
     the standing/sitting baselines; the slouch reference is capped at π/16 at
     scoring time so small-amplitude standing slouches register
   - `PostureDayStats` — pure aggregation over minute samples (testable)
   - `StreakService` — streak math + freeze logic. `currentState()` is the *only*
     get-or-create path for `StreakState`; views must never insert in `body`.
-  - `CalibrationService` — baseline storage
-  - `FaceTrackingService` — AVCapture + Vision face landmarks → head pitch
-  - `NotificationService` — schedules per-day rotation of reminders (repeating
-    `UNCalendarNotificationTrigger`)
+  - `CalibrationService` — baseline storage (AirPods standing/sitting/slouch)
+  - `NotificationService` — one repeating daily practice reminder
+    (`posture.practice.daily`, hour/minute from GoalSettings) + optional
+    every-N-minutes check-in slots (repeating `UNCalendarNotificationTrigger`)
   - `ReminderScheduler` — orchestrates the reschedule on settings/foreground
-  - `AirpodsBackgroundMonitor` — Pro-only background AirPods motion sampling
+  - `AirpodsBackgroundMonitor` — opt-in Pro all-day AirPods sampling;
+    `suspendForForegroundRead()`/`resumeAfterForegroundRead()` is the handoff
+    every foreground reader (calibration, scan, session) must use
   - `HeadphoneMotionService` — foreground `CMHeadphoneMotionManager` wrapper
   - `GoalSettings` — `@Observable` UserDefaults wrapper (App Group)
   - `SubscriptionService` — RevenueCat (guarded by `#if canImport(RevenueCat)`)
   - `AnalyticsService`, `PostureTipService`
 - `Posture/` — iOS UI
-  - `App.swift` → onboarding → calibration → MainTabView (Today / History / Settings).
-    Holds the AirPods monitor and the notification-tap fullScreenCover.
-  - `Views/AcknowledgmentView.swift` — the fullscreen sheet shown on reminder tap
+  - `App.swift` → onboarding → calibration → MainTabView (Today / History /
+    Settings). No hard paywall gate: free core loop, dismissible paywall after
+    the first completed session (`posture_post_first_session`) and at Pro
+    gates (level cap `posture_level_gate`, Settings postcard). Holds the
+    AirPods monitor and both notification-tap fullScreenCovers (check-in ack +
+    practice session).
+  - `Views/PracticeSessionView.swift` — the session screen (pre-start → live
+    ring → paused → summary); first session shows in-session coach marks
+  - `Views/SessionSummaryView.swift` — pass/fail receipt, per-10s timeline
+  - `Views/AcknowledgmentView.swift` — the fullscreen check-in on reminder tap
   - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
-    PostureBanner, QualityChip, TipLine, DaylightCTA, QuickScanView,
-    CameraPreview, PostureRing, StreakFlame, PoseDiagram, TrainingTour).
-    `TrainingTour` is the first-run spotlight walkthrough on Today (replayable
-    from Settings). `PoseDiagram` renders drawn pose visuals and auto-swaps to
+    PostureBanner, QualityChip, TipLine, DaylightCTA, AirpodsScanView,
+    PostureRing, StreakFlame, PoseDiagram, TrainingTour).
+    `TrainingTour` is legacy (replay from Settings only; auto-start removed).
+    `PoseDiagram` renders drawn pose visuals and auto-swaps to
     `Illo*` asset-catalog images when present — generate them with
     `scripts/generate-illustrations.py` (needs a billed Gemini key).
     Type rule: no serif italics anywhere; rounded SF via `Theme.display(_:)`.
 - `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets, read
-  `AcknowledgmentRecord` from the shared App Group container
+  from the shared App Group container (schemas must mirror `DataService`)
 - `PostureWatch/` — companion watch app
 
 ### Daylight design system

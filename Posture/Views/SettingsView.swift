@@ -61,10 +61,36 @@ struct SettingsView: View {
                     Text("Posture+")
                 }
 
-                // MARK: - Reminders
+                // MARK: - Daily practice
+                // No-AirPods users live on the check-in loop; the practice
+                // reminder would dead-end for them, so hide the section.
 
-                Section("Reminders") {
-                    Toggle("Remind me throughout the day", isOn: $settings.reminderEnabled)
+                if settings.hasAirpods == true {
+                    Section("Daily practice") {
+                        Toggle("Practice reminder", isOn: $settings.practiceReminderEnabled)
+                            .onChange(of: settings.practiceReminderEnabled) { _, _ in
+                                Task {
+                                    await ReminderScheduler.reschedule()
+                                    await refreshNotificationStatus()
+                                }
+                            }
+                        if settings.practiceReminderEnabled {
+                            DatePicker(
+                                "Remind me at",
+                                selection: practiceReminderTime,
+                                displayedComponents: .hourAndMinute
+                            )
+                        }
+                        Text("One reminder a day for your posture practice — a few minutes held tall with live AirPods coaching. Finishing it keeps your streak.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.ink2)
+                    }
+                }
+
+                // MARK: - Extra check-in nudges (secondary)
+
+                Section("Extra check-in nudges") {
+                    Toggle("Nudge me throughout the day", isOn: $settings.reminderEnabled)
                         .onChange(of: settings.reminderEnabled) { _, _ in
                             Task {
                                 await ReminderScheduler.reschedule()
@@ -72,7 +98,7 @@ struct SettingsView: View {
                             }
                         }
 
-                    if settings.reminderEnabled && notificationsDenied {
+                    if (settings.reminderEnabled || settings.practiceReminderEnabled) && notificationsDenied {
                         PostureBanner(
                             tone: .warn,
                             title: "Notifications are off.",
@@ -227,6 +253,24 @@ struct SettingsView: View {
         }
         #endif
         return "see plans →"
+    }
+
+    /// Bridge the stored hour/minute to the DatePicker's Date binding.
+    private var practiceReminderTime: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(
+                    bySettingHour: settings.practiceReminderHour,
+                    minute: settings.practiceReminderMinute,
+                    second: 0, of: .now
+                ) ?? .now
+            },
+            set: { newDate in
+                let parts = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                settings.practiceReminderHour = parts.hour ?? 10
+                settings.practiceReminderMinute = parts.minute ?? 0
+            }
+        )
     }
 
     private func refreshNotificationStatus() async {

@@ -7,15 +7,19 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-/// Background AirPods posture monitor (Pro feature).
+/// All-day AirPods posture monitor (optional Pro extra).
 ///
-/// Plays a silent audio track to keep `CMHeadphoneMotionManager` delivering
-/// head-pose updates in the background, evaluates posture against the user's
-/// calibration, records slouch events as `PosturePassiveSample`, and triggers
-/// haptic feedback when the user slouches.
+/// Holds the shared `AudioKeepAlive` to keep `CMHeadphoneMotionManager`
+/// delivering head-pose updates in the background, evaluates posture against
+/// the user's calibration, records slouch events as `PosturePassiveSample`,
+/// and triggers haptic feedback when the user slouches.
+///
+/// Since the daily-practice pivot this is no longer the core loop: the streak
+/// comes from completing a practice session, and monitoring only feeds the
+/// day timeline/stats for users who opt in.
 ///
 /// - Requires: `UIBackgroundModes: audio` in Info.plist
-/// - Requires: Pro subscription (gated by the caller)
+/// - Requires: Pro subscription + the Settings toggle (gated by the caller)
 @MainActor
 @Observable
 final class AirpodsBackgroundMonitor {
@@ -59,12 +63,7 @@ final class AirpodsBackgroundMonitor {
     private let headphoneService: HeadphoneMotionService
     private let calibrationService: CalibrationService
     private let modelContext: ModelContext
-
-    // MARK: - Audio engine (silent track for background delivery)
-
-    private var audioEngine: AVAudioEngine?
-    private var audioPlayer: AVAudioPlayerNode?
-    private var audioObservers: [NSObjectProtocol] = []
+    private static let keepAliveToken = "monitor"
 
     // MARK: - Slouch detection (time-based)
 
@@ -91,25 +90,13 @@ final class AirpodsBackgroundMonitor {
     private var lastHapticAt: Date = .distantPast
     private let hapticDebounceSeconds: TimeInterval = 60
 
-    /// The day we last credited the streak from passive monitoring. Wearing
-    /// AirPods and being monitored keeps the streak alive, so the habit no
-    /// longer depends on remembering to tap a manual check-in.
-    private var lastStreakCreditDay: Date?
-
     // MARK: - Minute aggregation
 
     /// The ~25 Hz stream is far too rich to persist raw, but slouch events
-    /// alone throw away the story of the day. We fold every scored sample
-    /// into a per-minute good/borderline/bad bucket and persist one
-    /// `PostureMinuteSample` row as each minute rolls over — that's what
-    /// "% of day aligned", wear time, and the day timeline read.
-    private var minuteBucketStart: Date?
-    private var minuteGoodSeconds: Double = 0
-    private var minuteBorderlineSeconds: Double = 0
-    private var minuteBadSeconds: Double = 0
-    /// Timestamp of the previous scored sample, for dt attribution. Clamped
-    /// so a gap (pods out, app suspended mid-read) never credits phantom time.
-    private var lastScoredSampleAt: Date?
+    /// alone throw away the story of the day. Every scored sample folds into
+    /// `MinuteBucket` and persists as one `PostureMinuteSample` row per minute —
+    /// that's what "% of day aligned", wear time, and the day timeline read.
+    private var minuteBucket = MinuteBucket()
     /// Keep the store from growing unbounded — a monitored year is ~350k
     /// minute rows. 90 days is more history than any view reads.
     private static let minuteRetentionDays = 90
@@ -132,18 +119,31 @@ final class AirpodsBackgroundMonitor {
             self?.handleConnect(connected)
         }
 
-        observeAudioNotifications()
+        // Surface keep-alive health in this monitor's activity log + error
+        // slot — MonitoringLogView reads both. The keep-alive allows a single
+        // observer and the monitor is the only long-lived holder.
+        AudioKeepAlive.shared.onEvent = { [weak self] event in
+            guard let self else { return }
+            switch event {
+            case .interrupted:
+                if self.isMonitoring, self.isBackground { self.logEvent(.audioInterrupted) }
+            case .resumed:
+                self.lastError = nil
+                if self.isMonitoring, self.isBackground { self.logEvent(.audioResumed) }
+            case .error(let message):
+                self.lastError = message
+                self.logEvent(.error(message))
+            }
+        }
     }
 
-    // Intentionally no deinit: `audioObservers` is @MainActor-isolated and
-    // deinit is nonisolated, so we can't touch it here. The monitor is
-    // process-scoped via `.shared` and never deallocs in practice.
+    // Intentionally no deinit: the monitor is process-scoped via `.shared`
+    // and never deallocs in practice.
 
     /// Process-scoped instance. Constructed lazily on first access and
     /// reused for the life of the app — avoids the SwiftUI `@State` default-
     /// value footgun where the parent View's body recomputation builds a new
-    /// monitor on every render. Each rebuild adds NotificationCenter
-    /// observers that survive the dropped instance.
+    /// monitor on every render.
     @MainActor static let shared = AirpodsBackgroundMonitor(
         modelContext: DataService.sharedModelContainer.mainContext
     )
@@ -173,7 +173,7 @@ final class AirpodsBackgroundMonitor {
     /// session attached (the Pro extension) or foreground-only?
     private(set) var isBackground = false
 
-    /// Arm monitoring. `background: true` attaches a silent audio session
+    /// Arm monitoring. `background: true` holds the silent-audio keep-alive
     /// so motion samples keep flowing while the app is suspended — this is
     /// the Pro tier behavior and shows the iOS orange dot. `background:
     /// false` starts motion only; iOS will suspend it when the app leaves
@@ -194,7 +194,7 @@ final class AirpodsBackgroundMonitor {
 
     /// Wire up audio (if Pro/background) and start head-motion updates. Safe
     /// to call repeatedly — guarded by `headphoneService.isRunning` and the
-    /// engine's own `isRunning`. Called from `start()` and from
+    /// keep-alive's own refcount. Called from `start()` and from
     /// `handleConnect(true)` when AirPods appear after a cold launch.
     private func activateMotion() {
         guard isMonitoring else { return }
@@ -202,16 +202,9 @@ final class AirpodsBackgroundMonitor {
         guard headphoneService.isAvailable else { return }
 
         if isBackground {
-            do {
-                if AVAudioSession.sharedInstance().category != .playback {
-                    try startAudioSession()
-                }
-                if audioEngine?.isRunning != true {
-                    try startSilentAudio()
-                }
-            } catch {
-                lastError = "Audio setup failed: \(error.localizedDescription)"
-                logEvent(.error(lastError ?? "audio error"))
+            AudioKeepAlive.shared.acquire(Self.keepAliveToken)
+            if let error = AudioKeepAlive.shared.lastError {
+                lastError = error
                 return
             }
         }
@@ -223,18 +216,17 @@ final class AirpodsBackgroundMonitor {
         isMonitoring = false
         isBackground = false
         headphoneService.stop()
-        stopSilentAudio()
-        stopAudioSession()
+        AudioKeepAlive.shared.release(Self.keepAliveToken)
         isConnected = false
         currentQuality = .good
         resetDetectionState()
     }
 
-    /// Clear all smoothing + streak state so the next bout starts clean. Called
-    /// on stop, on AirPods disconnect, and whenever we lack a real baseline.
+    /// Clear all smoothing state so the next bout starts clean. Called on
+    /// stop, on AirPods disconnect, and whenever we lack a real baseline.
     /// Flushes the in-progress minute first so partial minutes persist.
     private func resetDetectionState() {
-        flushMinuteBucket()
+        persistFlush(minuteBucket.flush())
         smoothedPitch = nil
         firstBadAt = nil
         inBadBout = false
@@ -242,24 +234,26 @@ final class AirpodsBackgroundMonitor {
 
     // MARK: - Foreground read coordination
 
-    /// True while a foreground read (calibration or a check-in scan) has taken
-    /// over the head-motion stream. See `suspendForForegroundRead()`.
+    /// True while a foreground read (calibration, a check-in scan, or a
+    /// practice session) has taken over the head-motion stream. See
+    /// `suspendForForegroundRead()`.
     private var suspendedForForegroundRead = false
 
-    /// A foreground read — the AirPods calibration capture or the 3-second
-    /// check-in scan — spins up its OWN `CMHeadphoneMotionManager`. iOS does
-    /// not reliably deliver head motion to two managers at once: a live
-    /// background monitor starves the read's manager, so the scan/calibration
-    /// sits on "waiting for AirPods" and eventually shows "can't hear your
-    /// AirPods" even though they're connected and streaming to us. Suspend our
-    /// motion stream for the duration of the read so it has exclusive access.
-    /// Keeps any silent-audio session alive (no orange-dot churn); only the
-    /// motion updates pause. Idempotent.
+    /// A foreground read — the AirPods calibration capture, the 3-second
+    /// check-in scan, or a practice/walk session — spins up its OWN
+    /// `CMHeadphoneMotionManager`. iOS does not reliably deliver head motion
+    /// to two managers at once: a live background monitor starves the read's
+    /// manager, so the scan/calibration sits on "waiting for AirPods" and
+    /// eventually shows "can't hear your AirPods" even though they're
+    /// connected and streaming to us. Suspend our motion stream for the
+    /// duration of the read so it has exclusive access. Keeps any silent-audio
+    /// keep-alive held (no orange-dot churn); only the motion updates pause.
+    /// Idempotent.
     func suspendForForegroundRead() {
         guard isMonitoring, !suspendedForForegroundRead else { return }
         suspendedForForegroundRead = true
         headphoneService.stop()
-        flushMinuteBucket()
+        persistFlush(minuteBucket.flush())
     }
 
     /// Resume the background motion stream after a foreground read finishes.
@@ -320,70 +314,29 @@ final class AirpodsBackgroundMonitor {
             sensitivity: sensitivity
         )
 
-        // A real scored reading means the user is wearing AirPods and being
-        // monitored today — that keeps the streak alive on its own.
-        creditStreakDayIfNeeded()
-
         // The "right now" readout tracks the current (smoothed) position with
         // no delay — it's a quick glance, not a verdict. The EMA above already
         // absorbs raw jitter, so this won't strobe. Sustained-time logic lives
         // only in the nudge below (buzz/record), never in what's displayed.
         if instant != currentQuality { currentQuality = instant }
         let now = Date.now
-        accumulateMinute(quality: instant, now: now)
+        persistFlush(minuteBucket.accumulate(quality: instant, at: now).flush)
         updateSlouchNudge(instant: instant, now: now)
     }
 
-    // MARK: - Minute bucket
+    // MARK: - Minute persistence
 
-    private func accumulateMinute(quality: PostureQuality, now: Date) {
-        let minute = Self.truncateToMinute(now)
-        if let bucket = minuteBucketStart, bucket != minute {
-            flushMinuteBucket()
-        }
-        if minuteBucketStart == nil { minuteBucketStart = minute }
-
-        // Credit the gap since the last scored sample to the current quality.
-        // Clamped at 2s: a longer gap means the stream was interrupted and
-        // that time was not observed.
-        let dt = lastScoredSampleAt.map { min(max(now.timeIntervalSince($0), 0), 2) } ?? 0
-        lastScoredSampleAt = now
-        switch quality {
-        case .good: minuteGoodSeconds += dt
-        case .borderline: minuteBorderlineSeconds += dt
-        case .bad: minuteBadSeconds += dt
-        }
-    }
-
-    /// Persist the in-progress minute and reset the bucket. Called on minute
-    /// rollover and whenever monitoring pauses (stop, disconnect, foreground
-    /// read) so partial minutes aren't lost.
-    private func flushMinuteBucket() {
-        defer {
-            minuteBucketStart = nil
-            minuteGoodSeconds = 0
-            minuteBorderlineSeconds = 0
-            minuteBadSeconds = 0
-            lastScoredSampleAt = nil
-        }
-        guard let start = minuteBucketStart else { return }
-        let total = minuteGoodSeconds + minuteBorderlineSeconds + minuteBadSeconds
-        guard total >= 1 else { return }
+    private func persistFlush(_ flush: MinuteBucket.Flush?) {
+        guard let flush else { return }
         let row = PostureMinuteSample(
-            minuteStart: start,
-            goodSeconds: minuteGoodSeconds,
-            borderlineSeconds: minuteBorderlineSeconds,
-            badSeconds: minuteBadSeconds,
+            minuteStart: flush.minuteStart,
+            goodSeconds: flush.goodSeconds,
+            borderlineSeconds: flush.borderlineSeconds,
+            badSeconds: flush.badSeconds,
             source: .airpods
         )
         modelContext.insert(row)
         try? modelContext.save()
-    }
-
-    private static func truncateToMinute(_ date: Date) -> Date {
-        let cal = Calendar.current
-        let parts = cal.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-        return cal.date(from: parts) ?? date
     }
 
     /// Drop minute rows past retention so the store stays lean.
@@ -428,16 +381,6 @@ final class AirpodsBackgroundMonitor {
 
     // MARK: - Recording
 
-    /// Credit today's streak once from passive monitoring. Updates only the
-    /// `StreakState` (no `AcknowledgmentRecord`), so History's check-in counts
-    /// stay honest while the streak reflects everyday monitored use.
-    private func creditStreakDayIfNeeded() {
-        let today = DateHelpers.startOfDay()
-        guard lastStreakCreditDay != today else { return }
-        lastStreakCreditDay = today
-        _ = StreakService(context: modelContext).recordAcknowledgment(at: .now)
-    }
-
     private func recordSlouchEvent(severity: Double) {
         let sample = PosturePassiveSample(
             severity: severity,
@@ -472,139 +415,6 @@ final class AirpodsBackgroundMonitor {
         guard now.timeIntervalSince(lastHapticAt) >= hapticDebounceSeconds else { return }
         lastHapticAt = now
         AudioServicesPlaySystemSound(1520)
-    }
-
-    // MARK: - Audio Session
-
-    private func startAudioSession() throws {
-        let session = AVAudioSession.sharedInstance()
-        // .mixWithOthers only — the silent keep-alive tone must be both
-        // inaudible AND non-interfering. .duckOthers would audibly lower the
-        // user's music/podcasts the entire time monitoring is armed, which is
-        // a real UX complaint and sharpens the 2.5.4 "no audible content" case.
-        try session.setCategory(
-            .playback,
-            mode: .default,
-            options: [.mixWithOthers]
-        )
-        try session.setActive(true, options: .notifyOthersOnDeactivation)
-    }
-
-    private func stopAudioSession() {
-        try? AVAudioSession.sharedInstance().setActive(
-            false,
-            options: .notifyOthersOnDeactivation
-        )
-    }
-
-    // MARK: - Interruption + config-change recovery
-
-    /// A phone call, Siri, or another app taking the audio session will
-    /// pause our silent track. When the interruption ends we must reactivate
-    /// the session AND restart the engine — `AVAudioEngine` doesn't resume
-    /// itself. Same for `AVAudioEngineConfigurationChange`, which fires when
-    /// the route changes (AirPods leaving, CarPlay handoff). Without these
-    /// observers the "always-on" Pro feature silently dies the first time a
-    /// call comes in.
-    ///
-    /// Use block-based observers that hop to MainActor — system audio
-    /// notifications post on private queues, so a selector-based observer on
-    /// a `@MainActor` class would trip Swift 6 isolation.
-    private func observeAudioNotifications() {
-        let center = NotificationCenter.default
-        let interruption = center.addObserver(
-            forName: AVAudioSession.interruptionNotification,
-            object: nil,
-            queue: nil
-        ) { @Sendable [weak self] note in
-            // Pull the raw type out here — `userInfo` is `[AnyHashable: Any]?`
-            // which isn't Sendable, so we can't ferry it across the actor hop.
-            let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
-            Task { @MainActor in self?.handleInterruption(rawType: raw) }
-        }
-        let configChange = center.addObserver(
-            forName: .AVAudioEngineConfigurationChange,
-            object: nil,
-            queue: nil
-        ) { @Sendable [weak self] _ in
-            Task { @MainActor in self?.handleEngineConfigChange() }
-        }
-        audioObservers = [interruption, configChange]
-    }
-
-    private func handleInterruption(rawType: UInt?) {
-        guard
-            let raw = rawType,
-            let type = AVAudioSession.InterruptionType(rawValue: raw)
-        else { return }
-        switch type {
-        case .began:
-            // Engine has stopped. Nothing to do until .ended fires.
-            if isMonitoring, isBackground { logEvent(.audioInterrupted) }
-        case .ended:
-            guard isMonitoring, isBackground else { return }
-            resumeSilentAudio()
-        @unknown default:
-            break
-        }
-    }
-
-    private func handleEngineConfigChange() {
-        guard isMonitoring, isBackground else { return }
-        resumeSilentAudio()
-    }
-
-    private func resumeSilentAudio() {
-        do {
-            try AVAudioSession.sharedInstance().setActive(
-                true,
-                options: .notifyOthersOnDeactivation
-            )
-            if let engine = audioEngine, !engine.isRunning {
-                try engine.start()
-                audioPlayer?.play()
-            } else if audioEngine == nil {
-                try startSilentAudio()
-            }
-            lastError = nil
-            logEvent(.audioResumed)
-        } catch {
-            lastError = "Could not resume audio: \(error.localizedDescription)"
-            logEvent(.error(lastError ?? "audio error"))
-        }
-    }
-
-    // MARK: - Silent Audio
-
-    private func startSilentAudio() throws {
-        let engine = AVAudioEngine()
-        let player = AVAudioPlayerNode()
-        guard let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1) else {
-            throw MonitorError.formatCreationFailed
-        }
-
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 44100) else {
-            throw MonitorError.bufferCreationFailed
-        }
-        buffer.frameLength = 44100
-
-        engine.attach(player)
-        engine.connect(player, to: engine.mainMixerNode, format: format)
-        engine.mainMixerNode.volume = 0.01
-
-        try engine.start()
-        player.scheduleBuffer(buffer, at: nil, options: .loops)
-        player.play()
-
-        self.audioEngine = engine
-        self.audioPlayer = player
-    }
-
-    private func stopSilentAudio() {
-        audioPlayer?.stop()
-        audioEngine?.stop()
-        audioPlayer = nil
-        audioEngine = nil
     }
 }
 

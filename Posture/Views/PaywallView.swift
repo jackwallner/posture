@@ -254,7 +254,7 @@ struct PaywallView: View {
             return "Start your \(trial) of Posture+"
         }
         #endif
-        return "Posture that watches itself."
+        return "Posture that grows with you."
     }
 
     private var trustStrip: some View {
@@ -281,9 +281,9 @@ struct PaywallView: View {
 
     private var compactFeatureList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            compactBenefit(icon: "airpods.gen3", title: "All-day monitoring: AirPods quietly watch and nudge when you slouch")
-            compactBenefit(icon: "clock.arrow.circlepath", title: "Your day, scored: % aligned, hour by hour")
-            compactBenefit(icon: "flame", title: "Streaks and gentle reminders that keep the habit going")
+            compactBenefit(icon: "chevron.up.2", title: "The full level ladder: longer practices, higher bars")
+            compactBenefit(icon: "clock.arrow.circlepath", title: "Trends and your day scored, hour by hour")
+            compactBenefit(icon: "airpods.gen3", title: "All-day monitoring and Watch nudges, if you want them")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

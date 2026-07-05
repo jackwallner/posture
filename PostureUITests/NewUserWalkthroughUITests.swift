@@ -12,8 +12,8 @@ final class NewUserWalkthroughUITests: XCTestCase {
     override func setUp() {
         continueAfterFailure = true
         app = XCUIApplication()
-        // Pro override walks past the hard paywall gate so the no-AirPods
-        // journey (Today → check-in → History → Settings) is reachable.
+        // Pro override keeps the Settings section in its subscribed state
+        // (the hard entry gate is gone since the practice pivot).
         app.launchArguments += ["UITEST_FRESH", "-PostureProOverride"]
         app.launch()
     }

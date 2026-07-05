@@ -32,7 +32,26 @@ enum NotificationService {
         "Long spine, easy neck.",
     ]
 
+    /// Daily-practice reminder copy — the one notification that matters.
+    private static let practiceTitles: [String] = [
+        "a few minutes of tall.",
+        "today's practice is waiting.",
+        "time to hold the shape.",
+        "your posture practice.",
+        "a short hold, done well.",
+        "practice, then carry it.",
+    ]
+
+    private static let practiceBodies: [String] = [
+        "AirPods in, spine long. The streak takes care of itself.",
+        "A few minutes held tall today beats an hour of trying tomorrow.",
+        "Sit or stand tall with live coaching. That's the whole habit.",
+        "Crown up, shoulders soft, begin.",
+    ]
+
     static let categoryIdentifier = "posture.reminder"
+    static let practiceCategoryIdentifier = "posture.practice"
+    static let practiceReminderIdentifier = "posture.practice.daily"
 
     /// Max pending reminder slots. iOS allows 64 pending requests; we
     /// schedule repeating daily triggers so the day's slots persist.
@@ -48,13 +67,50 @@ enum NotificationService {
     }
 
     static func registerCategories() {
-        let category = UNNotificationCategory(
+        let checkIn = UNNotificationCategory(
             identifier: categoryIdentifier,
             actions: [],
             intentIdentifiers: [],
             options: .customDismissAction
         )
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        let practice = UNNotificationCategory(
+            identifier: practiceCategoryIdentifier,
+            actions: [],
+            intentIdentifiers: [],
+            options: .customDismissAction
+        )
+        UNUserNotificationCenter.current().setNotificationCategories([checkIn, practice])
+    }
+
+    /// Schedule the single repeating daily-practice reminder. The copy
+    /// rotates by day-of-year (rescheduled on every foreground).
+    static func schedulePracticeReminder(hour: Int, minute: Int) async {
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [practiceReminderIdentifier])
+
+        let dayOffset = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+        let content = UNMutableNotificationContent()
+        content.title = practiceTitles[dayOffset % practiceTitles.count]
+        content.body = practiceBodies[dayOffset % practiceBodies.count]
+        content.sound = .default
+        content.categoryIdentifier = practiceCategoryIdentifier
+        content.userInfo = ["type": "practice-reminder"]
+
+        var fire = DateComponents()
+        fire.hour = hour
+        fire.minute = minute
+        let trigger = UNCalendarNotificationTrigger(dateMatching: fire, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: practiceReminderIdentifier,
+            content: content,
+            trigger: trigger
+        )
+        try? await center.add(request)
+    }
+
+    static func cancelPracticeReminder() {
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [practiceReminderIdentifier])
     }
 
     /// Schedule **repeating daily** posture reminders across the active

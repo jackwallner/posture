@@ -24,7 +24,10 @@ struct PostureWatchProvider: TimelineProvider {
     }
 
     static func load() -> PostureWatchWidgetEntry {
-        let schema = Schema([PostureSession.self, StreakState.self, Calibration.self, PosturePassiveSample.self, BeforeAfterPhoto.self, AcknowledgmentRecord.self])
+        // Must mirror DataService's schema exactly — this extension opens the
+        // same App Group store, and a schema mismatch after the app migrates
+        // it makes the container fail (blank widget).
+        let schema = Schema([PostureSession.self, PosturePassiveSample.self, PostureMinuteSample.self, Calibration.self, StreakState.self, BeforeAfterPhoto.self, AcknowledgmentRecord.self])
         let url = (FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: postureAppGroupID)
             ?? FileManager.default.temporaryDirectory).appendingPathComponent("Posture.store")
         let config = ModelConfiguration("Posture", schema: schema, url: url, cloudKitDatabase: .none)

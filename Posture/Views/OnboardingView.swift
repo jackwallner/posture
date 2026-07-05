@@ -52,7 +52,7 @@ struct OnboardingView: View {
                 .font(.system(size: 42, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
 
-            Text("A hands-free posture coach for AirPods. Your earbuds read your alignment all day, so you never have to glance at your phone to know how you're sitting.")
+            Text("A daily posture practice, coached by your AirPods. A few minutes held tall each day, with live feedback — that's how posture actually changes.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
@@ -60,7 +60,7 @@ struct OnboardingView: View {
             VStack(spacing: 14) {
                 pillarCard(index: "1", title: "Learn the shape", body: "First, what tall actually feels like, standing and sitting.", accent: Theme.lavender)
                 pillarCard(index: "2", title: "Calibrate once", body: "Your AirPods record your aligned posture in a few steady seconds.", accent: Theme.sage)
-                pillarCard(index: "3", title: "Quiet nudges all day", body: "We notice when you drift and nudge you, gently. No screens, no scolding.", accent: Theme.sand)
+                pillarCard(index: "3", title: "Practice daily", body: "One short session a day, starting at three minutes. Streaks and levels keep it growing.", accent: Theme.sand)
             }
             .padding(.top, 8)
         }

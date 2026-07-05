@@ -61,6 +61,7 @@ private struct AirpodsRootView: View {
     @State private var didActivate = false
     @State private var ackScheduledAt: Date?
     @State private var ackNotificationIndex: Int?
+    @State private var showingPracticeFromReminder = false
 
     var body: some View {
         RootView()
@@ -68,15 +69,17 @@ private struct AirpodsRootView: View {
             .onAppear {
                 guard !didActivate else { return }
                 didActivate = true
-                // Free users with AirPods get foreground-only coaching so
-                // they can feel the haptics while the app is open. Pro +
-                // toggle extends that with the silent-audio background
-                // trick. P1-7: a cold launch fires no onChange hooks, so
-                // do the right thing here.
+                // All-day monitoring runs only for Pro users who turned the
+                // Settings toggle on — since the practice pivot it is an
+                // optional extra, not the default. P1-7: a cold launch fires
+                // no onChange hooks, so do the right thing here.
                 startMonitoringForCurrentTier(monitor)
                 NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
                     ackNotificationIndex = index
+                }
+                NotificationDelegate.shared.onPracticeTap = {
+                    showingPracticeFromReminder = true
                 }
             }
             .fullScreenCover(item: .init(
@@ -85,6 +88,9 @@ private struct AirpodsRootView: View {
             )) { cover in
                 AcknowledgmentView(scheduledAt: cover.scheduledAt, notificationIndex: cover.index)
             }
+            .fullScreenCover(isPresented: $showingPracticeFromReminder) {
+                PracticeSessionView()
+            }
             .onChange(of: settings.hasCompletedOnboarding) { _, completed in
                 // First time the user finishes onboarding — now the
                 // "a few nudges a day" copy has been read, so the iOS
@@ -92,6 +98,15 @@ private struct AirpodsRootView: View {
                 if completed { Task { await ReminderScheduler.reschedule() } }
             }
             .onChange(of: settings.reminderEnabled) { _, _ in
+                Task { await ReminderScheduler.reschedule() }
+            }
+            .onChange(of: settings.practiceReminderEnabled) { _, _ in
+                Task { await ReminderScheduler.reschedule() }
+            }
+            .onChange(of: settings.practiceReminderHour) { _, _ in
+                Task { await ReminderScheduler.reschedule() }
+            }
+            .onChange(of: settings.practiceReminderMinute) { _, _ in
                 Task { await ReminderScheduler.reschedule() }
             }
             .onChange(of: settings.reminderIntervalMinutes) { _, _ in
@@ -117,12 +132,15 @@ private struct AirpodsRootView: View {
             }
     }
 
-    /// Every user past the hard paywall is a subscriber, so AirPods owners get
-    /// live coaching; the always-on toggle adds the silent-audio background
-    /// extension. Users on the camera fallback (no AirPods) get nothing here.
+    /// All-day monitoring is an opt-in Pro extra since the practice pivot:
+    /// it runs only when the user has AirPods, is subscribed, AND flipped
+    /// the Settings toggle. It never auto-starts just because someone is Pro
+    /// — that would compete with practice sessions for the motion stream.
     private func startMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
-        guard settings.hasAirpods == true, subscriptions.isProSubscriber else { return }
-        _ = m.start(background: settings.airpodsBackgroundEnabled)
+        guard settings.hasAirpods == true,
+              subscriptions.isProSubscriber,
+              settings.airpodsBackgroundEnabled else { return }
+        _ = m.start(background: true)
     }
 
     private func restartMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
@@ -151,6 +169,9 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
     /// the notification cold-launched the app. Replayed on assignment.
     @MainActor private var pendingTap: (scheduledAt: Date, index: Int)?
 
+    /// Same buffering for a practice-reminder tap that cold-launched the app.
+    @MainActor private var pendingPracticeTap = false
+
     /// Called when a posture-reminder notification is tapped. Invoked on
     /// the main actor — it mutates SwiftUI state.
     @MainActor var onReceive: (@MainActor (Date, Int) -> Void)? {
@@ -161,13 +182,30 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
         }
     }
 
+    /// Called when the daily-practice reminder is tapped — opens the session.
+    @MainActor var onPracticeTap: (@MainActor () -> Void)? {
+        didSet {
+            guard let onPracticeTap, pendingPracticeTap else { return }
+            pendingPracticeTap = false
+            onPracticeTap()
+        }
+    }
+
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        if userInfo["type"] as? String == "posture-reminder" {
+        if userInfo["type"] as? String == "practice-reminder" {
+            Task { @MainActor in
+                if let onPracticeTap = self.onPracticeTap {
+                    onPracticeTap()
+                } else {
+                    self.pendingPracticeTap = true
+                }
+            }
+        } else if userInfo["type"] as? String == "posture-reminder" {
             let stored = Date(timeIntervalSince1970: userInfo["scheduledAt"] as? TimeInterval ?? 0)
             let index = userInfo["index"] as? Int ?? 0
             // Repeating triggers carry the date they were *scheduled*, which
@@ -206,7 +244,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
 
 struct RootView: View {
     @Environment(GoalSettings.self) private var settings
-    @State private var subscriptions = SubscriptionService.shared
+    @Environment(\.modelContext) private var context
     @State private var didMigrate = false
 
     var body: some View {
@@ -215,26 +253,37 @@ struct RootView: View {
                 OnboardingView()
             } else if !settings.hasCalibrated {
                 CalibrationView()
-            } else if !subscriptions.isProSubscriber {
-                // Hard paywall: after setup, the app is gated until the user
-                // starts the trial or subscribes. Non-dismissible — there is no
-                // close button and it isn't presented as a sheet, so the only
-                // way past is a successful purchase (which flips isProSubscriber
-                // and re-renders this into MainTabView).
-                PaywallView(displayCloseButton: false, paywallImpressionId: "posture_gate")
             } else {
+                // No hard gate since the practice pivot: the core daily loop
+                // is free, the paywall appears after the first completed
+                // session and at Pro feature gates.
                 MainTabView()
             }
         }
         .task {
             guard !didMigrate else { return }
             settings.migrateFromDeprecatedKeys()
+            settings.migrateToPracticeReminders()
+            applyPracticePivotGraceIfNeeded()
             didMigrate = true
             // Hold the iOS notification prompt until after onboarding so
-            // the user reads "a few nudges a day" before the system asks.
+            // the user reads the reminder pitch before the system asks.
             if settings.hasCompletedOnboarding {
                 await ReminderScheduler.reschedule()
             }
+        }
+    }
+
+    /// One-shot on the first launch after the practice pivot: an active
+    /// streak gets today credited for free, so switching the streak source
+    /// from monitoring to sessions can't kill an existing run overnight.
+    private func applyPracticePivotGraceIfNeeded() {
+        guard !settings.didApplyPracticePivotGrace else { return }
+        settings.didApplyPracticePivotGrace = true
+        guard settings.hasCompletedOnboarding else { return }
+        let service = StreakService(context: context)
+        if StreakService.displayStreak(for: service.currentState()) > 0 {
+            _ = service.recordAcknowledgment(at: .now)
         }
     }
 }

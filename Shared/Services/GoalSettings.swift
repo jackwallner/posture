@@ -18,10 +18,18 @@ final class GoalSettings {
         static let calibrationDeferred = "calibrationDeferred"
         static let hasSeenIntroPaywall = "hasSeenIntroPaywall"
         static let hasSeenTrainingTour = "hasSeenTrainingTour"
+        static let hasSeenSessionCoachMarks = "hasSeenSessionCoachMarks"
+        static let hasSeenPivotExplainer = "hasSeenPivotExplainer"
+        static let didApplyPracticePivotGrace = "didApplyPracticePivotGrace"
         static let sensitivity = "sensitivity"
         static let alwaysOnEnabled = "alwaysOnEnabled"
 
-        // Reminder cadence
+        // Daily practice reminder
+        static let practiceReminderEnabled = "practiceReminderEnabled"
+        static let practiceReminderHour = "practiceReminderHour"
+        static let practiceReminderMinute = "practiceReminderMinute"
+
+        // Check-in reminder cadence (secondary since the practice pivot)
         static let reminderEnabled = "reminderEnabled"
         static let reminderIntervalMinutes = "reminderIntervalMinutes"
         static let activeHoursStart = "activeHoursStart"
@@ -73,6 +81,27 @@ final class GoalSettings {
         set { withMutation(keyPath: \.hasSeenTrainingTour) { defaults.set(newValue, forKey: Key.hasSeenTrainingTour) } }
     }
 
+    /// One-shot: the first practice session shows in-session coach marks
+    /// (ring → slouch on purpose → hold) instead of the old TrainingTour.
+    var hasSeenSessionCoachMarks: Bool {
+        get { access(keyPath: \.hasSeenSessionCoachMarks); return defaults.bool(forKey: Key.hasSeenSessionCoachMarks) }
+        set { withMutation(keyPath: \.hasSeenSessionCoachMarks) { defaults.set(newValue, forKey: Key.hasSeenSessionCoachMarks) } }
+    }
+
+    /// One-shot: pre-pivot users get a Today banner explaining that the
+    /// streak now comes from the daily practice.
+    var hasSeenPivotExplainer: Bool {
+        get { access(keyPath: \.hasSeenPivotExplainer); return defaults.bool(forKey: Key.hasSeenPivotExplainer) }
+        set { withMutation(keyPath: \.hasSeenPivotExplainer) { defaults.set(newValue, forKey: Key.hasSeenPivotExplainer) } }
+    }
+
+    /// One-shot: on the first launch after the practice pivot, an active
+    /// streak gets today credited for free so the model switch can't kill it.
+    var didApplyPracticePivotGrace: Bool {
+        get { access(keyPath: \.didApplyPracticePivotGrace); return defaults.bool(forKey: Key.didApplyPracticePivotGrace) }
+        set { withMutation(keyPath: \.didApplyPracticePivotGrace) { defaults.set(newValue, forKey: Key.didApplyPracticePivotGrace) } }
+    }
+
     var sensitivity: Int {
         get { access(keyPath: \.sensitivity); return defaults.object(forKey: Key.sensitivity) as? Int ?? 1 }
         set { withMutation(keyPath: \.sensitivity) { defaults.set(newValue, forKey: Key.sensitivity) } }
@@ -83,11 +112,32 @@ final class GoalSettings {
         set { withMutation(keyPath: \.alwaysOnEnabled) { defaults.set(newValue, forKey: Key.alwaysOnEnabled) } }
     }
 
-    // MARK: - Reminder Cadence
+    // MARK: - Daily practice reminder
 
-    /// Master toggle for periodic posture reminders.
+    /// The one reminder that matters: today's practice session.
+    var practiceReminderEnabled: Bool {
+        get { access(keyPath: \.practiceReminderEnabled); return defaults.object(forKey: Key.practiceReminderEnabled) as? Bool ?? true }
+        set { withMutation(keyPath: \.practiceReminderEnabled) { defaults.set(newValue, forKey: Key.practiceReminderEnabled) } }
+    }
+
+    /// Hour (0-23) of the daily practice reminder.
+    var practiceReminderHour: Int {
+        get { access(keyPath: \.practiceReminderHour); return defaults.object(forKey: Key.practiceReminderHour) as? Int ?? 10 }
+        set { withMutation(keyPath: \.practiceReminderHour) { defaults.set(newValue, forKey: Key.practiceReminderHour) } }
+    }
+
+    var practiceReminderMinute: Int {
+        get { access(keyPath: \.practiceReminderMinute); return defaults.object(forKey: Key.practiceReminderMinute) as? Int ?? 0 }
+        set { withMutation(keyPath: \.practiceReminderMinute) { defaults.set(newValue, forKey: Key.practiceReminderMinute) } }
+    }
+
+    // MARK: - Check-in reminder cadence (secondary)
+
+    /// Toggle for the extra throughout-the-day check-in nudges. Off by
+    /// default since the practice pivot — `migrateToPracticeReminders()`
+    /// preserves the old implicit `true` for existing users.
     var reminderEnabled: Bool {
-        get { access(keyPath: \.reminderEnabled); return defaults.object(forKey: Key.reminderEnabled) as? Bool ?? true }
+        get { access(keyPath: \.reminderEnabled); return defaults.object(forKey: Key.reminderEnabled) as? Bool ?? false }
         set { withMutation(keyPath: \.reminderEnabled) { defaults.set(newValue, forKey: Key.reminderEnabled) } }
     }
 
@@ -137,9 +187,14 @@ final class GoalSettings {
     // MARK: - Migration from old reminder keys
 
     /// Migrate settings from the old daily-reminder model to the new cadence model.
-    /// Call once on first launch after update.
+    /// Call once on first launch after update. Only applies to installs that
+    /// actually carry the deprecated keys — on a fresh install this must not
+    /// write `reminderEnabled` (it would defeat the off-by-default check-in
+    /// nudges introduced with the practice pivot).
     func migrateFromDeprecatedKeys() {
         guard defaults.object(forKey: Key.reminderEnabled) == nil else { return }
+        guard defaults.object(forKey: Key.dailyReminderEnabled) != nil
+            || defaults.object(forKey: Key.dailyReminderHour) != nil else { return }
         let oldEnabled = defaults.object(forKey: Key.dailyReminderEnabled) as? Bool ?? true
         reminderEnabled = oldEnabled
         if let oldHour = defaults.object(forKey: Key.dailyReminderHour) as? Int {
@@ -155,11 +210,24 @@ final class GoalSettings {
         defaults.removeObject(forKey: Key.dailyReminderHour)
     }
 
+    /// Practice-pivot migration. The check-in reminder default flipped from
+    /// implicit `true` to `false`; a pre-pivot user who never touched the
+    /// toggle expects their ~every-30-min nudges to keep firing, so write the
+    /// old implicit value explicitly before the new default takes over.
+    /// One-shot, keyed on `practiceReminderEnabled` never having been set.
+    func migrateToPracticeReminders() {
+        guard defaults.object(forKey: Key.practiceReminderEnabled) == nil else { return }
+        practiceReminderEnabled = true
+        if hasCompletedOnboarding, defaults.object(forKey: Key.reminderEnabled) == nil {
+            reminderEnabled = true
+        }
+    }
+
     #if DEBUG
     /// Wipe onboarding/calibration state so a UI test starts at the
     /// welcome screen regardless of prior installs. Test-only.
     func resetForUITest() {
-        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasSeenTrainingTour, Key.hasAirpods] {
+        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasSeenTrainingTour, Key.hasSeenSessionCoachMarks, Key.hasSeenPivotExplainer, Key.didApplyPracticePivotGrace, Key.practiceReminderEnabled, Key.practiceReminderHour, Key.practiceReminderMinute, Key.hasAirpods] {
             defaults.removeObject(forKey: key)
         }
     }

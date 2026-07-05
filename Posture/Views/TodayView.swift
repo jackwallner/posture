@@ -11,15 +11,18 @@ struct TodayView: View {
     @State private var showingAck = false
     @State private var showingRecalibrate = false
     @State private var showingMonitorLog = false
-    @State private var showingEnableConfirm = false
+    @State private var showingSession = false
+    @State private var showingLevelPaywall = false
     @State private var tourActive = false
     @State private var tourIndex = 0
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
+    @State private var subscriptions = SubscriptionService.shared
     @Query(sort: \Calibration.capturedAt, order: .reverse) private var calibrations: [Calibration]
     @Query private var passiveSamples: [PosturePassiveSample]
     @Query private var minuteSamples: [PostureMinuteSample]
+    @Query(sort: \PostureSession.startedAt, order: .reverse) private var sessions: [PostureSession]
 
     private var passiveSamplesToday: Int {
         let today = DateHelpers.startOfDay()
@@ -71,6 +74,31 @@ struct TodayView: View {
         return acknowledgments.filter { $0.timestamp >= today }
     }
 
+    // MARK: - Practice progression inputs
+
+    private var passedPracticeCount: Int {
+        sessions.filter { $0.kind == .practice && $0.passed }.count
+    }
+
+    /// The practice level, capped for free users.
+    private var practiceLevel: Int {
+        PracticeProgression.effectiveLevel(
+            level: PracticeProgression.level(passedSessions: passedPracticeCount),
+            isPro: subscriptions.isProSubscriber
+        )
+    }
+
+    private var isLevelCappedByFreeTier: Bool {
+        !subscriptions.isProSubscriber
+            && PracticeProgression.level(passedSessions: passedPracticeCount) > PracticeProgression.freeLevelCap
+    }
+
+    /// Today's completed practice session, if any (newest first).
+    private var todayCompletedPractice: PostureSession? {
+        let today = DateHelpers.startOfDay()
+        return sessions.first { $0.kind == .practice && $0.completed && $0.startedAt >= today }
+    }
+
     private var scoredAcks: [AcknowledgmentRecord] {
         todayAcks.compactMap { $0.quality == nil ? nil : $0 }
     }
@@ -114,13 +142,6 @@ struct TodayView: View {
                     settings.hasSeenTrainingTour = true
                 }
             )
-            .onAppear {
-                // First Today visit after the paywall: teach the loop once.
-                if isAirpodsUser && !settings.hasSeenTrainingTour {
-                    tourIndex = 0
-                    tourActive = true
-                }
-            }
             .onReceive(NotificationCenter.default.publisher(for: .postureReplayTrainingTour)) { _ in
                 tourIndex = 0
                 tourActive = true
@@ -128,17 +149,17 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
+            .fullScreenCover(isPresented: $showingSession) {
+                PracticeSessionView()
+            }
             .sheet(isPresented: $showingRecalibrate) {
                 CalibrationView(mode: .quickRecalibrate)
             }
             .sheet(isPresented: $showingMonitorLog) {
                 MonitoringLogView()
             }
-            .alert("Turn on all-day monitoring?", isPresented: $showingEnableConfirm) {
-                Button("Cancel", role: .cancel) { }
-                Button("Turn on") { settings.airpodsBackgroundEnabled = true }
-            } message: {
-                Text("Posture plays a silent tone to keep the AirPods sensor awake, so it can watch your posture with your phone in your pocket. iOS shows an orange dot while it listens. No audio is recorded. This uses extra battery.")
+            .sheet(isPresented: $showingLevelPaywall) {
+                PaywallView(paywallImpressionId: "posture_level_gate")
             }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
@@ -245,16 +266,28 @@ struct TodayView: View {
 
     @ViewBuilder
     private var airpodsTodayContent: some View {
-        monitoringHero
+        practiceHero
+            .trainingTourAnchor("tour.hero")
 
-        // The core action: go hands-free all day. Nudge until it's on.
-        if !settings.airpodsBackgroundEnabled {
+        // One-time explainer for users who learned the old monitoring-first
+        // loop: the streak now comes from the daily practice.
+        if settings.hasSeenTrainingTour && !settings.hasSeenPivotExplainer {
             softBanner(
-                title: "Go hands-free all day.",
-                body: "Turn on all-day monitoring and Posture keeps watching your posture with your phone in your pocket, nudging you when you slouch.",
-                actionLabel: "Turn on all-day monitoring",
-                action: { showingEnableConfirm = true }
+                title: "Your streak has a new home.",
+                body: "Posture is now built around one short daily practice — a few minutes held tall, with live coaching. Finishing it keeps your streak. All-day monitoring still lives in Settings if you want it.",
+                actionLabel: "Got it",
+                action: { settings.hasSeenPivotExplainer = true }
             )
+        }
+
+        // All-day monitoring demoted to a secondary card, shown only when
+        // the Settings toggle is on.
+        if settings.airpodsBackgroundEnabled, let m = airpodsMonitor, m.isMonitoring {
+            if let monitor = liveMonitor {
+                liveAlignmentCard(monitor: monitor)
+            } else {
+                armedCard(monitor: m)
+            }
         }
 
         todayReportCard
@@ -279,18 +312,122 @@ struct TodayView: View {
         .padding(.top, 2)
     }
 
+    // MARK: - Practice hero (the core loop)
+
     @ViewBuilder
-    private var monitoringHero: some View {
-        Group {
-            if let monitor = liveMonitor {
-                liveAlignmentCard(monitor: monitor)
-            } else if let m = airpodsMonitor, m.isMonitoring {
-                armedCard(monitor: m)
-            } else {
-                enableMonitoringCard
-            }
+    private var practiceHero: some View {
+        if let done = todayCompletedPractice {
+            practiceCompletedCard(done)
+        } else {
+            practiceStartCard
         }
-        .trainingTourAnchor("tour.hero")
+    }
+
+    private var practiceStartCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Today's practice")
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(Theme.sage)
+                Spacer()
+                levelBadge
+            }
+            Text("\(practiceMinutesLabel), held tall.")
+                .font(Theme.display(24))
+                .foregroundStyle(Theme.ink)
+            Text("Pop your AirPods in and hold your best posture with live coaching. Finish it and today's streak day is yours.")
+                .font(.system(.footnote, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .fixedSize(horizontal: false, vertical: true)
+            Button { showingSession = true } label: {
+                Text("Begin today's practice")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.daylight(.primary))
+            .padding(.top, 4)
+            levelProgressLine
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard()
+    }
+
+    private func practiceCompletedCard(_ session: PostureSession) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Practice complete")
+                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(Theme.sage)
+                Spacer()
+                levelBadge
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("\(session.alignedPercent)%")
+                    .font(.system(size: 40, weight: .regular, design: .rounded))
+                    .foregroundStyle(session.passed ? Theme.sage : Theme.sand)
+                Text(session.passed ? "aligned — target met." : "aligned today.")
+                    .font(Theme.display(19))
+                    .foregroundStyle(Theme.ink)
+            }
+            Text(session.passed
+                 ? "That pass counts toward your next level. Tomorrow's practice is ready when you are."
+                 : "The streak day is yours. Pass the \(session.targetPercent)% bar to move the level along.")
+                .font(.system(.footnote, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .fixedSize(horizontal: false, vertical: true)
+            levelProgressLine
+            Button { showingSession = true } label: {
+                Text("Practice again →")
+                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.sage)
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 2)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard()
+    }
+
+    private var levelBadge: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "chevron.up.2")
+                .font(.system(size: 9, weight: .semibold))
+            Text("Level \(practiceLevel)")
+                .font(.system(.caption, design: .rounded).weight(.semibold))
+        }
+        .foregroundStyle(Theme.sage)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Theme.sageTint, in: .capsule)
+    }
+
+    @ViewBuilder
+    private var levelProgressLine: some View {
+        if isLevelCappedByFreeTier {
+            Button { showingLevelPaywall = true } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 9, weight: .semibold))
+                    Text("Level \(PracticeProgression.freeLevelCap) · higher levels with Posture+")
+                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                }
+                .foregroundStyle(Theme.ink3)
+            }
+            .buttonStyle(.plain)
+        } else {
+            let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
+            Text("\(progress.done) of \(progress.needed) passes to Level \(practiceLevel + 1)")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(Theme.ink3)
+        }
+    }
+
+    private var practiceMinutesLabel: String {
+        let minutes = PracticeProgression.sessionSeconds(forLevel: practiceLevel) / 60
+        return minutes == 1 ? "One minute" : "\(minutes) minutes"
     }
 
     // MARK: - No-AirPods (manual) content — the compliance exception
@@ -540,33 +677,6 @@ struct TodayView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Monitoring is on, waiting for AirPods")
-    }
-
-    // MARK: - Enable monitoring card (monitoring not running)
-
-    private var enableMonitoringCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Your posture, all day")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(0.8)
-                .foregroundStyle(Theme.sage)
-            Text("Let Posture watch for you.")
-                .font(Theme.display(24))
-                .foregroundStyle(Theme.ink)
-            Text("Turn on all-day monitoring and your AirPods quietly track your posture in the background, with a gentle nudge whenever you start to slouch.")
-                .font(.system(.footnote, design: .rounded))
-                .foregroundStyle(Theme.ink2)
-                .fixedSize(horizontal: false, vertical: true)
-            Button { showingEnableConfirm = true } label: {
-                Text("Turn on monitoring")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.daylight(.primary))
-            .padding(.top, 4)
-        }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .dawnCard()
     }
 
     // MARK: - Today report card (all-day rhythm — summary lives in the card)

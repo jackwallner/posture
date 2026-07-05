@@ -33,10 +33,17 @@ enum ReminderScheduler {
         // on top of the Welcome screen.
         guard settings.hasCompletedOnboarding else { return }
         defer { NotificationCenter.default.post(name: .postureRemindersRescheduled, object: nil) }
-        guard settings.reminderEnabled else {
-            await NotificationService.cancelAllReminders()
-            return
+
+        // The practice session needs AirPods — no-AirPods users live on the
+        // check-in loop, so a practice reminder would dead-end for them.
+        let practiceWanted = settings.practiceReminderEnabled && settings.hasAirpods == true
+        if !practiceWanted {
+            NotificationService.cancelPracticeReminder()
         }
+        if !settings.reminderEnabled {
+            await NotificationService.cancelAllReminders()
+        }
+        guard practiceWanted || settings.reminderEnabled else { return }
 
         let authorized = await NotificationService.requestAuthorization()
         guard authorized else {
@@ -46,11 +53,19 @@ enum ReminderScheduler {
             return
         }
 
-        await NotificationService.scheduleReminders(
-            intervalMinutes: settings.reminderIntervalMinutes,
-            activeHoursStart: settings.activeHoursStart,
-            activeHoursEnd: settings.activeHoursEnd
-        )
+        if practiceWanted {
+            await NotificationService.schedulePracticeReminder(
+                hour: settings.practiceReminderHour,
+                minute: settings.practiceReminderMinute
+            )
+        }
+        if settings.reminderEnabled {
+            await NotificationService.scheduleReminders(
+                intervalMinutes: settings.reminderIntervalMinutes,
+                activeHoursStart: settings.activeHoursStart,
+                activeHoursEnd: settings.activeHoursEnd
+            )
+        }
     }
 
     /// The date of the next scheduled posture reminder, or nil if none.
