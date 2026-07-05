@@ -28,7 +28,7 @@ struct MonitoringLogView: View {
                         eventFeed(monitor)
                     } else {
                         Text("Monitoring isn't running.")
-                            .font(Theme.displaySerif(22))
+                            .font(Theme.display(22))
                             .foregroundStyle(Theme.ink)
                     }
                 }
@@ -61,7 +61,7 @@ struct MonitoringLogView: View {
                     .fill(statusColor(monitor))
                     .frame(width: 8, height: 8)
                 Text(statusLine(monitor))
-                    .font(Theme.displaySerif(20))
+                    .font(Theme.display(20))
                     .foregroundStyle(Theme.ink)
                 Spacer(minLength: 0)
             }
@@ -132,7 +132,7 @@ struct MonitoringLogView: View {
         switch quality {
         case .good: return "Aligned"
         case .borderline: return "Drifting"
-        case .bad: return "Resting"
+        case .bad: return "Slouching"
         }
     }
 
@@ -157,7 +157,7 @@ struct MonitoringLogView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Activity")
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
-                .tracking(1.2)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
 
             if monitor.events.isEmpty {

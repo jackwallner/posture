@@ -108,9 +108,11 @@ enum Theme {
         .system(size: size, weight: .bold, design: .rounded)
     }
 
-    /// Daylight ritual type — serif italic for the moments you pause for.
-    static func displaySerif(_ size: CGFloat) -> Font {
-        .system(size: size, weight: .regular, design: .serif).italic()
+    /// Display type for headline moments. One confident voice: rounded SF
+    /// with real weight, no serif italics — the whole app speaks the same
+    /// typeface and hierarchy comes from size + weight only.
+    static func display(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
     }
 
     /// Daylight numerics — rounded, monospaced digits for meta/eyebrows.

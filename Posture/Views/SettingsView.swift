@@ -138,6 +138,14 @@ struct SettingsView: View {
 
                 Section("Help") {
                     Button {
+                        // MainTabView flips to the Today tab; TodayView starts the tour.
+                        NotificationCenter.default.post(name: .postureReplayTrainingTour, object: nil)
+                    } label: {
+                        Label("Replay the Walkthrough", systemImage: "sparkles")
+                    }
+                    .foregroundStyle(Theme.ink)
+
+                    Button {
                         ReviewPromptCoordinator.shared.requestEnjoymentPrompt()
                     } label: {
                         Label("Rate or Send Feedback", systemImage: "star.bubble")
@@ -189,10 +197,10 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("POSTURE+")
                     .font(.caption.weight(.semibold))
-                    .tracking(2)
+                    .tracking(0.8)
                     .foregroundStyle(Theme.sage)
                 Text("Keep the whole year.\nSee your slouch hours.")
-                    .font(Theme.displaySerif(22))
+                    .font(Theme.display(22))
                     .foregroundStyle(Theme.ink)
                 Text(proPostcardPriceLine)
                     .font(.caption.weight(.semibold))

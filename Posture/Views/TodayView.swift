@@ -12,20 +12,26 @@ struct TodayView: View {
     @State private var showingRecalibrate = false
     @State private var showingMonitorLog = false
     @State private var showingEnableConfirm = false
+    @State private var tourActive = false
+    @State private var tourIndex = 0
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
     @Query(sort: \Calibration.capturedAt, order: .reverse) private var calibrations: [Calibration]
     @Query private var passiveSamples: [PosturePassiveSample]
-
-    private var hasPassiveSamplesToday: Bool {
-        let today = DateHelpers.startOfDay()
-        return passiveSamples.contains { $0.timestamp >= today }
-    }
+    @Query private var minuteSamples: [PostureMinuteSample]
 
     private var passiveSamplesToday: Int {
         let today = DateHelpers.startOfDay()
         return passiveSamples.filter { $0.timestamp >= today }.count
+    }
+
+    /// Live day stats from the continuous monitor's minute aggregates.
+    private var dayStats: PostureDayStats {
+        let today = DateHelpers.startOfDay()
+        return PostureDayStats.compute(
+            minutes: minuteSamples.filter { $0.minuteStart >= today }.map(\.statsIngest)
+        )
     }
 
     /// A real AirPods calibration baseline exists — required before the live
@@ -98,6 +104,27 @@ struct TodayView: View {
             }
             .dawnBackground()
             .navigationBarHidden(true)
+            .trainingTourOverlay(
+                steps: Self.tourSteps,
+                index: $tourIndex,
+                isActive: tourActive,
+                liveQuality: liveMonitor?.currentQuality,
+                onFinish: {
+                    tourActive = false
+                    settings.hasSeenTrainingTour = true
+                }
+            )
+            .onAppear {
+                // First Today visit after the paywall: teach the loop once.
+                if isAirpodsUser && !settings.hasSeenTrainingTour {
+                    tourIndex = 0
+                    tourActive = true
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .postureReplayTrainingTour)) { _ in
+                tourIndex = 0
+                tourActive = true
+            }
             .fullScreenCover(isPresented: $showingAck) {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
@@ -137,7 +164,7 @@ struct TodayView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(timeOfDayGreeting)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .tracking(1.5)
+                    .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Text("Today")
                     .font(.system(size: 34, weight: .regular, design: .rounded))
@@ -145,20 +172,28 @@ struct TodayView: View {
             }
             Spacer()
             if currentStreak > 0 {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(currentStreak) \(currentStreak == 1 ? "day" : "days")")
-                        .font(Theme.displaySerif(18))
-                        .foregroundStyle(Theme.ink2)
-                        .accessibilityLabel("\(currentStreak) day streak")
+                VStack(alignment: .trailing, spacing: 3) {
+                    HStack(spacing: 5) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Theme.sand)
+                        Text("\(currentStreak)-day streak")
+                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .foregroundStyle(Theme.ink)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .dawnCapsule()
+                    .accessibilityLabel("\(currentStreak) day streak")
                     if freezesAvailable > 0 {
                         HStack(spacing: 3) {
                             Image(systemName: "snowflake")
                                 .font(.system(size: 9, weight: .semibold))
-                            Text("\(freezesAvailable)")
+                            Text("\(freezesAvailable) \(freezesAvailable == 1 ? "freeze" : "freezes") saved")
                                 .font(.system(.caption2, design: .rounded).weight(.semibold))
                         }
                         .foregroundStyle(Theme.ink3)
-                        .accessibilityLabel("\(freezesAvailable) streak \(freezesAvailable == 1 ? "freeze" : "freezes") available")
+                        .accessibilityLabel("\(freezesAvailable) streak \(freezesAvailable == 1 ? "freeze" : "freezes") available. A freeze protects your streak for one missed day.")
                     }
                 }
             }
@@ -181,6 +216,32 @@ struct TodayView: View {
     private var isAirpodsUser: Bool { settings.hasAirpods == true }
 
     // MARK: - AirPods (monitoring-first) content
+
+    /// Tour copy. Step 3 is the live one — its body swaps to a success state
+    /// the moment the monitor reads `.bad`.
+    static let tourSteps: [TrainingTourStep] = [
+        TrainingTourStep(
+            anchorID: "tour.hero",
+            title: "This is your posture, live.",
+            body: "With AirPods in, this card reads your head position about 25 times a second. Green means aligned, amber means drifting, coral means slouching."
+        ),
+        TrainingTourStep(
+            anchorID: "tour.rhythm",
+            title: "Your day writes itself.",
+            body: "Every monitored minute lands here. By tonight you'll see the % of your day you sat tall, and which hours slipped."
+        ),
+        TrainingTourStep(
+            anchorID: nil,
+            title: "Now slouch. On purpose.",
+            body: "Really let go — chin toward your chest, shoulders forward. Hold it for a few seconds and watch the card above flip.",
+            isLiveSlouchStep: true
+        ),
+        TrainingTourStep(
+            anchorID: nil,
+            title: "That's the whole habit.",
+            body: "Keep your AirPods in while you work and Posture handles the rest: quiet nudges when you slouch, a streak for every monitored day. Aim for a few hours a day."
+        ),
+    ]
 
     @ViewBuilder
     private var airpodsTodayContent: some View {
@@ -220,13 +281,16 @@ struct TodayView: View {
 
     @ViewBuilder
     private var monitoringHero: some View {
-        if let monitor = liveMonitor {
-            liveAlignmentCard(monitor: monitor)
-        } else if let m = airpodsMonitor, m.isMonitoring {
-            armedCard(monitor: m)
-        } else {
-            enableMonitoringCard
+        Group {
+            if let monitor = liveMonitor {
+                liveAlignmentCard(monitor: monitor)
+            } else if let m = airpodsMonitor, m.isMonitoring {
+                armedCard(monitor: m)
+            } else {
+                enableMonitoringCard
+            }
         }
+        .trainingTourAnchor("tour.hero")
     }
 
     // MARK: - No-AirPods (manual) content — the compliance exception
@@ -273,7 +337,7 @@ struct TodayView: View {
                         .frame(width: 7, height: 7)
                     Text("Right now")
                         .font(.system(.footnote, design: .rounded).weight(.semibold))
-                        .tracking(1.2)
+                        .tracking(0.8)
                         .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
                     HStack(spacing: 3) {
@@ -299,7 +363,7 @@ struct TodayView: View {
                     .frame(width: 96, height: 96)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(liveWord(quality))
-                            .font(Theme.displaySerif(20))
+                            .font(Theme.display(20))
                             .foregroundStyle(liveColor(quality))
                         Text(liveSubtitle)
                             .font(.system(.footnote, design: .rounded))
@@ -350,9 +414,9 @@ struct TodayView: View {
     }
 
     private var liveSubtitle: String {
-        let resets = passiveSamplesToday
-        guard resets > 0 else { return "Monitoring your posture live." }
-        return "\(resets) slouch\(resets == 1 ? "" : "es") caught today."
+        let stats = dayStats
+        guard let percent = stats.alignedPercent else { return "Monitoring your posture live." }
+        return "\(percent)% aligned · \(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) today"
     }
 
     // MARK: - Check-in alignment card (fallback — discrete check-ins)
@@ -361,7 +425,7 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Today's alignment")
                 .font(.system(.footnote, design: .rounded).weight(.semibold))
-                .tracking(1.2)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             HStack(alignment: .center, spacing: 18) {
                 ZStack {
@@ -380,7 +444,7 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // Dawn: the quality word is the ritual moment — serif italic.
                     Text(readoutLabel)
-                        .font(Theme.displaySerif(20))
+                        .font(Theme.display(20))
                         .foregroundStyle(alignmentRingColor)
                     Text(readoutSubtitle)
                         .font(.system(.footnote, design: .rounded))
@@ -411,7 +475,7 @@ struct TodayView: View {
             HStack {
                 Text("Today, hour by hour")
                     .font(.system(.footnote, design: .rounded).weight(.semibold))
-                    .tracking(1.2)
+                    .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 Text("\(todayAcks.count) today")
@@ -443,7 +507,7 @@ struct TodayView: View {
                         .frame(width: 7, height: 7)
                     Text("Monitoring on")
                         .font(.system(.footnote, design: .rounded).weight(.semibold))
-                        .tracking(1.2)
+                        .tracking(0.8)
                         .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
                     HStack(spacing: 3) {
@@ -454,7 +518,7 @@ struct TodayView: View {
                     .foregroundStyle(Theme.ink3)
                 }
                 Text(needsBaseline ? "Calibrate to start reading." : "Waiting for your AirPods.")
-                    .font(Theme.displaySerif(22))
+                    .font(Theme.display(22))
                     .foregroundStyle(Theme.ink)
                 Text(needsBaseline
                      ? "Pop in your AirPods and recalibrate, and live posture readings begin."
@@ -482,12 +546,12 @@ struct TodayView: View {
 
     private var enableMonitoringCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("YOUR POSTURE, ALL DAY")
+            Text("Your posture, all day")
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(1.5)
+                .tracking(0.8)
                 .foregroundStyle(Theme.sage)
             Text("Let Posture watch for you.")
-                .font(Theme.displaySerif(24))
+                .font(Theme.display(24))
                 .foregroundStyle(Theme.ink)
             Text("Turn on all-day monitoring and your AirPods quietly track your posture in the background, with a gentle nudge whenever you start to slouch.")
                 .font(.system(.footnote, design: .rounded))
@@ -505,25 +569,11 @@ struct TodayView: View {
         .dawnCard()
     }
 
-    // MARK: - Today report card (all-day rhythm + summary)
+    // MARK: - Today report card (all-day rhythm — summary lives in the card)
 
     private var todayReportCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(monitoringSummaryLine)
-                .font(.system(.footnote, design: .rounded).weight(.medium))
-                .foregroundStyle(Theme.ink2)
-            PassiveTimelineView()
-        }
-    }
-
-    private var monitoringSummaryLine: String {
-        let slouches = passiveSamplesToday
-        if slouches == 0 {
-            return hasPassiveSamplesToday
-                ? "Steady so far today. Nice."
-                : "Your posture report builds as the day goes on."
-        }
-        return "\(slouches) slouch\(slouches == 1 ? "" : "es") caught today."
+        PassiveTimelineView()
+            .trainingTourAnchor("tour.rhythm")
     }
 
     private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {
@@ -579,7 +629,7 @@ struct TodayView: View {
         switch s {
         case 70...: return "Aligned"
         case 40..<70: return "Drifting"
-        default: return "Resting"
+        default: return "Slouching"
         }
     }
 

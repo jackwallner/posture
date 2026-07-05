@@ -12,6 +12,7 @@ enum DataService {
         let schema = Schema([
             PostureSession.self,
             PosturePassiveSample.self,
+            PostureMinuteSample.self,
             Calibration.self,
             StreakState.self,
             BeforeAfterPhoto.self,

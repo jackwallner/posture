@@ -15,7 +15,7 @@ struct QualityChip: View {
         switch quality {
         case .good: return "Aligned"
         case .borderline: return "Drifting"
-        case .bad: return "Resting"
+        case .bad: return "Slouching"
         }
     }
 

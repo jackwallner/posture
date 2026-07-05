@@ -1,22 +1,24 @@
 import SwiftUI
 
-/// A single-line serif-italic tip. Tap to expand inline. Replaces the
-/// heavy `PostureTipCard` on Today and the Done state (the full card
-/// stays on `PostureHabitsView`).
+/// A compact tip row. Shows the whole tip — a truncated tip teaches nothing —
+/// with a small leading icon so it reads as a tip, not lost body copy.
 struct TipLine: View {
     let tip: PostureTip
 
-    @State private var expanded = false
-
     var body: some View {
-        Text("· \(tip.text)")
-            .font(.system(.callout, design: .serif).italic())
-            .foregroundStyle(Theme.ink2)
-            .lineLimit(expanded ? nil : 1)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }
-            .accessibilityLabel("Tip: \(tip.text)")
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "lightbulb")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.sand)
+                .padding(.top, 2)
+            Text(tip.text)
+                .font(.system(.footnote, design: .rounded))
+                .foregroundStyle(Theme.ink2)
+                .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityLabel("Tip: \(tip.text)")
     }
 }
 

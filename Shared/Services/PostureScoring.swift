@@ -11,9 +11,15 @@ enum PostureScoring {
     /// Convert a single pose deviation (radians from baseline pitch) into a quality bucket.
     /// `slouchDelta` is the calibrated full-slouch reference deviation.
     /// `sensitivity`: 0 = relaxed, 1 = normal, 2 = strict.
+    /// The reference is floored (7.5°) so a half-hearted calibration can't be
+    /// hair-trigger, and capped (11.25°) so a theatrical chair slouch during
+    /// calibration can't stretch the scale until a *standing* slouch — which
+    /// only drops the head ~6–10° because it's mostly shoulders — reads as
+    /// good. The cap is applied here, at scoring time, so legacy calibrations
+    /// stored with the old wider cap tighten automatically.
     static func quality(deviation: Double, slouchDelta: Double, sensitivity: Int = 1) -> PostureQuality {
         let absDev = abs(deviation)
-        let safeSlouch = max(slouchDelta, .pi / 24)  // floor at 7.5°
+        let safeSlouch = min(max(slouchDelta, .pi / 24), .pi / 16)
         let ratio = absDev / safeSlouch
         let (goodThreshold, borderlineThreshold): (Double, Double) = switch sensitivity {
         case 0: (0.65, 1.15)  // Relaxed, only flag major slouches
@@ -23,6 +29,32 @@ enum PostureScoring {
         if ratio < goodThreshold { return .good }
         if ratio < borderlineThreshold { return .borderline }
         return .bad
+    }
+
+    /// Pick the aligned reference for a live sample when per-posture baselines
+    /// exist. The old approach averaged standing + sitting into one number,
+    /// which blurred both: honest standing uprightness read as deviation
+    /// (eating margin), and part of a real slouch was absorbed by the blur.
+    /// Scoring against the *nearer* baseline keeps each posture honest. Head
+    /// pitch alone can't tell standing from sitting, so no per-posture
+    /// strictness is attempted here — the tightened slouch cap in `quality`
+    /// is what keeps small-amplitude standing slouches visible.
+    static func nearestBaseline(
+        pitch: Double,
+        standing: Double?,
+        sitting: Double?,
+        combined: Double
+    ) -> Double {
+        switch (standing, sitting) {
+        case let (s?, t?):
+            return abs(pitch - s) < abs(pitch - t) ? s : t
+        case let (s?, nil):
+            return s
+        case let (nil, t?):
+            return t
+        default:
+            return combined
+        }
     }
 
     /// Robust deviation for a *window* of pose samples. Uses the median so a

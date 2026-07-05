@@ -61,7 +61,7 @@ struct AcknowledgmentView: View {
             HStack {
                 Text(eyebrow(scheduledAt))
                     .font(.caption.weight(.semibold))
-                    .tracking(2)
+                    .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 closeButton
@@ -70,7 +70,7 @@ struct AcknowledgmentView: View {
             .padding(.bottom, 40)
 
             Text("How's your posture\nright now?")
-                .font(Theme.displaySerif(42))
+                .font(Theme.display(42))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
 
@@ -86,7 +86,7 @@ struct AcknowledgmentView: View {
             HStack(spacing: 10) {
                 selfReportChip(label: "Aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
                 selfReportChip(label: "Drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
-                selfReportChip(label: "Resting", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+                selfReportChip(label: "Slouching", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
             }
             .padding(.bottom, 24)
         }
@@ -149,14 +149,14 @@ struct AcknowledgmentView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(doneEyebrow)
                         .font(.caption.weight(.semibold))
-                        .tracking(2)
+                        .tracking(0.8)
                         .foregroundStyle(resultColor)
                     HStack(alignment: .firstTextBaseline, spacing: 0) {
                         Text(resultWord)
-                            .font(Theme.displaySerif(64))
+                            .font(Theme.display(64))
                             .foregroundStyle(Theme.ink)
                         Text(".")
-                            .font(Theme.displaySerif(64))
+                            .font(Theme.display(64))
                             .foregroundStyle(resultColor)
                     }
                     Text(resultSubtitle)
@@ -205,7 +205,7 @@ struct AcknowledgmentView: View {
         switch recordedQuality {
         case .good: return "Aligned"
         case .borderline: return "Drifting"
-        case .bad: return "Resting"
+        case .bad: return "Slouching"
         case nil: return "Noted"
         }
     }

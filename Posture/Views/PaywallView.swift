@@ -153,7 +153,7 @@ struct PaywallView: View {
             timelineRow(
                 icon: "lock.open.fill",
                 title: "Today",
-                text: "Unlock coaching, drift rhythm, and full history, free.",
+                text: "Unlock all-day monitoring, live nudges, and your full report, free.",
                 showsLine: true
             )
             timelineRow(
@@ -216,10 +216,10 @@ struct PaywallView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("POSTURE+")
                 .font(.caption2.weight(.semibold))
-                .tracking(2)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             Text(headlineText)
-                .font(Theme.displaySerif(26))
+                .font(Theme.display(26))
                 .foregroundStyle(Theme.ink)
                 .lineLimit(2)
                 .minimumScaleFactor(0.85)
@@ -249,10 +249,12 @@ struct PaywallView: View {
         if let pkg = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
            subscriptions.isEligibleForIntroOffer(pkg),
            let trial = pkg.postureIntroOfferLabel {
-            return "Try Posture+\n\(trial)."
+            // One flowing sentence — a hard \n here used to collide with
+            // lineLimit(2) and truncate to "Try Posture+…".
+            return "Start your \(trial) of Posture+"
         }
         #endif
-        return "Build the posture\nyou keep."
+        return "Posture that watches itself."
     }
 
     private var trustStrip: some View {
@@ -279,9 +281,9 @@ struct PaywallView: View {
 
     private var compactFeatureList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            compactBenefit(icon: "clock.arrow.circlepath", title: "Drift rhythm: see exactly when you slip, hour by hour")
-            compactBenefit(icon: "airpods.gen3", title: "AirPods coaching: quiet nudges without glancing at your phone")
-            compactBenefit(icon: "calendar", title: "Full history: keep every month, not just seven days")
+            compactBenefit(icon: "airpods.gen3", title: "All-day monitoring: AirPods quietly watch and nudge when you slouch")
+            compactBenefit(icon: "clock.arrow.circlepath", title: "Your day, scored: % aligned, hour by hour")
+            compactBenefit(icon: "flame", title: "Streaks and gentle reminders that keep the habit going")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

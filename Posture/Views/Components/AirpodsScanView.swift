@@ -69,7 +69,7 @@ struct AirpodsScanView: View {
             HStack {
                 Text(eyebrow)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .tracking(1.5)
+                    .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 Button { onClose() } label: {
@@ -281,14 +281,23 @@ struct AirpodsScanView: View {
             // Judge the whole hold, not the final instant: the median across
             // every sample means a single glance down at second three can't
             // flip an otherwise-upright check-in to "bad".
-            guard let deviation = PostureScoring.aggregateDeviation(
-                samples: samples, baseline: baseline
+            guard let medianDeviation = PostureScoring.aggregateDeviation(
+                samples: samples, baseline: 0
             ) else {
                 onFallback()
                 return
             }
+            // Score against the nearer of the standing/sitting baselines so a
+            // standing check-in isn't judged by the averaged (mostly sitting)
+            // number. medianDeviation here is the raw median pitch.
+            let referenceBaseline = PostureScoring.nearestBaseline(
+                pitch: medianDeviation,
+                standing: calibration?.airpodsStandingPitch,
+                sitting: calibration?.airpodsSittingPitch,
+                combined: baseline
+            )
             let quality = PostureScoring.quality(
-                deviation: deviation,
+                deviation: medianDeviation - referenceBaseline,
                 slouchDelta: slouchDelta,
                 sensitivity: settings.sensitivity
             )

@@ -85,7 +85,7 @@ struct CalibrationView: View {
                 title: "Stand up tall.",
                 instruction: "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below.",
                 confirm: "I'm standing tall",
-                icon: "figure.stand"
+                pose: .standing
             )
             case .standing: alignedCaptureStep(
                 eyebrow: "Aligned · standing",
@@ -98,7 +98,7 @@ struct CalibrationView: View {
                 title: "Now sit down tall.",
                 instruction: "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below.",
                 confirm: "I'm sitting tall",
-                icon: "figure.seated.side"
+                pose: .sitting
             )
             case .sitting: alignedCaptureStep(
                 eyebrow: "Aligned · sitting",
@@ -111,7 +111,7 @@ struct CalibrationView: View {
                 title: "Now let go and slouch.",
                 instruction: "Settle into the slump you usually catch yourself in, however you're sitting now. When you're in your natural slouch, tap below.",
                 confirm: "I'm slouched",
-                icon: "figure.seated.side"
+                pose: .slouching
             )
             case .slouch: slouchStep
             case .unsupported: unsupportedStep
@@ -190,9 +190,9 @@ struct CalibrationView: View {
 
     private func alignedCaptureStep(eyebrow: String, title: String, instruction: String, accent: Color, wash: Color) -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text(eyebrow.uppercased())
+            Text(eyebrow)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(1.5)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
                 .padding(.top, 8)
             Spacer()
@@ -201,7 +201,7 @@ struct CalibrationView: View {
                     .fill(wash)
                     .frame(width: 200, height: 200)
                 Text("\(countdown)")
-                    .font(Theme.displaySerif(96))
+                    .font(Theme.display(96))
                     .foregroundStyle(accent)
                     .contentTransition(.numericText())
                     .animation(.default, value: countdown)
@@ -232,23 +232,15 @@ struct CalibrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func prepStep(eyebrow: String, title: String, instruction: String, confirm: String, icon: String) -> some View {
+    private func prepStep(eyebrow: String, title: String, instruction: String, confirm: String, pose: PoseDiagram.Pose) -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text(eyebrow.uppercased())
+            Text(eyebrow)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(1.5)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
                 .padding(.top, 8)
             Spacer()
-            ZStack {
-                Circle()
-                    .fill(Theme.lavenderTint)
-                    .frame(width: 160, height: 160)
-                Image(systemName: icon)
-                    .font(.system(size: 68, weight: .regular))
-                    .foregroundStyle(Theme.lavender)
-            }
-            .frame(maxWidth: .infinity)
+            PoseDiagram(pose: pose, height: 170)
 
             Text(title)
                 .font(.system(size: 32, weight: .semibold, design: .rounded))
@@ -284,9 +276,9 @@ struct CalibrationView: View {
 
     private var slouchStep: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("YOUR RANGE")
+            Text("Your range")
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(1.5)
+                .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
                 .padding(.top, 8)
             Spacer()
@@ -295,7 +287,7 @@ struct CalibrationView: View {
                     .fill(Theme.clayTint)
                     .frame(width: 200, height: 200)
                 Text("\(countdown)")
-                    .font(Theme.displaySerif(96))
+                    .font(Theme.display(96))
                     .foregroundStyle(Theme.clay)
                     .contentTransition(.numericText())
                     .animation(.default, value: countdown)

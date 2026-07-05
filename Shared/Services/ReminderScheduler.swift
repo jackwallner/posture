@@ -9,6 +9,9 @@ extension Notification.Name {
     /// time, remaining count) must re-read on this — reading while the
     /// queue is mid-rewrite sees a partial (often empty) list.
     static let postureRemindersRescheduled = Notification.Name("com.jackwallner.posture.remindersRescheduled")
+
+    /// Posted by Settings to replay the first-run training tour on Today.
+    static let postureReplayTrainingTour = Notification.Name("com.jackwallner.posture.replayTrainingTour")
 }
 
 /// Orchestrates posture reminder scheduling. Handles setting changes,

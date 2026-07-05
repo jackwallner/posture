@@ -17,6 +17,7 @@ final class GoalSettings {
         static let hasCalibrated = "hasCalibrated"
         static let calibrationDeferred = "calibrationDeferred"
         static let hasSeenIntroPaywall = "hasSeenIntroPaywall"
+        static let hasSeenTrainingTour = "hasSeenTrainingTour"
         static let sensitivity = "sensitivity"
         static let alwaysOnEnabled = "alwaysOnEnabled"
 
@@ -62,6 +63,14 @@ final class GoalSettings {
     var hasSeenIntroPaywall: Bool {
         get { access(keyPath: \.hasSeenIntroPaywall); return defaults.bool(forKey: Key.hasSeenIntroPaywall) }
         set { withMutation(keyPath: \.hasSeenIntroPaywall) { defaults.set(newValue, forKey: Key.hasSeenIntroPaywall) } }
+    }
+
+    /// One-shot: the guided training tour runs on the first Today visit after
+    /// the paywall, teaching the monitoring loop (live status → rhythm →
+    /// feel the nudge). Replayable from Settings.
+    var hasSeenTrainingTour: Bool {
+        get { access(keyPath: \.hasSeenTrainingTour); return defaults.bool(forKey: Key.hasSeenTrainingTour) }
+        set { withMutation(keyPath: \.hasSeenTrainingTour) { defaults.set(newValue, forKey: Key.hasSeenTrainingTour) } }
     }
 
     var sensitivity: Int {
@@ -150,7 +159,7 @@ final class GoalSettings {
     /// Wipe onboarding/calibration state so a UI test starts at the
     /// welcome screen regardless of prior installs. Test-only.
     func resetForUITest() {
-        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasAirpods] {
+        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasSeenTrainingTour, Key.hasAirpods] {
             defaults.removeObject(forKey: key)
         }
     }

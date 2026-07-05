@@ -96,6 +96,24 @@ final class AirpodsBackgroundMonitor {
     /// longer depends on remembering to tap a manual check-in.
     private var lastStreakCreditDay: Date?
 
+    // MARK: - Minute aggregation
+
+    /// The ~25 Hz stream is far too rich to persist raw, but slouch events
+    /// alone throw away the story of the day. We fold every scored sample
+    /// into a per-minute good/borderline/bad bucket and persist one
+    /// `PostureMinuteSample` row as each minute rolls over — that's what
+    /// "% of day aligned", wear time, and the day timeline read.
+    private var minuteBucketStart: Date?
+    private var minuteGoodSeconds: Double = 0
+    private var minuteBorderlineSeconds: Double = 0
+    private var minuteBadSeconds: Double = 0
+    /// Timestamp of the previous scored sample, for dt attribution. Clamped
+    /// so a gap (pods out, app suspended mid-read) never credits phantom time.
+    private var lastScoredSampleAt: Date?
+    /// Keep the store from growing unbounded — a monitored year is ~350k
+    /// minute rows. 90 days is more history than any view reads.
+    private static let minuteRetentionDays = 90
+
     // MARK: - Init
 
     init(modelContext: ModelContext) {
@@ -169,6 +187,7 @@ final class AirpodsBackgroundMonitor {
         isBackground = background
         lastError = nil
         logEvent(.armed(background: background))
+        pruneOldMinuteSamples()
         activateMotion()
         return true
     }
@@ -213,7 +232,9 @@ final class AirpodsBackgroundMonitor {
 
     /// Clear all smoothing + streak state so the next bout starts clean. Called
     /// on stop, on AirPods disconnect, and whenever we lack a real baseline.
+    /// Flushes the in-progress minute first so partial minutes persist.
     private func resetDetectionState() {
+        flushMinuteBucket()
         smoothedPitch = nil
         firstBadAt = nil
         inBadBout = false
@@ -238,6 +259,7 @@ final class AirpodsBackgroundMonitor {
         guard isMonitoring, !suspendedForForegroundRead else { return }
         suspendedForForegroundRead = true
         headphoneService.stop()
+        flushMinuteBucket()
     }
 
     /// Resume the background motion stream after a foreground read finishes.
@@ -282,9 +304,18 @@ final class AirpodsBackgroundMonitor {
         smoothedPitch = PostureScoring.smoothed(
             previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
         )
-        let deviation = (smoothedPitch ?? pitch) - baseline
+        let scoredPitch = smoothedPitch ?? pitch
+        // Standing and sitting have different honest head positions — score
+        // against whichever aligned baseline is nearer instead of the old
+        // averaged blur, so upright margin isn't eaten by the other posture.
+        let referenceBaseline = PostureScoring.nearestBaseline(
+            pitch: scoredPitch,
+            standing: calibration?.airpodsStandingPitch,
+            sitting: calibration?.airpodsSittingPitch,
+            combined: baseline
+        )
         let instant = PostureScoring.quality(
-            deviation: deviation,
+            deviation: scoredPitch - referenceBaseline,
             slouchDelta: slouchDelta,
             sensitivity: sensitivity
         )
@@ -298,7 +329,73 @@ final class AirpodsBackgroundMonitor {
         // absorbs raw jitter, so this won't strobe. Sustained-time logic lives
         // only in the nudge below (buzz/record), never in what's displayed.
         if instant != currentQuality { currentQuality = instant }
-        updateSlouchNudge(instant: instant, now: Date.now)
+        let now = Date.now
+        accumulateMinute(quality: instant, now: now)
+        updateSlouchNudge(instant: instant, now: now)
+    }
+
+    // MARK: - Minute bucket
+
+    private func accumulateMinute(quality: PostureQuality, now: Date) {
+        let minute = Self.truncateToMinute(now)
+        if let bucket = minuteBucketStart, bucket != minute {
+            flushMinuteBucket()
+        }
+        if minuteBucketStart == nil { minuteBucketStart = minute }
+
+        // Credit the gap since the last scored sample to the current quality.
+        // Clamped at 2s: a longer gap means the stream was interrupted and
+        // that time was not observed.
+        let dt = lastScoredSampleAt.map { min(max(now.timeIntervalSince($0), 0), 2) } ?? 0
+        lastScoredSampleAt = now
+        switch quality {
+        case .good: minuteGoodSeconds += dt
+        case .borderline: minuteBorderlineSeconds += dt
+        case .bad: minuteBadSeconds += dt
+        }
+    }
+
+    /// Persist the in-progress minute and reset the bucket. Called on minute
+    /// rollover and whenever monitoring pauses (stop, disconnect, foreground
+    /// read) so partial minutes aren't lost.
+    private func flushMinuteBucket() {
+        defer {
+            minuteBucketStart = nil
+            minuteGoodSeconds = 0
+            minuteBorderlineSeconds = 0
+            minuteBadSeconds = 0
+            lastScoredSampleAt = nil
+        }
+        guard let start = minuteBucketStart else { return }
+        let total = minuteGoodSeconds + minuteBorderlineSeconds + minuteBadSeconds
+        guard total >= 1 else { return }
+        let row = PostureMinuteSample(
+            minuteStart: start,
+            goodSeconds: minuteGoodSeconds,
+            borderlineSeconds: minuteBorderlineSeconds,
+            badSeconds: minuteBadSeconds,
+            source: .airpods
+        )
+        modelContext.insert(row)
+        try? modelContext.save()
+    }
+
+    private static func truncateToMinute(_ date: Date) -> Date {
+        let cal = Calendar.current
+        let parts = cal.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+        return cal.date(from: parts) ?? date
+    }
+
+    /// Drop minute rows past retention so the store stays lean.
+    private func pruneOldMinuteSamples() {
+        let cutoff = Calendar.current.date(
+            byAdding: .day, value: -Self.minuteRetentionDays, to: DateHelpers.startOfDay()
+        ) ?? .distantPast
+        try? modelContext.delete(
+            model: PostureMinuteSample.self,
+            where: #Predicate { $0.minuteStart < cutoff }
+        )
+        try? modelContext.save()
     }
 
     /// The nudge (haptic + recorded sample) fires only after a long *continuous*

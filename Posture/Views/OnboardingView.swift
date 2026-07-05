@@ -72,6 +72,8 @@ struct OnboardingView: View {
                 .font(.system(size: 36, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
 
+            PoseDiagram(pose: .stack, height: 170)
+
             Text("Tall posture is a stack, not a strain. Line these up and let everything else relax.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
@@ -92,6 +94,8 @@ struct OnboardingView: View {
                 .font(.system(size: 36, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
 
+            PoseDiagram(pose: .standing, height: 170)
+
             Text("Try it now. We'll capture this pose in a moment, so build it once here.")
                 .font(.system(.body, design: .rounded))
                 .foregroundStyle(Theme.ink)
@@ -111,6 +115,8 @@ struct OnboardingView: View {
             Text("Sitting tall.")
                 .font(.system(size: 36, weight: .semibold, design: .rounded))
                 .foregroundStyle(Theme.ink)
+
+            PoseDiagram(pose: .sitting, height: 170)
 
             Text("Where most of the slouching happens. Same long spine, different base.")
                 .font(.system(.body, design: .rounded))
