@@ -25,7 +25,7 @@ struct PostureWidgetProvider: TimelineProvider {
     }
 
     static func load() -> PostureWidgetEntry {
-        // Must mirror DataService's schema exactly — this extension opens the
+        // Must mirror DataService's schema exactly - this extension opens the
         // same App Group store, and a schema mismatch after the app migrates
         // it makes the container fail (blank widget).
         let schema = Schema([PostureSession.self, PosturePassiveSample.self, PostureMinuteSample.self, Calibration.self, StreakState.self, BeforeAfterPhoto.self, AcknowledgmentRecord.self])
@@ -88,31 +88,31 @@ struct PostureLockScreenWidgetView: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 5) {
                 Image(systemName: "figure.stand")
-                    .font(.subheadline.weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
                 Text("Posture")
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
             }
             .foregroundStyle(Theme.ink)
             Spacer(minLength: 0)
             if let score = entry.todayScore {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
                     Text("\(score)")
-                        .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                        .font(Theme.font(.largeTitle, weight: .bold))
                         .foregroundStyle(Theme.ink)
                     Text("/ 100")
-                        .font(.caption)
+                        .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
                 }
             } else {
                 Text("No check-in yet today")
-                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .font(Theme.font(.subheadline, weight: .medium))
                     .foregroundStyle(Theme.ink2)
             }
             HStack(spacing: 4) {
                 Image(systemName: "flame.fill")
-                    .font(.caption2)
+                    .font(Theme.font(.caption2))
                 Text("\(entry.streak)-day streak")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
             }
             .foregroundStyle(Theme.ink2)
         }
@@ -124,15 +124,15 @@ struct PostureLockScreenWidgetView: View {
             AccessoryWidgetBackground()
             VStack(spacing: 1) {
                 Image(systemName: "figure.stand")
-                    .font(.caption.weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                 if let score = entry.todayScore {
                     Text("\(score)")
-                        .font(.system(.title3, design: .rounded).weight(.bold))
+                        .font(Theme.font(.title3, weight: .bold))
                 } else {
                     Image(systemName: "flame.fill")
-                        .font(.caption2)
+                        .font(Theme.font(.caption2))
                     Text("\(entry.streak)")
-                        .font(.system(.title3, design: .rounded).weight(.bold))
+                        .font(Theme.font(.title3, weight: .bold))
                 }
             }
         }
@@ -151,31 +151,31 @@ struct PostureLockScreenWidgetView: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(spacing: 4) {
                 Image(systemName: "figure.stand")
-                    .font(.caption.weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                 Text("Posture")
-                    .font(.caption2.weight(.semibold))
+                    .font(Theme.font(.caption2, weight: .semibold))
             }
             if let score = entry.todayScore {
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
                     Text("\(score)")
-                        .font(.system(.title, design: .rounded).weight(.bold))
+                        .font(Theme.font(.title, weight: .bold))
                     Text("/ 100")
-                        .font(.caption2)
+                        .font(Theme.font(.caption2))
                         .foregroundStyle(.secondary)
                 }
                 HStack(spacing: 4) {
                     Image(systemName: "flame.fill")
-                        .font(.caption2)
+                        .font(Theme.font(.caption2))
                     Text("\(entry.streak)-day streak")
-                        .font(.caption2)
+                        .font(Theme.font(.caption2))
                 }
                 .foregroundStyle(.secondary)
             } else {
                 Text("No check-in yet today")
-                    .font(.headline)
+                    .font(Theme.font(.headline))
                     .foregroundStyle(.secondary)
                 Text("\(entry.streak)-day streak")
-                    .font(.caption2)
+                    .font(Theme.font(.caption2))
                     .foregroundStyle(.secondary)
             }
         }
@@ -183,6 +183,13 @@ struct PostureLockScreenWidgetView: View {
 }
 
 @main
+struct PostureWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        PostureWidget()
+        PracticeLiveActivity()
+    }
+}
+
 struct PostureWidget: Widget {
     let kind = "PostureWidget"
 

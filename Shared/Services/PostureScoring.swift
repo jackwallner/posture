@@ -6,15 +6,15 @@ enum PostureQuality: String, Sendable {
     case bad
 }
 
-/// Pure scoring functions — no I/O, no state. Easy to unit test.
+/// Pure scoring functions - no I/O, no state. Easy to unit test.
 enum PostureScoring {
     /// Convert a single pose deviation (radians from baseline pitch) into a quality bucket.
     /// `slouchDelta` is the calibrated full-slouch reference deviation.
     /// `sensitivity`: 0 = relaxed, 1 = normal, 2 = strict.
     /// The reference is floored (7.5°) so a half-hearted calibration can't be
     /// hair-trigger, and capped (11.25°) so a theatrical chair slouch during
-    /// calibration can't stretch the scale until a *standing* slouch — which
-    /// only drops the head ~6–10° because it's mostly shoulders — reads as
+    /// calibration can't stretch the scale until a *standing* slouch - which
+    /// only drops the head ~6–10° because it's mostly shoulders - reads as
     /// good. The cap is applied here, at scoring time, so legacy calibrations
     /// stored with the old wider cap tighten automatically.
     static func quality(deviation: Double, slouchDelta: Double, sensitivity: Int = 1) -> PostureQuality {
@@ -37,7 +37,7 @@ enum PostureScoring {
     /// (eating margin), and part of a real slouch was absorbed by the blur.
     /// Scoring against the *nearer* baseline keeps each posture honest. Head
     /// pitch alone can't tell standing from sitting, so no per-posture
-    /// strictness is attempted here — the tightened slouch cap in `quality`
+    /// strictness is attempted here - the tightened slouch cap in `quality`
     /// is what keeps small-amplitude standing slouches visible.
     static func nearestBaseline(
         pitch: Double,
@@ -54,6 +54,35 @@ enum PostureScoring {
             return t
         default:
             return combined
+        }
+    }
+
+    /// The aligned baseline plus the slouch range that belongs to it. With
+    /// per-posture calibration (standing + sitting each measured tall AND
+    /// slouched) the sample is judged against the nearer posture's own range -
+    /// a standing slouch is a small pitch drop, a sitting collapse a big one,
+    /// and sharing one delta blurred both.
+    static func postureReference(
+        pitch: Double,
+        standing: Double?,
+        sitting: Double?,
+        combined: Double,
+        standingSlouchDelta: Double?,
+        sittingSlouchDelta: Double?,
+        fallbackSlouchDelta: Double
+    ) -> (baseline: Double, slouchDelta: Double) {
+        switch (standing, sitting) {
+        case let (s?, t?):
+            if abs(pitch - s) < abs(pitch - t) {
+                return (s, standingSlouchDelta ?? fallbackSlouchDelta)
+            }
+            return (t, sittingSlouchDelta ?? fallbackSlouchDelta)
+        case let (s?, nil):
+            return (s, standingSlouchDelta ?? fallbackSlouchDelta)
+        case let (nil, t?):
+            return (t, sittingSlouchDelta ?? fallbackSlouchDelta)
+        default:
+            return (combined, fallbackSlouchDelta)
         }
     }
 
@@ -98,7 +127,7 @@ enum PostureScoring {
 
     /// Walking injects rhythmic head bob that the live EMA (α 0.15) only
     /// partly absorbs, so walk scoring judges the *median over a rolling
-    /// window* instead of the smoothed instant — gait oscillation cancels
+    /// window* instead of the smoothed instant - gait oscillation cancels
     /// out of a median, a real sustained slump doesn't.
     enum Walk {
         /// Rolling window the walk verdict is computed over.
@@ -106,7 +135,7 @@ enum PostureScoring {
         /// The first stretch of a walk (pocketing the phone, finding stride)
         /// is excluded from the session's aligned score and timeline.
         static let warmupSeconds: Double = 30
-        /// Walks score with relaxed thresholds — heads move more out there.
+        /// Walks score with relaxed thresholds - heads move more out there.
         static let sensitivity = 0
         /// Windowed quality must stay bad this long before a nudge.
         static let nudgeSustainSeconds: Double = 10
@@ -118,7 +147,7 @@ enum PostureScoring {
 
     /// Median deviation of the time-stamped samples inside the walk window.
     /// Returns nil until at least `Walk.minSpanSeconds` of the window is
-    /// covered — never judge a stride off a fraction of a second.
+    /// covered - never judge a stride off a fraction of a second.
     static func walkWindowDeviation(
         samples: [(t: TimeInterval, pitch: Double)],
         baseline: Double,
@@ -189,7 +218,7 @@ struct ChinTuckRepDetector: Sendable {
             }
             let elapsed = t - started
             if elapsed > PostureScoring.ChinTuck.maxRepDurationSeconds {
-                // Stuck out there — treat as a new neutral once they return.
+                // Stuck out there - treat as a new neutral once they return.
                 if abs(deviation) <= PostureScoring.ChinTuck.returnToleranceRadians {
                     state = .neutral
                     excursionStartedAt = nil
@@ -199,7 +228,7 @@ struct ChinTuckRepDetector: Sendable {
             if abs(deviation) <= PostureScoring.ChinTuck.returnToleranceRadians {
                 state = .neutral
                 excursionStartedAt = nil
-                // Too quick to be a deliberate rep — ignore the cycle.
+                // Too quick to be a deliberate rep - ignore the cycle.
                 return elapsed >= PostureScoring.ChinTuck.minRepDurationSeconds ? 1 : 0
             }
             return 0

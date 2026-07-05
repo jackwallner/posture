@@ -13,7 +13,7 @@ struct AcknowledgmentView: View {
     /// The time this reminder was scheduled for. Defaults to .now for manual check-ins.
     let scheduledAt: Date
 
-    /// Optional — notification index, so we can clear the delivered notification.
+    /// Optional - notification index, so we can clear the delivered notification.
     let notificationIndex: Int?
 
     @State private var phase: Phase = .choice
@@ -36,7 +36,7 @@ struct AcknowledgmentView: View {
         }
         .onAppear {
             currentTip = PostureTipService.randomTip()
-            // AirPods owners get an objective scan as the check-in — no
+            // AirPods owners get an objective scan as the check-in - no
             // self-report. Manual self-report is the no-AirPods mode only.
             if settings.hasAirpods == true, phase == .choice {
                 phase = .scanning
@@ -60,7 +60,7 @@ struct AcknowledgmentView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(eyebrow(scheduledAt))
-                    .font(.caption.weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
@@ -75,7 +75,7 @@ struct AcknowledgmentView: View {
                 .lineSpacing(2)
 
             Text("Sit tall, then tell us how you're holding it. Your check-in keeps your streak alive.")
-                .font(.body)
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
 
@@ -100,7 +100,7 @@ struct AcknowledgmentView: View {
             recordManual(quality: quality)
         } label: {
             Text(label)
-                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .font(Theme.font(.subheadline, weight: .semibold))
                 .foregroundStyle(accent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -148,7 +148,7 @@ struct AcknowledgmentView: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 14) {
                     Text(doneEyebrow)
-                        .font(.caption.weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(resultColor)
                     HStack(alignment: .firstTextBaseline, spacing: 0) {
@@ -160,14 +160,14 @@ struct AcknowledgmentView: View {
                             .foregroundStyle(resultColor)
                     }
                     Text(resultSubtitle)
-                        .font(.body)
+                        .font(Theme.font(.body))
                         .foregroundStyle(Theme.ink2)
                         .fixedSize(horizontal: false, vertical: true)
-                    // The receipt — what this check-in just added, so a
+                    // The receipt - what this check-in just added, so a
                     // three-second ritual never feels like it vanished.
                     if todayCheckInCount > 0 {
                         Text(tallyLine)
-                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .font(Theme.font(.footnote, weight: .semibold))
                             .foregroundStyle(Theme.ink3)
                             .padding(.top, 2)
                     }
@@ -192,7 +192,7 @@ struct AcknowledgmentView: View {
     private var closeButton: some View {
         Button { dismiss() } label: {
             Image(systemName: "xmark")
-                .font(.body.weight(.medium))
+                .font(Theme.font(.body, weight: .medium))
                 .foregroundStyle(Theme.ink3)
         }
         .buttonStyle(.plain)

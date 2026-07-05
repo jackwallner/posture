@@ -12,10 +12,11 @@ struct TodayView: View {
     @State private var showingRecalibrate = false
     @State private var showingMonitorLog = false
     @State private var showingSession = false
-    @State private var showingLevelPaywall = false
     @State private var showingWalk = false
     @State private var showingWalkPaywall = false
     @State private var showingAchievements = false
+    @State private var showingLevelLadder = false
+    @State private var showingStreakDetail = false
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
@@ -38,7 +39,7 @@ struct TodayView: View {
         )
     }
 
-    /// A real AirPods calibration baseline exists — required before the live
+    /// A real AirPods calibration baseline exists - required before the live
     /// monitor can honestly score posture.
     private var hasAirpodsBaseline: Bool {
         calibrations.first?.airpodsPitch != nil
@@ -46,13 +47,13 @@ struct TodayView: View {
 
     /// The continuous monitor when it's actually producing a trustworthy live
     /// reading: armed, AirPods connected, and calibrated. This is the primary
-    /// posture signal — the on-demand scan is now the fallback.
+    /// posture signal - the on-demand scan is now the fallback.
     private var liveMonitor: AirpodsBackgroundMonitor? {
         guard let m = airpodsMonitor, m.isMonitoring, m.isConnected, hasAirpodsBaseline else { return nil }
         return m
     }
 
-    /// Show a soft prompt to recalibrate after 30+ days — head pose drifts
+    /// Show a soft prompt to recalibrate after 30+ days - head pose drifts
     /// against the saved baseline (especially with AirPods which sit
     /// differently each time).
     private var needsRecalibration: Bool {
@@ -62,12 +63,12 @@ struct TodayView: View {
     }
 
     /// Display-only streak. Does not insert a StreakState during body
-    /// evaluation (audit P1-10) — creation is owned by StreakService.
+    /// evaluation (audit P1-10) - creation is owned by StreakService.
     /// `displayStreak` zeroes out a run that already lapsed, so we never
     /// show "12 days" when the streak is dead.
     private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
 
-    /// Display-only freeze count — so users know their streak has a safety net.
+    /// Display-only freeze count - so users know their streak has a safety net.
     private var freezesAvailable: Int { streaks.first?.freezesAvailable ?? 0 }
 
     private var todayAcks: [AcknowledgmentRecord] {
@@ -156,11 +157,14 @@ struct TodayView: View {
             .sheet(isPresented: $showingMonitorLog) {
                 MonitoringLogView()
             }
-            .sheet(isPresented: $showingLevelPaywall) {
-                PaywallView(paywallImpressionId: "posture_level_gate")
-            }
             .sheet(isPresented: $showingAchievements) {
                 AchievementsView()
+            }
+            .sheet(isPresented: $showingLevelLadder) {
+                LevelLadderView()
+            }
+            .sheet(isPresented: $showingStreakDetail) {
+                StreakDetailView()
             }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
@@ -185,39 +189,41 @@ struct TodayView: View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(timeOfDayGreeting)
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Text("Today")
-                    .font(.system(size: 34, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 34, weight: .regular))
                     .foregroundStyle(Theme.ink)
             }
             Spacer()
             if currentStreak > 0 {
-                VStack(alignment: .trailing, spacing: 3) {
-                    HStack(spacing: 5) {
-                        Image(systemName: "flame.fill")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(Theme.sand)
-                        Text("\(currentStreak)-day streak")
-                            .font(.system(.footnote, design: .rounded).weight(.semibold))
-                            .foregroundStyle(Theme.ink)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .dawnCapsule()
-                    .accessibilityLabel("\(currentStreak) day streak")
-                    if freezesAvailable > 0 {
-                        HStack(spacing: 3) {
-                            Image(systemName: "snowflake")
-                                .font(.system(size: 9, weight: .semibold))
-                            Text("\(freezesAvailable) \(freezesAvailable == 1 ? "freeze" : "freezes") saved")
-                                .font(.system(.caption2, design: .rounded).weight(.semibold))
+                Button { showingStreakDetail = true } label: {
+                    VStack(alignment: .trailing, spacing: 3) {
+                        HStack(spacing: 5) {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Theme.sand)
+                            Text("\(currentStreak)-day streak")
+                                .font(Theme.font(.footnote, weight: .semibold))
+                                .foregroundStyle(Theme.ink)
                         }
-                        .foregroundStyle(Theme.ink3)
-                        .accessibilityLabel("\(freezesAvailable) streak \(freezesAvailable == 1 ? "freeze" : "freezes") available. A freeze protects your streak for one missed day.")
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .dawnCapsule()
+                        if freezesAvailable > 0 {
+                            HStack(spacing: 3) {
+                                Image(systemName: "snowflake")
+                                    .font(.system(size: 9, weight: .semibold))
+                                Text("\(freezesAvailable) \(freezesAvailable == 1 ? "save" : "saves") ready")
+                                    .font(Theme.font(.caption2, weight: .semibold))
+                            }
+                            .foregroundStyle(Theme.ink3)
+                        }
                     }
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(currentStreak) day streak, \(freezesAvailable) saves ready. Tap for streak details.")
             }
         }
         .padding(.top, 12)
@@ -241,6 +247,23 @@ struct TodayView: View {
 
     @ViewBuilder
     private var airpodsTodayContent: some View {
+        // Live posture leads the page: with AirPods in and the app open, the
+        // top card is your alignment right now (free, on by default).
+        if let m = airpodsMonitor, m.isMonitoring || m.userPaused {
+            VStack(spacing: 6) {
+                if m.userPaused {
+                    pausedMonitorCard(m)
+                } else {
+                    if let monitor = liveMonitor {
+                        liveAlignmentCard(monitor: monitor)
+                    } else {
+                        armedCard(monitor: m)
+                    }
+                    monitorStopRow(m)
+                }
+            }
+        }
+
         practiceHero
 
         achievementsRow
@@ -252,20 +275,10 @@ struct TodayView: View {
         if settings.hasSeenTrainingTour && !settings.hasSeenPivotExplainer {
             softBanner(
                 title: "Your streak has a new home.",
-                body: "Posture is now built around one short daily practice — a few minutes held tall, with live coaching. Finishing it keeps your streak. All-day monitoring still lives in Settings if you want it.",
+                body: "Posture is now built around one short daily practice: a few minutes held tall, with live coaching. Finishing it keeps your streak. All-day monitoring still lives in Settings if you want it.",
                 actionLabel: "Got it",
                 action: { settings.hasSeenPivotExplainer = true }
             )
-        }
-
-        // All-day monitoring demoted to a secondary card, shown only when
-        // the Settings toggle is on.
-        if settings.airpodsBackgroundEnabled, let m = airpodsMonitor, m.isMonitoring {
-            if let monitor = liveMonitor {
-                liveAlignmentCard(monitor: monitor)
-            } else {
-                armedCard(monitor: m)
-            }
         }
 
         todayReportCard
@@ -282,7 +295,7 @@ struct TodayView: View {
         // Manual check-in is a minor escape hatch here, not the main event.
         Button { showingAck = true } label: {
             Text("Log a manual check-in")
-                .font(.system(.footnote, design: .rounded).weight(.medium))
+                .font(Theme.font(.footnote, weight: .medium))
                 .foregroundStyle(Theme.ink3)
                 .frame(maxWidth: .infinity)
         }
@@ -305,7 +318,7 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Today's practice")
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.sage)
                 Spacer()
@@ -315,7 +328,7 @@ struct TodayView: View {
                 .font(Theme.display(24))
                 .foregroundStyle(Theme.ink)
             Text("Pop your AirPods in and hold your best posture with live coaching. Finish it and today's streak day is yours.")
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
             Button { showingSession = true } label: {
@@ -335,7 +348,7 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Practice complete")
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.sage)
                 Spacer()
@@ -343,22 +356,22 @@ struct TodayView: View {
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("\(session.alignedPercent)%")
-                    .font(.system(size: 40, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 40, weight: .regular))
                     .foregroundStyle(session.passed ? Theme.sage : Theme.sand)
-                Text(session.passed ? "aligned — target met." : "aligned today.")
+                Text(session.passed ? "aligned, target met." : "aligned today.")
                     .font(Theme.display(19))
                     .foregroundStyle(Theme.ink)
             }
             Text(session.passed
                  ? "That pass counts toward your next level. Tomorrow's practice is ready when you are."
                  : "The streak day is yours. Pass the \(session.targetPercent)% bar to move the level along.")
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
             levelProgressLine
             Button { showingSession = true } label: {
                 Text("Practice again →")
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.footnote, weight: .semibold))
                     .foregroundStyle(Theme.sage)
             }
             .buttonStyle(.plain)
@@ -369,7 +382,7 @@ struct TodayView: View {
         .dawnCard()
     }
 
-    /// Walk mode entry (Pro). Free users see it locked — tapping opens the
+    /// Walk mode entry (Pro). Free users see it locked - tapping opens the
     /// walk paywall, so the feature sells itself.
     private var walkCard: some View {
         Button {
@@ -390,10 +403,10 @@ struct TodayView: View {
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Take it for a walk")
-                        .font(.system(.body, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.body, weight: .semibold))
                         .foregroundStyle(Theme.ink)
                     Text("See how tall you carry yourself out there.")
-                        .font(.system(.footnote, design: .rounded))
+                        .font(Theme.font(.footnote))
                         .foregroundStyle(Theme.ink2)
                 }
                 Spacer(minLength: 0)
@@ -412,36 +425,43 @@ struct TodayView: View {
     }
 
     private var levelBadge: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "chevron.up.2")
-                .font(.system(size: 9, weight: .semibold))
-            Text("Level \(practiceLevel)")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+        Button { showingLevelLadder = true } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "chevron.up.2")
+                    .font(.system(size: 9, weight: .semibold))
+                Text("Level \(practiceLevel)")
+                    .font(Theme.font(.caption, weight: .semibold))
+            }
+            .foregroundStyle(Theme.sage)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Theme.sageTint, in: .capsule)
         }
-        .foregroundStyle(Theme.sage)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .background(Theme.sageTint, in: .capsule)
+        .buttonStyle(.plain)
+        .accessibilityLabel("Level \(practiceLevel). Tap to see how levels work.")
     }
 
     @ViewBuilder
     private var levelProgressLine: some View {
         if isLevelCappedByFreeTier {
-            Button { showingLevelPaywall = true } label: {
+            Button { showingLevelLadder = true } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 9, weight: .semibold))
                     Text("Level \(PracticeProgression.freeLevelCap) · higher levels with Posture+")
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                 }
                 .foregroundStyle(Theme.ink3)
             }
             .buttonStyle(.plain)
         } else {
-            let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
-            Text("\(progress.done) of \(progress.needed) passes to Level \(practiceLevel + 1)")
-                .font(.system(.caption, design: .rounded))
-                .foregroundStyle(Theme.ink3)
+            Button { showingLevelLadder = true } label: {
+                let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
+                Text("\(progress.done) of \(progress.needed) passes to Level \(practiceLevel + 1)")
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -450,7 +470,7 @@ struct TodayView: View {
         return minutes == 1 ? "One minute" : "\(minutes) minutes"
     }
 
-    // MARK: - No-AirPods (manual) content — the compliance exception
+    // MARK: - No-AirPods (manual) content - the compliance exception
 
     @ViewBuilder
     private var manualTodayContent: some View {
@@ -482,7 +502,7 @@ struct TodayView: View {
         }
     }
 
-    // MARK: - Live alignment card (continuous monitor — primary signal)
+    // MARK: - Live alignment card (continuous monitor - primary signal)
 
     private func liveAlignmentCard(monitor: AirpodsBackgroundMonitor) -> some View {
         let quality = monitor.currentQuality
@@ -493,7 +513,7 @@ struct TodayView: View {
                         .fill(liveColor(quality))
                         .frame(width: 7, height: 7)
                     Text("Right now")
-                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
@@ -501,7 +521,7 @@ struct TodayView: View {
                         Text("Activity")
                         Image(systemName: "chevron.right")
                     }
-                    .font(.system(.caption2, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption2, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                 }
                 HStack(alignment: .center, spacing: 18) {
@@ -523,7 +543,7 @@ struct TodayView: View {
                             .font(Theme.display(20))
                             .foregroundStyle(liveColor(quality))
                         Text(liveSubtitle)
-                            .font(.system(.footnote, design: .rounded))
+                            .font(Theme.font(.footnote))
                             .foregroundStyle(Theme.ink2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -536,6 +556,56 @@ struct TodayView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Posture right now: \(liveWord(quality)). Tap for activity.")
+    }
+
+    /// Quiet stop control under the live card. Every monitored minute is
+    /// already recorded, so stopping loses nothing already earned.
+    private func monitorStopRow(_ monitor: AirpodsBackgroundMonitor) -> some View {
+        Button {
+            monitor.userPaused = true
+            monitor.stop()
+        } label: {
+            Text("Stop for now")
+                .font(Theme.font(.caption, weight: .semibold))
+                .foregroundStyle(Theme.ink3)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Stop the live posture readout")
+    }
+
+    /// The user hit Stop - reassure that the minutes were kept and offer the
+    /// way back in.
+    private func pausedMonitorCard(_ monitor: AirpodsBackgroundMonitor) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 7) {
+                Circle()
+                    .fill(Theme.ink3)
+                    .frame(width: 7, height: 7)
+                Text("Live readout stopped")
+                    .font(Theme.font(.footnote, weight: .semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(Theme.ink3)
+                Spacer(minLength: 0)
+            }
+            Text("Your monitored minutes are saved in today's report. Start again any time.")
+                .font(Theme.font(.footnote))
+                .foregroundStyle(Theme.ink2)
+                .fixedSize(horizontal: false, vertical: true)
+            Button {
+                monitor.userPaused = false
+                let wantsBackground = subscriptions.isProSubscriber && settings.airpodsBackgroundEnabled
+                _ = monitor.start(background: wantsBackground)
+            } label: {
+                Text("Start reading again →")
+                    .font(Theme.font(.footnote, weight: .semibold))
+                    .foregroundStyle(Theme.sage)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard()
     }
 
     private func liveColor(_ q: PostureQuality) -> Color {
@@ -576,12 +646,12 @@ struct TodayView: View {
         return "\(percent)% aligned · \(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) today"
     }
 
-    // MARK: - Check-in alignment card (fallback — discrete check-ins)
+    // MARK: - Check-in alignment card (fallback - discrete check-ins)
 
     private var checkInAlignmentCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Today's alignment")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             HStack(alignment: .center, spacing: 18) {
@@ -594,17 +664,17 @@ struct TodayView: View {
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.6), value: alignmentScore)
                     Text(alignmentScore.map { "\($0)" } ?? "–")
-                        .font(.system(size: 34, weight: .regular, design: .rounded))
+                        .font(Theme.font(size: 34, weight: .regular))
                         .foregroundStyle(Theme.ink)
                 }
                 .frame(width: 96, height: 96)
                 VStack(alignment: .leading, spacing: 4) {
-                    // Dawn: the quality word is the ritual moment — serif italic.
+                    // Dawn: the quality word is the ritual moment - serif italic.
                     Text(readoutLabel)
                         .font(Theme.display(20))
                         .foregroundStyle(alignmentRingColor)
                     Text(readoutSubtitle)
-                        .font(.system(.footnote, design: .rounded))
+                        .font(Theme.font(.footnote))
                         .foregroundStyle(Theme.ink2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -631,12 +701,12 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Today, hour by hour")
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.footnote, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 Text("\(todayAcks.count) today")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
             }
             DayStrip(
@@ -663,7 +733,7 @@ struct TodayView: View {
                         .fill(Theme.sand)
                         .frame(width: 7, height: 7)
                     Text("Monitoring on")
-                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(Theme.ink3)
                     Spacer(minLength: 0)
@@ -671,7 +741,7 @@ struct TodayView: View {
                         Text("Activity")
                         Image(systemName: "chevron.right")
                     }
-                    .font(.system(.caption2, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption2, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                 }
                 Text(needsBaseline ? "Calibrate to start reading." : "Waiting for your AirPods.")
@@ -680,13 +750,13 @@ struct TodayView: View {
                 Text(needsBaseline
                      ? "Pop in your AirPods and recalibrate, and live posture readings begin."
                      : "Put your AirPods in and Posture starts watching your posture automatically.")
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
                     .fixedSize(horizontal: false, vertical: true)
                 if monitor.isConnected {
                     TimelineView(.periodic(from: .now, by: 1)) { timeline in
                         Text(monitorActivityLine(monitor: monitor, now: timeline.date))
-                            .font(.system(.caption, design: .rounded))
+                            .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink3)
                     }
                 }
@@ -699,7 +769,7 @@ struct TodayView: View {
         .accessibilityLabel("Monitoring is on, waiting for AirPods")
     }
 
-    // MARK: - Today report card (all-day rhythm — summary lives in the card)
+    // MARK: - Today report card (all-day rhythm - summary lives in the card)
 
     private var todayReportCard: some View {
         PassiveTimelineView()
@@ -724,16 +794,16 @@ struct TodayView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     if let latest {
                         Text("Latest badge: \(latest.title)")
-                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .font(Theme.font(.footnote, weight: .semibold))
                             .foregroundStyle(Theme.ink)
                     } else {
                         Text("Badges")
-                            .font(.system(.footnote, design: .rounded).weight(.semibold))
+                            .font(Theme.font(.footnote, weight: .semibold))
                             .foregroundStyle(Theme.ink)
                     }
                     if let next {
                         Text("Next up: \(next.title)")
-                            .font(.system(.caption, design: .rounded))
+                            .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink3)
                     }
                 }
@@ -762,17 +832,17 @@ struct TodayView: View {
     private func softBanner(title: String, body: String, actionLabel: String?, action: (() -> Void)?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .font(Theme.font(.subheadline, weight: .semibold))
                 .foregroundStyle(Theme.ink)
             Text(body)
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
             if let actionLabel, let action {
                 Button(action: action) {
                     Text(actionLabel + " →")
-                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.sage)
                 }
                 .buttonStyle(.plain)
@@ -821,19 +891,19 @@ struct TodayView: View {
     private var metaRow: some View {
         if settings.reminderEnabled {
             Text("Next reminder \(nextReminderText) · \(remainingReminders) more today")
-                .font(.system(.caption, design: .rounded))
+                .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
         } else {
             HStack(spacing: 6) {
                 Text("Reminders are off.")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
                 Button {
                     settings.reminderEnabled = true
                     Task { await ReminderScheduler.reschedule() }
                 } label: {
                     Text("Turn on →")
-                        .font(.caption.weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .foregroundStyle(Theme.sage)
                 }
                 .buttonStyle(.plain)

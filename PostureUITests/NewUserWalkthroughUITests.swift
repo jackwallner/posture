@@ -30,7 +30,7 @@ final class NewUserWalkthroughUITests: XCTestCase {
         let begin = app.buttons["Continue"]
         XCTAssertTrue(begin.waitForExistence(timeout: 20), "welcome never appeared")
         shot("01-welcome")
-        for _ in 0..<3 {
+        for _ in 0..<4 {
             if app.buttons["Continue"].exists { app.buttons["Continue"].tap() }
         }
         let finish = app.buttons["Set up my baseline"]

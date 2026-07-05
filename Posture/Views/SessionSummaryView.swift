@@ -14,7 +14,7 @@ struct SessionSummaryView: View {
 
                 VStack(alignment: .leading, spacing: 14) {
                     Text(eyebrow)
-                        .font(.caption.weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(accent)
                     HStack(alignment: .firstTextBaseline, spacing: 0) {
@@ -26,7 +26,7 @@ struct SessionSummaryView: View {
                             .foregroundStyle(accent)
                     }
                     Text(subtitle)
-                        .font(.body)
+                        .font(Theme.font(.body))
                         .foregroundStyle(Theme.ink2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -57,10 +57,10 @@ struct SessionSummaryView: View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(result.alignedPercent)%")
-                    .font(.system(size: 34, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 34, weight: .regular))
                     .foregroundStyle(accent)
                 Text("aligned")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -69,10 +69,10 @@ struct SessionSummaryView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(isWalk ? minutesLabel : "\(targetLabel)%")
-                    .font(.system(size: 34, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 34, weight: .regular))
                     .foregroundStyle(Theme.ink)
                 Text(isWalk ? "held tall" : "target")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,7 +86,7 @@ struct SessionSummaryView: View {
     private var timelineStrip: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(isWalk ? "The walk, minute by minute" : "The session, ten seconds at a time")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.6)
                 .foregroundStyle(Theme.ink3)
             HStack(alignment: .bottom, spacing: 3) {
@@ -112,10 +112,10 @@ struct SessionSummaryView: View {
                             text: "Day \(result.streakDays) of your streak.")
             }
             if isWalk {
-                // Walks carry no level stakes — the streak line is the receipt.
+                // Walks carry no level stakes - the streak line is the receipt.
             } else if result.leveledUp {
                 receiptLine(icon: "chevron.up.2", color: Theme.sage,
-                            text: "Level \(result.newLevel) unlocked — tomorrow's practice grows a little.")
+                            text: "Level \(result.newLevel) unlocked, tomorrow's practice grows a little.")
             } else if result.passed {
                 receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
                             text: "Target met. That counts toward Level \(result.newLevel + 1).")
@@ -136,7 +136,7 @@ struct SessionSummaryView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(color)
             Text(text)
-                .font(.system(.footnote, design: .rounded).weight(.medium))
+                .font(Theme.font(.footnote, weight: .medium))
                 .foregroundStyle(Theme.ink2)
         }
     }
@@ -162,7 +162,7 @@ struct SessionSummaryView: View {
             return "The minutes you held still count in today's timeline. Come back for the full practice."
         }
         if result.passed {
-            return "You stayed aligned \(result.alignedPercent)% of the session — over the \(targetLabel)% bar."
+            return "You stayed aligned \(result.alignedPercent)% of the session, over the \(targetLabel)% bar."
         }
         return "You finished the full practice. \(result.alignedPercent)% aligned today; the bar was \(targetLabel)%."
     }

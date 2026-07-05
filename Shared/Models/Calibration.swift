@@ -11,7 +11,7 @@ final class Calibration {
     var baseYaw: Double
     var baseRoll: Double
 
-    // AirPods baseline (radians) — nil if AirPods weren't connected during calibration.
+    // AirPods baseline (radians) - nil if AirPods weren't connected during calibration.
     // `airpodsPitch` is the effective baseline scoring reads: the mean of the
     // standing + sitting aligned captures (they're both "head level", so a
     // single robust number, cross-checked across two postures).
@@ -30,13 +30,21 @@ final class Calibration {
     // decide whether the baseline is trustworthy enough to judge against.
     var baselineConfidence: Double?
 
-    // Watch wrist gravity baseline — nil if watch wasn't worn
+    // Watch wrist gravity baseline - nil if watch wasn't worn
     var watchGravityX: Double?
     var watchGravityY: Double?
     var watchGravityZ: Double?
 
     // Slouch reference: how far the user actually tilts when slouching (radians)
     var slouchPitchDelta: Double
+
+    // Per-posture slouch references (2026-07): the drop from the standing
+    // aligned pose into a standing slouch, and sitting into a sitting slouch.
+    // Standing slouches are mostly shoulders (small pitch change); sitting
+    // slouches collapse further - one shared delta blurred both. nil on
+    // legacy rows; scoring falls back to `slouchPitchDelta`.
+    var standingSlouchDelta: Double?
+    var sittingSlouchDelta: Double?
 
     init(
         id: UUID = UUID(),
@@ -51,6 +59,8 @@ final class Calibration {
         airpodsStandingPitch: Double? = nil,
         airpodsSittingPitch: Double? = nil,
         baselineConfidence: Double? = nil,
+        standingSlouchDelta: Double? = nil,
+        sittingSlouchDelta: Double? = nil,
         watchGravityX: Double? = nil,
         watchGravityY: Double? = nil,
         watchGravityZ: Double? = nil
@@ -67,6 +77,8 @@ final class Calibration {
         self.airpodsStandingPitch = airpodsStandingPitch
         self.airpodsSittingPitch = airpodsSittingPitch
         self.baselineConfidence = baselineConfidence
+        self.standingSlouchDelta = standingSlouchDelta
+        self.sittingSlouchDelta = sittingSlouchDelta
         self.watchGravityX = watchGravityX
         self.watchGravityY = watchGravityY
         self.watchGravityZ = watchGravityZ

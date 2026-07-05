@@ -1,0 +1,119 @@
+import ActivityKit
+import SwiftUI
+import WidgetKit
+
+/// Dynamic Island + lock-screen presentation of a running practice or walk
+/// session: live countdown and the current alignment color.
+struct PracticeLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: PracticeActivityAttributes.self) { context in
+            lockScreenView(context)
+                .activityBackgroundTint(Theme.paper)
+                .activitySystemActionForegroundColor(Theme.ink)
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    HStack(spacing: 6) {
+                        Image(systemName: icon(context))
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(color(context))
+                        Text(qualityWord(context))
+                            .font(Theme.font(.subheadline, weight: .semibold))
+                            .foregroundStyle(color(context))
+                    }
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    countdown(context)
+                        .font(Theme.font(.title3, weight: .semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: 64)
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    Text(bottomLine(context))
+                        .font(Theme.font(.footnote))
+                        .foregroundStyle(.secondary)
+                }
+            } compactLeading: {
+                Image(systemName: icon(context))
+                    .foregroundStyle(color(context))
+            } compactTrailing: {
+                countdown(context)
+                    .font(Theme.font(.caption2, weight: .semibold))
+                    .monospacedDigit()
+                    .frame(maxWidth: 44)
+            } minimal: {
+                Image(systemName: icon(context))
+                    .foregroundStyle(color(context))
+            }
+        }
+    }
+
+    // MARK: - Lock screen
+
+    private func lockScreenView(_ context: ActivityViewContext<PracticeActivityAttributes>) -> some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(color(context).opacity(0.18))
+                    .frame(width: 44, height: 44)
+                Image(systemName: icon(context))
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(color(context))
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(context.attributes.kind == "walk" ? "Posture walk" : "Posture practice")
+                    .font(Theme.font(.subheadline, weight: .semibold))
+                    .foregroundStyle(Theme.ink)
+                Text(bottomLine(context))
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink2)
+            }
+            Spacer(minLength: 8)
+            countdown(context)
+                .font(Theme.font(.title2, weight: .semibold))
+                .monospacedDigit()
+                .foregroundStyle(Theme.ink)
+        }
+        .padding(16)
+    }
+
+    // MARK: - Bits
+
+    @ViewBuilder
+    private func countdown(_ context: ActivityViewContext<PracticeActivityAttributes>) -> some View {
+        if context.state.paused {
+            Text("paused")
+        } else {
+            Text(timerInterval: Date.now...max(context.state.endDate, .now), countsDown: true)
+        }
+    }
+
+    private func bottomLine(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
+        if context.state.paused { return "Paused. Your minutes are safe." }
+        return "\(context.state.alignedPercent)% aligned so far"
+    }
+
+    private func icon(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
+        if context.attributes.kind == "walk" { return "figure.walk" }
+        return "figure.stand"
+    }
+
+    private func color(_ context: ActivityViewContext<PracticeActivityAttributes>) -> Color {
+        if context.state.paused { return Theme.ink3 }
+        switch context.state.quality {
+        case "good": return Theme.sage
+        case "borderline": return Theme.sand
+        default: return Theme.clay
+        }
+    }
+
+    private func qualityWord(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
+        if context.state.paused { return "Paused" }
+        switch context.state.quality {
+        case "good": return context.attributes.kind == "walk" ? "Tall" : "Aligned"
+        case "borderline": return "Drifting"
+        default: return "Slouching"
+        }
+    }
+}

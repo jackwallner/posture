@@ -26,7 +26,7 @@ struct PostureHabitsView: View {
                 .foregroundStyle(Theme.textPrimary)
 
             Text("Small adjustments throughout the day add up to lasting change.")
-                .font(.subheadline)
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
         }
@@ -39,10 +39,10 @@ struct PostureHabitsView: View {
         return VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.headline)
+                    .font(Theme.font(.headline))
                     .foregroundStyle(Theme.brandPrimary)
                 Text(title)
-                    .font(.headline)
+                    .font(Theme.font(.headline))
                     .foregroundStyle(Theme.textPrimary)
             }
             .padding(.horizontal, 4)

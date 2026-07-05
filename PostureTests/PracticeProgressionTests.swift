@@ -74,7 +74,9 @@ final class PracticeProgressionTests: XCTestCase {
     // MARK: - Free cap
 
     func testEffectiveLevelCapsFreeUsers() {
-        XCTAssertEqual(PracticeProgression.effectiveLevel(level: 3, isPro: false), 3)
+        XCTAssertEqual(PracticeProgression.effectiveLevel(level: 1, isPro: false), 1)
+        XCTAssertEqual(PracticeProgression.effectiveLevel(level: 2, isPro: false), 2)
+        XCTAssertEqual(PracticeProgression.effectiveLevel(level: 3, isPro: false), PracticeProgression.freeLevelCap)
         XCTAssertEqual(PracticeProgression.effectiveLevel(level: 9, isPro: false), PracticeProgression.freeLevelCap)
         XCTAssertEqual(PracticeProgression.effectiveLevel(level: 9, isPro: true), 9)
     }

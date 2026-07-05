@@ -8,7 +8,7 @@ struct WatchTodayView: View {
     @State private var subscriptions = SubscriptionService.shared
     @State private var background = BackgroundPostureWorkout.shared
 
-    /// Display-only — never insert a StreakState during body evaluation
+    /// Display-only - never insert a StreakState during body evaluation
     /// (audit P1-10). Creation is owned by StreakService on the phone.
     private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
 
@@ -58,7 +58,7 @@ struct WatchTodayView: View {
 
     /// Reconcile the (possibly phone-synced) preference with the live
     /// workout: start it when monitoring is on for a Pro user, stop it
-    /// otherwise. Idempotent — safe to call on launch and on every change.
+    /// otherwise. Idempotent - safe to call on launch and on every change.
     @MainActor
     private func applyAlwaysOn() async {
         let shouldRun = settings.alwaysOnEnabled && subscriptions.isProSubscriber

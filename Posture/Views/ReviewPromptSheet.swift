@@ -104,7 +104,7 @@ struct ReviewPromptSheet: View {
             .padding(.top, 8)
 
             Text("If Posture is helping you sit taller through the day, a quick App Store rating helps more people find a gentle posture habit.")
-                .font(.system(.subheadline, design: .rounded))
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -129,14 +129,14 @@ struct ReviewPromptSheet: View {
     private var reviewPitchContent: some View {
         VStack(spacing: 18) {
             Text("Posture is built by one indie developer. No ads, no accounts, and nothing leaves your phone.")
-                .font(.system(.subheadline, design: .rounded))
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 8)
 
             Text("An honest review takes seconds and helps others discover a quiet daily posture ritual.")
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -167,12 +167,12 @@ struct ReviewPromptSheet: View {
     private var feedbackContent: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("What would make Posture work better for you?")
-                .font(.system(.subheadline, design: .rounded))
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
 
             TextEditor(text: $feedbackText)
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .frame(minHeight: 140)
                 .padding(10)
                 .scrollContentBackground(.hidden)
@@ -180,7 +180,7 @@ struct ReviewPromptSheet: View {
                 .focused($feedbackFocused)
 
             Text("Opens your mail app with a draft to the developer. No analytics, just your words.")
-                .font(.system(.caption, design: .rounded))
+                .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
 
             Button { sendFeedback() } label: {
@@ -216,7 +216,7 @@ struct ReviewPromptSheet: View {
     static func feedbackMailURL(body: String) -> URL? {
         var components = URLComponents()
         components.scheme = "mailto"
-        components.path = "jackwallner@gmail.com"
+        components.path = "jackwallner+q@gmail.com"
         components.queryItems = [
             URLQueryItem(name: "subject", value: "Posture feedback"),
             URLQueryItem(name: "body", value: body),

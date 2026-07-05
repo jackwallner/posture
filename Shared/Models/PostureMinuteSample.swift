@@ -3,7 +3,7 @@ import SwiftData
 
 /// One minute of continuous monitoring, aggregated from the ~25 Hz head-pose
 /// stream. This is the persistent record of *how the user actually sat*, not
-/// just when they slouched badly enough to be nudged — it powers the day
+/// just when they slouched badly enough to be nudged - it powers the day
 /// timeline, "% of day aligned", wear time, and longest-aligned-stretch stats.
 @Model
 final class PostureMinuteSample {

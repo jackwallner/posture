@@ -1,6 +1,6 @@
 import Foundation
 
-/// Pure aggregation over a day's `PostureMinuteSample` rows. No I/O — views
+/// Pure aggregation over a day's `PostureMinuteSample` rows. No I/O - views
 /// query SwiftData and hand rows in, tests hand in fixtures.
 struct PostureDayStats: Sendable {
     /// Total seconds the monitor was actually reading (AirPods in).
@@ -21,7 +21,7 @@ struct PostureDayStats: Sendable {
         let percent: Int? = wear > 0 ? Int((weighted / wear * 100).rounded()) : nil
 
         // Longest aligned stretch: consecutive minute rows (by minuteStart)
-        // dominated by good posture. A gap in monitoring breaks the run —
+        // dominated by good posture. A gap in monitoring breaks the run -
         // we only credit time we actually observed.
         let sorted = minutes.sorted { $0.minuteStart < $1.minuteStart }
         var longest = 0
@@ -73,10 +73,10 @@ struct PostureDayStats: Sendable {
         var dominantGood: Bool { goodSeconds >= borderlineSeconds && goodSeconds >= badSeconds }
     }
 
-    /// Short human wear-time: "4h 20m", "38m", "—" when nothing yet.
+    /// Short human wear-time: "4h 20m", "38m", "0m" when nothing yet.
     static func wearLabel(seconds: Double) -> String {
         let mins = Int(seconds / 60)
-        guard mins > 0 else { return "—" }
+        guard mins > 0 else { return "0m" }
         if mins < 60 { return "\(mins)m" }
         return "\(mins / 60)h \(mins % 60)m"
     }

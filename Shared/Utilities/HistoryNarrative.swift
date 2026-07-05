@@ -1,7 +1,7 @@
 import Foundation
 
 /// Generates the one-sentence story above the History week strip.
-/// Deterministic — picks from a small template set based on which day
+/// Deterministic - picks from a small template set based on which day
 /// scored best/worst and how much data exists.
 enum HistoryNarrative {
     private static func score(_ q: PostureQuality) -> Int {

@@ -1,6 +1,6 @@
 import Foundation
 
-/// The daily-practice level ramp. Pure functions only — level is derived
+/// The daily-practice level ramp. Pure functions only - level is derived
 /// from the count of *passed* practice sessions, never stored, so it can't
 /// drift from the session rows and needs no migration.
 ///
@@ -14,19 +14,21 @@ enum PracticeProgression {
     private nonisolated static let lateLevelStride = 12
 
     /// Session length starts at 3 minutes and grows a minute per level,
-    /// topping out at 15 — long enough to matter, short enough to finish.
+    /// topping out at 15 - long enough to matter, short enough to finish.
     nonisolated static let baseSessionSeconds = 180
     nonisolated static let sessionSecondsPerLevel = 60
     nonisolated static let maxSessionSeconds = 900
 
     /// Aligned-% target starts winnable and ramps gently. 80% is the
-    /// ceiling — posture is a practice, not a perfection contest.
+    /// ceiling - posture is a practice, not a perfection contest.
     nonisolated static let baseTargetPercent = 50
     nonisolated static let targetPercentPerLevel = 3
     nonisolated static let maxTargetPercent = 80
 
-    /// Free tier stops ramping here; higher levels are Posture+.
-    nonisolated static let freeLevelCap = 5
+    /// Free tier stops ramping here; higher levels are Posture+. Level 2 is
+    /// deliberate: the free loop stays light (3-4 minute holds) and the
+    /// ladder itself is the upgrade.
+    nonisolated static let freeLevelCap = 2
 
     nonisolated static func level(passedSessions: Int) -> Int {
         guard passedSessions >= 0 else { return 1 }

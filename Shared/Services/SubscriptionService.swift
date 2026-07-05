@@ -272,7 +272,7 @@ final class SubscriptionService: NSObject {
     }
     #endif
 
-    /// Convenience for debug — flips entitlement locally without RevenueCat. Useful when the
+    /// Convenience for debug - flips entitlement locally without RevenueCat. Useful when the
     /// SDK key isn't set yet or you're iterating on the paywall UX.
     func setLocalOverride(isPro: Bool) {
         isProSubscriber = isPro

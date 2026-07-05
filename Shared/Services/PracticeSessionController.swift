@@ -1,6 +1,7 @@
-// Practice sessions are iOS-only — they read AirPods head motion.
+// Practice sessions are iOS-only - they read AirPods head motion.
 #if os(iOS)
 
+import ActivityKit
 import AudioToolbox
 import Foundation
 import SwiftData
@@ -11,7 +12,7 @@ import UserNotifications
 /// phase): owns the motion stream for its duration, scores every sample,
 /// accrues elapsed time from observed samples only, and writes the results.
 ///
-/// Deliberately NOT an extension of `AirpodsBackgroundMonitor` — the all-day
+/// Deliberately NOT an extension of `AirpodsBackgroundMonitor` - the all-day
 /// monitor is a process-scoped singleton with all-day semantics (retention
 /// pruning, long haptic debounce). A session wants tighter feedback constants
 /// and a lifecycle tied to a view. The two share `PostureScoring` and
@@ -44,7 +45,7 @@ final class PracticeSessionController {
         /// (walks always pass 0).
         var repsTarget: Int = 0
         /// False for custom-length sessions that shouldn't advance the level
-        /// ladder — they still credit the streak.
+        /// ladder - they still credit the streak.
         var countsForLevel: Bool = true
     }
 
@@ -107,14 +108,14 @@ final class PracticeSessionController {
     private var badSeconds: Double = 0
     private var minuteBucket = MinuteBucket()
 
-    // Segment timeline for the summary strip (10s practice, 60s walk —
+    // Segment timeline for the summary strip (10s practice, 60s walk -
     // a 30-min walk at 10s segments would be an unreadable 180 bars).
     private var timeline: [Double] = []
     private var segmentSeconds: Double = 0
     private var segmentAligned: Double = 0
     private var segmentLength: Double = 10
 
-    // In-session slouch nudge: tighter than the all-day monitor — the whole
+    // In-session slouch nudge: tighter than the all-day monitor - the whole
     // point of practice is immediate feedback. Walks nudge slower and rarer.
     private var firstBadAt: Date?
     private var inBadBout = false
@@ -127,15 +128,24 @@ final class PracticeSessionController {
     private var walkSamples: [(t: TimeInterval, pitch: Double)] = []
     private var lastWalkVerdictAt: TimeInterval = 0
 
-    /// Sessions under this long aren't worth a row — an instant cancel is
+    /// Sessions under this long aren't worth a row - an instant cancel is
     /// noise, not an attempt.
     private static let minRecordSeconds: Double = 30
 
     private static let keepAliveToken = "session"
 
+    // Live Activity: countdown + current alignment in the Dynamic Island
+    // while the user switches apps. The countdown renders off `endDate`, so
+    // only quality flips and pauses need pushes. We keep the id, not the
+    // `Activity` object — it isn't Sendable, and each push looks it up
+    // fresh inside its own task region.
+    private var liveActivityID: String?
+    private var lastActivityQuality: PostureQuality = .good
+    private var lastActivityUpdateAt: Date = .distantPast
+
     var isAirpodsConnected: Bool { motion.isConnected }
 
-    /// Tracked via lifecycle notifications — `UIApplication.shared` is
+    /// Tracked via lifecycle notifications - `UIApplication.shared` is
     /// unavailable in the extension targets that also compile Shared/.
     private var isAppInBackground = false
     private var lifecycleObservers: [NSObjectProtocol] = []
@@ -165,7 +175,7 @@ final class PracticeSessionController {
 
     // MARK: - Config
 
-    /// Count of passed practice sessions — the input to the level ramp.
+    /// Count of passed practice sessions - the input to the level ramp.
     static func passedPracticeCount(context: ModelContext) -> Int {
         let practiceRaw = PostureSessionKind.practice.rawValue
         let descriptor = FetchDescriptor<PostureSession>(
@@ -229,7 +239,7 @@ final class PracticeSessionController {
         }
         phase = (config.kind == .practice && config.repsTarget > 0) ? .reps : .waiting
 
-        // Take exclusive ownership of the head-motion stream — iOS starves a
+        // Take exclusive ownership of the head-motion stream - iOS starves a
         // second CMHeadphoneMotionManager while the monitor's is live.
         AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
         // Keep motion flowing through a screen lock for the bounded duration.
@@ -243,6 +253,7 @@ final class PracticeSessionController {
         persistFlush(minuteBucket.flush())
         motion.stop()
         phase = .paused(.user)
+        updateLiveActivity(paused: true, force: true)
         AnalyticsService.sessionPaused()
     }
 
@@ -283,6 +294,7 @@ final class PracticeSessionController {
             inBadBout = false
             smoothedPitch = nil
             phase = .paused(.airpodsOut)
+            updateLiveActivity(paused: true, force: true)
         }
         // Reconnect: HeadphoneMotionService's wantsToRun re-arms motion on its
         // own; the next scored sample flips us back to .running in ingest.
@@ -314,21 +326,24 @@ final class PracticeSessionController {
                 previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
             )
             let scoredPitch = smoothedPitch ?? pitch
-            let referenceBaseline = PostureScoring.nearestBaseline(
+            let reference = PostureScoring.postureReference(
                 pitch: scoredPitch,
                 standing: calibration.airpodsStandingPitch,
                 sitting: calibration.airpodsSittingPitch,
-                combined: baseline
+                combined: baseline,
+                standingSlouchDelta: calibration.standingSlouchDelta,
+                sittingSlouchDelta: calibration.sittingSlouchDelta,
+                fallbackSlouchDelta: calibration.slouchPitchDelta
             )
             quality = PostureScoring.quality(
-                deviation: scoredPitch - referenceBaseline,
-                slouchDelta: calibration.slouchPitchDelta,
+                deviation: scoredPitch - reference.baseline,
+                slouchDelta: reference.slouchDelta,
                 sensitivity: GoalSettings.shared.sensitivity
             )
         }
         if quality != currentQuality { currentQuality = quality }
 
-        // Elapsed accrues from observed sample gaps (clamped), never a Timer —
+        // Elapsed accrues from observed sample gaps (clamped), never a Timer -
         // pods-out or a suspension can't credit phantom time, and pausing
         // falls out for free.
         let (credited, flush) = minuteBucket.accumulate(quality: quality, at: now)
@@ -347,13 +362,16 @@ final class PracticeSessionController {
         }
         updateSlouchNudge(quality: quality, now: now)
 
+        startLiveActivityIfNeeded()
+        updateLiveActivity(paused: false, force: false)
+
         if Int(elapsedSeconds) >= config.targetSeconds {
             finish(completed: true)
         }
     }
 
     /// Chin-tuck warm-up: count retract-and-return cycles against the
-    /// standing baseline. No session time or scoring accrues here — the
+    /// standing baseline. No session time or scoring accrues here - the
     /// clock starts with the hold.
     private func ingestRep(pitch: Double, at now: Date) {
         guard let calibration = calibrationService.current(),
@@ -373,7 +391,7 @@ final class PracticeSessionController {
     }
 
     /// Escape hatch for a warm-up that isn't detecting (bad fit, odd pitch
-    /// response) — jump straight to the hold.
+    /// response) - jump straight to the hold.
     func skipReps() {
         guard phase == .reps else { return }
         smoothedPitch = nil
@@ -381,7 +399,7 @@ final class PracticeSessionController {
     }
 
     #if DEBUG
-    /// Manual rep advance for simulator work — no motion stream there.
+    /// Manual rep advance for simulator work - no motion stream there.
     func debugCountRep() {
         guard phase == .reps else { return }
         repsCompleted += 1
@@ -405,7 +423,7 @@ final class PracticeSessionController {
             walkSamples.removeFirst(firstKeep)
         }
         guard t - lastWalkVerdictAt >= 1 else { return currentQuality }
-        // Walking is standing — judge against the standing baseline when we
+        // Walking is standing - judge against the standing baseline when we
         // have one instead of the sitting-blurred combined number.
         let walkBaseline = calibration.airpodsStandingPitch ?? combined
         guard let deviation = PostureScoring.walkWindowDeviation(
@@ -414,7 +432,7 @@ final class PracticeSessionController {
         lastWalkVerdictAt = t
         return PostureScoring.quality(
             deviation: deviation,
-            slouchDelta: calibration.slouchPitchDelta,
+            slouchDelta: calibration.standingSlouchDelta ?? calibration.slouchPitchDelta,
             sensitivity: PostureScoring.Walk.sensitivity
         )
     }
@@ -470,7 +488,7 @@ final class PracticeSessionController {
         let alignedPercent = PostureScoring.sessionScore(
             goodSeconds: good, borderlineSeconds: borderline, badSeconds: bad
         )
-        // `passed` means level credit, which only practice can earn — and
+        // `passed` means level credit, which only practice can earn - and
         // only at the ladder's own duration (custom lengths are streak-only).
         let passed = config.kind == .practice && completed && config.countsForLevel
             && alignedPercent >= config.targetPercent
@@ -550,6 +568,63 @@ final class PracticeSessionController {
         persistFlush(minuteBucket.flush())
         AudioKeepAlive.shared.release(Self.keepAliveToken)
         AirpodsBackgroundMonitor.shared.resumeAfterForegroundRead()
+        endLiveActivity()
+    }
+
+    // MARK: - Live Activity
+
+    private func activityContentState(paused: Bool) -> PracticeActivityAttributes.ContentState {
+        .init(
+            endDate: Date.now.addingTimeInterval(Double(remainingSeconds)),
+            quality: currentQuality.rawValue,
+            alignedPercent: Int((alignedFractionSoFar * 100).rounded()),
+            paused: paused
+        )
+    }
+
+    /// Started on the first scored sample (after the warm-up), so the
+    /// countdown it shows is the real hold.
+    private func startLiveActivityIfNeeded() {
+        guard liveActivityID == nil, let config,
+              ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        let activity = try? Activity.request(
+            attributes: PracticeActivityAttributes(kind: config.kind.rawValue),
+            content: .init(state: activityContentState(paused: false), staleDate: nil)
+        )
+        liveActivityID = activity?.id
+        lastActivityUpdateAt = .now
+        lastActivityQuality = currentQuality
+    }
+
+    /// Push a state update. Unthrottled for pause/resume; sample-path calls
+    /// pass `force: false` and only land on a quality flip or every ~15s
+    /// (the countdown itself needs no pushes).
+    private func updateLiveActivity(paused: Bool, force: Bool) {
+        guard let id = liveActivityID else { return }
+        let now = Date.now
+        if !force {
+            let qualityChanged = currentQuality != lastActivityQuality
+            let stale = now.timeIntervalSince(lastActivityUpdateAt) >= 15
+            guard qualityChanged || stale else { return }
+        }
+        lastActivityUpdateAt = now
+        lastActivityQuality = currentQuality
+        let state = activityContentState(paused: paused)
+        Task.detached {
+            guard let activity = Activity<PracticeActivityAttributes>.activities
+                .first(where: { $0.id == id }) else { return }
+            await activity.update(ActivityContent(state: state, staleDate: nil))
+        }
+    }
+
+    private func endLiveActivity() {
+        guard let id = liveActivityID else { return }
+        liveActivityID = nil
+        Task.detached {
+            guard let activity = Activity<PracticeActivityAttributes>.activities
+                .first(where: { $0.id == id }) else { return }
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
     }
 
     private func persistFlush(_ flush: MinuteBucket.Flush?) {
@@ -565,7 +640,7 @@ final class PracticeSessionController {
         try? context.save()
     }
 
-    /// The session hit its target while the phone was locked or backgrounded —
+    /// The session hit its target while the phone was locked or backgrounded -
     /// tell the user it's done so they aren't sitting tall for nothing.
     private func postCompletionNotification(kind: PostureSessionKind, alignedPercent: Int, passed: Bool) {
         let content = UNMutableNotificationContent()

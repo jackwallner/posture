@@ -7,7 +7,7 @@ import WatchKit
 
 /// Reads wrist motion via `CMMotionManager` device motion. Computes the angle between the
 /// current gravity vector and the calibrated baseline; large deltas mean the wrist (and by
-/// proxy the upper body) has rotated forward — the slumped-shoulder telltale.
+/// proxy the upper body) has rotated forward - the slumped-shoulder telltale.
 @MainActor
 @Observable
 final class WatchMotionService {

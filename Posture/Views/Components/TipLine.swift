@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// A compact tip row. Shows the whole tip — a truncated tip teaches nothing —
+/// A compact tip row. Shows the whole tip - a truncated tip teaches nothing -
 /// with a small leading icon so it reads as a tip, not lost body copy.
 struct TipLine: View {
     let tip: PostureTip
@@ -12,7 +12,7 @@ struct TipLine: View {
                 .foregroundStyle(Theme.sand)
                 .padding(.top, 2)
             Text(tip.text)
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)

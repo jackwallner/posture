@@ -5,11 +5,11 @@ import Observation
 
 /// Wraps `CMHeadphoneMotionManager`. Only AirPods Pro / 3rd-gen / Max provide head motion.
 /// iOS only delivers updates while the app is foreground (or while audio is playing with the
-/// right session category — we don't rely on that).
+/// right session category - we don't rely on that).
 @MainActor
 @Observable
 final class HeadphoneMotionService {
-    /// `isDeviceMotionAvailable` is *device* capability — "does this iPhone support
+    /// `isDeviceMotionAvailable` is *device* capability - "does this iPhone support
     /// headphone motion at all". It is true on any real iOS 14+ device even with no
     /// headphones anywhere in sight (and false on the simulator). It says nothing
     /// about whether AirPods are currently connected; connection truth comes from
@@ -48,7 +48,7 @@ final class HeadphoneMotionService {
     /// Set by `start()` even if motion can't begin yet (no AirPods connected).
     /// When the delegate later reports connect we activate updates then. Without
     /// this, the user puts in AirPods after we called `start()` and motion
-    /// never flows — UI looks "linked" but no samples ever arrive.
+    /// never flows - UI looks "linked" but no samples ever arrive.
     private var wantsToRun = false
 
     init() {
@@ -78,7 +78,7 @@ final class HeadphoneMotionService {
 
     func start() {
         wantsToRun = true
-        // Do NOT infer connection from `isDeviceMotionAvailable` — that's device
+        // Do NOT infer connection from `isDeviceMotionAvailable` - that's device
         // capability and is always true on a real iPhone, AirPods or not. Forcing
         // `isConnected = true` here made the calibration/scan views start a capture
         // against headphones that weren't there, and because the flag never changed
@@ -125,7 +125,7 @@ final class HeadphoneMotionService {
 
 /// Delegate has to live outside the @MainActor service so it can conform to the
 /// nonisolated `CMHeadphoneMotionManagerDelegate` protocol. Each HMS owns its
-/// own box and the box weakly points back — no shared mutable closure storage,
+/// own box and the box weakly points back - no shared mutable closure storage,
 /// no cross-thread races.
 private final class HeadphoneDelegateBox: NSObject, CMHeadphoneMotionManagerDelegate, @unchecked Sendable {
     weak var owner: HeadphoneMotionService?

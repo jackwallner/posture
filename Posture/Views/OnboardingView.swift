@@ -9,16 +9,18 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(GoalSettings.self) private var settings
     @State private var page = 0
+    @State private var focus: PostureFocus = .both
 
-    private let lastPage = 3
+    private let lastPage = 4
 
     var body: some View {
         VStack(spacing: 0) {
             TabView(selection: $page) {
                 welcomePage.tag(0)
-                shapePage.tag(1)
-                standingPage.tag(2)
-                sittingPage.tag(3)
+                focusPage.tag(1)
+                shapePage.tag(2)
+                standingPage.tag(3)
+                sittingPage.tag(4)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: page)
@@ -30,6 +32,7 @@ struct OnboardingView: View {
                 if page < lastPage {
                     withAnimation { page += 1 }
                 } else {
+                    settings.postureFocus = focus
                     settings.hasAirpods = true
                     settings.hasCompletedOnboarding = true
                 }
@@ -49,11 +52,11 @@ struct OnboardingView: View {
     private var welcomePage: some View {
         pageScaffold {
             Text("Welcome to Posture.")
-                .font(.system(size: 42, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 42, weight: .semibold))
                 .foregroundStyle(Theme.ink)
 
-            Text("A daily posture practice, coached by your AirPods. A few minutes held tall each day, with live feedback — that's how posture actually changes.")
-                .font(.system(.body, design: .rounded))
+            Text("A daily posture practice, coached by your AirPods. A few minutes held tall each day, with live feedback, that's how posture actually changes.")
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -66,16 +69,75 @@ struct OnboardingView: View {
         }
     }
 
+    private var focusPage: some View {
+        pageScaffold {
+            Text("What do you want to fix?")
+                .font(Theme.font(size: 36, weight: .semibold))
+                .foregroundStyle(Theme.ink)
+
+            Text("We'll capture your posture both ways either way, but your coaching leans where you need it.")
+                .font(Theme.font(.body))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            VStack(spacing: 14) {
+                focusCard(.sitting, icon: "chair", title: "Sitting posture", body: "Desk slouch, laptop hunch, couch collapse.")
+                focusCard(.standing, icon: "figure.stand", title: "Standing posture", body: "Forward head, rounded shoulders on your feet.")
+                focusCard(.both, icon: "arrow.up.and.down.circle", title: "Both", body: "The full picture, sitting and standing.")
+            }
+            .padding(.top, 8)
+        }
+    }
+
+    private func focusCard(_ value: PostureFocus, icon: String, title: String, body: String) -> some View {
+        let selected = focus == value
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) { focus = value }
+        } label: {
+            HStack(alignment: .top, spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(selected ? Theme.sage : Theme.sageTint)
+                        .frame(width: 36, height: 36)
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(selected ? .white : Theme.sage)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(Theme.font(.body, weight: .semibold))
+                        .foregroundStyle(Theme.ink)
+                    Text(body)
+                        .font(Theme.font(.subheadline))
+                        .foregroundStyle(Theme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 20))
+                    .foregroundStyle(selected ? Theme.sage : Theme.ink3.opacity(0.4))
+            }
+            .padding(18)
+            .dawnCard()
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                    .stroke(selected ? Theme.sage : .clear, lineWidth: 2)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
+    }
+
     private var shapePage: some View {
         pageScaffold {
             Text("What good posture is.")
-                .font(.system(size: 36, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 36, weight: .semibold))
                 .foregroundStyle(Theme.ink)
 
             PoseDiagram(pose: .stack, height: 170)
 
             Text("Tall posture is a stack, not a strain. Line these up and let everything else relax.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -91,13 +153,13 @@ struct OnboardingView: View {
     private var standingPage: some View {
         pageScaffold {
             Text("Standing tall.")
-                .font(.system(size: 36, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 36, weight: .semibold))
                 .foregroundStyle(Theme.ink)
 
             PoseDiagram(pose: .standing, height: 170)
 
             Text("Try it now. We'll capture this pose in a moment, so build it once here.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -113,13 +175,13 @@ struct OnboardingView: View {
     private var sittingPage: some View {
         pageScaffold {
             Text("Sitting tall.")
-                .font(.system(size: 36, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 36, weight: .semibold))
                 .foregroundStyle(Theme.ink)
 
             PoseDiagram(pose: .sitting, height: 170)
 
             Text("Where most of the slouching happens. Same long spine, different base.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -163,15 +225,15 @@ struct OnboardingView: View {
                     .fill(accent.opacity(0.18))
                     .frame(width: 36, height: 36)
                 Text(index)
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
                     .foregroundStyle(accent)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(.body, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.body, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text(body)
-                    .font(.system(.subheadline, design: .rounded))
+                    .font(Theme.font(.subheadline))
                     .foregroundStyle(Theme.ink)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -193,10 +255,10 @@ struct OnboardingView: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(.body, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.body, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text(body)
-                    .font(.system(.subheadline, design: .rounded))
+                    .font(Theme.font(.subheadline))
                     .foregroundStyle(Theme.ink)
                     .fixedSize(horizontal: false, vertical: true)
             }

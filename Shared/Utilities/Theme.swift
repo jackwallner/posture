@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Daylight design system. iOS resolves colors from the asset catalog
 /// (light + dark variants live in `Posture/Assets.xcassets`). watchOS has
-/// no Daylight colorsets, so it falls back to literal dark-mode values —
+/// no Daylight colorsets, so it falls back to literal dark-mode values -
 /// the watch UI is out of scope for the Daylight pass but must keep
 /// compiling and stay legible on its black background.
 enum Theme {
@@ -20,7 +20,7 @@ enum Theme {
     static let clay     = Color(red: 0.878, green: 0.588, blue: 0.478)
     static let clayTint = Color(red: 0.231, green: 0.161, blue: 0.125)
     #else
-    // Calm pastel palette — soft mint canvas, white cards, deep slate ink,
+    // Calm pastel palette - soft mint canvas, white cards, deep slate ink,
     // lavender accent for ritual moments, soft sage/sand/coral for posture
     // quality. Literal colors rather than the legacy asset-catalog
     // Daylight* colorsets; those are no longer referenced.
@@ -47,9 +47,9 @@ enum Theme {
 
     // MARK: - Posture quality
 
-    static let good       = sage   // alignment ≥ 80 — "aligned"
-    static let borderline = sand   // alignment 50–79 — "drifting"
-    static let bad        = clay   // alignment < 50 — "resting"
+    static let good       = sage   // alignment ≥ 80 - "aligned"
+    static let borderline = sand   // alignment 50–79 - "drifting"
+    static let bad        = clay   // alignment < 50 - "resting"
 
     // MARK: - Semantic aliases (kept until call-sites migrate to Daylight tokens)
 
@@ -74,7 +74,7 @@ enum Theme {
 
     // MARK: - Dawn direction (visual register)
 
-    /// Pre-dawn page wash — lavender cresting at the top, fading into the
+    /// Pre-dawn page wash - lavender cresting at the top, fading into the
     /// mint canvas. The recurring surface where ritual lives (Stage A · C).
     static var dawnWash: LinearGradient {
         LinearGradient(
@@ -84,7 +84,7 @@ enum Theme {
         )
     }
 
-    /// Score-ring sweep — sand into lavender, so the moment of measurement
+    /// Score-ring sweep - sand into lavender, so the moment of measurement
     /// and the moment of ritual visually blend (Stage A · C).
     static var ringSweep: AngularGradient {
         AngularGradient(
@@ -103,21 +103,67 @@ enum Theme {
 
     // MARK: - Type
 
-    /// Legacy rounded-bold numeric. Kept for unmigrated call-sites.
-    static func bigNumber(_ size: CGFloat) -> Font {
-        .system(size: size, weight: .bold, design: .rounded)
-    }
-
-    /// Display type for headline moments. One confident voice: rounded SF
-    /// with real weight, no serif italics — the whole app speaks the same
-    /// typeface and hierarchy comes from size + weight only.
-    static func display(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+    /// One typeface everywhere: Nunito (bundled, OFL). Warm rounded
+    /// terminals that fit the Daylight register without being the stock
+    /// SF-rounded every template app ships. watchOS keeps system rounded -
+    /// the watch targets don't bundle the font files.
+    #if os(watchOS)
+    static func font(size: CGFloat, weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
         .system(size: size, weight: weight, design: .rounded)
     }
+    #else
+    static func font(size: CGFloat, weight: Font.Weight = .regular, relativeTo style: Font.TextStyle = .body) -> Font {
+        Font.custom(nunitoName(weight), size: size, relativeTo: style)
+    }
 
-    /// Daylight numerics — rounded, monospaced digits for meta/eyebrows.
+    private static func nunitoName(_ weight: Font.Weight) -> String {
+        switch weight {
+        case .bold, .heavy, .black: return "Nunito-Bold"
+        case .semibold: return "Nunito-SemiBold"
+        case .medium: return "Nunito-Medium"
+        default: return "Nunito-Regular"
+        }
+    }
+    #endif
+
+    /// Text-style shorthand: `Theme.font(.footnote, weight: .semibold)`.
+    /// Sizes track the iOS default type ramp and scale with Dynamic Type
+    /// via `relativeTo`.
+    static func font(_ style: Font.TextStyle, weight: Font.Weight = .regular) -> Font {
+        font(size: styleSize(style), weight: weight, relativeTo: style)
+    }
+
+    private static func styleSize(_ style: Font.TextStyle) -> CGFloat {
+        switch style {
+        case .largeTitle: return 34
+        case .title: return 28
+        case .title2: return 22
+        case .title3: return 20
+        case .headline: return 17
+        case .body: return 17
+        case .callout: return 16
+        case .subheadline: return 15
+        case .footnote: return 13
+        case .caption: return 12
+        case .caption2: return 11
+        @unknown default: return 17
+        }
+    }
+
+    /// Legacy bold numeric. Kept for unmigrated call-sites.
+    static func bigNumber(_ size: CGFloat) -> Font {
+        font(size: size, weight: .bold)
+    }
+
+    /// Display type for headline moments. One confident voice; hierarchy
+    /// comes from size + weight only.
+    static func display(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        font(size: size, weight: weight)
+    }
+
+    /// Numerics - monospaced digits for meta/eyebrows and timers.
     static func roundedNumeric(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
-        .system(size: size, weight: weight, design: .rounded).monospacedDigit()
+        font(size: size, weight: weight).monospacedDigit()
     }
 
     static func qualityColor(_ quality: PostureQuality) -> Color {
@@ -147,7 +193,7 @@ extension View {
             .overlay(shape.stroke(Theme.ink.opacity(0.06), lineWidth: 1))
     }
 
-    /// Dawn pill surface — the capsule-shaped sibling of `dawnCard`.
+    /// Dawn pill surface - the capsule-shaped sibling of `dawnCard`.
     func dawnCapsule() -> some View {
         self
             .background(Capsule().fill(Theme.paper2.opacity(0.55)))

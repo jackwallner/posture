@@ -32,7 +32,7 @@ struct DayStrip: View {
                     ForEach(hours, id: \.self) { hour in
                         let bucket = acks(in: hour)
                         if hour > currentHour {
-                            // Future — dashed baseline
+                            // Future - dashed baseline
                             Rectangle()
                                 .stroke(style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
                                 .frame(height: 1)
@@ -59,7 +59,7 @@ struct DayStrip: View {
             HStack(spacing: 4) {
                 ForEach(hours, id: \.self) { hour in
                     Text(hour % 2 == 0 ? hourLabel(hour) : " ")
-                        .font(.system(.caption2, design: .rounded))
+                        .font(Theme.font(.caption2))
                         .foregroundStyle(Theme.ink3)
                         .frame(maxWidth: .infinity)
                 }

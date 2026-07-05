@@ -51,8 +51,9 @@ struct PostureApp: App {
 
 private struct AirpodsRootView: View {
     @Environment(GoalSettings.self) private var settings
+    @Environment(\.scenePhase) private var scenePhase
     @State private var subscriptions = SubscriptionService.shared
-    // Process-scoped — see `AirpodsBackgroundMonitor.shared` for why this
+    // Process-scoped - see `AirpodsBackgroundMonitor.shared` for why this
     // can't be a `@State` default expression. SwiftUI re-evaluates @State
     // initial values on every parent rerender; with the monitor's audio
     // observers having no removal hook, those dropped instances would leak
@@ -69,11 +70,9 @@ private struct AirpodsRootView: View {
             .onAppear {
                 guard !didActivate else { return }
                 didActivate = true
-                // All-day monitoring runs only for Pro users who turned the
-                // Settings toggle on — since the practice pivot it is an
-                // optional extra, not the default. P1-7: a cold launch fires
-                // no onChange hooks, so do the right thing here.
-                startMonitoringForCurrentTier(monitor)
+                // P1-7: a cold launch fires no onChange hooks, so decide the
+                // monitoring mode (Pro all-day vs free in-app live) here.
+                reconcileMonitoring(monitor)
                 NotificationDelegate.shared.onReceive = { scheduledAt, index in
                     ackScheduledAt = scheduledAt
                     ackNotificationIndex = index
@@ -92,7 +91,7 @@ private struct AirpodsRootView: View {
                 PracticeSessionView()
             }
             .onChange(of: settings.hasCompletedOnboarding) { _, completed in
-                // First time the user finishes onboarding — now the
+                // First time the user finishes onboarding - now the
                 // "a few nudges a day" copy has been read, so the iOS
                 // notification prompt has context.
                 if completed { Task { await ReminderScheduler.reschedule() } }
@@ -119,33 +118,54 @@ private struct AirpodsRootView: View {
                 Task { await ReminderScheduler.reschedule() }
             }
             .onChange(of: settings.airpodsBackgroundEnabled) { _, _ in
-                restartMonitoringForCurrentTier(monitor)
+                monitor.stop()
+                reconcileMonitoring(monitor)
+            }
+            .onChange(of: settings.inAppLiveEnabled) { _, _ in
+                monitor.stop()
+                reconcileMonitoring(monitor)
             }
             .onChange(of: subscriptions.isProSubscriber) { _, _ in
-                restartMonitoringForCurrentTier(monitor)
+                monitor.stop()
+                reconcileMonitoring(monitor)
+            }
+            .onChange(of: scenePhase) { _, _ in
+                reconcileMonitoring(monitor)
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 Task { await ReminderScheduler.reschedule() }
-                if !monitor.isMonitoring {
-                    startMonitoringForCurrentTier(monitor)
-                }
+                reconcileMonitoring(monitor)
             }
     }
 
-    /// All-day monitoring is an opt-in Pro extra since the practice pivot:
-    /// it runs only when the user has AirPods, is subscribed, AND flipped
-    /// the Settings toggle. It never auto-starts just because someone is Pro
-    /// — that would compete with practice sessions for the motion stream.
-    private func startMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
-        guard settings.hasAirpods == true,
-              subscriptions.isProSubscriber,
-              settings.airpodsBackgroundEnabled else { return }
-        _ = m.start(background: true)
-    }
-
-    private func restartMonitoringForCurrentTier(_ m: AirpodsBackgroundMonitor) {
+    /// One place decides whether the shared monitor should be running and in
+    /// which mode:
+    /// - Pro + all-day toggle → background monitoring (silent-audio keep-alive).
+    /// - Otherwise, the free in-app live readout (`inAppLiveEnabled`, default
+    ///   on) runs motion while the app is foregrounded and stops when it
+    ///   leaves - no keep-alive, no orange dot beyond the active session.
+    /// - A manual Stop from the Today card (`userPaused`) beats both until
+    ///   the user starts it again.
+    private func reconcileMonitoring(_ m: AirpodsBackgroundMonitor) {
+        guard settings.hasAirpods == true, !m.userPaused else {
+            m.stop()
+            return
+        }
+        if subscriptions.isProSubscriber, settings.airpodsBackgroundEnabled {
+            if !m.isMonitoring || !m.isBackground {
+                m.stop()
+                _ = m.start(background: true)
+            }
+            return
+        }
+        if settings.inAppLiveEnabled, scenePhase != .background {
+            if !m.isMonitoring || m.isBackground {
+                m.stop()
+                _ = m.start(background: false)
+            }
+            return
+        }
         m.stop()
-        startMonitoringForCurrentTier(m)
     }
 }
 
@@ -154,7 +174,7 @@ private struct AckCover: Identifiable {
     let index: Int
     // Stable identity derived from the reminder it represents. A random
     // UUID here would change on every parent re-render, and
-    // `.fullScreenCover(item:)` keys presentation off `id` — a churning id
+    // `.fullScreenCover(item:)` keys presentation off `id` - a churning id
     // tears down and rebuilds the live AcknowledgmentView mid-check-in,
     // snapping it back from .scanning/.done to .choice.
     var id: String { "\(scheduledAt.timeIntervalSince1970)-\(index)" }
@@ -165,7 +185,7 @@ private struct AckCover: Identifiable {
 final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @unchecked Sendable {
     static let shared = NotificationDelegate()
 
-    /// A tap that arrived before the root view assigned `onReceive` — i.e.
+    /// A tap that arrived before the root view assigned `onReceive` - i.e.
     /// the notification cold-launched the app. Replayed on assignment.
     @MainActor private var pendingTap: (scheduledAt: Date, index: Int)?
 
@@ -173,7 +193,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
     @MainActor private var pendingPracticeTap = false
 
     /// Called when a posture-reminder notification is tapped. Invoked on
-    /// the main actor — it mutates SwiftUI state.
+    /// the main actor - it mutates SwiftUI state.
     @MainActor var onReceive: (@MainActor (Date, Int) -> Void)? {
         didSet {
             guard let onReceive, let tap = pendingTap else { return }
@@ -182,7 +202,7 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
         }
     }
 
-    /// Called when the daily-practice reminder is tapped — opens the session.
+    /// Called when the daily-practice reminder is tapped - opens the session.
     @MainActor var onPracticeTap: (@MainActor () -> Void)? {
         didSet {
             guard let onPracticeTap, pendingPracticeTap else { return }
@@ -210,13 +230,13 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
             let index = userInfo["index"] as? Int ?? 0
             // Repeating triggers carry the date they were *scheduled*, which
             // can be days old if the app hasn't been foregrounded since. Only
-            // the slot's time-of-day is meaningful — pin it to today so the
+            // the slot's time-of-day is meaningful - pin it to today so the
             // check-in screen and the saved record show the right day.
             let slot = Calendar.current.dateComponents([.hour, .minute], from: stored)
             let scheduledAt = Calendar.current.date(
                 bySettingHour: slot.hour ?? 0, minute: slot.minute ?? 0, second: 0, of: Date()
             ) ?? stored
-            // P1-6: hop to the main actor — this delegate fires on UN's
+            // P1-6: hop to the main actor - this delegate fires on UN's
             // private queue and the callback touches @State.
             Task { @MainActor in
                 if let onReceive = self.onReceive {
@@ -291,6 +311,7 @@ struct RootView: View {
 struct MainTabView: View {
     @Environment(GoalSettings.self) private var settings
     @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
+    @State private var subscriptions = SubscriptionService.shared
     @State private var selectedTab = 0
     @State private var showReviewPrompt = false
     @State private var reviewPromptInitialStep: ReviewPromptSheet.Step = .enjoyment
@@ -310,6 +331,12 @@ struct MainTabView: View {
             HistoryView()
                 .tabItem { Label("History", systemImage: "chart.bar.fill") }
                 .tag(1)
+            // The upgrade pitch gets its own tab until the user subscribes.
+            if !subscriptions.isProSubscriber {
+                ProTabView()
+                    .tabItem { Label("Posture+", systemImage: "sparkles") }
+                    .tag(3)
+            }
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
                 .tag(2)
@@ -318,7 +345,7 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .posturePositiveMomentForReview)) { _ in
             scheduleReviewPromptAfterPositiveMoment()
         }
-        // Settings' "Replay practice coach marks" — the session opens from
+        // Settings' "Replay practice coach marks" - the session opens from
         // Today, so switch there; TodayView receives the same notification
         // and presents the session.
         .onReceive(NotificationCenter.default.publisher(for: .postureReplaySessionCoachMarks)) { _ in
@@ -340,7 +367,7 @@ struct MainTabView: View {
             }
         }
         .sheet(isPresented: $showReviewPrompt, onDismiss: {
-            // Swipe-to-dismiss skips every button path — start the cooldown
+            // Swipe-to-dismiss skips every button path - start the cooldown
             // here too, or the prompt can come back at the next positive
             // moment. Redundant after a button outcome, which is harmless.
             ReviewPromptTracker.markShown()

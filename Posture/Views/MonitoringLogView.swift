@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// Running activity log for the AirPods monitor — answers "is it actually
+/// Running activity log for the AirPods monitor - answers "is it actually
 /// working?" with a live freshness readout and a feed of what the monitor
 /// has seen and done this session.
 struct MonitoringLogView: View {
@@ -42,7 +42,7 @@ struct MonitoringLogView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.body.weight(.medium))
+                            .font(Theme.font(.body, weight: .medium))
                             .foregroundStyle(Theme.ink3)
                     }
                     .accessibilityLabel("Close")
@@ -88,7 +88,7 @@ struct MonitoringLogView: View {
 
             if let error = monitor.lastError {
                 Text(error)
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.clay)
             }
         }
@@ -100,11 +100,11 @@ struct MonitoringLogView: View {
     private func statRow(label: String, value: String) -> some View {
         HStack {
             Text(label)
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink3)
             Spacer()
             Text(value)
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink)
         }
     }
@@ -140,7 +140,7 @@ struct MonitoringLogView: View {
 
     private var howItWorks: some View {
         Text("While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for three seconds gets one log entry and a gentle buzz, at most once a minute.")
-            .font(.system(.footnote, design: .rounded))
+            .font(Theme.font(.footnote))
             .foregroundStyle(Theme.ink2)
             .lineSpacing(2)
             .padding(18)
@@ -156,13 +156,13 @@ struct MonitoringLogView: View {
     private func eventFeed(_ monitor: AirpodsBackgroundMonitor) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Activity")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
 
             if monitor.events.isEmpty {
                 Text("Nothing logged yet this session.")
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
@@ -185,12 +185,12 @@ struct MonitoringLogView: View {
                 .frame(width: 6, height: 6)
                 .padding(.top, 4)
             Text(text)
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 8)
             Text(timeString(event.timestamp))
-                .font(.system(.caption2, design: .rounded))
+                .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink3)
         }
     }

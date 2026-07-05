@@ -2,8 +2,8 @@ import SwiftData
 import SwiftUI
 
 /// The monitored day, hour by hour, from per-minute aggregates. Each hour
-/// cell is colored by how aligned that hour actually was — not just whether
-/// a slouch event fired — so the card fills with the story of the day.
+/// cell is colored by how aligned that hour actually was - not just whether
+/// a slouch event fired - so the card fills with the story of the day.
 struct PassiveTimelineView: View {
     @Query private var minutes: [PostureMinuteSample]
     @Query private var slouches: [PosturePassiveSample]
@@ -27,7 +27,7 @@ struct PassiveTimelineView: View {
         let stats = stats
         VStack(alignment: .leading, spacing: 12) {
             Text("Today's rhythm")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink3)
 
             Text(headline(stats))
@@ -38,16 +38,16 @@ struct PassiveTimelineView: View {
             hourStrip(stats)
 
             HStack {
-                Text("12a").font(.caption2).foregroundStyle(Theme.ink3)
+                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12p").font(.caption2).foregroundStyle(Theme.ink3)
+                Text("12p").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12a").font(.caption2).foregroundStyle(Theme.ink3)
+                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
             }
 
             if stats.wearSeconds > 0 {
                 Text(detailLine(stats))
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
             }
         }

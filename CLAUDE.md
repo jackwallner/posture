@@ -50,19 +50,31 @@ pipeline in the app.
   - `DataService` — App Group SwiftData container. Widget targets MUST mirror
     its schema exactly (they open the same store).
   - `PracticeProgression` — pure level ramp: passed sessions → level →
-    session length + target %. Free tier caps at level 5.
-  - `PracticeSessionController` — drives one bounded session: owns the motion
-    stream (suspends the monitor), scores at ~25 Hz, accrues elapsed from
-    observed sample dt (never a Timer), writes `PostureSession` +
-    minute samples, credits the streak on completion.
+    session length + target %. Free tier caps at level 2 (the ladder is the
+    upgrade); `LevelLadderView` explains the system + pitches Posture+.
+  - `PracticeSessionController` — drives one bounded session: chin-tuck
+    warm-up reps (`ChinTuckRepDetector`, practice only) → timed hold; owns
+    the motion stream (suspends the monitor), scores at ~25 Hz, accrues
+    elapsed from observed sample dt (never a Timer), writes `PostureSession`
+    + minute samples, credits the streak on completion, and runs the
+    ActivityKit Live Activity (countdown + live alignment in the Dynamic
+    Island). Custom-length sessions set `countsForLevel: false` (streak
+    only). Walks pass `repsTarget: 0`.
+  - `AchievementCatalog` — display-only badges derived at read time from
+    streak + session rows (no persistence). Surfaces: `AchievementsView`
+    grid, Today teaser row, summary unlock lines.
   - `MinuteBucket` — pure per-minute aggregation shared by monitor + sessions
     (dt clamp 2s, ≥1s flush floor).
   - `AudioKeepAlive` — refcounted silent-audio engine (`acquire`/`release`)
     keeping CoreMotion alive in background; held by the monitor (indefinite,
     Pro toggle) and by sessions (bounded).
-  - `PostureScoring` — pure scoring (testable). Scores against the *nearer* of
-    the standing/sitting baselines; the slouch reference is capped at π/16 at
-    scoring time so small-amplitude standing slouches register
+  - `PostureScoring` — pure scoring (testable). `postureReference` picks the
+    *nearer* of the standing/sitting baselines AND that posture's own
+    calibrated slouch delta (`Calibration.standingSlouchDelta` /
+    `sittingSlouchDelta`, nil on legacy rows → `slouchPitchDelta` fallback);
+    the slouch reference is capped at π/16 at scoring time so
+    small-amplitude standing slouches register. Also home of `ChinTuck` +
+    `ChinTuckRepDetector` (warm-up rep counting).
   - `PostureDayStats` — pure aggregation over minute samples (testable)
   - `StreakService` — streak math + freeze logic. `currentState()` is the *only*
     get-or-create path for `StreakState`; views must never insert in `body`.
@@ -71,7 +83,12 @@ pipeline in the app.
     (`posture.practice.daily`, hour/minute from GoalSettings) + optional
     every-N-minutes check-in slots (repeating `UNCalendarNotificationTrigger`)
   - `ReminderScheduler` — orchestrates the reschedule on settings/foreground
-  - `AirpodsBackgroundMonitor` — opt-in Pro all-day AirPods sampling;
+  - `AirpodsBackgroundMonitor` — one shared monitor, two modes decided by
+    `reconcileMonitoring` in App.swift: Pro all-day background (Settings
+    toggle, silent-audio keep-alive) or the free in-app live readout
+    (`GoalSettings.inAppLiveEnabled`, default on, foreground only). Both
+    record minute samples. `userPaused` is the manual Stop from Today's
+    card — auto-start paths must respect it.
     `suspendForForegroundRead()`/`resumeAfterForegroundRead()` is the handoff
     every foreground reader (calibration, scan, session) must use
   - `HeadphoneMotionService` — foreground `CMHeadphoneMotionManager` wrapper
@@ -79,39 +96,54 @@ pipeline in the app.
   - `SubscriptionService` — RevenueCat (guarded by `#if canImport(RevenueCat)`)
   - `AnalyticsService`, `PostureTipService`
 - `Posture/` — iOS UI
-  - `App.swift` → onboarding → calibration → MainTabView (Today / History /
-    Settings). No hard paywall gate: free core loop, dismissible paywall after
-    the first completed session (`posture_post_first_session`) and at Pro
-    gates (level cap `posture_level_gate`, Settings postcard). Holds the
-    AirPods monitor and both notification-tap fullScreenCovers (check-in ack +
-    practice session).
-  - `Views/PracticeSessionView.swift` — the session screen (pre-start → live
-    ring → paused → summary); first session shows in-session coach marks
-  - `Views/WalkSessionView.swift` — walk mode (Pro): 10/20/30-min walking
-    session, rolling-median walk scoring (`PostureScoring.Walk`), 30s warmup
-    excluded from the score; credits the streak, never the level
+  - `App.swift` → onboarding (incl. posture-focus choice) → calibration →
+    MainTabView (Today / History / Posture+ [non-subscribers only] /
+    Settings). No hard paywall gate: free core loop, dismissible paywall
+    after the first completed session (`posture_post_first_session`) and at
+    Pro gates (`posture_level_gate`, `posture_walk_gate`,
+    `posture_trends_gate`, `posture_pro_tab`, Settings postcard). Holds the
+    AirPods monitor (`reconcileMonitoring`) and both notification-tap
+    fullScreenCovers (check-in ack + practice session).
+  - `Views/PracticeSessionView.swift` — the session screen (pre-start with
+    custom-length menu → chin-tuck warm-up reps → live ring → paused →
+    summary); first hold shows in-session coach marks, replayable from
+    Settings via `.postureReplaySessionCoachMarks`
+  - `Views/WalkSessionView.swift` — walk mode (Pro): 10/20/30-min chips +
+    custom wheel (5–120), rolling-median walk scoring (`PostureScoring.Walk`),
+    30s warmup excluded from the score; credits the streak, never the level
   - `Views/SessionSummaryView.swift` — kind-aware receipt (pass/fail + level
-    for practice, % tall for walks), segment timeline
+    for practice, % tall for walks), segment timeline, new-badge lines
+  - `Views/HistoryView.swift` — practice-first: minutes/day chart, tappable
+    session receipts (`SessionDetailView`), Pro-gated trends (week delta,
+    monitoring chart, hour rhythm), free check-in journal
   - `Views/AcknowledgmentView.swift` — the fullscreen check-in on reminder tap
+  - `Views/LevelLadderView.swift`, `Views/StreakDetailView.swift`,
+    `Views/AchievementsView.swift`, `Views/ProTabView.swift` — explainer /
+    detail sheets opened from Today (level chip, streak chip, badges row)
+    and the tab bar
   - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
     PostureBanner, QualityChip, TipLine, DaylightCTA, AirpodsScanView,
-    PostureRing, StreakFlame, PoseDiagram, TrainingTour).
-    `TrainingTour` is legacy (replay from Settings only; auto-start removed).
+    PostureRing, StreakFlame, PoseDiagram).
     `PoseDiagram` renders drawn pose visuals and auto-swaps to
     `Illo*` asset-catalog images when present — generate them with
     `scripts/generate-illustrations.py` (needs a billed Gemini key).
-    Type rule: no serif italics anywhere; rounded SF via `Theme.display(_:)`.
 - `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets, read
-  from the shared App Group container (schemas must mirror `DataService`)
+  from the shared App Group container (schemas must mirror `DataService`).
+  `PostureWidget` also hosts `PracticeLiveActivity` (ActivityKit Dynamic
+  Island/lock-screen countdown; attributes in
+  `Shared/Utilities/PracticeActivityAttributes.swift`).
 - `PostureWatch/` — companion watch app
 
 ### Daylight design system
 
-Palette + type tokens in `Shared/Utilities/Theme.swift`, backed by asset-catalog
-`Daylight*` colorsets (paper / ink / sage / sand / clay, with dark variants).
-Body type is rounded SF Pro; ritual moments use SF Serif italic
-(`Theme.displaySerif(_:)`). Posture qualities map: good→sage, borderline→sand,
-bad→clay. The look-and-feel brief is in `docs/design-response/`.
+Palette + type tokens in `Shared/Utilities/Theme.swift` (literal colors:
+paper / ink / sage / sand / clay / lavender). Type is bundled **Nunito**
+(`Posture/Fonts/*.ttf`, OFL) via `Theme.font(_:weight:)` /
+`Theme.font(size:weight:)` / `Theme.display(_:)` — never use
+`.system(design: .rounded)` in new UI code; watchOS falls back to system
+rounded (no bundled fonts there). No serif italics, no em dashes in copy.
+Posture qualities map: good→sage, borderline→sand, bad→clay. The
+look-and-feel brief is in `docs/design-response/`.
 
 ## Plan reference
 

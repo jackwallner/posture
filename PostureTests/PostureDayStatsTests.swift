@@ -61,7 +61,7 @@ final class PostureDayStatsTests: XCTestCase {
     }
 
     func testWearLabel() {
-        XCTAssertEqual(PostureDayStats.wearLabel(seconds: 0), "—")
+        XCTAssertEqual(PostureDayStats.wearLabel(seconds: 0), "0m")
         XCTAssertEqual(PostureDayStats.wearLabel(seconds: 40 * 60), "40m")
         XCTAssertEqual(PostureDayStats.wearLabel(seconds: 4 * 3600 + 20 * 60), "4h 20m")
     }

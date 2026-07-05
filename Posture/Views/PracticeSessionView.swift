@@ -17,6 +17,10 @@ struct PracticeSessionView: View {
     @State private var coachStep: CoachStep? = nil
     @State private var coachSlouchFelt = false
     @State private var showRepsSkip = false
+    /// Custom session length (minutes). nil = the level's own duration.
+    @State private var customMinutes: Int? = nil
+
+    private let customDurationOptions = [3, 5, 10, 15, 20, 30]
 
     private enum CoachStep: Int {
         case ring, slouch, hold
@@ -73,9 +77,10 @@ struct PracticeSessionView: View {
     // MARK: - Pre-start
 
     private func preStartView(_ controller: PracticeSessionController) -> some View {
-        let config = PracticeSessionController.nextConfig(
+        let base = PracticeSessionController.nextConfig(
             context: context, isPro: subscriptions.isProSubscriber
         )
+        let config = configApplyingCustomDuration(base)
         return VStack(alignment: .leading, spacing: 0) {
             HStack {
                 levelChip(config.level)
@@ -90,8 +95,8 @@ struct PracticeSessionView: View {
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
 
-            Text("A quick chin-tuck warm-up, then \(minutesLabel(config.targetSeconds)) held tall with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
-                .font(.system(.body, design: .rounded))
+            Text("A quick chin-tuck warm-up, then \(minutesLabel(config.targetSeconds)) \(focusPhrase) with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(3)
                 .padding(.top, 14)
@@ -102,9 +107,11 @@ struct PracticeSessionView: View {
             }
             .padding(.top, 24)
 
+            durationPicker(base)
+
             if let error = controller.lastError {
                 Text(error)
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.clay)
                     .padding(.top, 12)
             }
@@ -125,6 +132,63 @@ struct PracticeSessionView: View {
         .dawnBackground()
     }
 
+    /// Custom lengths keep the streak but sit outside the ladder - the level
+    /// only moves at its own duration, so a 3-minute custom day can't farm
+    /// passes.
+    private func configApplyingCustomDuration(
+        _ base: PracticeSessionController.Config
+    ) -> PracticeSessionController.Config {
+        guard let minutes = customMinutes, minutes * 60 != base.targetSeconds else { return base }
+        return PracticeSessionController.Config(
+            kind: .practice,
+            targetSeconds: minutes * 60,
+            targetPercent: base.targetPercent,
+            level: base.level,
+            repsTarget: base.repsTarget,
+            countsForLevel: false
+        )
+    }
+
+    private func durationPicker(_ base: PracticeSessionController.Config) -> some View {
+        let levelMinutes = base.targetSeconds / 60
+        return VStack(alignment: .leading, spacing: 6) {
+            Menu {
+                Button {
+                    customMinutes = nil
+                } label: {
+                    Label("Level \(base.level) length · \(levelMinutes) min", systemImage: customMinutes == nil ? "checkmark" : "chevron.up.2")
+                }
+                ForEach(customDurationOptions.filter { $0 != levelMinutes }, id: \.self) { minutes in
+                    Button {
+                        customMinutes = minutes
+                    } label: {
+                        if customMinutes == minutes {
+                            Label("\(minutes) minutes", systemImage: "checkmark")
+                        } else {
+                            Text("\(minutes) minutes")
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 12, weight: .semibold))
+                    Text(customMinutes == nil ? "Change length" : "Custom length: \(customMinutes!) min")
+                        .font(Theme.font(.footnote, weight: .semibold))
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 9, weight: .semibold))
+                }
+                .foregroundStyle(Theme.sage)
+            }
+            if customMinutes != nil {
+                Text("Custom lengths keep your streak. Level progress needs the level's own length.")
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink3)
+            }
+        }
+        .padding(.top, 12)
+    }
+
     // MARK: - Chin-tuck warm-up
 
     private func repsView(_ controller: PracticeSessionController) -> some View {
@@ -139,7 +203,7 @@ struct PracticeSessionView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.body.weight(.medium))
+                        .font(Theme.font(.body, weight: .medium))
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -159,7 +223,7 @@ struct PracticeSessionView: View {
                     .animation(.easeOut(duration: 0.4), value: done)
                 VStack(spacing: 6) {
                     Text("\(done)")
-                        .font(.system(size: 64, weight: .regular, design: .rounded))
+                        .font(Theme.font(size: 64, weight: .regular))
                         .foregroundStyle(Theme.ink)
                         .contentTransition(.numericText())
                         .animation(.easeOut(duration: 0.2), value: done)
@@ -178,7 +242,7 @@ struct PracticeSessionView: View {
                 Text(controller.isAirpodsConnected
                      ? "Gently draw your chin straight back, like a small double chin, then return to level. Slow and easy."
                      : "Pop your AirPods in to begin. Reps count from your first reading.")
-                    .font(.system(.body, design: .rounded))
+                    .font(Theme.font(.body))
                     .foregroundStyle(Theme.ink2)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -200,7 +264,7 @@ struct PracticeSessionView: View {
             #if DEBUG
             Button { controller.debugCountRep() } label: {
                 Text("Done with this rep (debug)")
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink3)
             }
             .buttonStyle(.plain)
@@ -225,7 +289,7 @@ struct PracticeSessionView: View {
             Image(systemName: "figure.flexibility")
                 .font(.system(size: 11, weight: .semibold))
             Text("Warm-up")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
         }
         .foregroundStyle(Theme.lavender)
         .padding(.horizontal, 12)
@@ -254,7 +318,7 @@ struct PracticeSessionView: View {
                         }
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.body.weight(.medium))
+                            .font(Theme.font(.body, weight: .medium))
                             .foregroundStyle(Theme.ink3)
                     }
                     .buttonStyle(.plain)
@@ -267,7 +331,7 @@ struct PracticeSessionView: View {
                 sessionRing(controller, quality: quality, paused: paused)
 
                 Text(statusLine(controller))
-                    .font(.system(.body, design: .rounded))
+                    .font(Theme.font(.body))
                     .foregroundStyle(Theme.ink2)
                     .multilineTextAlignment(.center)
                     .padding(.top, 24)
@@ -333,7 +397,7 @@ struct PracticeSessionView: View {
                 .animation(.easeOut(duration: 0.5), value: progress)
             VStack(spacing: 6) {
                 Text(timeLabel(controller.remainingSeconds))
-                    .font(.system(size: 54, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 54, weight: .regular))
                     .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText(countsDown: true))
                     .animation(.easeOut(duration: 0.2), value: controller.remainingSeconds)
@@ -342,7 +406,7 @@ struct PracticeSessionView: View {
                     .foregroundStyle(color)
                 if controller.elapsedSeconds > 10 {
                     Text("\(Int((controller.alignedFractionSoFar * 100).rounded()))% aligned")
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .foregroundStyle(Theme.ink3)
                 }
             }
@@ -358,10 +422,10 @@ struct PracticeSessionView: View {
             Spacer()
             VStack(alignment: .leading, spacing: 8) {
                 Text(coachTitle(step))
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text(coachBody(step, controller: controller))
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
                     .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -369,7 +433,7 @@ struct PracticeSessionView: View {
                     advanceCoach(from: step)
                 } label: {
                     Text(coachAction(step) + " →")
-                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.sage)
                 }
                 .buttonStyle(.plain)
@@ -406,7 +470,7 @@ struct PracticeSessionView: View {
         case .slouch:
             return coachSlouchFelt
                 ? "Sit back up and watch it turn green. During practice, a slouch held for ~15 seconds earns a gentle buzz."
-                : "Really let go — chin toward your chest, shoulders forward. Watch the ring flip."
+                : "Really let go, chin toward your chest, shoulders forward. Watch the ring flip."
         case .hold:
             return "Hold it tall for \(timeLabel(controller.remainingSeconds)) more. Finish and today's streak day is yours; hit the target % and you level up."
         }
@@ -448,7 +512,7 @@ struct PracticeSessionView: View {
     private var closeButton: some View {
         Button { dismiss() } label: {
             Image(systemName: "xmark")
-                .font(.body.weight(.medium))
+                .font(Theme.font(.body, weight: .medium))
                 .foregroundStyle(Theme.ink3)
         }
         .buttonStyle(.plain)
@@ -460,7 +524,7 @@ struct PracticeSessionView: View {
             Image(systemName: "chevron.up.2")
                 .font(.system(size: 10, weight: .semibold))
             Text("Level \(level)")
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
         }
         .foregroundStyle(Theme.sage)
         .padding(.horizontal, 12)
@@ -471,10 +535,10 @@ struct PracticeSessionView: View {
     private func statPill(value: String, label: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(Theme.font(.title3, weight: .semibold))
                 .foregroundStyle(Theme.ink)
             Text(label)
-                .font(.system(.caption, design: .rounded))
+                .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
         }
         .padding(.horizontal, 16)
@@ -491,7 +555,7 @@ struct PracticeSessionView: View {
     private func statusLine(_ controller: PracticeSessionController) -> String {
         switch controller.phase {
         case .waiting:
-            return "Pop your AirPods in to begin — the clock starts with your first reading."
+            return "Pop your AirPods in to begin, the clock starts with your first reading."
         case .paused(.airpodsOut):
             return "AirPods are out. The clock is paused until they're back in."
         case .paused(.user):
@@ -499,7 +563,7 @@ struct PracticeSessionView: View {
         case .running:
             switch controller.currentQuality {
             case .good: return "Tall and easy. Keep breathing."
-            case .borderline: return "Drifting a little — lift the crown of your head."
+            case .borderline: return "Drifting a little, lift the crown of your head."
             case .bad: return "Curled forward. Ears back over shoulders."
             }
         default:
@@ -535,5 +599,14 @@ struct PracticeSessionView: View {
     private func minutesLabel(_ seconds: Int) -> String {
         let minutes = seconds / 60
         return minutes == 1 ? "1 minute" : "\(minutes) minutes"
+    }
+
+    /// Coaching copy leans toward the posture the user said they want to fix.
+    private var focusPhrase: String {
+        switch settings.postureFocus {
+        case .sitting: return "sitting tall"
+        case .standing: return "standing tall"
+        case .both: return "held tall, sitting or standing"
+        }
     }
 }

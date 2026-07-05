@@ -3,8 +3,8 @@ import Foundation
 import WatchConnectivity
 
 /// Bridges the `alwaysOnEnabled` preference between the iPhone and the
-/// Apple Watch. App Group `UserDefaults` are per-device — they do *not*
-/// sync across the phone/watch boundary — so without this the iOS toggle
+/// Apple Watch. App Group `UserDefaults` are per-device - they do *not*
+/// sync across the phone/watch boundary - so without this the iOS toggle
 /// would never reach the watch.
 ///
 /// iOS pushes the latest value with `updateApplicationContext` (last value

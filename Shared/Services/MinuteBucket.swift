@@ -1,7 +1,7 @@
 import Foundation
 
 /// Folds a scored ~25 Hz posture stream into per-minute good/borderline/bad
-/// second buckets — the persistence-ready shape behind `PostureMinuteSample`.
+/// second buckets - the persistence-ready shape behind `PostureMinuteSample`.
 /// Pure value type shared by the all-day monitor and bounded sessions so the
 /// two never disagree about how observed time is attributed.
 struct MinuteBucket {
@@ -14,7 +14,7 @@ struct MinuteBucket {
     }
 
     /// Gaps longer than this mean the stream was interrupted (pods out, app
-    /// suspended mid-read) and that time was not observed — never credit it.
+    /// suspended mid-read) and that time was not observed - never credit it.
     static let maxSampleGapSeconds: Double = 2
 
     /// Buckets thinner than this aren't worth a row.

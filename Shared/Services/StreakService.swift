@@ -10,7 +10,7 @@ final class StreakService {
     }
 
     /// The single get-or-create entry point for StreakState. Views must
-    /// not insert StreakState during body evaluation (audit P1-10) —
+    /// not insert StreakState during body evaluation (audit P1-10) -
     /// route creation through here.
     func currentState() -> StreakState {
         var descriptor = FetchDescriptor<StreakState>(sortBy: [SortDescriptor(\.id)])
@@ -43,7 +43,7 @@ final class StreakService {
         let streakBefore = state.currentStreak
         StreakService.applySession(to: state, at: date)
         // Award the milestone bonus only when this check-in advanced the
-        // streak — otherwise every same-day repeat on a milestone day
+        // streak - otherwise every same-day repeat on a milestone day
         // stacks another free freeze.
         if state.currentStreak != streakBefore {
             StreakService.awardMilestoneFreezes(state, at: date)
@@ -53,7 +53,7 @@ final class StreakService {
     }
 
     /// Compute the user's acknowledgment response rate for a given date.
-    /// This is a best-effort estimate — we can't always count total reminders
+    /// This is a best-effort estimate - we can't always count total reminders
     /// that were sent vs acknowledged, so we use the app's scheduled count.
     nonisolated static func responseRate(
         for date: Date,
@@ -70,7 +70,7 @@ final class StreakService {
         return min(Double(ackCount) / Double(scheduledCount), 1.0)
     }
 
-    /// Weekly freeze refill — resets to 2 available freezes every 7 days.
+    /// Weekly freeze refill - resets to 2 available freezes every 7 days.
     nonisolated static func refillFreezesIfNeeded(_ state: StreakState, at date: Date) {
         let maxFreezes = 2
         guard state.freezesAvailable < maxFreezes else { return }
@@ -108,7 +108,7 @@ final class StreakService {
 
         switch gap {
         case ...0:
-            // Same day — streak unchanged. Also covers a *negative* gap
+            // Same day - streak unchanged. Also covers a *negative* gap
             // (clock set back, or travel west across the date line), which
             // must not reset an active streak.
             return

@@ -1,11 +1,11 @@
 import SwiftData
 import SwiftUI
 
-/// AirPods calibration. We start the headphone motion service and capture the
-/// user's aligned posture twice, standing then sitting, each behind a
-/// steadiness gate so a fidgety hold is retried rather than baked into the
-/// baseline. A slouch pose then sets the personal range. The two aligned reads
-/// are averaged into one high-confidence baseline. If no motion ever arrives we
+/// AirPods calibration. Four reads, each confirmed by the user with a redo
+/// option: standing tall → standing slouch → sitting tall → sitting slouch.
+/// The aligned reads become per-posture baselines; each slouch read sets that
+/// posture's personal range, so a subtle standing slouch and a deep chair
+/// collapse are judged on their own scales. If no motion ever arrives we
 /// surface the "compatible AirPods required" gate.
 struct CalibrationView: View {
     enum Mode {
@@ -25,24 +25,22 @@ struct CalibrationView: View {
 
     @State private var airpods = HeadphoneMotionService()
     @State private var phase: Phase = .waiting
-    @State private var countdown: Int = 5
+    @State private var countdown: Int = 4
     @State private var showSkipHint = false
-    @State private var showSteadyRetry = false
 
-    // Aligned captures accumulate here as the sequence advances.
-    @State private var standingCapture: PoseCapture?
-    @State private var sittingCapture: PoseCapture?
-    @State private var capturedSlouchDelta: Double?
+    @State private var captures: [PoseStep: PoseCapture] = [:]
     @State private var savedConfidence: Double?
 
     @State private var sequenceTask: Task<Void, Never>?
     @State private var waitDeadlineTask: Task<Void, Never>?
     @State private var permissionWatchTask: Task<Void, Never>?
 
-    /// Set by the per-pose "I'm ready" confirm button; the capture sequence
-    /// waits on this before counting down so we only ever read a pose the user
-    /// says they're actually holding.
-    @State private var poseConfirmed = false
+    /// Set by the per-step buttons; the capture sequence polls these.
+    @State private var prepDecision: PrepDecision?
+    @State private var reviewDecision: ReviewDecision?
+
+    private enum PrepDecision { case confirmed, skipped }
+    private enum ReviewDecision { case accepted, redo }
 
     /// One steady read of a pose: its mean pitch, how tight the hold was, and
     /// the accompanying yaw/roll means (kept from the sitting read).
@@ -53,17 +51,24 @@ struct CalibrationView: View {
         let roll: Double?
     }
 
-    enum Phase {
-        case waiting          // AirPods not yet sending samples
-        case standingPrep     // "get standing", wait for confirm
-        case standing         // capturing standing-upright
-        case sittingPrep      // "get sitting", wait for confirm
-        case sitting          // capturing sitting-upright
-        case slouchPrep       // "now slouch", wait for confirm
-        case slouch           // reading the user's slouch
-        case unsupported      // gave up — show the gate
-        case permissionDenied // motion access is off, not missing hardware
-        case done             // saved
+    /// The four reads, in order.
+    enum PoseStep: CaseIterable, Equatable {
+        case standing
+        case standingSlouch
+        case sitting
+        case sittingSlouch
+
+        var isSlouch: Bool { self == .standingSlouch || self == .sittingSlouch }
+    }
+
+    enum Phase: Equatable {
+        case waiting              // AirPods not yet sending samples
+        case prep(PoseStep)       // instructions, wait for "I'm ready"
+        case capturing(PoseStep)  // countdown + read
+        case review(PoseStep)     // confirm the measurement or redo
+        case unsupported          // gave up, show the gate
+        case permissionDenied     // motion access is off, not missing hardware
+        case done                 // saved
     }
 
     /// Generous: lets a user pop AirPods in after launching the app.
@@ -71,49 +76,14 @@ struct CalibrationView: View {
     /// After this long with no AirPods, offer an escape so a user (or reviewer)
     /// without compatible AirPods is never trapped on a static screen.
     private let skipHintSeconds: Double = 6
-    /// Settle countdown before each read, and how many times a too-jittery
-    /// aligned read is retried before we accept the best-effort hold.
-    private let settleSeconds = 4
-    private let maxAlignedAttempts = 2
 
     var body: some View {
         Group {
             switch phase {
             case .waiting: waitingStep
-            case .standingPrep: prepStep(
-                eyebrow: "Aligned · standing",
-                title: "Stand up tall.",
-                instruction: "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below.",
-                confirm: "I'm standing tall",
-                pose: .standing
-            )
-            case .standing: alignedCaptureStep(
-                eyebrow: "Aligned · standing",
-                title: "Hold it.",
-                instruction: "Stay tall and still, looking straight ahead, while we read your standing posture.",
-                accent: Theme.sage, wash: Theme.sageTint
-            )
-            case .sittingPrep: prepStep(
-                eyebrow: "Aligned · sitting",
-                title: "Now sit down tall.",
-                instruction: "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below.",
-                confirm: "I'm sitting tall",
-                pose: .sitting
-            )
-            case .sitting: alignedCaptureStep(
-                eyebrow: "Aligned · sitting",
-                title: "Hold it.",
-                instruction: "Stay tall and still, looking straight ahead, while we read your sitting posture.",
-                accent: Theme.sage, wash: Theme.sageTint
-            )
-            case .slouchPrep: prepStep(
-                eyebrow: "Your range",
-                title: "Now let go and slouch.",
-                instruction: "Settle into the slump you usually catch yourself in, however you're sitting now. When you're in your natural slouch, tap below.",
-                confirm: "I'm slouched",
-                pose: .slouching
-            )
-            case .slouch: slouchStep
+            case .prep(let step): prepView(step)
+            case .capturing(let step): captureView(step)
+            case .review(let step): reviewView(step)
             case .unsupported: unsupportedStep
             case .permissionDenied: permissionDeniedStep
             case .done: doneStep
@@ -126,7 +96,7 @@ struct CalibrationView: View {
                 startSequence()
             }
         }
-        // Samples are the ground truth that AirPods are in and streaming —
+        // Samples are the ground truth that AirPods are in and streaming -
         // `isConnected` can already be true (so onChange never re-fires) when a
         // capture rewound to .waiting, e.g. because the Motion & Fitness
         // permission dialog swallowed the first capture window.
@@ -144,7 +114,61 @@ struct CalibrationView: View {
         }
     }
 
-    // MARK: - Steps
+    // MARK: - Step copy
+
+    private func eyebrow(_ step: PoseStep) -> String {
+        switch step {
+        case .standing: return "1 of 4 · Standing tall"
+        case .standingSlouch: return "2 of 4 · Standing slouch"
+        case .sitting: return "3 of 4 · Sitting tall"
+        case .sittingSlouch: return "4 of 4 · Sitting slouch"
+        }
+    }
+
+    private func prepTitle(_ step: PoseStep) -> String {
+        switch step {
+        case .standing: return "Stand up tall."
+        case .standingSlouch: return "Now slouch, standing."
+        case .sitting: return "Now sit down tall."
+        case .sittingSlouch: return "Last one: slouch in the chair."
+        }
+    }
+
+    private func prepInstruction(_ step: PoseStep) -> String {
+        switch step {
+        case .standing:
+            return "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below."
+        case .standingSlouch:
+            return "Stay on your feet and let it all go: shoulders rolled forward, chest sunk, head drifting ahead of your spine. This is the standing slump we'll coach you out of. When you're in it, tap below."
+        case .sitting:
+            return "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below."
+        case .sittingSlouch:
+            return "Settle into the slump you usually catch yourself in at a desk: rounded back, chin toward your chest. When you're in your natural slouch, tap below."
+        }
+    }
+
+    private func prepConfirmLabel(_ step: PoseStep) -> String {
+        switch step {
+        case .standing: return "I'm standing tall"
+        case .standingSlouch: return "I'm slouched"
+        case .sitting: return "I'm sitting tall"
+        case .sittingSlouch: return "I'm slouched"
+        }
+    }
+
+    private func poseDiagram(_ step: PoseStep) -> PoseDiagram.Pose {
+        switch step {
+        case .standing: return .standing
+        case .sitting: return .sitting
+        case .standingSlouch, .sittingSlouch: return .slouching
+        }
+    }
+
+    private func captureAccent(_ step: PoseStep) -> (Color, Color) {
+        step.isSlouch ? (Theme.clay, Theme.clayTint) : (Theme.sage, Theme.sageTint)
+    }
+
+    // MARK: - Steps UI
 
     private var waitingStep: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -160,12 +184,12 @@ struct CalibrationView: View {
             .frame(maxWidth: .infinity)
 
             Text("Pop in your AirPods.")
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 32, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 24)
 
             Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone. iOS will ask permission to read motion.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -188,10 +212,46 @@ struct CalibrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func alignedCaptureStep(eyebrow: String, title: String, instruction: String, accent: Color, wash: Color) -> some View {
+    private func prepView(_ step: PoseStep) -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text(eyebrow)
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+            Text(eyebrow(step))
+                .font(Theme.font(.caption, weight: .semibold))
+                .tracking(0.8)
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 8)
+            Spacer()
+            PoseDiagram(pose: poseDiagram(step), height: 170)
+
+            Text(prepTitle(step))
+                .font(Theme.font(size: 32, weight: .semibold))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 12)
+
+            Text(prepInstruction(step))
+                .font(Theme.font(.body))
+                .foregroundStyle(Theme.ink)
+                .lineSpacing(3)
+
+            Spacer()
+
+            Button { prepDecision = .confirmed } label: { Text(prepConfirmLabel(step)) }
+                .buttonStyle(.daylight(.primary))
+
+            if step.isSlouch {
+                Button { prepDecision = .skipped } label: { Text("Skip, use the standard range") }
+                    .buttonStyle(.daylight(.ghost))
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func captureView(_ step: PoseStep) -> some View {
+        let (accent, wash) = captureAccent(step)
+        return VStack(alignment: .leading, spacing: 18) {
+            Text(eyebrow(step))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
                 .padding(.top, 8)
@@ -208,22 +268,17 @@ struct CalibrationView: View {
             }
             .frame(maxWidth: .infinity)
 
-            Text(title)
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
+            Text("Hold it.")
+                .font(Theme.font(size: 32, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 12)
 
-            Text(instruction)
-                .font(.system(.body, design: .rounded))
+            Text(step.isSlouch
+                 ? "Stay in the slump, nice and still, while we read it."
+                 : "Stay tall and still, looking straight ahead, while we read this pose.")
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
-
-            if showSteadyRetry {
-                Label("That read was a little shaky. Hold as still as you can.", systemImage: "hand.raised.slash")
-                    .font(.system(.subheadline, design: .rounded).weight(.medium))
-                    .foregroundStyle(Theme.sand)
-                    .padding(.top, 2)
-            }
 
             Spacer()
         }
@@ -232,86 +287,67 @@ struct CalibrationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func prepStep(eyebrow: String, title: String, instruction: String, confirm: String, pose: PoseDiagram.Pose) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text(eyebrow)
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+    /// The user confirms each read before it becomes part of the baseline -
+    /// a shaky or mistimed capture gets a redo, not a bake-in.
+    private func reviewView(_ step: PoseStep) -> some View {
+        let capture = captures[step]
+        let steady = (capture?.standardDeviation ?? 1) <= PostureScoring.stableCaptureThreshold
+        return VStack(alignment: .leading, spacing: 18) {
+            Text(eyebrow(step))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
                 .padding(.top, 8)
             Spacer()
-            PoseDiagram(pose: pose, height: 170)
 
-            Text(title)
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
-                .foregroundStyle(Theme.ink)
-                .padding(.top, 12)
-
-            Text(instruction)
-                .font(.system(.body, design: .rounded))
-                .foregroundStyle(Theme.ink)
-                .lineSpacing(3)
-
-            if showSteadyRetry {
-                Label("That read was a little shaky. Re-settle, then tap when you're steady.", systemImage: "hand.raised.slash")
-                    .font(.system(.subheadline, design: .rounded).weight(.medium))
-                    .foregroundStyle(Theme.sand)
-                    .padding(.top, 2)
-            }
-
-            Spacer()
-
-            Button { poseConfirmed = true } label: { Text(confirm) }
-                .buttonStyle(.daylight(.primary))
-
-            if phase == .slouchPrep {
-                Button { finishWithDefaultSlouch() } label: { Text("Skip, use the standard range") }
-                    .buttonStyle(.daylight(.ghost))
-            }
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var slouchStep: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Your range")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
-                .tracking(0.8)
-                .foregroundStyle(Theme.ink3)
-                .padding(.top, 8)
-            Spacer()
             ZStack {
                 Circle()
-                    .fill(Theme.clayTint)
-                    .frame(width: 200, height: 200)
-                Text("\(countdown)")
-                    .font(Theme.display(96))
-                    .foregroundStyle(Theme.clay)
-                    .contentTransition(.numericText())
-                    .animation(.default, value: countdown)
+                    .fill(steady ? Theme.sageTint : Theme.sandTint)
+                    .frame(width: 160, height: 160)
+                Image(systemName: steady ? "checkmark" : "water.waves")
+                    .font(.system(size: 54, weight: .regular))
+                    .foregroundStyle(steady ? Theme.sage : Theme.sand)
             }
             .frame(maxWidth: .infinity)
 
-            Text("Now let go.")
-                .font(.system(size: 32, weight: .semibold, design: .rounded))
+            Text(steady ? "Got it." : "That read was a little shaky.")
+                .font(Theme.font(size: 32, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 12)
 
-            Text("Settle into the slump you usually catch yourself in, and hold it. The distance between tall and slumped becomes your personal range.")
-                .font(.system(.body, design: .rounded))
+            Text(reviewSummary(step, capture: capture, steady: steady))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
             Spacer()
 
-            Button { finishWithDefaultSlouch() } label: { Text("Skip, use the standard range") }
+            Button { reviewDecision = .accepted } label: { Text("Looks right") }
+                .buttonStyle(.daylight(.primary))
+            Button { reviewDecision = .redo } label: { Text("Redo this read") }
                 .buttonStyle(.daylight(.ghost))
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func reviewSummary(_ step: PoseStep, capture: PoseCapture?, steady: Bool) -> String {
+        guard let capture else { return "We couldn't read that pose. Try a redo." }
+        if step.isSlouch {
+            let upright = captures[step == .standingSlouch ? .standing : .sitting]?.pitch
+            if let upright {
+                let degrees = Int((abs(capture.pitch - upright) * 180 / .pi).rounded())
+                if degrees < 2 {
+                    return "That slouch reads almost identical to your tall pose. If you were holding back, redo it and really let go."
+                }
+                return "Your \(step == .standingSlouch ? "standing" : "sitting") slouch drops your head about \(degrees)° from tall. That distance becomes your personal range."
+            }
+            return "Slouch captured. That distance becomes your personal range."
+        }
+        return steady
+            ? "A clean, steady read of your \(step == .standing ? "standing" : "sitting") posture. This is the baseline you'll be coached back to."
+            : "You can keep it, but a stiller hold gives more honest coaching. Re-settle and redo if you can."
     }
 
     private var unsupportedStep: some View {
@@ -328,12 +364,12 @@ struct CalibrationView: View {
             .frame(maxWidth: .infinity)
 
             Text("We need compatible AirPods.")
-                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 30, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
             Text("Posture reads alignment from the head-motion sensor in AirPods Pro (1st and 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -372,12 +408,12 @@ struct CalibrationView: View {
             .frame(maxWidth: .infinity)
 
             Text("Motion access is off.")
-                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 30, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
             Text("Posture needs permission to read your AirPods' motion sensor. Turn on Motion and Fitness for Posture in Settings, then try again.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
@@ -414,12 +450,12 @@ struct CalibrationView: View {
             .frame(maxWidth: .infinity)
 
             Text("All set.")
-                .font(.system(size: 40, weight: .semibold, design: .rounded))
+                .font(Theme.font(size: 40, weight: .semibold))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 28)
 
             Text(doneSubtitle)
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
                 .padding(.top, 10)
@@ -443,15 +479,21 @@ struct CalibrationView: View {
     }
 
     private var doneSubtitle: String {
-        let base = "We've learned your aligned posture standing and sitting"
-        let range = capturedSlouchDelta != nil ? ", and your slouch." : "."
-        return base + range + " Every check-in is scored against your own range."
+        let hasBothSlouches = captures[.standingSlouch] != nil && captures[.sittingSlouch] != nil
+        let hasAnySlouch = captures[.standingSlouch] != nil || captures[.sittingSlouch] != nil
+        if hasBothSlouches {
+            return "We've learned your tall posture standing and sitting, and your slouch in each. Every reading is scored against your own range for that posture."
+        }
+        if hasAnySlouch {
+            return "We've learned your tall posture standing and sitting, and one of your slouches. Every reading is scored against your own range."
+        }
+        return "We've learned your tall posture standing and sitting. Readings are scored against the standard range until you capture your slouch."
     }
 
     // MARK: - State machine
 
     private func begin() {
-        // Take exclusive ownership of the head-motion stream — the shared
+        // Take exclusive ownership of the head-motion stream - the shared
         // background monitor would otherwise starve this capture's own
         // CMHeadphoneMotionManager. Resumed in onDisappear.
         AirpodsBackgroundMonitor.shared.suspendForForegroundRead()
@@ -536,147 +578,140 @@ struct CalibrationView: View {
         }
     }
 
-    /// Run the full standing → sitting → slouch capture sequence. Each aligned
-    /// pose is retried if the hold was too shaky; a mid-sequence AirPods drop
-    /// rewinds cleanly to the waiting screen so we never dead-end.
+    /// Run the four reads in order: standing → standing slouch → sitting →
+    /// sitting slouch. Every read ends on a review screen where the user
+    /// accepts it or redoes it. A mid-sequence AirPods drop on an aligned
+    /// read rewinds cleanly to the waiting screen so we never dead-end;
+    /// a dropped slouch read just falls back to the standard range.
     private func startSequence() {
         guard phase == .waiting else { return }
         waitDeadlineTask?.cancel()
         permissionWatchTask?.cancel()
         AnalyticsService.calibrateStarted(mode: mode == .quickRecalibrate ? "quick" : "full")
 
+        captures = [:]
         sequenceTask?.cancel()
         sequenceTask = Task {
-            guard let standing = await captureAlignedPose(prep: .standingPrep, capture: .standing) else {
-                rewindToWaiting(); return
+            for step in PoseStep.allCases {
+                let outcome = await runStep(step)
+                switch outcome {
+                case .completed, .skipped:
+                    continue
+                case .airpodsLost:
+                    rewindToWaiting()
+                    return
+                case .cancelled:
+                    return
+                }
             }
-            standingCapture = standing
-            guard let sitting = await captureAlignedPose(prep: .sittingPrep, capture: .sitting) else {
-                rewindToWaiting(); return
-            }
-            sittingCapture = sitting
-
-            // Slouch: confirm the user is actually slouched before reading.
-            phase = .slouchPrep
-            guard await waitForPoseConfirm() else { return }
-            countdown = 3
-            showSteadyRetry = false
-            phase = .slouch
-            await captureSlouch(uprightSitting: sitting.pitch)
+            save()
+            phase = .done
         }
     }
 
-    /// Park on a prep screen until the user taps "I'm ready" (sets
-    /// `poseConfirmed`). Returns false if the task was cancelled or the slouch
-    /// step was skipped (which already saved + moved to .done) so the caller
-    /// bails cleanly.
-    private func waitForPoseConfirm() async -> Bool {
-        poseConfirmed = false
-        while !poseConfirmed {
-            guard !Task.isCancelled else { return false }
-            // Skipping the slouch calls finishWithDefaultSlouch → phase .done.
-            if phase == .done { return false }
+    private enum StepOutcome {
+        case completed
+        case skipped      // slouch step skipped → standard range
+        case airpodsLost
+        case cancelled
+    }
+
+    private func runStep(_ step: PoseStep) async -> StepOutcome {
+        while true {
+            phase = .prep(step)
+            switch await waitForPrepDecision() {
+            case nil:
+                return .cancelled
+            case .skipped:
+                captures[step] = nil
+                return .skipped
+            case .confirmed:
+                break
+            }
+
+            phase = .capturing(step)
+            guard let capture = await captureRead(step) else {
+                // A dropped slouch read shouldn't rewind two good aligned
+                // captures - fall back to the standard range for it.
+                return step.isSlouch ? .skipped : .airpodsLost
+            }
+            captures[step] = capture
+
+            phase = .review(step)
+            switch await waitForReviewDecision() {
+            case nil:
+                return .cancelled
+            case .accepted:
+                return .completed
+            case .redo:
+                captures[step] = nil
+                continue
+            }
+        }
+    }
+
+    /// Park on the prep screen until the user answers. nil = cancelled.
+    private func waitForPrepDecision() async -> PrepDecision? {
+        prepDecision = nil
+        while prepDecision == nil {
+            guard !Task.isCancelled else { return nil }
             try? await Task.sleep(nanoseconds: 80_000_000)
         }
-        return true
+        return prepDecision
     }
 
-    /// Capture one aligned pose, retrying up to `maxAlignedAttempts` times when
-    /// the hold is shakier than the steadiness threshold. Returns nil only when
-    /// AirPods drop or never deliver enough samples (caller rewinds).
-    private func captureAlignedPose(prep: Phase, capture: Phase) async -> PoseCapture? {
-        for attempt in 0..<maxAlignedAttempts {
-            // Prep gate before every attempt: wait until the user says they're
-            // in the pose (a retry sends them back here to re-settle).
-            showSteadyRetry = attempt > 0
-            phase = prep
-            guard await waitForPoseConfirm() else { return nil }
-            phase = capture
-
-            for i in stride(from: settleSeconds, through: 1, by: -1) {
-                guard !Task.isCancelled else { return nil }
-                guard airpods.isConnected else { return nil }
-                countdown = i
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-            }
-
-            var pitch: [Double] = []
-            var yaw: [Double] = []
-            var roll: [Double] = []
-            // ~2s window at 10 Hz — enough to measure the spread of the hold.
-            for _ in 0..<20 {
-                guard !Task.isCancelled else { return nil }
-                if let p = airpods.lastPitch { pitch.append(p) }
-                if let y = airpods.lastYaw { yaw.append(y) }
-                if let r = airpods.lastRoll { roll.append(r) }
-                try? await Task.sleep(nanoseconds: 100_000_000)
-            }
-
-            guard pitch.count >= 10 else { return nil }
-
-            let mean = pitch.reduce(0, +) / Double(pitch.count)
-            let sd = PostureScoring.standardDeviation(pitch)
-            let steady = sd <= PostureScoring.stableCaptureThreshold
-            if steady || attempt == maxAlignedAttempts - 1 {
-                return PoseCapture(
-                    pitch: mean,
-                    standardDeviation: sd,
-                    yaw: yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count),
-                    roll: roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
-                )
-            }
-            // Too shaky and attempts remain — loop and re-read this pose.
+    /// Park on the review screen until the user answers. nil = cancelled.
+    private func waitForReviewDecision() async -> ReviewDecision? {
+        reviewDecision = nil
+        while reviewDecision == nil {
+            guard !Task.isCancelled else { return nil }
+            try? await Task.sleep(nanoseconds: 80_000_000)
         }
-        return nil
+        return reviewDecision
     }
 
-    /// Second-stage slouch read. Any failure (drop, too few samples) falls back
-    /// to the default range — both aligned reads are already in hand, so the
-    /// user is never rewound from here.
-    private func captureSlouch(uprightSitting: Double) async {
-        for i in stride(from: 3, through: 1, by: -1) {
-            guard !Task.isCancelled else { return }
-            guard airpods.isConnected else { finishWithDefaultSlouch(); return }
+    /// Settle countdown, then a ~2s sampling window. Returns nil when
+    /// AirPods drop or too few samples arrive.
+    private func captureRead(_ step: PoseStep) async -> PoseCapture? {
+        let settle = step.isSlouch ? 3 : 4
+        for i in stride(from: settle, through: 1, by: -1) {
+            guard !Task.isCancelled else { return nil }
+            guard airpods.isConnected else { return nil }
             countdown = i
             try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
 
         var pitch: [Double] = []
-        for _ in 0..<10 {
-            guard !Task.isCancelled else { return }
+        var yaw: [Double] = []
+        var roll: [Double] = []
+        // ~2s window at 10 Hz - enough to measure the spread of the hold.
+        for _ in 0..<20 {
+            guard !Task.isCancelled else { return nil }
             if let p = airpods.lastPitch { pitch.append(p) }
+            if let y = airpods.lastYaw { yaw.append(y) }
+            if let r = airpods.lastRoll { roll.append(r) }
             try? await Task.sleep(nanoseconds: 100_000_000)
         }
 
-        guard !Task.isCancelled else { return }
-        guard pitch.count >= 5 else { finishWithDefaultSlouch(); return }
+        guard pitch.count >= 10 else { return nil }
 
-        let slouchPitch = pitch.reduce(0, +) / Double(pitch.count)
-        capturedSlouchDelta = PostureScoring.calibratedSlouchDelta(
-            uprightPitch: uprightSitting,
-            slouchedPitch: slouchPitch
+        return PoseCapture(
+            pitch: pitch.reduce(0, +) / Double(pitch.count),
+            standardDeviation: PostureScoring.standardDeviation(pitch),
+            yaw: yaw.isEmpty ? nil : yaw.reduce(0, +) / Double(yaw.count),
+            roll: roll.isEmpty ? nil : roll.reduce(0, +) / Double(roll.count)
         )
-        save()
-        phase = .done
     }
 
     private func rewindToWaiting() {
         guard !Task.isCancelled else { return }
         phase = .waiting
-        showSteadyRetry = false
         armWaiting()
     }
 
-    private func finishWithDefaultSlouch() {
-        sequenceTask?.cancel()
-        capturedSlouchDelta = nil
-        save()
-        phase = .done
-    }
-
     private func save() {
-        guard let sitting = sittingCapture else { return }
-        let standing = standingCapture
+        guard let sitting = captures[.sitting] else { return }
+        let standing = captures[.standing]
         // Both aligned reads are "head level", so their mean is a more robust
         // baseline than either alone; confidence is how tight the two holds were.
         let poseMeans = [standing?.pitch, sitting.pitch].compactMap { $0 }
@@ -689,24 +724,45 @@ struct CalibrationView: View {
             : confidences.reduce(0, +) / Double(confidences.count)
         savedConfidence = confidence
 
+        // Per-posture slouch ranges: each slouch read against its own tall pose.
+        let standingSlouch: Double? = zip2(standing?.pitch, captures[.standingSlouch]?.pitch)
+            .map { PostureScoring.calibratedSlouchDelta(uprightPitch: $0, slouchedPitch: $1) }
+        let sittingSlouch: Double? = captures[.sittingSlouch].map {
+            PostureScoring.calibratedSlouchDelta(uprightPitch: sitting.pitch, slouchedPitch: $0.pitch)
+        }
+        // Legacy combined delta stays as the fallback for scoring paths that
+        // don't know the posture.
+        let combinedDeltas = [standingSlouch, sittingSlouch].compactMap { $0 }
+        let combinedDelta = combinedDeltas.isEmpty
+            ? .pi / 24
+            : combinedDeltas.reduce(0, +) / Double(combinedDeltas.count)
+
         let cal = Calibration(
             basePitch: 0,
             baseYaw: 0,
             baseRoll: 0,
-            slouchPitchDelta: capturedSlouchDelta ?? .pi / 24,
+            slouchPitchDelta: combinedDelta,
             airpodsPitch: baseline,
             airpodsRoll: sitting.roll,
             airpodsYaw: sitting.yaw,
             airpodsStandingPitch: standing?.pitch,
             airpodsSittingPitch: sitting.pitch,
-            baselineConfidence: confidence
+            baselineConfidence: confidence,
+            standingSlouchDelta: standingSlouch,
+            sittingSlouchDelta: sittingSlouch
         )
         CalibrationService(context: context).save(cal)
-        // A real AirPods capture happened — clear any deferred/no-AirPods flags.
+        // A real AirPods capture happened - clear any deferred/no-AirPods flags.
         settings.calibrationDeferred = false
         settings.hasAirpods = true
         AnalyticsService.calibrateCompleted()
         airpods.stop()
+    }
+
+    /// Optional-pair helper: both present or nil.
+    private func zip2<A, B>(_ a: A?, _ b: B?) -> (A, B)? {
+        guard let a, let b else { return nil }
+        return (a, b)
     }
 }
 
@@ -728,7 +784,7 @@ private struct ConfidenceBar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink2)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {

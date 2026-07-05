@@ -45,7 +45,7 @@ final class BackgroundPostureWorkout: NSObject {
     func requestAuthorization() async -> Bool {
         guard HKHealthStore.isHealthDataAvailable() else { return false }
         do {
-            // Sharing the workout type is required to *start* an HKWorkoutSession —
+            // Sharing the workout type is required to *start* an HKWorkoutSession -
             // without it watchOS won't authorize the session and finishWorkout()
             // in stop() fails silently. We read no Health data (wrist motion comes
             // from CoreMotion); we only save a short posture-monitoring workout.

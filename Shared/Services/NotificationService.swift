@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 
 enum NotificationService {
-    /// Daylight voice — lowercase, observational, never imperative.
+    /// Daylight voice - lowercase, observational, never imperative.
     /// ≤24 chars so the banner doesn't truncate.
     private static let reminderTitles: [String] = [
         "a small check-in.",
@@ -19,7 +19,7 @@ enum NotificationService {
         "a moment for the body.",
     ]
 
-    /// Optional supporting line — a small tip, paired with a title. Kept gentle
+    /// Optional supporting line - a small tip, paired with a title. Kept gentle
     /// and observational to match the Daylight voice.
     private static let reminderBodies: [String] = [
         "Lift the crown of your head a touch.",
@@ -32,7 +32,7 @@ enum NotificationService {
         "Long spine, easy neck.",
     ]
 
-    /// Daily-practice reminder copy — the one notification that matters.
+    /// Daily-practice reminder copy - the one notification that matters.
     private static let practiceTitles: [String] = [
         "a few minutes of tall.",
         "today's practice is waiting.",

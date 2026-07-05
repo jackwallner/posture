@@ -7,12 +7,12 @@ struct PostureTipCard: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: iconForCategory(tip.category))
-                .font(.title3)
+                .font(Theme.font(.title3))
                 .foregroundStyle(Theme.brandPrimary)
                 .frame(width: 32)
 
             Text(tip.text)
-                .font(.subheadline)
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 

@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 /// Display-only badge wall. Everything derives at read time from streak +
-/// session rows — nothing here is persisted.
+/// session rows - nothing here is persisted.
 struct AchievementsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var streaks: [StreakState]
@@ -41,7 +41,7 @@ struct AchievementsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.footnote.weight(.semibold))
+                            .font(Theme.font(.footnote, weight: .semibold))
                             .foregroundStyle(Theme.ink3)
                     }
                     .accessibilityLabel("Close")
@@ -61,11 +61,11 @@ struct AchievementsView: View {
                     .foregroundStyle(badge.isEarned ? Theme.sage : Theme.ink3.opacity(0.5))
             }
             Text(badge.title)
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .foregroundStyle(badge.isEarned ? Theme.ink : Theme.ink3)
                 .multilineTextAlignment(.center)
             Text(badge.isEarned ? earnedLabel(badge) : badge.subtitle)
-                .font(.system(.caption2, design: .rounded))
+                .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)

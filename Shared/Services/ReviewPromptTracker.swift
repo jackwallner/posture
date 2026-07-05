@@ -1,7 +1,7 @@
 import Foundation
 
 extension Notification.Name {
-    /// Posted after a satisfaction moment — host may present the enjoyment funnel after a short delay.
+    /// Posted after a satisfaction moment - host may present the enjoyment funnel after a short delay.
     static let posturePositiveMomentForReview = Notification.Name("com.jackwallner.posture.positiveMomentForReview")
 }
 
@@ -26,7 +26,7 @@ enum ReviewPromptTracker {
     static let minimumLaunchCount = 5
     static let minimumDaysSinceFirstOpen = 7
     /// Minimum cumulative positive moments before the passive enjoyment funnel surfaces.
-    /// A single good day isn't enough — only ask people who've repeatedly had a good experience.
+    /// A single good day isn't enough - only ask people who've repeatedly had a good experience.
     static let minimumPositiveMoments = 3
     static let cooldownDays = 120
 

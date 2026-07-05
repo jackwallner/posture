@@ -198,7 +198,7 @@ struct HistoryView: View {
     private var weekHeader: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(weekRangeLabel)
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             Text(weekHeadline)
@@ -207,13 +207,13 @@ struct HistoryView: View {
                 .fixedSize(horizontal: false, vertical: true)
             if weekSessionCount > 0 {
                 Text("\(weekPracticeMinutes) practice \(weekPracticeMinutes == 1 ? "minute" : "minutes") across \(weekSessionCount) \(weekSessionCount == 1 ? "session" : "sessions") this week")
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
             }
         }
     }
 
-    // MARK: - Practice chart (minutes per day — the metric that matters)
+    // MARK: - Practice chart (minutes per day - the metric that matters)
 
     /// One column per day: height = minutes practiced. Color reflects whether
     /// the day's practice held up (sage ≥ 50% aligned, sand under). The
@@ -226,7 +226,7 @@ struct HistoryView: View {
 
         return VStack(alignment: .leading, spacing: 10) {
             Text("Minutes practiced")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.6)
                 .foregroundStyle(Theme.ink3)
             HStack(alignment: .bottom, spacing: 10) {
@@ -234,7 +234,7 @@ struct HistoryView: View {
                     VStack(spacing: 6) {
                         practiceColumn(entry, maxMinutes: maxMinutes)
                         Text(wf.string(from: entry.day))
-                            .font(.system(.caption2, design: .rounded).weight(.semibold))
+                            .font(Theme.font(.caption2, weight: .semibold))
                             .foregroundStyle(cal.isDateInToday(entry.day) ? Theme.ink : Theme.ink3)
                     }
                     .frame(maxWidth: .infinity)
@@ -259,7 +259,7 @@ struct HistoryView: View {
         return VStack(spacing: 4) {
             if entry.minutes > 0 {
                 Text("\(entry.minutes)m")
-                    .font(.system(.caption2, design: .rounded).weight(.semibold).monospacedDigit())
+                    .font(Theme.font(.caption2, weight: .semibold).monospacedDigit())
                     .foregroundStyle(Theme.ink2)
             }
             RoundedRectangle(cornerRadius: 5)
@@ -288,7 +288,7 @@ struct HistoryView: View {
         if !sessionHistory.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Sessions")
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.footnote, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                     .padding(.bottom, 6)
                 ForEach(Array(sessionHistory.prefix(30))) { session in
@@ -313,15 +313,15 @@ struct HistoryView: View {
                 .background(session.completed ? Theme.sageTint : Theme.paper3, in: Circle())
             VStack(alignment: .leading, spacing: 1) {
                 Text(sessionTitle(session))
-                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .font(Theme.font(.subheadline, weight: .medium))
                     .foregroundStyle(Theme.ink)
                 Text(sessionSubtitle(session))
-                    .font(.system(.caption, design: .rounded))
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
             }
             Spacer()
             Text("\(session.alignedPercent)%")
-                .font(.system(.subheadline, design: .rounded).weight(.semibold).monospacedDigit())
+                .font(Theme.font(.subheadline, weight: .semibold).monospacedDigit())
                 .foregroundStyle(session.passed ? Theme.sage : Theme.ink2)
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
@@ -365,12 +365,12 @@ struct HistoryView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Trends")
-                    .font(.system(.footnote, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.footnote, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 if let delta = deltaVsLastWeek {
                     Text(delta)
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .foregroundStyle(Theme.ink2)
                 }
             }
@@ -378,19 +378,19 @@ struct HistoryView: View {
             if hasMonitoredData {
                 if let percent = weekAlignedPercent {
                     Text("\(percent)% aligned this week")
-                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.subheadline, weight: .semibold))
                         .foregroundStyle(Theme.ink)
                 }
                 monitoringChart
                 if weekWearSeconds > 0 {
                     Text("\(PostureDayStats.wearLabel(seconds: weekWearSeconds)) monitored across \(monitoredDaysThisWeek) \(monitoredDaysThisWeek == 1 ? "day" : "days")")
-                        .font(.system(.caption, design: .rounded))
+                        .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
                 }
                 hourRhythm
             } else {
                 Text("Turn on monitoring or practice with the app open and your alignment trends build here, hour by hour.")
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -403,14 +403,14 @@ struct HistoryView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Text("Trends")
-                        .font(.system(.footnote, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.ink3)
                     Spacer()
                     Image(systemName: "lock.fill")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(Theme.ink3)
                 }
-                // Silhouette columns — the shape of the feature, no numbers.
+                // Silhouette columns - the shape of the feature, no numbers.
                 HStack(alignment: .bottom, spacing: 8) {
                     ForEach(Array([38, 64, 46, 80, 58, 88, 70].enumerated()), id: \.offset) { _, h in
                         RoundedRectangle(cornerRadius: 4)
@@ -421,10 +421,10 @@ struct HistoryView: View {
                 }
                 .frame(height: 88, alignment: .bottom)
                 Text("See your alignment trends with Posture+")
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text("Week-over-week alignment, your strong and slouchy hours, and every monitored minute, scored.")
-                    .font(.system(.footnote, design: .rounded))
+                    .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -448,7 +448,7 @@ struct HistoryView: View {
                 VStack(spacing: 6) {
                     monitoringColumn(entry.stats, maxWear: maxWear)
                     Text(wf.string(from: entry.day))
-                        .font(.system(.caption2, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.caption2, weight: .semibold))
                         .foregroundStyle(cal.isDateInToday(entry.day) ? Theme.ink : Theme.ink3)
                 }
                 .frame(maxWidth: .infinity)
@@ -474,7 +474,7 @@ struct HistoryView: View {
         return VStack(spacing: 4) {
             if let percent = stats.alignedPercent {
                 Text("\(percent)")
-                    .font(.system(.caption2, design: .rounded).weight(.semibold).monospacedDigit())
+                    .font(Theme.font(.caption2, weight: .semibold).monospacedDigit())
                     .foregroundStyle(Theme.ink2)
             }
             RoundedRectangle(cornerRadius: 5)
@@ -523,11 +523,11 @@ struct HistoryView: View {
                 .foregroundStyle(color)
                 .frame(width: 20)
             Text(label)
-                .font(.system(.footnote, design: .rounded).weight(.semibold))
+                .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink)
             Spacer()
             Text(hours.map(hourLabel).joined(separator: " · "))
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
         }
     }
@@ -559,7 +559,7 @@ struct HistoryView: View {
 
     private var journalHeader: some View {
         Text("Check-ins")
-            .font(.system(.footnote, design: .rounded).weight(.semibold))
+            .font(Theme.font(.footnote, weight: .semibold))
             .foregroundStyle(Theme.ink3)
     }
 
@@ -568,12 +568,12 @@ struct HistoryView: View {
             ForEach(Array(acknowledgments.prefix(20))) { ack in
                 HStack(alignment: .top, spacing: 14) {
                     Text(timeString(ack.timestamp))
-                        .font(.system(.footnote, design: .rounded).monospacedDigit())
+                        .font(Theme.font(.footnote).monospacedDigit())
                         .foregroundStyle(Theme.ink2)
                         .lineLimit(1)
                         .frame(width: 76, alignment: .leading)
                     Text(rowLabel(ack))
-                        .font(.system(.subheadline, design: .rounded))
+                        .font(Theme.font(.subheadline))
                         .foregroundStyle(Theme.ink)
                     Spacer()
                     Circle()
@@ -600,7 +600,7 @@ struct HistoryView: View {
         VStack(alignment: .leading, spacing: 18) {
             HorizonStroke()
             Text("No history yet")
-                .font(.system(.caption, design: .rounded).weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             Text(settings.hasAirpods == true
@@ -609,7 +609,7 @@ struct HistoryView: View {
                 .font(Theme.display(28))
                 .foregroundStyle(Theme.ink)
             Text("After a few days you'll see your practice minutes stack up, day after day.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
             if settings.hasAirpods != true {
                 Button { showingAck = true } label: { Text("Check in now") }
@@ -663,7 +663,7 @@ struct SessionDetailView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(dateLine)
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                        .font(Theme.font(.caption, weight: .semibold))
                         .tracking(0.8)
                         .foregroundStyle(Theme.ink3)
                     Text(headline)
@@ -673,7 +673,7 @@ struct SessionDetailView: View {
                 Spacer()
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
-                        .font(.footnote.weight(.semibold))
+                        .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.ink3)
                         .frame(width: 30, height: 30)
                         .background(Theme.paper2, in: Circle())
@@ -693,7 +693,7 @@ struct SessionDetailView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Where the time went")
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.6)
                     .foregroundStyle(Theme.ink3)
                 GeometryReader { geo in
@@ -716,7 +716,7 @@ struct SessionDetailView: View {
             .dawnCard(cornerRadius: 14)
 
             Text(verdictLine)
-                .font(.system(.footnote, design: .rounded))
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -764,10 +764,10 @@ struct SessionDetailView: View {
     private func statCard(value: String, label: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value)
-                .font(.system(size: 26, weight: .regular, design: .rounded))
+                .font(Theme.font(size: 26, weight: .regular))
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(.caption, design: .rounded))
+                .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -788,7 +788,7 @@ struct SessionDetailView: View {
         HStack(spacing: 5) {
             Circle().fill(color).frame(width: 7, height: 7)
             Text("\(label) \(seconds / 60)m")
-                .font(.system(.caption2, design: .rounded))
+                .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink2)
         }
     }

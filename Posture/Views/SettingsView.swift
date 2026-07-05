@@ -30,14 +30,14 @@ struct SettingsView: View {
                                 if isOn { showingWatchSyncInfo = true }
                             }
                         Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
-                            .font(.caption)
+                            .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
 
                         Toggle("Quiet AirPods background", isOn: Binding(
                             get: { settings.airpodsBackgroundEnabled },
                             set: { newValue in
                                 if newValue && !settings.airpodsBackgroundEnabled {
-                                    // First-flip confirmation — explain the orange dot
+                                    // First-flip confirmation - explain the orange dot
                                     // before the silent tone (and the indicator) start.
                                     showingAirpodsBackgroundConfirm = true
                                 } else {
@@ -46,7 +46,7 @@ struct SettingsView: View {
                             }
                         ))
                         Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded. This uses extra battery.")
-                            .font(.caption)
+                            .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
 
                         if settings.airpodsBackgroundEnabled, let monitor = airpodsMonitor {
@@ -59,6 +59,17 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Posture+")
+                }
+
+                // MARK: - Live readout (free, in-app)
+
+                if settings.hasAirpods == true {
+                    Section("Live readout") {
+                        Toggle("Show my posture while the app is open", isOn: $settings.inAppLiveEnabled)
+                        Text("With AirPods in, the top of Today shows your alignment live and the minutes count toward your day report. Reading stops when you leave the app.")
+                            .font(Theme.font(.caption))
+                            .foregroundStyle(Theme.ink2)
+                    }
                 }
 
                 // MARK: - Daily practice
@@ -81,8 +92,8 @@ struct SettingsView: View {
                                 displayedComponents: .hourAndMinute
                             )
                         }
-                        Text("One reminder a day for your posture practice — a few minutes held tall with live AirPods coaching. Finishing it keeps your streak.")
-                            .font(.caption)
+                        Text("One reminder a day for your posture practice, a few minutes held tall with live AirPods coaching. Finishing it keeps your streak.")
+                            .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
                 }
@@ -143,14 +154,14 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     Text("Relaxed forgives small forward head tilt. Strict flags it sooner.")
-                        .font(.caption)
+                        .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
                 }
 
                 // MARK: - Calibration
 
                 Section("Calibration") {
-                    // Don't clear the old calibration here — if the user
+                    // Don't clear the old calibration here - if the user
                     // cancels the sheet they'd be left scoring against a
                     // zero baseline. A completed capture supersedes the old
                     // row anyway (`current()` returns the newest).
@@ -164,7 +175,7 @@ struct SettingsView: View {
 
                 Section("Help") {
                     Button {
-                        // Reset the one-shot, then let Today open a session —
+                        // Reset the one-shot, then let Today open a session -
                         // the coach marks run on the next live hold.
                         settings.hasSeenSessionCoachMarks = false
                         NotificationCenter.default.post(name: .postureReplaySessionCoachMarks, object: nil)
@@ -224,14 +235,14 @@ struct SettingsView: View {
         Button { showingPaywall = true } label: {
             VStack(alignment: .leading, spacing: 10) {
                 Text("POSTURE+")
-                    .font(.caption.weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.sage)
                 Text("Keep the whole year.\nSee your slouch hours.")
                     .font(Theme.display(22))
                     .foregroundStyle(Theme.ink)
                 Text(proPostcardPriceLine)
-                    .font(.caption.weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .foregroundStyle(Theme.sage)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -308,7 +319,7 @@ private struct AirpodsStatusChip: View {
                 .fill(dotColor)
                 .frame(width: 6, height: 6)
             Text(label)
-                .font(.caption.weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .foregroundStyle(textColor)
         }
         .padding(.horizontal, 12)

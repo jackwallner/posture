@@ -1,6 +1,13 @@
 import Foundation
 import Observation
 
+/// What the user told onboarding they most want to fix.
+enum PostureFocus: String, CaseIterable, Sendable {
+    case sitting
+    case standing
+    case both
+}
+
 @MainActor
 @Observable
 final class GoalSettings {
@@ -40,6 +47,12 @@ final class GoalSettings {
 
         // AirPods ownership (asked once at onboarding, nil if never asked)
         static let hasAirpods = "hasAirpods"
+
+        // What the user wants to improve (asked at onboarding)
+        static let postureFocus = "postureFocus"
+
+        // Live in-app posture readout while the app is open (free, default on)
+        static let inAppLiveEnabled = "inAppLiveEnabled"
 
         // Deprecated (kept for migration)
         static let dailyReminderEnabled = "dailyReminderEnabled"
@@ -134,7 +147,7 @@ final class GoalSettings {
     // MARK: - Check-in reminder cadence (secondary)
 
     /// Toggle for the extra throughout-the-day check-in nudges. Off by
-    /// default since the practice pivot — `migrateToPracticeReminders()`
+    /// default since the practice pivot - `migrateToPracticeReminders()`
     /// preserves the old implicit `true` for existing users.
     var reminderEnabled: Bool {
         get { access(keyPath: \.reminderEnabled); return defaults.object(forKey: Key.reminderEnabled) as? Bool ?? false }
@@ -184,11 +197,29 @@ final class GoalSettings {
         }
     }
 
+    /// What the user said they want to improve. Coaching copy leans on it;
+    /// calibration always captures both postures regardless.
+    var postureFocus: PostureFocus {
+        get {
+            access(keyPath: \.postureFocus)
+            return PostureFocus(rawValue: defaults.string(forKey: Key.postureFocus) ?? "") ?? .both
+        }
+        set { withMutation(keyPath: \.postureFocus) { defaults.set(newValue.rawValue, forKey: Key.postureFocus) } }
+    }
+
+    /// Show the live posture readout at the top of Today whenever the app is
+    /// open with AirPods in. Free feature, on by default, motion stops the
+    /// moment the app backgrounds (unless the Pro all-day toggle holds it).
+    var inAppLiveEnabled: Bool {
+        get { access(keyPath: \.inAppLiveEnabled); return defaults.object(forKey: Key.inAppLiveEnabled) as? Bool ?? true }
+        set { withMutation(keyPath: \.inAppLiveEnabled) { defaults.set(newValue, forKey: Key.inAppLiveEnabled) } }
+    }
+
     // MARK: - Migration from old reminder keys
 
     /// Migrate settings from the old daily-reminder model to the new cadence model.
     /// Call once on first launch after update. Only applies to installs that
-    /// actually carry the deprecated keys — on a fresh install this must not
+    /// actually carry the deprecated keys - on a fresh install this must not
     /// write `reminderEnabled` (it would defeat the off-by-default check-in
     /// nudges introduced with the practice pivot).
     func migrateFromDeprecatedKeys() {
@@ -199,7 +230,7 @@ final class GoalSettings {
         reminderEnabled = oldEnabled
         if let oldHour = defaults.object(forKey: Key.dailyReminderHour) as? Int {
             // Clamp to the Settings stepper range (6...22) and keep the
-            // window valid — an evening reminder hour (e.g. 21) would
+            // window valid - an evening reminder hour (e.g. 21) would
             // otherwise produce start >= end, which schedules nothing.
             activeHoursStart = min(max(oldHour, 6), 22)
             if activeHoursEnd <= activeHoursStart {

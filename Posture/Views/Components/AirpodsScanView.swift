@@ -25,7 +25,7 @@ struct AirpodsScanView: View {
 
     enum Phase { case waiting, scanning, noConnection }
 
-    /// If AirPods never start streaming, don't sit on "waiting" forever — fall
+    /// If AirPods never start streaming, don't sit on "waiting" forever - fall
     /// to the no-connection view (which surfaces the prominent manual fallback).
     private let waitDeadlineSeconds: Double = 12
 
@@ -68,13 +68,13 @@ struct AirpodsScanView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(eyebrow)
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
                 Button { onClose() } label: {
                     Image(systemName: "xmark")
-                        .font(.body.weight(.medium))
+                        .font(Theme.font(.body, weight: .medium))
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -88,7 +88,7 @@ struct AirpodsScanView: View {
 
             Text(phase == .scanning ? "Hold still, sit how you've been sitting."
                                     : "Pop your AirPods in to begin.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
@@ -119,7 +119,7 @@ struct AirpodsScanView: View {
                 .frame(width: 160, height: 160)
             if phase == .scanning {
                 Text("\(max(0, 3 - elapsedSeconds))")
-                    .font(.system(size: 84, weight: .regular, design: .rounded))
+                    .font(Theme.font(size: 84, weight: .regular))
                     .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText(countsDown: true))
                     .animation(.easeOut(duration: 0.2), value: elapsedSeconds)
@@ -150,7 +150,7 @@ struct AirpodsScanView: View {
                 Spacer()
                 Button { onClose() } label: {
                     Image(systemName: "xmark")
-                        .font(.body.weight(.medium))
+                        .font(Theme.font(.body, weight: .medium))
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -171,14 +171,14 @@ struct AirpodsScanView: View {
             .frame(maxWidth: .infinity)
 
             Text("Can't hear your AirPods.")
-                .font(.system(size: 28, weight: .regular, design: .rounded))
+                .font(Theme.font(size: 28, weight: .regular))
                 .foregroundStyle(Theme.ink)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
                 .padding(.top, 24)
 
             Text("Pop them back in, or log this one by hand.")
-                .font(.system(.body, design: .rounded))
+                .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .multilineTextAlignment(.center)
@@ -198,13 +198,13 @@ struct AirpodsScanView: View {
     // MARK: - Lifecycle
 
     private func begin() {
-        // Take exclusive ownership of the head-motion stream for the scan —
+        // Take exclusive ownership of the head-motion stream for the scan -
         // the shared background monitor would otherwise starve this view's own
         // CMHeadphoneMotionManager, leaving the scan stuck on "waiting".
         // Resumed in onDisappear.
         let monitor = AirpodsBackgroundMonitor.shared
         // If the always-on monitor was already streaming, the AirPods are
-        // definitely in-ear — carry that so a slow stream handoff doesn't get
+        // definitely in-ear - carry that so a slow stream handoff doesn't get
         // misread as "no AirPods".
         let airpodsKnownPresent = monitor.isMonitoring && monitor.isConnected
         monitor.suspendForForegroundRead()
@@ -218,7 +218,7 @@ struct AirpodsScanView: View {
         beginTask = Task {
             // iOS doesn't reassign head-motion to a second manager instantly.
             // When AirPods were already streaming to the background monitor,
-            // give it a beat to release before we claim the stream — otherwise
+            // give it a beat to release before we claim the stream - otherwise
             // the first scan after foregrounding starves and falsely shows
             // "can't hear your AirPods".
             if airpodsKnownPresent {
@@ -262,7 +262,7 @@ struct AirpodsScanView: View {
             guard !Task.isCancelled else { return }
 
             // M7: if we gathered readings, score them even if the AirPods
-            // dropped at the very end — don't throw away the user's 3-second
+            // dropped at the very end - don't throw away the user's 3-second
             // hold. Only fall back when we truly never got a sample.
             guard !samples.isEmpty else {
                 phase = .noConnection

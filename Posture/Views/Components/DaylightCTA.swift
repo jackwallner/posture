@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Soft pastel CTA — rounded card, gentle shadow on primary, white text on
+/// Soft pastel CTA - rounded card, gentle shadow on primary, white text on
 /// sage. Secondary is a lavender-tinted card. Tonal mirrors a quiet
 /// hint chip. Ghost is plain text for tertiary moves.
 struct DaylightCTA: ViewModifier {
@@ -30,7 +30,7 @@ struct DaylightCTA: ViewModifier {
                 )
         case .ghost:
             content
-                .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                .font(Theme.font(.subheadline, weight: .semibold))
                 .foregroundStyle(Theme.ink2)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
@@ -40,7 +40,7 @@ struct DaylightCTA: ViewModifier {
 
     private func base(_ content: Content, fg: Color) -> some View {
         content
-            .font(.system(.headline, design: .rounded).weight(.semibold))
+            .font(Theme.font(.headline, weight: .semibold))
             .foregroundStyle(fg)
             .frame(maxWidth: .infinity)
             .frame(height: 56)
@@ -56,7 +56,7 @@ extension View {
 
 /// Button style that applies the CTA chrome to the *label*, so the whole
 /// styled card is the hit target. Applying `.daylightCTA` outside a
-/// `Button` leaves only the bare text tappable — the visible 56-pt card
+/// `Button` leaves only the bare text tappable - the visible 56-pt card
 /// ignores any touch that misses the label (TF feedback: "check in now
 /// does nothing").
 struct DaylightButtonStyle: ButtonStyle {

@@ -52,6 +52,8 @@ targets:
         buildPhase: resources
       - path: Posture/PrivacyInfo.xcprivacy
         buildPhase: resources
+      - path: Posture/Fonts
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jackwallner.posture
@@ -115,6 +117,8 @@ targets:
     sources:
       - path: PostureWidget
       - path: PostureWidget/PrivacyInfo.xcprivacy
+        buildPhase: resources
+      - path: Posture/Fonts
         buildPhase: resources
       - path: Shared
     settings:

@@ -23,7 +23,7 @@ struct PostureRing: View {
                     .font(Theme.bigNumber(size * 0.32))
                     .foregroundStyle(Theme.ink)
                 Text("Score")
-                    .font(.caption)
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.textSecondary)
             }
         }

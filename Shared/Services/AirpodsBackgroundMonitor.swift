@@ -1,4 +1,4 @@
-// AirPods background monitoring is iOS-only — requires audio session + AVFoundation + CoreMotion
+// AirPods background monitoring is iOS-only - requires audio session + AVFoundation + CoreMotion
 #if os(iOS)
 
 import AVFoundation
@@ -31,10 +31,16 @@ final class AirpodsBackgroundMonitor {
     private(set) var currentQuality: PostureQuality = .good
     private(set) var lastError: String?
 
+    /// User hit Stop on the monitoring card. Auto-start paths (foreground
+    /// live readout, Pro all-day toggle on launch) respect this until the
+    /// user hits Start again - a manual stop that silently un-stopped
+    /// itself on the next foreground would read as broken.
+    var userPaused = false
+
     // MARK: - Activity visibility
 
     /// When the most recent head-motion sample arrived. Published at most
-    /// once per second — samples land at ~25 Hz and republishing each one
+    /// once per second - samples land at ~25 Hz and republishing each one
     /// would re-render every observing view at that rate.
     private(set) var lastSampleAt: Date?
 
@@ -43,7 +49,7 @@ final class AirpodsBackgroundMonitor {
     private(set) var samplesToday = 0
 
     /// Running log of monitor activity (newest first, capped). In-memory
-    /// only — it answers "is this thing actually working?", not history.
+    /// only - it answers "is this thing actually working?", not history.
     private(set) var events: [MonitorEvent] = []
 
     private var unpublishedSampleCount = 0
@@ -75,7 +81,7 @@ final class AirpodsBackgroundMonitor {
 
     /// When the user first entered `.bad`. Reset on `.good` or on AirPods
     /// disconnect. We trigger a haptic + record a sample after this much
-    /// *continuous* bad posture — long enough that leaning to grab something or
+    /// *continuous* bad posture - long enough that leaning to grab something or
     /// glancing down at a doorway never nudges. Borderline drift does not reset
     /// the clock, but also does not advance it.
     private var firstBadAt: Date?
@@ -94,10 +100,10 @@ final class AirpodsBackgroundMonitor {
 
     /// The ~25 Hz stream is far too rich to persist raw, but slouch events
     /// alone throw away the story of the day. Every scored sample folds into
-    /// `MinuteBucket` and persists as one `PostureMinuteSample` row per minute —
+    /// `MinuteBucket` and persists as one `PostureMinuteSample` row per minute -
     /// that's what "% of day aligned", wear time, and the day timeline read.
     private var minuteBucket = MinuteBucket()
-    /// Keep the store from growing unbounded — a monitored year is ~350k
+    /// Keep the store from growing unbounded - a monitored year is ~350k
     /// minute rows. 90 days is more history than any view reads.
     private static let minuteRetentionDays = 90
 
@@ -113,14 +119,14 @@ final class AirpodsBackgroundMonitor {
             self?.onSample(pitch: pitch, yaw: yaw, roll: roll)
         }
         // AirPods can drop in/out during a background session (case, ear-out,
-        // device switch). Don't tear down — just reflect the truth in UI so
+        // device switch). Don't tear down - just reflect the truth in UI so
         // the user sees we're "armed and waiting" vs "live."
         headphoneService.onConnect = { [weak self] connected in
             self?.handleConnect(connected)
         }
 
         // Surface keep-alive health in this monitor's activity log + error
-        // slot — MonitoringLogView reads both. The keep-alive allows a single
+        // slot - MonitoringLogView reads both. The keep-alive allows a single
         // observer and the monitor is the only long-lived holder.
         AudioKeepAlive.shared.onEvent = { [weak self] event in
             guard let self else { return }
@@ -141,7 +147,7 @@ final class AirpodsBackgroundMonitor {
     // and never deallocs in practice.
 
     /// Process-scoped instance. Constructed lazily on first access and
-    /// reused for the life of the app — avoids the SwiftUI `@State` default-
+    /// reused for the life of the app - avoids the SwiftUI `@State` default-
     /// value footgun where the parent View's body recomputation builds a new
     /// monitor on every render.
     @MainActor static let shared = AirpodsBackgroundMonitor(
@@ -160,7 +166,7 @@ final class AirpodsBackgroundMonitor {
         }
         // AirPods just became available. If start() previously returned
         // false because no head-tracking AirPods were connected, the user
-        // is now in the "armed and waiting" state — activate motion now.
+        // is now in the "armed and waiting" state - activate motion now.
         isAvailable = headphoneService.isAvailable
         if isMonitoring && !headphoneService.isRunning {
             activateMotion()
@@ -174,11 +180,11 @@ final class AirpodsBackgroundMonitor {
     private(set) var isBackground = false
 
     /// Arm monitoring. `background: true` holds the silent-audio keep-alive
-    /// so motion samples keep flowing while the app is suspended — this is
+    /// so motion samples keep flowing while the app is suspended - this is
     /// the Pro tier behavior and shows the iOS orange dot. `background:
     /// false` starts motion only; iOS will suspend it when the app leaves
     /// the foreground. Returns true as long as the monitor is armed, even
-    /// if AirPods aren't currently connected — motion activates when they
+    /// if AirPods aren't currently connected - motion activates when they
     /// appear via the connect callback.
     @discardableResult
     func start(background: Bool = true) -> Bool {
@@ -193,7 +199,7 @@ final class AirpodsBackgroundMonitor {
     }
 
     /// Wire up audio (if Pro/background) and start head-motion updates. Safe
-    /// to call repeatedly — guarded by `headphoneService.isRunning` and the
+    /// to call repeatedly - guarded by `headphoneService.isRunning` and the
     /// keep-alive's own refcount. Called from `start()` and from
     /// `handleConnect(true)` when AirPods appear after a cold launch.
     private func activateMotion() {
@@ -239,8 +245,8 @@ final class AirpodsBackgroundMonitor {
     /// `suspendForForegroundRead()`.
     private var suspendedForForegroundRead = false
 
-    /// A foreground read — the AirPods calibration capture, the 3-second
-    /// check-in scan, or a practice/walk session — spins up its OWN
+    /// A foreground read - the AirPods calibration capture, the 3-second
+    /// check-in scan, or a practice/walk session - spins up its OWN
     /// `CMHeadphoneMotionManager`. iOS does not reliably deliver head motion
     /// to two managers at once: a live background monitor starves the read's
     /// manager, so the scan/calibration sits on "waiting for AirPods" and
@@ -269,7 +275,7 @@ final class AirpodsBackgroundMonitor {
     // MARK: - Sample handler
 
     private func onSample(pitch: Double, yaw: Double, roll: Double) {
-        // Guard the publishes — samples land at ~25 Hz, and every write to an
+        // Guard the publishes - samples land at ~25 Hz, and every write to an
         // @Observable property re-renders observers even when the value is
         // unchanged.
         if !isConnected {
@@ -299,23 +305,26 @@ final class AirpodsBackgroundMonitor {
             previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
         )
         let scoredPitch = smoothedPitch ?? pitch
-        // Standing and sitting have different honest head positions — score
-        // against whichever aligned baseline is nearer instead of the old
-        // averaged blur, so upright margin isn't eaten by the other posture.
-        let referenceBaseline = PostureScoring.nearestBaseline(
+        // Standing and sitting have different honest head positions AND
+        // different slouch ranges - score against whichever aligned baseline
+        // is nearer, with that posture's own calibrated slouch delta.
+        let reference = PostureScoring.postureReference(
             pitch: scoredPitch,
             standing: calibration?.airpodsStandingPitch,
             sitting: calibration?.airpodsSittingPitch,
-            combined: baseline
+            combined: baseline,
+            standingSlouchDelta: calibration?.standingSlouchDelta,
+            sittingSlouchDelta: calibration?.sittingSlouchDelta,
+            fallbackSlouchDelta: slouchDelta
         )
         let instant = PostureScoring.quality(
-            deviation: scoredPitch - referenceBaseline,
-            slouchDelta: slouchDelta,
+            deviation: scoredPitch - reference.baseline,
+            slouchDelta: reference.slouchDelta,
             sensitivity: sensitivity
         )
 
         // The "right now" readout tracks the current (smoothed) position with
-        // no delay — it's a quick glance, not a verdict. The EMA above already
+        // no delay - it's a quick glance, not a verdict. The EMA above already
         // absorbs raw jitter, so this won't strobe. Sustained-time logic lives
         // only in the nudge below (buzz/record), never in what's displayed.
         if instant != currentQuality { currentQuality = instant }
@@ -369,7 +378,7 @@ final class AirpodsBackgroundMonitor {
                     triggerHaptic()
                     // One record + buzz per bout. Re-arms when posture
                     // returns to `.good`, not when the threshold lapses
-                    // again — otherwise a 30-min slouch writes hundreds
+                    // again - otherwise a 30-min slouch writes hundreds
                     // of rows.
                     inBadBout = true
                 }

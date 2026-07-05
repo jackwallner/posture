@@ -16,7 +16,7 @@ struct PaywallView: View {
     @State private var subscriptions = SubscriptionService.shared
 
     var displayCloseButton: Bool = true
-    /// RevenueCat custom paywall impression id — pass per entry point (`posture_settings_sheet`, etc.).
+    /// RevenueCat custom paywall impression id - pass per entry point (`posture_settings_sheet`, etc.).
     var paywallImpressionId: String = "posture_sheet"
 
     @State private var selectedPackage: Package?
@@ -73,7 +73,7 @@ struct PaywallView: View {
             Spacer()
             ProgressView().tint(Theme.sage)
             Text("Loading plans…")
-                .font(.system(.subheadline, design: .rounded))
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink2)
             Spacer()
             legalFooter
@@ -89,10 +89,10 @@ struct PaywallView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(Theme.ink3)
             Text("Couldn't load plans")
-                .font(.system(.headline, design: .rounded))
+                .font(Theme.font(.headline))
                 .foregroundStyle(Theme.ink2)
             Text(subscriptions.lastError ?? "Check your connection and try again.")
-                .font(.system(.subheadline, design: .rounded))
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
@@ -111,7 +111,7 @@ struct PaywallView: View {
         .padding(.horizontal, 24)
     }
 
-    /// Single viewport — no scroll. CTA + plans always visible on one screen.
+    /// Single viewport - no scroll. CTA + plans always visible on one screen.
     private var paywallContent: some View {
         VStack(spacing: 10) {
             header
@@ -145,7 +145,7 @@ struct PaywallView: View {
         #endif
     }
 
-    /// "How your free trial works" — the timeline that spells out the deal:
+    /// "How your free trial works" - the timeline that spells out the deal:
     /// everything unlocked today, a reminder before it ends, nothing charged
     /// until then. Lifts trial conversion and cuts surprise-charge complaints.
     private var trialTimeline: some View {
@@ -200,10 +200,10 @@ struct PaywallView: View {
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(.caption.weight(.bold))
+                    .font(Theme.font(.caption, weight: .bold))
                     .foregroundStyle(Theme.ink)
                 Text(text)
-                    .font(.caption2)
+                    .font(Theme.font(.caption2))
                     .foregroundStyle(Theme.ink2)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -215,7 +215,7 @@ struct PaywallView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("POSTURE+")
-                .font(.caption2.weight(.semibold))
+                .font(Theme.font(.caption2, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
             Text(headlineText)
@@ -224,7 +224,7 @@ struct PaywallView: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.85)
             Text(subtitleText)
-                .font(.footnote)
+                .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .lineLimit(2)
                 .minimumScaleFactor(0.9)
@@ -249,7 +249,7 @@ struct PaywallView: View {
         if let pkg = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
            subscriptions.isEligibleForIntroOffer(pkg),
            let trial = pkg.postureIntroOfferLabel {
-            // One flowing sentence — a hard \n here used to collide with
+            // One flowing sentence - a hard \n here used to collide with
             // lineLimit(2) and truncate to "Try Posture+…".
             return "Start your \(trial) of Posture+"
         }
@@ -271,10 +271,10 @@ struct PaywallView: View {
     private func trustItem(icon: String, label: String) -> some View {
         HStack(spacing: 5) {
             Image(systemName: icon)
-                .font(.caption2)
+                .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.sage)
             Text(label)
-                .font(.caption2.weight(.medium))
+                .font(Theme.font(.caption2, weight: .medium))
                 .foregroundStyle(Theme.ink2)
         }
     }
@@ -295,7 +295,7 @@ struct PaywallView: View {
                 .foregroundStyle(Theme.sage)
                 .frame(width: 24)
             Text(title)
-                .font(.subheadline)
+                .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink)
                 .lineLimit(2)
                 .minimumScaleFactor(0.85)
@@ -344,7 +344,7 @@ struct PaywallView: View {
             .disabled(isPurchasing || selectedPackage == nil)
 
             Text(trialReassuranceLine ?? " ")
-                .font(.caption.weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
                 .foregroundStyle(Theme.sage)
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
@@ -354,7 +354,7 @@ struct PaywallView: View {
                 .accessibilityHidden(trialReassuranceLine == nil)
 
             Text(disclosureText ?? " ")
-                .font(.caption2)
+                .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
                 .lineLimit(4)
@@ -365,13 +365,13 @@ struct PaywallView: View {
 
             if let errorMessage {
                 Text(errorMessage)
-                    .font(.caption)
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.clay)
                     .multilineTextAlignment(.center)
             }
             if let restoreMessage {
                 Text(restoreMessage)
-                    .font(.caption)
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
                     .multilineTextAlignment(.center)
             }
@@ -379,13 +379,13 @@ struct PaywallView: View {
     }
 
     /// Restore + legal links. Required by 3.1.2 to be present on the paywall in
-    /// EVERY state — including while products are still loading or failed to
-    /// load — so it lives outside the product-loaded branch.
+    /// EVERY state - including while products are still loading or failed to
+    /// load - so it lives outside the product-loaded branch.
     private var legalFooter: some View {
         HStack(spacing: 14) {
             Button(action: startRestore) {
                 Text(isRestoring ? "Restoring…" : "Restore Purchases")
-                    .font(.caption2.weight(.semibold))
+                    .font(Theme.font(.caption2, weight: .semibold))
                     .foregroundStyle(Theme.ink2)
             }
             .buttonStyle(.plain)
@@ -396,7 +396,7 @@ struct PaywallView: View {
                 Text("·")
                 Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
             }
-            .font(.caption2.weight(.semibold))
+            .font(Theme.font(.caption2, weight: .semibold))
             .foregroundStyle(Theme.ink3)
         }
     }
@@ -406,12 +406,12 @@ struct PaywallView: View {
             Spacer()
             Button { dismiss() } label: {
                 Image(systemName: "xmark")
-                    .font(.subheadline.weight(.bold))
+                    .font(Theme.font(.subheadline, weight: .bold))
                     .foregroundStyle(Theme.ink2)
                     .frame(width: 30, height: 30)
                     .background(Theme.paper2, in: Circle())
                     // Pad the hit area out past the visible chip so the whole
-                    // top-right corner closes the sheet — the bare glyph was a
+                    // top-right corner closes the sheet - the bare glyph was a
                     // ~13pt target that routinely missed.
                     .padding(12)
                     .contentShape(Circle())
@@ -429,7 +429,7 @@ struct PaywallView: View {
             compactFeatureList
             Spacer()
             Text("Connect to load plans")
-                .font(.caption)
+                .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
                 .frame(maxWidth: .infinity)
             legalFooter
@@ -447,7 +447,7 @@ struct PaywallView: View {
         #if HAS_REVENUECAT
         guard let package = selectedPackage else { return "Continue" }
         if package.posturePackageKind == .lifetime { return "Unlock Lifetime" }
-        // Name the trial length in the button — answers "what am I agreeing to?"
+        // Name the trial length in the button - answers "what am I agreeing to?"
         if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
             return "Start My \(trial.capitalized)"
         }
@@ -553,7 +553,7 @@ struct PaywallView: View {
                 case .purchased:
                     break
                 case .pending:
-                    // Ask to Buy / deferred — without this the sheet just
+                    // Ask to Buy / deferred - without this the sheet just
                     // sits there as if the tap did nothing.
                     restoreMessage = "Purchase is pending approval. Posture+ unlocks as soon as it's approved."
                 case .cancelled:
@@ -609,18 +609,18 @@ private struct PosturePlanCard: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
                         Text(package.postureDisplayName)
-                            .font(.subheadline.weight(.semibold))
+                            .font(Theme.font(.subheadline, weight: .semibold))
                             .foregroundStyle(Theme.ink)
                         if let savings = savingsPercent {
                             Text("SAVE \(savings)%")
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .font(Theme.font(size: 9, weight: .bold))
                                 .foregroundStyle(Theme.paper)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Theme.sage, in: Capsule())
                         } else if isBestValue {
                             Text("BEST VALUE")
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .font(Theme.font(size: 9, weight: .bold))
                                 .foregroundStyle(Theme.paper)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
@@ -629,7 +629,7 @@ private struct PosturePlanCard: View {
                     }
                     if let secondary = secondaryLine {
                         Text(secondary)
-                            .font(.caption2.weight(.medium))
+                            .font(Theme.font(.caption2, weight: .medium))
                             .foregroundStyle(Theme.ink3)
                     }
                 }
@@ -670,7 +670,7 @@ private struct PosturePlanCard: View {
         return nil
     }
 
-    /// "≈ $0.27/week" anchor — annual feels cheap when broken down.
+    /// "≈ $0.27/week" anchor - annual feels cheap when broken down.
     private var perWeekLabel: String? {
         guard let period = package.storeProduct.subscriptionPeriod else { return nil }
         let weeks: Decimal

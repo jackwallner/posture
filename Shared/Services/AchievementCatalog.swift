@@ -1,6 +1,6 @@
 import Foundation
 
-/// One display-only badge. Nothing is persisted — every badge derives at
+/// One display-only badge. Nothing is persisted - every badge derives at
 /// read time from `StreakState` and the `PostureSession` rows, so the
 /// catalog can never drift from the data.
 struct Achievement: Identifiable, Sendable {
@@ -111,7 +111,7 @@ enum AchievementCatalog {
         ]
     }
 
-    /// Earned badge ids only — the compact set for "did this session unlock
+    /// Earned badge ids only - the compact set for "did this session unlock
     /// anything new?" comparisons.
     nonisolated static func earnedIDs(
         streak: StreakState?,

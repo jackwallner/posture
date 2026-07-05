@@ -44,7 +44,7 @@ final class AudioKeepAlive {
     // deallocs in practice.
 
     /// Start (or keep) the silent keep-alive on behalf of `token`. Errors are
-    /// recorded in `lastError` rather than thrown — a failed keep-alive
+    /// recorded in `lastError` rather than thrown - a failed keep-alive
     /// degrades to foreground-only motion, it doesn't break the feature.
     func acquire(_ token: String) {
         let wasEmpty = holders.isEmpty
@@ -77,7 +77,7 @@ final class AudioKeepAlive {
 
     private func startAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
-        // .mixWithOthers only — the silent keep-alive tone must be both
+        // .mixWithOthers only - the silent keep-alive tone must be both
         // inaudible AND non-interfering. .duckOthers would audibly lower the
         // user's music/podcasts the entire time it's held, which is a real UX
         // complaint and sharpens the 2.5.4 "no audible content" case.
@@ -102,12 +102,12 @@ final class AudioKeepAlive {
 
     /// A phone call, Siri, or another app taking the audio session will
     /// pause our silent track. When the interruption ends we must reactivate
-    /// the session AND restart the engine — `AVAudioEngine` doesn't resume
+    /// the session AND restart the engine - `AVAudioEngine` doesn't resume
     /// itself. Same for `AVAudioEngineConfigurationChange`, which fires when
     /// the route changes (AirPods leaving, CarPlay handoff). Without these
     /// observers the keep-alive silently dies the first time a call comes in.
     ///
-    /// Use block-based observers that hop to MainActor — system audio
+    /// Use block-based observers that hop to MainActor - system audio
     /// notifications post on private queues, so a selector-based observer on
     /// a `@MainActor` class would trip Swift 6 isolation.
     private func observeAudioNotifications() {
@@ -117,7 +117,7 @@ final class AudioKeepAlive {
             object: nil,
             queue: nil
         ) { @Sendable [weak self] note in
-            // Pull the raw type out here — `userInfo` is `[AnyHashable: Any]?`
+            // Pull the raw type out here - `userInfo` is `[AnyHashable: Any]?`
             // which isn't Sendable, so we can't ferry it across the actor hop.
             let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
             Task { @MainActor in self?.handleInterruption(rawType: raw) }

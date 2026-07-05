@@ -20,6 +20,13 @@
     <string>$(MARKETING_VERSION)</string>
     <key>CFBundleVersion</key>
     <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Nunito-Regular.ttf</string>
+        <string>Nunito-Medium.ttf</string>
+        <string>Nunito-SemiBold.ttf</string>
+        <string>Nunito-Bold.ttf</string>
+    </array>
     <key>NSExtension</key>
     <dict>
         <key>NSExtensionPointIdentifier</key>

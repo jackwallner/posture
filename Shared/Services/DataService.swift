@@ -24,7 +24,7 @@ enum DataService {
             return container
         }
 
-        // Corrupt store — wipe and retry
+        // Corrupt store - wipe and retry
         let storeFiles = [url, url.appendingPathExtension("wal"), url.appendingPathExtension("shm")]
         for file in storeFiles {
             try? FileManager.default.removeItem(at: file)

@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 /// Instructional pose visual for onboarding and calibration. A large figure
-/// with a dashed plumb line and ear/shoulder/hip markers — teaches the
+/// with a dashed plumb line and ear/shoulder/hip markers - teaches the
 /// "stack" visually instead of describing it. Pure SwiftUI so it ships
 /// without asset generation; designed to be swapped for illustrated art
 /// later without changing call sites.

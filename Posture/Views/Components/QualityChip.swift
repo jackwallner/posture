@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Tonal quality pill — lowercase, never shouts. Optional leading dot and
+/// Tonal quality pill - lowercase, never shouts. Optional leading dot and
 /// trailing score. Daylight's replacement for `PostureLiveIndicator`
 /// (kept until the Acknowledgment/QuickScan rebuild migrates its
 /// call-site).
@@ -35,7 +35,7 @@ struct QualityChip: View {
                 Circle().fill(tint).frame(width: 6, height: 6)
             }
             Text(label)
-                .font(.caption.weight(.semibold))
+                .font(Theme.font(.caption, weight: .semibold))
             if let score {
                 Text("· \(score)")
                     .font(.caption.weight(.semibold).monospacedDigit())

@@ -26,16 +26,16 @@ struct PostureBanner: View {
                 .padding(.top, 5)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
+                    .font(Theme.font(.subheadline, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text(message)
-                    .font(.caption)
+                    .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
                     .fixedSize(horizontal: false, vertical: true)
                 if let action {
                     Button(action: action.perform) {
                         Text("\(action.label) →")
-                            .font(.caption.weight(.semibold))
+                            .font(Theme.font(.caption, weight: .semibold))
                             .foregroundStyle(Theme.sage)
                     }
                     .padding(.top, 2)
@@ -66,7 +66,7 @@ struct HorizonStroke: View {
 }
 
 extension PostureBanner {
-    /// First-run roadblock variant — banner under a horizon stroke.
+    /// First-run roadblock variant - banner under a horizon stroke.
     func fullscreen() -> some View {
         VStack(alignment: .leading, spacing: 18) {
             HorizonStroke()
