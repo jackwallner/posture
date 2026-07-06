@@ -368,9 +368,6 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .postureReplaySessionCoachMarks)) { _ in
             selectedTab = 0
         }
-        .onReceive(NotificationCenter.default.publisher(for: .postureSelectProgressTab)) { _ in
-            selectedTab = 4
-        }
         .onChange(of: selectedTab) { _, tab in
             if tab == 0 {
                 scheduleReviewPromptAfterPositiveMoment()
