@@ -3,9 +3,10 @@ import SwiftUI
 
 /// A walking posture session (Pro): pick a time or a distance, pocket the
 /// phone, and AirPods track how tall you walk while the pedometer (and
-/// optional GPS) track how far. Scoring auto-baselines to your own walking
-/// posture in the first 30 seconds, and the clock only runs while you're
-/// actually walking - standing still can't fake a good walk.
+/// optional GPS) track how far. Scoring uses the walking baseline captured once
+/// in a deliberate first-walk setup (`WalkBaselineCaptureView`), and the clock
+/// only runs while you're actually walking - standing still can't fake a good
+/// walk.
 struct WalkSessionView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
@@ -19,6 +20,7 @@ struct WalkSessionView: View {
     @State private var showingEndConfirm = false
     @State private var showingCustomTime = false
     @State private var showingCustomDistance = false
+    @State private var showingBaselineCapture = false
     @State private var customMinutes = 45
 
     private let minuteOptions = [10, 20, 30]
@@ -90,7 +92,9 @@ struct WalkSessionView: View {
                     .foregroundStyle(Theme.ink)
                     .padding(.top, 20)
 
-                Text("AirPods in, phone in your pocket. Posture reads how tall you carry your head; your steps and distance track alongside. The first half minute sets your walking baseline.")
+                Text(hasWalkBaseline
+                     ? "AirPods in, phone in your pocket. Posture reads how tall you carry your head against your saved walking posture; your steps and distance track alongside."
+                     : "AirPods in, phone in your pocket. Posture reads how tall you carry your head; your steps and distance track alongside. First, a quick one-time setup to learn your walking posture.")
                     .font(Theme.font(.body))
                     .foregroundStyle(Theme.ink2)
                     .lineSpacing(3)
@@ -118,17 +122,15 @@ struct WalkSessionView: View {
                 }
 
                 Button {
-                    controller.start(config: .init(
-                        kind: .walk,
-                        targetSeconds: goalIsDistance ? 7200 : targetMinutes * 60,
-                        targetPercent: 0,
-                        level: 0,
-                        goalIsDistance: goalIsDistance,
-                        targetDistanceMeters: goalIsDistance ? targetMeters : 0,
-                        useGPS: useGPS
-                    ))
+                    // First walk ever: capture the walking baseline once, then
+                    // start. Every later walk reuses the saved baseline.
+                    if hasWalkBaseline {
+                        startWalk(controller)
+                    } else {
+                        showingBaselineCapture = true
+                    }
                 } label: {
-                    Text("Start walking")
+                    Text(hasWalkBaseline ? "Start walking" : "Set up walking")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.daylight(.primary))
@@ -145,6 +147,29 @@ struct WalkSessionView: View {
         .sheet(isPresented: $showingCustomDistance) {
             customDistanceSheet.presentationDetents([.height(300)])
         }
+        .fullScreenCover(isPresented: $showingBaselineCapture) {
+            WalkBaselineCaptureView(onCaptured: {
+                showingBaselineCapture = false
+                startWalk(controller)
+            })
+        }
+    }
+
+    /// True once the deliberate first-walk setup has saved a walking baseline.
+    private var hasWalkBaseline: Bool {
+        CalibrationService(context: context).current()?.airpodsWalkingPitch != nil
+    }
+
+    private func startWalk(_ controller: PracticeSessionController) {
+        controller.start(config: .init(
+            kind: .walk,
+            targetSeconds: goalIsDistance ? 7200 : targetMinutes * 60,
+            targetPercent: 0,
+            level: 0,
+            goalIsDistance: goalIsDistance,
+            targetDistanceMeters: goalIsDistance ? targetMeters : 0,
+            useGPS: useGPS
+        ))
     }
 
     private var goalTypePicker: some View {

@@ -25,6 +25,15 @@ final class Calibration {
     var airpodsStandingPitch: Double?
     var airpodsSittingPitch: Double?
 
+    // Walking aligned baseline (radians): the user's own good-posture head pitch
+    // while actually walking, captured once in a deliberate setup the first time
+    // they start a walk (walking's honest neutral - forward lean, head bob -
+    // differs from a standing hold). Saved and reused for every later walk so a
+    // walk is scored from its first second, instead of re-normalizing to the
+    // first 30s of each walk (which risked baking a bad-posture walk in). nil
+    // until that setup runs; scoring falls back to the per-walk auto-capture.
+    var airpodsWalkingPitch: Double?
+
     // How steady the aligned captures were (0…1). A tight, still hold scores
     // near 1; a fidgety capture scores low. Surfaced to the user and used to
     // decide whether the baseline is trustworthy enough to judge against.
@@ -58,6 +67,7 @@ final class Calibration {
         airpodsYaw: Double? = nil,
         airpodsStandingPitch: Double? = nil,
         airpodsSittingPitch: Double? = nil,
+        airpodsWalkingPitch: Double? = nil,
         baselineConfidence: Double? = nil,
         standingSlouchDelta: Double? = nil,
         sittingSlouchDelta: Double? = nil,
@@ -76,6 +86,7 @@ final class Calibration {
         self.airpodsYaw = airpodsYaw
         self.airpodsStandingPitch = airpodsStandingPitch
         self.airpodsSittingPitch = airpodsSittingPitch
+        self.airpodsWalkingPitch = airpodsWalkingPitch
         self.baselineConfidence = baselineConfidence
         self.standingSlouchDelta = standingSlouchDelta
         self.sittingSlouchDelta = sittingSlouchDelta

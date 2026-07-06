@@ -291,6 +291,10 @@ struct RootView: View {
             }
         }
         .task {
+            // End any Live Activity orphaned by a prior crash/force-quit before
+            // anything can start a new one - otherwise a crashed walk's Dynamic
+            // Island countdown lingers and the next walk stacks a second.
+            await PracticeSessionController.endAllLiveActivities()
             guard !didMigrate else { return }
             settings.migrateFromDeprecatedKeys()
             settings.migrateToPracticeReminders()

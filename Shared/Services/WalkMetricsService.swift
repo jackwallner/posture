@@ -78,7 +78,14 @@ final class WalkMetricsService: NSObject, CLLocationManagerDelegate {
         lastLocation = nil
 
         if pedometerAvailable {
-            pedometer.startUpdates(from: .now) { [weak self] data, _ in
+            // The handler MUST be `@Sendable`: CMPedometer delivers on a private
+            // queue, and without this the closure inherits this method's
+            // @MainActor isolation, so the runtime asserts (EXC_BREAKPOINT in
+            // _swift_task_checkIsolatedSwift) the instant the first step lands.
+            // That is the "starting a walk crashes" bug - it only fires on a
+            // real device, since the Simulator has no pedometer. Same fix as
+            // HeadphoneMotionService.beginMotionUpdates.
+            pedometer.startUpdates(from: .now) { @Sendable [weak self] data, _ in
                 guard let data else { return }
                 let steps = data.numberOfSteps.intValue
                 let distance = data.distance?.doubleValue

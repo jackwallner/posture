@@ -394,10 +394,16 @@ final class PracticeSessionController {
                 updateLiveActivity(paused: false, force: false)
                 return
             }
-            if elapsedSeconds <= PostureScoring.Walk.warmupSeconds {
-                walkWarmupPitches.append(pitch)
-            } else if autoWalkBaseline == nil {
-                autoWalkBaseline = PostureScoring.median(walkWarmupPitches)
+            // With a saved walking baseline (captured once in the first-walk
+            // setup) we score from the first second and skip the per-walk
+            // auto-capture entirely. Only legacy users with no saved baseline
+            // fall back to normalizing against this walk's own first 30s.
+            if calibration.airpodsWalkingPitch == nil {
+                if elapsedSeconds <= PostureScoring.Walk.warmupSeconds {
+                    walkWarmupPitches.append(pitch)
+                } else if autoWalkBaseline == nil {
+                    autoWalkBaseline = PostureScoring.median(walkWarmupPitches)
+                }
             }
         }
 
@@ -513,9 +519,11 @@ final class PracticeSessionController {
             walkSamples.removeFirst(firstKeep)
         }
         guard t - lastWalkVerdictAt >= 1 else { return currentQuality }
-        // Prefer the walk's own auto-captured baseline (this walk's warmup
-        // median); fall back to standing calibration, then the combined number.
-        let walkBaseline = autoWalkBaseline ?? calibration.airpodsStandingPitch ?? combined
+        // Prefer the saved walking baseline (deliberately captured once in the
+        // first-walk setup); then this walk's own auto-captured warmup median
+        // (legacy fallback); then standing calibration, then the combined number.
+        let walkBaseline = calibration.airpodsWalkingPitch
+            ?? autoWalkBaseline ?? calibration.airpodsStandingPitch ?? combined
         guard let deviation = PostureScoring.walkWindowDeviation(
             samples: walkSamples, baseline: walkBaseline, now: t
         ) else { return currentQuality }
@@ -681,6 +689,17 @@ final class PracticeSessionController {
             alignedPercent: Int((alignedFractionSoFar * 100).rounded()),
             paused: paused
         )
+    }
+
+    /// End every practice/walk Live Activity, including ones orphaned by a
+    /// prior crash or force-quit (ActivityKit activities outlive the process).
+    /// Called on launch so a crashed walk's Dynamic Island countdown can't
+    /// linger and stack a second one on the next walk ("multiple walks at
+    /// once"), and defensively before we start a fresh one.
+    static func endAllLiveActivities() async {
+        for activity in Activity<PracticeActivityAttributes>.activities {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
     }
 
     /// Started on the first scored sample (after the warm-up), so the
