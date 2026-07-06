@@ -337,7 +337,7 @@ struct TodayView: View {
             }
             .buttonStyle(.daylight(.primary))
             .padding(.top, 4)
-            levelProgressLine
+            practiceProgressStrip
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -363,12 +363,12 @@ struct TodayView: View {
                     .foregroundStyle(Theme.ink)
             }
             Text(session.passed
-                 ? "That pass counts toward your next level. Tomorrow's practice is ready when you are."
-                 : "The streak day is yours. Pass the \(session.targetPercent)% bar to move the level along.")
+                 ? "Target met. That pip counts toward your next level."
+                 : "The streak day is yours. Hit the \(session.targetPercent)% bar to fill a pip.")
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
-            levelProgressLine
+            practiceProgressStrip
             Button { showingSession = true } label: {
                 Text("Practice again →")
                     .font(Theme.font(.footnote, weight: .semibold))
@@ -442,27 +442,62 @@ struct TodayView: View {
     }
 
     @ViewBuilder
-    private var levelProgressLine: some View {
+    private var practiceProgressStrip: some View {
         if isLevelCappedByFreeTier {
             Button { showingLevelLadder = true } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: 6) {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 9, weight: .semibold))
-                    Text("Level \(PracticeProgression.freeLevelCap) · higher levels with Posture+")
+                        .font(.system(size: 10, weight: .semibold))
+                    Text("Level \(PracticeProgression.freeLevelCap) · full program with Posture+")
                         .font(Theme.font(.caption, weight: .semibold))
                 }
                 .foregroundStyle(Theme.ink3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 4)
             }
             .buttonStyle(.plain)
         } else {
-            Button { showingLevelLadder = true } label: {
-                let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
-                Text("\(progress.done) of \(progress.needed) passes to Level \(practiceLevel + 1)")
-                    .font(Theme.font(.caption))
-                    .foregroundStyle(Theme.ink3)
+            Button {
+                NotificationCenter.default.post(name: .postureSelectProgressTab, object: nil)
+            } label: {
+                HStack(spacing: 12) {
+                    if currentStreak > 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(Theme.sand)
+                            Text("\(currentStreak)")
+                                .font(Theme.font(.caption, weight: .bold))
+                                .foregroundStyle(Theme.ink)
+                        }
+                    }
+                    Spacer(minLength: 8)
+                    let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
+                    LevelPipsView(filled: progress.done, total: progress.needed, size: .compact)
+                    Text("Level \(practiceLevel + 1)")
+                        .font(Theme.font(.caption, weight: .semibold))
+                        .foregroundStyle(Theme.ink3)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(Theme.ink3)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Theme.paper3, in: RoundedRectangle(cornerRadius: 10))
+                .padding(.top, 4)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Level progress, \(progressAccessibilityLabel). Tap to open program.")
         }
+    }
+
+    private var progressAccessibilityLabel: String {
+        let progress = PracticeProgression.progressInLevel(passedSessions: passedPracticeCount)
+        return PracticeProgressCopy.levelUpCaption(
+            done: progress.done,
+            needed: progress.needed,
+            nextLevel: practiceLevel + 1
+        )
     }
 
     private var practiceMinutesLabel: String {

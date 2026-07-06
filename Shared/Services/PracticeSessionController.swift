@@ -71,6 +71,9 @@ final class PracticeSessionController {
         let newLevel: Int
         let leveledUp: Bool
         let streakDays: Int
+        let levelProgressDone: Int
+        let levelProgressNeeded: Int
+        let levelPipAnimateIndex: Int?
         /// Titles of badges this session newly earned, for the summary line.
         let newAchievementTitles: [String]
         /// Walk metrics (0 on practice sessions).
@@ -642,6 +645,10 @@ final class PracticeSessionController {
             .filter { $0.isEarned && !earnedBefore.contains($0.id) }
             .map(\.title)
 
+        let passedAfter = passedBefore + (passed ? 1 : 0)
+        let progressAfter = PracticeProgression.progressInLevel(passedSessions: passedAfter)
+        let pipAnimateIndex = passed ? progressAfter.done - 1 : nil
+
         result = Result(
             kind: config.kind,
             alignedPercent: alignedPercent,
@@ -655,6 +662,9 @@ final class PracticeSessionController {
             newLevel: newLevel,
             leveledUp: newLevel > levelBefore,
             streakDays: streakDays,
+            levelProgressDone: progressAfter.done,
+            levelProgressNeeded: progressAfter.needed,
+            levelPipAnimateIndex: pipAnimateIndex,
             newAchievementTitles: newAchievements,
             distanceMeters: walkDistance,
             steps: walkStepCount,

@@ -13,6 +13,7 @@ extension Notification.Name {
     /// Posted by Settings to replay the in-session coach marks: Today opens
     /// a practice session with `hasSeenSessionCoachMarks` reset.
     static let postureReplaySessionCoachMarks = Notification.Name("com.jackwallner.posture.replaySessionCoachMarks")
+    static let postureSelectProgressTab = Notification.Name("com.jackwallner.posture.selectProgressTab")
 }
 
 /// Orchestrates posture reminder scheduling. Handles setting changes,

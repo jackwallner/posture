@@ -6,6 +6,8 @@ struct SessionSummaryView: View {
     let result: PracticeSessionController.Result
     let onDone: () -> Void
 
+    @State private var displayedPipFill = 0
+
     var body: some View {
         ZStack {
             tint.ignoresSafeArea()
@@ -33,6 +35,10 @@ struct SessionSummaryView: View {
 
                 scoreRow
 
+                if !isWalk, result.completed, result.levelProgressNeeded > 0 {
+                    levelProgressCard
+                }
+
                 if isWalk, result.steps > 0 || result.distanceMeters > 0 {
                     walkStatsRow
                 }
@@ -51,9 +57,65 @@ struct SessionSummaryView: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 32)
         }
+        .onAppear { animatePipsIfNeeded() }
     }
 
-    // MARK: - Sections
+    private var levelProgressCard: some View {
+        let nextLevel = result.leveledUp ? result.newLevel + 1 : result.level + 1
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                if result.streakDays > 0 {
+                    HStack(spacing: 5) {
+                        Image(systemName: "flame.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Theme.sand)
+                        Text("Day \(result.streakDays)")
+                            .font(Theme.font(.footnote, weight: .semibold))
+                            .foregroundStyle(Theme.ink)
+                    }
+                }
+                Spacer(minLength: 8)
+                LevelPipsView(
+                    filled: displayedPipFill,
+                    total: result.levelProgressNeeded,
+                    size: .prominent,
+                    animateIndex: result.levelPipAnimateIndex
+                )
+            }
+            Text(levelProgressCaption(nextLevel: nextLevel))
+                .font(Theme.font(.footnote, weight: .semibold))
+                .foregroundStyle(Theme.ink2)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard()
+    }
+
+    private func levelProgressCaption(nextLevel: Int) -> String {
+        if result.leveledUp {
+            let next = PracticeProgressCopy.levelUpCaption(
+                done: displayedPipFill,
+                needed: result.levelProgressNeeded,
+                nextLevel: nextLevel
+            )
+            return "Level \(result.newLevel) unlocked. Next: \(next.lowercased())"
+        }
+        return PracticeProgressCopy.levelUpCaption(
+            done: displayedPipFill,
+            needed: result.levelProgressNeeded,
+            nextLevel: nextLevel
+        )
+    }
+
+    private func animatePipsIfNeeded() {
+        guard !isWalk, result.completed else { return }
+        let before = result.passed ? max(0, result.levelProgressDone - 1) : result.levelProgressDone
+        displayedPipFill = before
+        guard result.passed else { return }
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.72).delay(0.15)) {
+            displayedPipFill = result.levelProgressDone
+        }
+    }
 
     private var isWalk: Bool { result.kind == .walk }
 
@@ -85,7 +147,6 @@ struct SessionSummaryView: View {
         }
     }
 
-    /// Distance walked + steps, the workout half of a walk's receipt.
     private var walkStatsRow: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
@@ -121,8 +182,6 @@ struct SessionSummaryView: View {
         return String(format: d < 10 ? "%.2f" : "%.1f", d)
     }
 
-    /// One bar per segment (10s of practice, minute of walk), colored by how
-    /// tall it was held.
     private var timelineStrip: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(isWalk ? "The walk, minute by minute" : "The session, ten seconds at a time")
@@ -147,18 +206,13 @@ struct SessionSummaryView: View {
     @ViewBuilder
     private var receiptLines: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if result.completed, result.streakDays > 0 {
-                receiptLine(icon: "flame.fill", color: Theme.sand,
-                            text: "Day \(result.streakDays) of your streak.")
-            }
             if isWalk {
-                // Walks carry no level stakes - the streak line is the receipt.
             } else if result.leveledUp {
                 receiptLine(icon: "chevron.up.2", color: Theme.sage,
-                            text: "Level \(result.newLevel) unlocked, tomorrow's practice grows a little.")
+                            text: "Level \(result.newLevel) unlocked. Tomorrow's hold grows a little.")
             } else if result.passed {
                 receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
-                            text: "Target met. That counts toward Level \(result.newLevel + 1).")
+                            text: "Target met. One pip toward Level \(result.level + 1).")
             } else if result.completed {
                 receiptLine(icon: "circle.dashed", color: Theme.ink3,
                             text: "Finished, under target. Streak safe. The level waits for a taller day.")
@@ -181,13 +235,11 @@ struct SessionSummaryView: View {
         }
     }
 
-    // MARK: - Copy
-
     private var headline: String {
         if isWalk { return result.completed ? "Walked tall" : "Walk ended" }
         if !result.completed { return "Ended early" }
         if result.leveledUp { return "Level up" }
-        if result.passed { return "Held tall" }
+        if result.passed { return "Target met" }
         return "Done"
     }
 
@@ -231,8 +283,6 @@ struct SessionSummaryView: View {
     }
 
     private var targetLabel: Int {
-        // Result carries the target implicitly via pass/fail; recompute the
-        // level's bar for display.
         PracticeProgression.targetPercent(forLevel: result.level)
     }
 
