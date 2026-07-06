@@ -16,14 +16,20 @@ Before capturing, stage the data so it sells (5 minutes):
   is visible in the raws and stays real — that's fine, it's the house
   style on the published apps).
 
+Fastest path: launch the DEBUG build with `SCREENSHOT_SEED -PostureProOverride`
+(see `Posture/Utilities/ScreenshotSeed.swift`) to land in a fully-staged app
+(6-day streak, a week of passed practice sessions, a walk, per-minute history,
+Pro-crisp surfaces) with no onboarding/calibration, then navigate headless with
+`axe` and capture with `xcrun simctl io <UDID> screenshot`.
+
 | File | Screen | How to get there |
 |------|--------|------------------|
-| `raw-1-today.png` | Today tab, scored day | Open app after the staged check-ins. Ring + "aligned" + streak visible. |
-| `raw-2-scan.png` | AirPods scan countdown | "check in now" → "scan with AirPods" with AirPods in → capture mid-countdown (big 3/2/1 numeral). |
-| `raw-3-aligned.png` | "aligned." result | Finish a scan that lands aligned (sit straight) → serif "aligned." screen before tapping done. |
-| `raw-4-history.png` | History tab | After several check-ins across ≥2 days so the week bars + "% aligned" + entries list look alive. |
-| `raw-5-checkin.png` | Check-in choice sheet | "check in now" → the "how's your posture right now?" sheet with the aligned/drifting/resting chips. |
-| `raw-6-streak.png` | Today, streak emphasis | Same Today screen on a streak day ≥3 — capture with the flame/count fresh (can be same capture session as raw-1 if streak shows; otherwise skip and Claude Design will produce 5). |
+| `raw-1-today.png` | Today tab, scored day | Open seeded app. Streak chip, "Practice complete · 84% aligned, target met", Level 3, rhythm chart. |
+| `raw-2-practice.png` | "Today's practice." pre-start | Today → "Practice again →". The chin-tuck + hold explainer, duration/target chips, Begin. |
+| `raw-3-summary.png` | Session receipt | History → tap the top session row. Aligned/drifting/slouching split + "Target met, counted toward your level." |
+| `raw-4-history.png` | History tab | "A strong week of practice." minutes-per-day bars + session list. |
+| `raw-5-progress.png` | Progress tab | The level ladder (L1–L5), NOW/NEXT cards, "target-met sessions to next level". |
+| `raw-6-checkin.png` | Hand check-in confirmation | Today → "Log a manual check-in" → "Check in by hand" → "Noted." (logged for your streak). |
 
 Watch (optional this round): plain captures from the watch app/widget at
 native resolution go directly into `claude-design/output/watch/` — Apple

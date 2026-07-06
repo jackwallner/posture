@@ -59,14 +59,24 @@ hardware claims beyond "AirPods", no ratings/awards badges.
 
 | # | Raw file | Output file | Accent / tint | Headline line 1 | Headline line 2 (italic serif) | Subline |
 |---|----------|-------------|---------------|-----------------|-------------------------------|---------|
-| 1 | `raw-1-today.png` | `store-1-today.png` | sage `#8FC5A8` | Sit taller, | every day. | 3-second posture checks with your AirPods |
-| 2 | `raw-2-scan.png` | `store-2-scan.png` | lavender `#BFA8E4` | Your AirPods | read your posture. | Head-motion scan — no camera, no wearable |
-| 3 | `raw-3-aligned.png` | `store-3-aligned.png` | sage `#8FC5A8` | Gentle words, | not nagging. | Aligned, drifting, or resting — never scolded |
-| 4 | `raw-4-history.png` | `store-4-history.png` | sand `#E8C896` | See your | slouch hours. | Your week, hour by hour, on-device |
-| 5 | `raw-5-checkin.png` | `store-5-checkin.png` | clay `#E8A09A` | No AirPods in? | Just tell us. | Check in by hand and keep your streak |
-| 6 | `raw-6-streak.png` | `store-6-streak.png` | sand `#E8C896` | Streaks make | it stick. | Daily flames, with freeze protection |
+| 1 | `raw-1-today.png` | `store-1-today.png` | sage `#8FC5A8` | Sit taller, | every day. | A gentle daily score, no scolding. |
+| 2 | `raw-2-practice.png` | `store-2-practice.png` | lavender `#BFA8E4` | Your AirPods, | your coach. | A few guided minutes. No camera, no wearable. |
+| 3 | `raw-3-summary.png` | `store-3-summary.png` | sage `#8FC5A8` | Gentle words, | not nagging. | Aligned, drifting, or slouched. Never scolded. |
+| 4 | `raw-4-history.png` | `store-4-history.png` | sand `#E8C896` | Watch it | add up. | Practice minutes and passes, private on-device. |
+| 5 | `raw-5-progress.png` | `store-5-progress.png` | clay `#E8A09A` | Level up, | gently. | Sessions grow from 3 to 15 minutes as you improve. |
+| 6 | `raw-6-checkin.png` | `store-6-checkin.png` | sand `#E8C896` | No AirPods in? | Just tell us. | Check in by hand and keep your streak. |
 
 If a listed raw is missing from `claude-design/raw/`, skip that frame and
 renumber nothing — produce the remaining outputs under their listed names.
 
 Write outputs to `claude-design/output/store/`.
+
+## Automated path (preferred)
+
+`scripts/compose-screenshots.py` renders all six frames in this exact house
+style from the raws in `claude-design/raw/` (drawn iPhone frame, gradient
+canvas, Nunito-Bold headline + Georgia Bold Italic accent, subline). The frame
+table above is encoded in `FRAMES` in that script. Raws are captured headless
+from the seeded simulator build — launch with `SCREENSHOT_SEED -PostureProOverride`
+(see `Posture/Utilities/ScreenshotSeed.swift`) which stages a streak, a week of
+passed practice sessions, a walk, per-minute history, and Pro-crisp surfaces.

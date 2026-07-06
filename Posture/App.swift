@@ -13,6 +13,7 @@ struct PostureApp: App {
         if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") {
             GoalSettings.shared.resetForUITest()
         }
+        ScreenshotSeed.seedIfNeeded()
         #endif
         SubscriptionService.shared.configure()
         NotificationService.registerCategories()
