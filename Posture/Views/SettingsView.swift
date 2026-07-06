@@ -1,6 +1,9 @@
 import SwiftData
 import SwiftUI
 import UserNotifications
+#if HAS_REVENUECAT
+import RevenueCat
+#endif
 
 struct SettingsView: View {
     @Environment(GoalSettings.self) private var settings
@@ -8,7 +11,18 @@ struct SettingsView: View {
     @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
 
     @State private var subscriptions = SubscriptionService.shared
-    @State private var showingPaywall = false
+    @State private var showTrialOffer = false
+    @State private var showTrialPaywall = false
+    @State private var paywallImpressionId = "posture_settings_sheet"
+    @State private var trialOfferFocus: PosturePlusFeature?
+    @State private var pendingFeatureEnable: PosturePlusFeature?
+    @State private var pendingPaywallAfterTrialDismiss = false
+    @State private var trialPurchaseInFlight = false
+    @State private var trialPurchaseError: String?
+    @State private var trialOfferDetent: PresentationDetent = .fraction(0.68)
+    #if HAS_REVENUECAT
+    @State private var trialOfferPackage: Package?
+    #endif
     @State private var showingQuickRecalibrate = false
     @State private var notificationsDenied = false
     @State private var showingWatchSyncInfo = false
@@ -23,39 +37,24 @@ struct SettingsView: View {
                 // MARK: - Pro
 
                 Section {
-                    if subscriptions.isProSubscriber {
-                        Toggle("Always-on Watch monitoring", isOn: $settings.alwaysOnEnabled)
-                            .onChange(of: settings.alwaysOnEnabled) { _, isOn in
-                                WatchSyncService.shared.pushAlwaysOn(isOn)
-                                if isOn { showingWatchSyncInfo = true }
-                            }
-                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
-                            .font(Theme.font(.caption))
-                            .foregroundStyle(Theme.ink2)
+                    Toggle(isOn: alwaysOnBinding) {
+                        plusToggleLabel("Always-on Watch monitoring")
+                    }
+                    Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink2)
 
-                        Toggle("Quiet AirPods background", isOn: Binding(
-                            get: { settings.airpodsBackgroundEnabled },
-                            set: { newValue in
-                                if newValue && !settings.airpodsBackgroundEnabled {
-                                    // First-flip confirmation - explain the orange dot
-                                    // before the silent tone (and the indicator) start.
-                                    showingAirpodsBackgroundConfirm = true
-                                } else {
-                                    settings.airpodsBackgroundEnabled = newValue
-                                }
-                            }
-                        ))
-                        Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded. This uses extra battery.")
-                            .font(Theme.font(.caption))
-                            .foregroundStyle(Theme.ink2)
+                    Toggle(isOn: airpodsBackgroundBinding) {
+                        plusToggleLabel("Quiet AirPods background")
+                    }
+                    Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded. This uses extra battery.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink2)
 
-                        if settings.airpodsBackgroundEnabled, let monitor = airpodsMonitor {
-                            AirpodsStatusChip(monitor: monitor)
-                        }
-                    } else {
-                        proPostcard
-                            .listRowInsets(EdgeInsets())
-                            .listRowBackground(Color.clear)
+                    if subscriptions.isProSubscriber,
+                       settings.airpodsBackgroundEnabled,
+                       let monitor = airpodsMonitor {
+                        AirpodsStatusChip(monitor: monitor)
                     }
                 } header: {
                     Text("Posture+")
@@ -216,8 +215,52 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .task { await refreshNotificationStatus() }
-            .sheet(isPresented: $showingPaywall) {
-                PaywallView(paywallImpressionId: "posture_settings_sheet")
+            .onChange(of: subscriptions.isProSubscriber) { _, isPro in
+                if isPro { applyPendingFeatureEnable() }
+            }
+            .sheet(isPresented: $showTrialOffer, onDismiss: {
+                trialPurchaseInFlight = false
+                trialPurchaseError = nil
+                #if HAS_REVENUECAT
+                trialOfferPackage = nil
+                #endif
+                if pendingPaywallAfterTrialDismiss {
+                    pendingPaywallAfterTrialDismiss = false
+                    showTrialPaywall = true
+                } else if !subscriptions.isProSubscriber {
+                    pendingFeatureEnable = nil
+                }
+            }) {
+                TrialOfferSheet(
+                    focus: trialOfferFocus,
+                    offerLabel: trialOfferIntroLabel,
+                    priceLabel: trialOfferPriceLabel,
+                    directPurchase: trialOfferIsDirect,
+                    isPurchasing: trialPurchaseInFlight,
+                    errorMessage: trialPurchaseError,
+                    onStartTrial: {
+                        if trialOfferIsDirect {
+                            startDirectTrialPurchase()
+                        } else {
+                            pendingPaywallAfterTrialDismiss = true
+                            showTrialOffer = false
+                        }
+                    },
+                    onSeeAllPlans: {
+                        pendingPaywallAfterTrialDismiss = true
+                        showTrialOffer = false
+                    },
+                    onDismiss: { showTrialOffer = false }
+                )
+                .presentationDetents([.fraction(0.68), .large], selection: $trialOfferDetent)
+                .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled(trialPurchaseInFlight)
+            }
+            .sheet(isPresented: $showTrialPaywall, onDismiss: {
+                trialOfferFocus = nil
+                if !subscriptions.isProSubscriber { pendingFeatureEnable = nil }
+            }) {
+                PaywallView(paywallImpressionId: paywallImpressionId)
             }
             .alert("Open Posture on your Watch", isPresented: $showingWatchSyncInfo) {
                 Button("Got it", role: .cancel) { }
@@ -236,41 +279,132 @@ struct SettingsView: View {
         }
     }
 
-    private var proPostcard: some View {
-        Button { showingPaywall = true } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("POSTURE+")
-                    .font(Theme.font(.caption, weight: .semibold))
-                    .tracking(0.8)
-                    .foregroundStyle(Theme.sage)
-                Text("Keep the whole year.\nSee your slouch hours.")
-                    .font(Theme.display(22))
-                    .foregroundStyle(Theme.ink)
-                Text(proPostcardPriceLine)
-                    .font(Theme.font(.caption, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+    @ViewBuilder
+    private func plusToggleLabel(_ title: String) -> some View {
+        HStack(spacing: 8) {
+            Text(title)
+            if !subscriptions.isProSubscriber {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.ink3)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(18)
-            .background(Theme.sageTint, in: .rect(cornerRadius: 14))
         }
-        .buttonStyle(.plain)
     }
 
-    /// Price line for the Posture+ postcard, read from the loaded store
-    /// products so the copy is right in every storefront currency and only
-    /// promises a trial to users who are actually eligible. Hardcoding
-    /// "$29.99/yr" here showed USD to everyone.
-    private var proPostcardPriceLine: String {
-        #if HAS_REVENUECAT
-        if let yearly = subscriptions.products.first(where: { $0.posturePackageKind == .yearly }) {
-            if subscriptions.isEligibleForIntroOffer(yearly), let trial = yearly.postureIntroOfferLabel {
-                return "\(trial) · \(yearly.posturePriceLabel) →"
+    private var alwaysOnBinding: Binding<Bool> {
+        Binding(
+            get: { subscriptions.isProSubscriber && settings.alwaysOnEnabled },
+            set: { enabled in
+                if subscriptions.isProSubscriber {
+                    settings.alwaysOnEnabled = enabled
+                    WatchSyncService.shared.pushAlwaysOn(enabled)
+                    if enabled { showingWatchSyncInfo = true }
+                } else if enabled {
+                    requestTrialOffer(for: .alwaysOnWatch)
+                }
             }
-            return "\(yearly.posturePriceLabel) →"
+        )
+    }
+
+    private var airpodsBackgroundBinding: Binding<Bool> {
+        Binding(
+            get: { subscriptions.isProSubscriber && settings.airpodsBackgroundEnabled },
+            set: { enabled in
+                if subscriptions.isProSubscriber {
+                    if enabled && !settings.airpodsBackgroundEnabled {
+                        showingAirpodsBackgroundConfirm = true
+                    } else {
+                        settings.airpodsBackgroundEnabled = enabled
+                    }
+                } else if enabled {
+                    requestTrialOffer(for: .airpodsBackground)
+                }
+            }
+        )
+    }
+
+    #if HAS_REVENUECAT
+    private var hasTrialOffer: Bool {
+        subscriptions.products.contains { subscriptions.isEligibleForIntroOffer($0) }
+    }
+
+    private var directTrialPackage: Package? {
+        let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
+        return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
+    }
+
+    private var trialOfferIsDirect: Bool {
+        directTrialPackage != nil
+    }
+
+    private var trialOfferIntroLabel: String? {
+        trialOfferPackage?.postureIntroOfferLabel
+            ?? subscriptions.products.compactMap(\.postureIntroOfferLabel).first
+    }
+
+    private var trialOfferPriceLabel: String? {
+        trialOfferPackage?.posturePriceLabel ?? directTrialPackage?.posturePriceLabel
+    }
+    #else
+    private var trialOfferIsDirect: Bool { false }
+    private var trialOfferIntroLabel: String? { nil }
+    private var trialOfferPriceLabel: String? { nil }
+    #endif
+
+    private func requestTrialOffer(for feature: PosturePlusFeature) {
+        guard !subscriptions.isProSubscriber else { return }
+        pendingFeatureEnable = feature
+        trialOfferFocus = feature
+        paywallImpressionId = feature.paywallImpressionId
+        trialOfferDetent = .fraction(0.68)
+        #if HAS_REVENUECAT
+        if hasTrialOffer {
+            trialOfferPackage = directTrialPackage
+            showTrialOffer = true
+        } else {
+            showTrialPaywall = true
+        }
+        #else
+        showTrialPaywall = true
+        #endif
+    }
+
+    private func startDirectTrialPurchase() {
+        #if HAS_REVENUECAT
+        guard let package = trialOfferPackage ?? directTrialPackage else {
+            pendingPaywallAfterTrialDismiss = true
+            showTrialOffer = false
+            return
+        }
+        trialPurchaseError = nil
+        trialPurchaseInFlight = true
+        Task { @MainActor in
+            defer { trialPurchaseInFlight = false }
+            do {
+                switch try await subscriptions.purchase(package) {
+                case .purchased, .pending:
+                    showTrialOffer = false
+                case .cancelled:
+                    trialPurchaseError = "Trial wasn't started. Tap again, or pick a different plan."
+                }
+            } catch {
+                trialPurchaseError = "Couldn't start your trial. Please try again."
+            }
         }
         #endif
-        return "see plans →"
+    }
+
+    private func applyPendingFeatureEnable() {
+        guard let feature = pendingFeatureEnable else { return }
+        pendingFeatureEnable = nil
+        switch feature {
+        case .alwaysOnWatch:
+            settings.alwaysOnEnabled = true
+            WatchSyncService.shared.pushAlwaysOn(true)
+            showingWatchSyncInfo = true
+        case .airpodsBackground:
+            showingAirpodsBackgroundConfirm = true
+        }
     }
 
     /// Bridge the stored hour/minute to the DatePicker's Date binding.

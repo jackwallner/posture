@@ -351,7 +351,7 @@ struct MainTabView: View {
             // The upgrade pitch gets its own tab until the user subscribes.
             if !subscriptions.isProSubscriber {
                 ProTabView()
-                    .tabItem { Label("Posture+", systemImage: "sparkles") }
+                    .tabItem { Label("Posture+", systemImage: "lock.fill") }
                     .tag(3)
             }
             SettingsView()
@@ -367,6 +367,9 @@ struct MainTabView: View {
         // and presents the session.
         .onReceive(NotificationCenter.default.publisher(for: .postureReplaySessionCoachMarks)) { _ in
             selectedTab = 0
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .postureSelectProgressTab)) { _ in
+            selectedTab = 4
         }
         .onChange(of: selectedTab) { _, tab in
             if tab == 0 {
