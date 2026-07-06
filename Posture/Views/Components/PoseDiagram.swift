@@ -18,9 +18,7 @@ struct PoseDiagram: View {
     var height: CGFloat = 180
 
     var body: some View {
-        // Illustrated art wins when present in the asset catalog (generated
-        // by scripts/generate-illustrations.py); the drawn diagram is the
-        // no-assets fallback so the build never depends on generation.
+        // Bundled asset-catalog art when present; drawn diagram is the fallback.
         if let illustration = UIImage(named: assetName) {
             Image(uiImage: illustration)
                 .resizable()

@@ -149,9 +149,8 @@ pipeline in the app.
   - `Views/Components/` — Daylight design system pieces (HorizonMeter, DayStrip,
     PostureBanner, QualityChip, TipLine, DaylightCTA, AirpodsScanView,
     PostureRing, StreakFlame, PoseDiagram).
-    `PoseDiagram` renders drawn pose visuals and auto-swaps to
-    `Illo*` asset-catalog images when present — generate them with
-    `scripts/generate-illustrations.py` (needs a billed Gemini key).
+    `PoseDiagram` renders drawn pose visuals and auto-swaps to bundled `Illo*`
+    asset-catalog images when present.
 - `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets, read
   from the shared App Group container (schemas must mirror `DataService`).
   `PostureWidget` also hosts `PracticeLiveActivity` (ActivityKit Dynamic
