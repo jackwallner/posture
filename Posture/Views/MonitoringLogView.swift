@@ -89,7 +89,7 @@ struct MonitoringLogView: View {
             if let error = monitor.lastError {
                 Text(error)
                     .font(Theme.font(.footnote))
-                    .foregroundStyle(Theme.clay)
+                    .foregroundStyle(Theme.badText)
             }
         }
         .padding(20)

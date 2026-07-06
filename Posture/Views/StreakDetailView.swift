@@ -63,7 +63,7 @@ struct StreakDetailView: View {
             HStack(spacing: 8) {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(Theme.sand)
+                    .foregroundStyle(Theme.borderlineText)
                 Text(currentStreak == 1 ? "1 day" : "\(currentStreak) days")
                     .font(Theme.display(34))
                     .foregroundStyle(Theme.ink)
@@ -174,7 +174,7 @@ struct StreakDetailView: View {
                 HStack(spacing: 10) {
                     Image(systemName: best >= day ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 15))
-                        .foregroundStyle(best >= day ? Theme.sage : Theme.ink3.opacity(0.4))
+                        .foregroundStyle(best >= day ? Theme.goodText : Theme.ink3.opacity(0.4))
                     Text("\(day)-day streak")
                         .font(Theme.font(.subheadline))
                         .foregroundStyle(best >= day ? Theme.ink : Theme.ink2)

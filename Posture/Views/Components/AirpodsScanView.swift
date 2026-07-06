@@ -166,7 +166,7 @@ struct AirpodsScanView: View {
                     .frame(width: 200, height: 200)
                 Image(systemName: "airpodspro")
                     .font(.system(size: 60))
-                    .foregroundStyle(Theme.sand)
+                    .foregroundStyle(Theme.borderlineText)
             }
             .frame(maxWidth: .infinity)
 

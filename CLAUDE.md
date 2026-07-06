@@ -77,9 +77,11 @@ pipeline in the app.
     Pro toggle) and by sessions (bounded).
   - `WalkMetricsService` — iOS-only live walk metrics: `CMPedometer`
     (steps, distance estimate, cadence) + optional `CoreLocation` GPS for
-    accurate distance. `isWalking` (step-delta gate) is what the controller
-    uses to hold the walk clock when you stop moving, so sitting still can't
-    fake a good walk; degrades to always-walking when the pedometer is absent
+    accurate distance. `isWalking` (step-delta gate): while false the walk
+    clock KEEPS RUNNING but the time scores as rest (`.bad`), so sitting
+    still can't fake a good walk and the in-app countdown never drifts from
+    the Live Activity/watch countdown; slouch nudges are suppressed while
+    stationary. Degrades to always-walking when the pedometer is absent
     (Simulator). Owned by `PracticeSessionController` for walk sessions.
   - `PostureScoring` — pure scoring (testable). `postureReference` picks the
     *nearer* of the standing/sitting baselines AND that posture's own
@@ -126,10 +128,15 @@ pipeline in the app.
   - `Views/WalkSessionView.swift` — walk mode (Pro): a **Time or Distance**
     goal (minute chips / distance chips + custom wheels), an optional GPS
     toggle, and a live steps + distance readout. Rolling-median walk scoring
-    (`PostureScoring.Walk`); the 30s warmup both stays out of the score AND
-    auto-captures the walking baseline (`autoWalkBaseline`). The clock holds
-    while `WalkMetricsService.isWalking` is false ("keep walking"). Credits the
-    streak, never the level.
+    (`PostureScoring.Walk`) against the one-time walking baseline
+    (`WalkBaselineCaptureView`: intro → get-moving countdown → 30s walking
+    capture → explicit "Start my walk", never auto-started; redoable from the
+    walk pre-start link or Settings → "Reset walking posture"), anchored at
+    scoring time to within `Walk.maxLeanFromStanding` of the standing
+    calibration (`Walk.anchoredBaseline`) so a slouched capture can't poison
+    the scale. The legacy per-walk 30s auto-baseline remains only for users
+    with no saved capture. Stationary time counts as rest, not held time.
+    Credits the streak, never the level.
   - `Views/OnboardingTrialView.swift` — the "7 days on us" trial pitch shown
     once after calibration to non-subscribers (`hasSeenOnboardingTrial` gate in
     `RootView`); dismissible ("Maybe later"), opens `PaywallView` as a sheet

@@ -325,7 +325,7 @@ struct CalibrationView: View {
                     .frame(width: 160, height: 160)
                 Image(systemName: steady ? "checkmark" : "water.waves")
                     .font(.system(size: 54, weight: .regular))
-                    .foregroundStyle(steady ? Theme.sage : Theme.sand)
+                    .foregroundStyle(steady ? Theme.goodText : Theme.borderlineText)
             }
             .frame(maxWidth: .infinity)
 
@@ -378,7 +378,7 @@ struct CalibrationView: View {
                     .frame(width: 96, height: 96)
                 Image(systemName: "airpods.gen3")
                     .font(.system(size: 40, weight: .regular))
-                    .foregroundStyle(Theme.sand)
+                    .foregroundStyle(Theme.borderlineText)
             }
             .frame(maxWidth: .infinity)
 
@@ -422,7 +422,7 @@ struct CalibrationView: View {
                     .frame(width: 96, height: 96)
                 Image(systemName: "hand.raised.slash")
                     .font(.system(size: 38, weight: .regular))
-                    .foregroundStyle(Theme.sand)
+                    .foregroundStyle(Theme.borderlineText)
             }
             .frame(maxWidth: .infinity)
 
@@ -464,7 +464,7 @@ struct CalibrationView: View {
                     .frame(width: 180, height: 180)
                 Image(systemName: "checkmark")
                     .font(.system(size: 60, weight: .regular))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .frame(maxWidth: .infinity)
 

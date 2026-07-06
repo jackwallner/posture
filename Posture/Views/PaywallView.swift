@@ -103,7 +103,7 @@ struct PaywallView: View {
                 }
             }
             .font(Theme.font(.subheadline, weight: .semibold))
-            .foregroundStyle(Theme.sage)
+            .foregroundStyle(Theme.goodText)
             Spacer()
             legalFooter
                 .padding(.bottom, 18)
@@ -311,7 +311,7 @@ struct PaywallView: View {
         HStack(spacing: 5) {
             Image(systemName: icon)
                 .font(Theme.font(.caption2))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text(label)
                 .font(Theme.font(.caption2, weight: .medium))
                 .foregroundStyle(Theme.ink2)
@@ -331,7 +331,7 @@ struct PaywallView: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
                 .frame(width: 24)
             Text(title)
                 .font(Theme.font(.subheadline))
@@ -384,7 +384,7 @@ struct PaywallView: View {
 
             Text(trialReassuranceLine ?? " ")
                 .font(Theme.font(.caption, weight: .semibold))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -405,7 +405,7 @@ struct PaywallView: View {
             if let errorMessage {
                 Text(errorMessage)
                     .font(Theme.font(.caption))
-                    .foregroundStyle(Theme.clay)
+                    .foregroundStyle(Theme.badText)
                     .multilineTextAlignment(.center)
             }
             if let restoreMessage {

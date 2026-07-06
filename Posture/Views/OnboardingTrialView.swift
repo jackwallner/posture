@@ -20,7 +20,7 @@ struct OnboardingTrialView: View {
             Text("POSTURE+")
                 .font(Theme.font(.caption, weight: .semibold))
                 .tracking(1)
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text(onboardingHeadline)
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
@@ -50,7 +50,7 @@ struct OnboardingTrialView: View {
             if let errorMessage {
                 Text(errorMessage)
                     .font(Theme.font(.caption))
-                    .foregroundStyle(Theme.clay)
+                    .foregroundStyle(Theme.badText)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
                     .padding(.bottom, 6)
@@ -224,7 +224,7 @@ struct OnboardingTrialView: View {
                 Circle().fill(Theme.sageTint).frame(width: 34, height: 34)
                 Image(systemName: icon)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
@@ -258,7 +258,7 @@ struct OnboardingTrialView: View {
         VStack(spacing: 5) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text(title)
                 .font(Theme.font(.caption, weight: .bold))
                 .foregroundStyle(Theme.ink)

@@ -137,7 +137,7 @@ struct TrialOfferSheet: View {
                     if let errorMessage {
                         Text(errorMessage)
                             .font(Theme.font(.footnote))
-                            .foregroundStyle(Theme.clay)
+                            .foregroundStyle(Theme.badText)
                             .multilineTextAlignment(.center)
                             .transition(.opacity)
                     }
@@ -181,7 +181,7 @@ struct TrialOfferSheet: View {
                         Button(action: onSeeAllPlans) {
                             Text("See all plans")
                                 .font(Theme.font(.subheadline, weight: .semibold))
-                                .foregroundStyle(Theme.sage)
+                                .foregroundStyle(Theme.goodText)
                         }
                         .buttonStyle(.plain)
                         .disabled(isPurchasing)

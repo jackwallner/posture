@@ -10,10 +10,12 @@ struct DaylightCTA: ViewModifier {
     func body(content: Content) -> some View {
         switch style {
         case .primary:
+            // Deep sage, not the pastel: white-on-pastel sat near 2:1 and
+            // the primary CTA is the one control that must never be squinted at.
             base(content, fg: Color.white)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.ctaRadius, style: .continuous)
-                        .fill(Theme.sage)
+                        .fill(Theme.goodText)
                 )
                 .shadow(color: Theme.sage.opacity(0.35), radius: 14, y: 6)
         case .secondary:
@@ -23,7 +25,7 @@ struct DaylightCTA: ViewModifier {
                         .fill(Theme.lavenderTint)
                 )
         case .tonal:
-            base(content, fg: Theme.sage)
+            base(content, fg: Theme.goodText)
                 .background(
                     RoundedRectangle(cornerRadius: Theme.ctaRadius, style: .continuous)
                         .fill(Theme.sageTint)

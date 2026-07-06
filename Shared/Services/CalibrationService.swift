@@ -31,6 +31,13 @@ final class CalibrationService {
         try? context.save()
     }
 
+    /// Forget the walking baseline; the next walk runs the setup again.
+    func clearWalkingBaseline() {
+        guard let calibration = current(), calibration.airpodsWalkingPitch != nil else { return }
+        calibration.airpodsWalkingPitch = nil
+        try? context.save()
+    }
+
     func clear() {
         let all = (try? context.fetch(FetchDescriptor<Calibration>())) ?? []
         for c in all { context.delete(c) }

@@ -59,7 +59,7 @@ struct PracticeLiveActivity: Widget {
                     .frame(width: 46, height: 46)
                 Image(systemName: icon(context))
                     .font(.system(size: 19, weight: .bold))
-                    .foregroundStyle(color(context))
+                    .foregroundStyle(lockColor(context))
             }
             VStack(alignment: .leading, spacing: 2) {
                 // Lead with the live posture state, in its own color, so a
@@ -67,7 +67,7 @@ struct PracticeLiveActivity: Widget {
                 // slouching" without decoding the icon tint.
                 Text(qualityWord(context))
                     .font(Theme.font(.headline, weight: .bold))
-                    .foregroundStyle(color(context))
+                    .foregroundStyle(lockColor(context))
                 Text(bottomLine(context))
                     .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
@@ -117,12 +117,24 @@ struct PracticeLiveActivity: Widget {
         }
     }
 
+    /// Dynamic Island tint: pastels read well on the island's black.
     private func color(_ context: ActivityViewContext<PracticeActivityAttributes>) -> Color {
         if context.state.paused { return Theme.ink3 }
         switch context.state.quality {
         case "good": return Theme.sage
         case "borderline": return Theme.sand
         default: return Theme.clay
+        }
+    }
+
+    /// Lock-screen tint: the banner sits on the light paper wash, where the
+    /// pastels wash out - the state word needs the text-grade colors.
+    private func lockColor(_ context: ActivityViewContext<PracticeActivityAttributes>) -> Color {
+        if context.state.paused { return Theme.ink3 }
+        switch context.state.quality {
+        case "good": return Theme.goodText
+        case "borderline": return Theme.borderlineText
+        default: return Theme.badText
         }
     }
 

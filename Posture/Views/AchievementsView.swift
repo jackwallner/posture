@@ -58,7 +58,7 @@ struct AchievementsView: View {
                     .frame(width: 62, height: 62)
                 Image(systemName: badge.systemImage)
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundStyle(badge.isEarned ? Theme.sage : Theme.ink3.opacity(0.5))
+                    .foregroundStyle(badge.isEarned ? Theme.goodText : Theme.ink3.opacity(0.5))
             }
             Text(badge.title)
                 .font(Theme.font(.caption, weight: .semibold))

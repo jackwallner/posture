@@ -153,7 +153,9 @@ final class PracticeSessionController {
     private var walkMetrics: WalkMetricsService?
 
     /// Published for the walk UI: are we currently registering steps? When
-    /// false the walk clock is held so sitting still can't fake a good walk.
+    /// false the walk keeps its clock running (so the in-app countdown and
+    /// the Live Activity/watch countdown never drift apart) but the time
+    /// scores as rest - sitting still can't fake a good walk.
     private(set) var isWalkingNow = true
 
     // Live walk readouts for the UI (0 outside a walk).
@@ -385,23 +387,19 @@ final class PracticeSessionController {
         guard let config, let calibration = calibrationService.current(),
               let baseline = calibration.airpodsPitch else { return }
 
-        // Walking gate + auto-baseline, before scoring: the walk clock holds
-        // while stationary, and the warmup window feeds the walking baseline.
+        // Walking gate + auto-baseline, before scoring. The clock never
+        // holds: stationary time scores as rest instead, so the countdown
+        // stays honest everywhere (app, Dynamic Island, watch) and standing
+        // still can't bank aligned time.
         if config.kind == .walk {
             walkMetrics?.tick(now: now)
             let walking = walkMetrics?.isWalking ?? true
             if isWalkingNow != walking { isWalkingNow = walking }
-            if !walking {
-                // Not registering steps - don't score or credit. Sitting still
-                // in good posture can no longer bank a "good walk".
-                updateLiveActivity(paused: false, force: false)
-                return
-            }
             // With a saved walking baseline (captured once in the first-walk
             // setup) we score from the first second and skip the per-walk
             // auto-capture entirely. Only legacy users with no saved baseline
             // fall back to normalizing against this walk's own first 30s.
-            if calibration.airpodsWalkingPitch == nil {
+            if walking, calibration.airpodsWalkingPitch == nil {
                 if elapsedSeconds <= PostureScoring.Walk.warmupSeconds {
                     walkWarmupPitches.append(pitch)
                 } else if autoWalkBaseline == nil {
@@ -412,7 +410,12 @@ final class PracticeSessionController {
 
         let quality: PostureQuality
         if config.kind == .walk {
-            quality = walkQuality(pitch: pitch, at: now, calibration: calibration, combined: baseline)
+            if isWalkingNow {
+                quality = walkQuality(pitch: pitch, at: now, calibration: calibration, combined: baseline)
+            } else {
+                // Not registering steps: the time counts, aligned it is not.
+                quality = .bad
+            }
         } else {
             smoothedPitch = PostureScoring.smoothed(
                 previous: smoothedPitch, sample: pitch, alpha: smoothingAlpha
@@ -452,7 +455,14 @@ final class PracticeSessionController {
             }
             accrueTimeline(credited: credited, quality: quality)
         }
-        updateSlouchNudge(quality: quality, now: now)
+        if config.kind == .walk && !isWalkingNow {
+            // Waiting at a light isn't a slouch - no buzz, and no carrying a
+            // half-built bad bout into the next stretch of walking.
+            firstBadAt = nil
+            inBadBout = false
+        } else {
+            updateSlouchNudge(quality: quality, now: now)
+        }
 
         startLiveActivityIfNeeded()
         updateLiveActivity(paused: false, force: false)
@@ -522,11 +532,15 @@ final class PracticeSessionController {
             walkSamples.removeFirst(firstKeep)
         }
         guard t - lastWalkVerdictAt >= 1 else { return currentQuality }
-        // Prefer the saved walking baseline (deliberately captured once in the
-        // first-walk setup); then this walk's own auto-captured warmup median
-        // (legacy fallback); then standing calibration, then the combined number.
-        let walkBaseline = calibration.airpodsWalkingPitch
-            ?? autoWalkBaseline ?? calibration.airpodsStandingPitch ?? combined
+        // The saved walking baseline (deliberately captured once in the
+        // first-walk setup, or this walk's own warmup median as the legacy
+        // fallback) is anchored to the standing calibration: walking earns a
+        // small natural lean, but a capture taken mid-slouch can't drag the
+        // whole scale down with it.
+        let walkBaseline = PostureScoring.Walk.anchoredBaseline(
+            walking: calibration.airpodsWalkingPitch ?? autoWalkBaseline,
+            standing: calibration.airpodsStandingPitch ?? combined
+        )
         guard let deviation = PostureScoring.walkWindowDeviation(
             samples: walkSamples, baseline: walkBaseline, now: t
         ) else { return currentQuality }

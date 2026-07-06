@@ -1,12 +1,16 @@
 import SwiftData
 import SwiftUI
 
-/// A one-time, deliberate setup captured the first time a user starts a walk:
-/// they walk tall for ~30 seconds while we record their own good-posture
-/// walking head pitch, then we save it to `Calibration.airpodsWalkingPitch`
-/// and reuse it for every future walk. Capturing good posture on purpose beats
-/// normalizing to the first 30 seconds of each walk, which risked baking a
-/// slouched walk in as the baseline.
+/// A one-time, deliberate setup captured the first time a user starts a walk
+/// (redoable from Settings or the walk screen): they walk tall for ~30 seconds
+/// while we record their own good-posture walking head pitch, then we save it
+/// to `Calibration.airpodsWalkingPitch` and reuse it for every future walk.
+/// Capturing good posture on purpose beats normalizing to the first 30 seconds
+/// of each walk, which risked baking a slouched walk in as the baseline.
+///
+/// The flow is deliberately unhurried: an intro that explains what's about to
+/// happen, a get-moving lead-in so the capture never starts before the user
+/// does, and a confirmation the user leaves by choice - nothing auto-starts.
 ///
 /// Self-contained: owns its own head-motion stream and the "are you actually
 /// walking" gate, so only walking samples count toward the baseline.
@@ -14,17 +18,22 @@ struct WalkBaselineCaptureView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    /// Called once the baseline is saved; the caller then starts the real walk.
+    /// Called when the user taps "Start my walk" on the confirmation; the
+    /// caller then starts the real walk.
     let onCaptured: () -> Void
 
     private enum Stage: Equatable {
         case intro
+        /// Brief countdown after "Start walking" so the user is moving
+        /// before any samples count.
+        case getMoving
         case capturing
         case noAirpods
         case done
     }
 
     @State private var stage: Stage = .intro
+    @State private var leadInSeconds: Double = 0
     @State private var walkingSeconds: Double = 0
     @State private var isWalkingNow = true
 
@@ -36,6 +45,8 @@ struct WalkBaselineCaptureView: View {
 
     /// Seconds of *walking* we need before the baseline is trustworthy.
     private let targetSeconds: Double = 30
+    /// The get-moving lead-in before samples start counting.
+    private let leadInTarget: Double = 5
     private let tick: Double = 0.2
 
     private var progress: Double { min(1, walkingSeconds / targetSeconds) }
@@ -58,6 +69,7 @@ struct WalkBaselineCaptureView: View {
 
             switch stage {
             case .intro: introView
+            case .getMoving: getMovingView
             case .capturing: capturingView
             case .noAirpods: noAirpodsView
             case .done: doneView
@@ -68,7 +80,7 @@ struct WalkBaselineCaptureView: View {
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .dawnBackground()
-        .interactiveDismissDisabled(stage == .capturing)
+        .interactiveDismissDisabled(stage == .getMoving || stage == .capturing)
         .onDisappear { teardown() }
     }
 
@@ -84,17 +96,39 @@ struct WalkBaselineCaptureView: View {
                 .font(Theme.display(32))
                 .foregroundStyle(Theme.ink)
 
-            Text("Just once. Pop your AirPods in, then walk tall for about half a minute so Posture learns the head position of your best walking posture. We reuse it for every walk after this, so scoring is honest from your very first step.")
+            Text("A one-time setup, about half a minute. Pop your AirPods in and walk tall - head level, eyes on the horizon - while Posture learns your best walking posture. Every walk after this is scored against it.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(3)
                 .padding(.top, 14)
 
-            Button { beginCapture() } label: {
-                Text("I'm ready to walk").frame(maxWidth: .infinity)
+            Text("You can redo this anytime from Settings.")
+                .font(Theme.font(.footnote))
+                .foregroundStyle(Theme.ink3)
+                .padding(.top, 10)
+
+            Button { beginLeadIn() } label: {
+                Text("Start walking").frame(maxWidth: .infinity)
             }
             .buttonStyle(.daylight(.primary))
             .padding(.top, 28)
+        }
+    }
+
+    private var getMovingView: some View {
+        VStack(spacing: 14) {
+            Text("\(Int(max(1, (leadInTarget - leadInSeconds).rounded(.up))))")
+                .font(Theme.font(size: 64, weight: .regular))
+                .foregroundStyle(Theme.ink)
+                .contentTransition(.numericText(countsDown: true))
+                .monospacedDigit()
+            Text("Start walking now.")
+                .font(Theme.display(24))
+                .foregroundStyle(Theme.ink)
+            Text("Get moving and stand tall. The 30-second capture begins when the count ends.")
+                .font(Theme.font(.body))
+                .foregroundStyle(Theme.ink2)
+                .multilineTextAlignment(.center)
         }
     }
 
@@ -121,9 +155,9 @@ struct WalkBaselineCaptureView: View {
             }
             .frame(width: 240, height: 240)
 
-            Text(isWalkingNow ? "Walk tall, eyes on the horizon." : "Keep walking, we pause when you stop.")
+            Text(isWalkingNow ? "Walk tall, eyes on the horizon." : "Keep walking, the count holds while you're stopped.")
                 .font(Theme.font(.body))
-                .foregroundStyle(isWalkingNow ? Theme.ink2 : Theme.ink3)
+                .foregroundStyle(isWalkingNow ? Theme.ink2 : Theme.badText)
                 .multilineTextAlignment(.center)
                 .padding(.top, 26)
                 .padding(.horizontal, 12)
@@ -156,25 +190,31 @@ struct WalkBaselineCaptureView: View {
         VStack(spacing: 14) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text("Walking posture saved.")
                 .font(Theme.display(26))
                 .foregroundStyle(Theme.ink)
-            Text("You're set. This walk (and every walk after) is scored against your own tall stride.")
+            Text("Every walk is now scored against your own tall stride. Redo this anytime from Settings.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
+            Button { onCaptured() } label: {
+                Text("Start my walk").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.daylight(.primary))
+            .padding(.top, 10)
         }
     }
 
     // MARK: - Capture
 
-    private func beginCapture() {
+    private func beginLeadIn() {
         guard airpods.isAvailable, !HeadphoneMotionService.isMotionAccessDenied else {
             stage = .noAirpods
             return
         }
-        stage = .capturing
+        stage = .getMoving
+        leadInSeconds = 0
         walkingSeconds = 0
         samples = []
         smoothedPitch = nil
@@ -187,12 +227,24 @@ struct WalkBaselineCaptureView: View {
         metrics = m
 
         captureTask?.cancel()
-        captureTask = Task { await captureLoop() }
+        captureTask = Task { await leadInThenCapture() }
+    }
+
+    private func leadInThenCapture() async {
+        // Get-moving countdown: the user starts walking while the stream and
+        // pedometer spin up, so second 1 of the capture is a real stride.
+        while !Task.isCancelled, leadInSeconds < leadInTarget {
+            try? await Task.sleep(nanoseconds: UInt64(tick * 1_000_000_000))
+            leadInSeconds += tick
+        }
+        guard !Task.isCancelled else { return }
+        stage = .capturing
+        await captureLoop()
     }
 
     private func captureLoop() async {
-        // Give the stream a moment to hand off, then poll at ~5 Hz. Only accrue
-        // (and sample) while the pedometer says we're actually walking.
+        // Poll at ~5 Hz. Only accrue (and sample) while the pedometer says
+        // we're actually walking.
         var sawAnySample = false
         var noSampleTicks = 0
         while !Task.isCancelled, walkingSeconds < targetSeconds {
@@ -231,11 +283,7 @@ struct WalkBaselineCaptureView: View {
         CalibrationService(context: context).setWalkingBaseline(baseline)
         teardown()
         stage = .done
-        // Brief beat on the confirmation, then hand back to start the walk.
-        Task {
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
-            onCaptured()
-        }
+        // The user starts the walk from here by choice - no auto-start.
     }
 
     private func finishCancel() {

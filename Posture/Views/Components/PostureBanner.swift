@@ -36,7 +36,7 @@ struct PostureBanner: View {
                     Button(action: action.perform) {
                         Text("\(action.label) →")
                             .font(Theme.font(.caption, weight: .semibold))
-                            .foregroundStyle(Theme.sage)
+                            .foregroundStyle(Theme.goodText)
                     }
                     .padding(.top, 2)
                 }

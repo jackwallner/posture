@@ -4,9 +4,10 @@ import SwiftUI
 /// A walking posture session (Pro): pick a time or a distance, pocket the
 /// phone, and AirPods track how tall you walk while the pedometer (and
 /// optional GPS) track how far. Scoring uses the walking baseline captured once
-/// in a deliberate first-walk setup (`WalkBaselineCaptureView`), and the clock
-/// only runs while you're actually walking - standing still can't fake a good
-/// walk.
+/// in a deliberate first-walk setup (`WalkBaselineCaptureView`, redoable from
+/// Settings), anchored to the standing calibration. The clock runs for the
+/// whole walk; time spent standing still scores as rest, so it can't fake a
+/// good walk and the countdown matches the Live Activity everywhere.
 struct WalkSessionView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
@@ -117,7 +118,7 @@ struct WalkSessionView: View {
                 if let error = controller.lastError {
                     Text(error)
                         .font(Theme.font(.footnote))
-                        .foregroundStyle(Theme.clay)
+                        .foregroundStyle(Theme.badText)
                         .padding(.top, 12)
                 }
 
@@ -135,7 +136,21 @@ struct WalkSessionView: View {
                 }
                 .buttonStyle(.daylight(.primary))
                 .padding(.top, 26)
-                .padding(.bottom, 28)
+
+                if hasWalkBaseline {
+                    Button {
+                        showingBaselineCapture = true
+                    } label: {
+                        Text("Redo walking posture setup")
+                            .font(Theme.font(.footnote, weight: .semibold))
+                            .foregroundStyle(Theme.ink2)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 14)
+                }
+
+                Color.clear.frame(height: 28)
             }
             .padding(.horizontal, 24)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -186,7 +201,7 @@ struct WalkSessionView: View {
         } label: {
             Text(title)
                 .font(Theme.font(.subheadline, weight: .semibold))
-                .foregroundStyle(selected ? Theme.sage : Theme.ink2)
+                .foregroundStyle(selected ? Theme.goodText : Theme.ink2)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(
@@ -241,7 +256,7 @@ struct WalkSessionView: View {
         Button(action: action) {
             Text(label)
                 .font(Theme.font(.subheadline, weight: .semibold))
-                .foregroundStyle(selected ? Theme.sage : Theme.ink2)
+                .foregroundStyle(selected ? Theme.goodText : Theme.ink2)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(
@@ -260,7 +275,7 @@ struct WalkSessionView: View {
             HStack(spacing: 12) {
                 Image(systemName: useGPS ? "location.fill" : "location")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(useGPS ? Theme.sage : Theme.ink3)
+                    .foregroundStyle(useGPS ? Theme.goodText : Theme.ink3)
                     .frame(width: 24)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Use GPS for accurate distance")
@@ -341,7 +356,7 @@ struct WalkSessionView: View {
     private func liveView(_ controller: PracticeSessionController) -> some View {
         let quality = controller.currentQuality
         let paused = isPaused(controller.phase)
-        let stationary = controller.phase == .running && !controller.isWalkingNow && !inWarmup(controller)
+        let stationary = controller.phase == .running && !controller.isWalkingNow
         return VStack(spacing: 0) {
             HStack {
                 walkChip
@@ -370,7 +385,7 @@ struct WalkSessionView: View {
                     .stroke(Theme.ringTrack, lineWidth: 10)
                 Circle()
                     .trim(from: 0, to: controller.walkProgressFraction)
-                    .stroke(paused || stationary ? Theme.ink3 : qualityColor(quality),
+                    .stroke(paused ? Theme.ink3 : qualityColor(quality),
                             style: .init(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .animation(.easeOut(duration: 0.5), value: controller.walkProgressFraction)
@@ -385,7 +400,8 @@ struct WalkSessionView: View {
                         .foregroundStyle(Theme.ink3)
                     Text(stationary ? "keep walking" : (paused ? "paused" : qualityWord(quality)))
                         .font(Theme.display(19))
-                        .foregroundStyle(stationary || paused ? Theme.ink3 : qualityColor(quality))
+                        .foregroundStyle(stationary ? Theme.badText
+                                         : (paused ? Theme.ink3 : Theme.qualityTextColor(quality)))
                         .padding(.top, 2)
                 }
             }
@@ -431,7 +447,7 @@ struct WalkSessionView: View {
                 metricStat(value: distanceLabel(controller.walkDistanceMeters), label: distanceUnit)
             }
             if controller.walkUsingGPS {
-                metricStat(value: "GPS", label: "on", tint: Theme.sage)
+                metricStat(value: "GPS", label: "on", tint: Theme.goodText)
             }
         }
     }
@@ -470,7 +486,7 @@ struct WalkSessionView: View {
             Text("Walk")
                 .font(Theme.font(.footnote, weight: .semibold))
         }
-        .foregroundStyle(Theme.sage)
+        .foregroundStyle(Theme.goodText)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(Theme.sageTint, in: .capsule)
@@ -498,7 +514,7 @@ struct WalkSessionView: View {
 
     private func statusLine(_ controller: PracticeSessionController, stationary: Bool) -> String {
         if stationary {
-            return "Paused, you've stopped moving. The walk picks back up when you start walking again."
+            return "You've stopped moving. The clock keeps running, but standing still counts as rest - keep walking."
         }
         switch controller.phase {
         case .waiting:

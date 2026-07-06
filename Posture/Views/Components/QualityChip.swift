@@ -20,6 +20,9 @@ struct QualityChip: View {
     }
 
     private var tint: Color { Theme.qualityColor(quality) }
+    /// The word itself needs the text-grade color - pastel-on-pastel-tint
+    /// sat under 2:1. The dot keeps the pastel; it matches the ring/fills.
+    private var textTint: Color { Theme.qualityTextColor(quality) }
 
     private var tintBackground: Color {
         switch quality {
@@ -41,7 +44,7 @@ struct QualityChip: View {
                     .font(.caption.weight(.semibold).monospacedDigit())
             }
         }
-        .foregroundStyle(tint)
+        .foregroundStyle(textTint)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(tintBackground, in: .capsule)

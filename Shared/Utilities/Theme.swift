@@ -28,8 +28,11 @@ enum Theme {
     static let paper2    = Color(red: 1.000, green: 1.000, blue: 1.000) // pure white card
     static let paper3    = Color(red: 0.957, green: 0.976, blue: 0.969) // #F4F9F7 track/divider
     static let ink       = Color(red: 0.184, green: 0.243, blue: 0.227) // #2F3E3A deep slate
-    static let ink2      = Color(red: 0.420, green: 0.482, blue: 0.463) // #6B7B76 secondary
-    static let ink3      = Color(red: 0.604, green: 0.659, blue: 0.643) // #9AA8A4 tertiary
+    // Secondary/tertiary ink darkened (2026-07): the originals (#6B7B76 /
+    // #9AA8A4) fell below readable contrast on the mint canvas - ink3 sat
+    // near 2.2:1. These hold ~5:1 and ~3.5:1 respectively.
+    static let ink2      = Color(red: 0.353, green: 0.420, blue: 0.396) // #5A6B65 secondary
+    static let ink3      = Color(red: 0.459, green: 0.514, blue: 0.494) // #75837E tertiary
     static let sage      = Color(red: 0.561, green: 0.773, blue: 0.659) // #8FC5A8 calm green
     static let sageTint  = Color(red: 0.871, green: 0.945, blue: 0.910) // pale sage wash
     static let sand      = Color(red: 0.910, green: 0.784, blue: 0.588) // #E8C896 warm pastel
@@ -50,6 +53,28 @@ enum Theme {
     static let good       = sage   // alignment ≥ 80 - "aligned"
     static let borderline = sand   // alignment 50–79 - "drifting"
     static let bad        = clay   // alignment < 50 - "resting"
+
+    // Text-grade quality colors. The pastel fills work as ring strokes and
+    // chip washes but wash out as words on the light canvas ("Slouching" in
+    // pastel coral read near 1.9:1). Any quality-colored TEXT uses these.
+    // watchOS keeps the pastels - they sit on a black background there.
+    #if os(watchOS)
+    static let goodText       = sage
+    static let borderlineText = sand
+    static let badText        = clay
+    #else
+    static let goodText       = Color(red: 0.263, green: 0.494, blue: 0.373) // deep sage
+    static let borderlineText = Color(red: 0.604, green: 0.427, blue: 0.141) // deep amber
+    static let badText        = Color(red: 0.716, green: 0.322, blue: 0.278) // deep coral
+    #endif
+
+    static func qualityTextColor(_ quality: PostureQuality) -> Color {
+        switch quality {
+        case .good: return goodText
+        case .borderline: return borderlineText
+        case .bad: return badText
+        }
+    }
 
     // MARK: - Semantic aliases (kept until call-sites migrate to Daylight tokens)
 

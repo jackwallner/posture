@@ -112,7 +112,7 @@ struct PracticeSessionView: View {
             if let error = controller.lastError {
                 Text(error)
                     .font(Theme.font(.footnote))
-                    .foregroundStyle(Theme.clay)
+                    .foregroundStyle(Theme.badText)
                     .padding(.top, 12)
             }
 
@@ -178,7 +178,7 @@ struct PracticeSessionView: View {
                     Image(systemName: "chevron.down")
                         .font(.system(size: 9, weight: .semibold))
                 }
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             }
             if customMinutes != nil {
                 Text("Custom lengths keep your streak. Level progress needs the level's own length.")
@@ -404,7 +404,7 @@ struct PracticeSessionView: View {
                     .animation(.easeOut(duration: 0.2), value: controller.remainingSeconds)
                 Text(paused ? "paused" : qualityWord(quality))
                     .font(Theme.display(19))
-                    .foregroundStyle(color)
+                    .foregroundStyle(paused ? Theme.ink3 : Theme.qualityTextColor(quality))
                 if controller.elapsedSeconds > 10 {
                     Text("\(Int((controller.alignedFractionSoFar * 100).rounded()))% aligned")
                         .font(Theme.font(.caption, weight: .semibold))
@@ -433,13 +433,16 @@ struct PracticeSessionView: View {
                 Button {
                     advanceCoach(from: step)
                 } label: {
-                    Text(coachAction(step) + " →")
+                    // The waiting state stays fully readable (the old 35%-
+                    // opacity treatment was near-invisible on the tint).
+                    Text(step == .slouch && !coachSlouchFelt
+                         ? "Waiting for the slouch…"
+                         : coachAction(step) + " →")
                         .font(Theme.font(.footnote, weight: .semibold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(step == .slouch && !coachSlouchFelt ? Theme.ink2 : Theme.goodText)
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 4)
-                .opacity(step == .slouch && !coachSlouchFelt ? 0.35 : 1)
                 .disabled(step == .slouch && !coachSlouchFelt)
             }
             .padding(18)
@@ -527,7 +530,7 @@ struct PracticeSessionView: View {
             Text("Level \(level)")
                 .font(Theme.font(.footnote, weight: .semibold))
         }
-        .foregroundStyle(Theme.sage)
+        .foregroundStyle(Theme.goodText)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .background(Theme.sageTint, in: .capsule)

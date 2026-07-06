@@ -9,7 +9,7 @@ struct TipLine: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "lightbulb")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Theme.sand)
+                .foregroundStyle(Theme.borderlineText)
                 .padding(.top, 2)
             Text(tip.text)
                 .font(Theme.font(.footnote))

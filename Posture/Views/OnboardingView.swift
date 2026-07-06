@@ -97,11 +97,11 @@ struct OnboardingView: View {
             HStack(alignment: .top, spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(selected ? Theme.sage : Theme.sageTint)
+                        .fill(selected ? Theme.goodText : Theme.sageTint)
                         .frame(width: 36, height: 36)
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(selected ? .white : Theme.sage)
+                        .foregroundStyle(selected ? .white : Theme.goodText)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -115,7 +115,7 @@ struct OnboardingView: View {
                 Spacer(minLength: 0)
                 Image(systemName: selected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 20))
-                    .foregroundStyle(selected ? Theme.sage : Theme.ink3.opacity(0.4))
+                    .foregroundStyle(selected ? Theme.goodText : Theme.ink3.opacity(0.4))
             }
             .padding(14)
             .dawnCard()
@@ -256,7 +256,7 @@ struct OnboardingView: View {
                     .frame(width: 36, height: 36)
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)

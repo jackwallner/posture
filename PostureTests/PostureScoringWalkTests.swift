@@ -72,4 +72,43 @@ final class PostureScoringWalkTests: XCTestCase {
         XCTAssertEqual(PostureScoring.Walk.windowSeconds, 7)
         XCTAssertEqual(PostureScoring.Walk.warmupSeconds, 30)
     }
+
+    // MARK: - Standing-anchored baseline
+
+    func testAnchoredBaselineKeepsHonestWalkingCapture() {
+        // A walking capture with a small natural lean stays as captured.
+        let standing = 0.10
+        let walking = standing + 0.05  // ~2.9° lean, inside the clamp
+        XCTAssertEqual(
+            PostureScoring.Walk.anchoredBaseline(walking: walking, standing: standing),
+            walking, accuracy: 0.0001
+        )
+    }
+
+    func testAnchoredBaselineClampsSlouchedCapture() {
+        // A capture taken mid-slouch (way below standing) is pulled back to
+        // the standing pose plus the max allowed lean.
+        let standing = 0.10
+        let walking = standing + 0.5  // an implausible 28° "lean"
+        XCTAssertEqual(
+            PostureScoring.Walk.anchoredBaseline(walking: walking, standing: standing),
+            standing + PostureScoring.Walk.maxLeanFromStanding, accuracy: 0.0001
+        )
+    }
+
+    func testAnchoredBaselineClampsBothDirections() {
+        let standing = 0.10
+        let walking = standing - 0.5
+        XCTAssertEqual(
+            PostureScoring.Walk.anchoredBaseline(walking: walking, standing: standing),
+            standing - PostureScoring.Walk.maxLeanFromStanding, accuracy: 0.0001
+        )
+    }
+
+    func testAnchoredBaselineFallsBackToStanding() {
+        XCTAssertEqual(
+            PostureScoring.Walk.anchoredBaseline(walking: nil, standing: 0.12),
+            0.12, accuracy: 0.0001
+        )
+    }
 }

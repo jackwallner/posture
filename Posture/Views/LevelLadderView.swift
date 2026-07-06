@@ -66,13 +66,15 @@ struct LevelLadderView: View {
             Text("Level \(effectiveLevel)")
                 .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text("Your practice grows with you.")
                 .font(Theme.display(26))
                 .foregroundStyle(Theme.ink)
             let progress = PracticeProgression.progressInLevel(passedSessions: passedCount)
             Text(isPro || trueLevel < PracticeProgression.freeLevelCap
-                 ? "\(progress.done) of \(progress.needed) passes to Level \(trueLevel + 1)."
+                 ? PracticeProgressCopy.levelUpCaption(
+                     done: progress.done, needed: progress.needed, nextLevel: trueLevel + 1
+                   ) + "."
                  : "You've reached the top of the free ladder.")
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
@@ -81,9 +83,9 @@ struct LevelLadderView: View {
 
     private var howItWorks: some View {
         VStack(alignment: .leading, spacing: 8) {
-            explainerLine(icon: "checkmark.circle", text: "Finish a session's minutes and the streak day is yours, every time.")
-            explainerLine(icon: "target", text: "Meet the session's aligned-% target and it counts as a pass.")
-            explainerLine(icon: "chevron.up.2", text: "Passes add up to levels. Each level adds a minute to the hold and nudges the bar up.")
+            explainerLine(icon: "flame", text: "Finish the minutes and your streak day is safe, whatever the score.")
+            explainerLine(icon: "checkmark.circle", text: "Score at or above the day's aligned-% target and the session is a pass.")
+            explainerLine(icon: "chevron.up.2", text: "Passes add up to levels: one more minute, a slightly higher target each time.")
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,7 +96,7 @@ struct LevelLadderView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: icon)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
                 .frame(width: 22)
             Text(text)
                 .font(Theme.font(.footnote))
@@ -126,7 +128,7 @@ struct LevelLadderView: View {
         return HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(isCurrent ? Theme.sage : (reached ? Theme.sageTint : Theme.paper3))
+                    .fill(isCurrent ? Theme.goodText : (reached ? Theme.sageTint : Theme.paper3))
                     .frame(width: 30, height: 30)
                 if locked {
                     Image(systemName: "lock.fill")
@@ -135,7 +137,7 @@ struct LevelLadderView: View {
                 } else {
                     Text("\(level)")
                         .font(Theme.font(.footnote, weight: .bold))
-                        .foregroundStyle(isCurrent ? .white : (reached ? Theme.sage : Theme.ink3))
+                        .foregroundStyle(isCurrent ? .white : (reached ? Theme.goodText : Theme.ink3))
                 }
             }
             VStack(alignment: .leading, spacing: 1) {
@@ -150,7 +152,7 @@ struct LevelLadderView: View {
             if isCurrent {
                 Text("you")
                     .font(Theme.font(.caption2, weight: .bold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(Theme.sageTint, in: .capsule)
@@ -191,7 +193,7 @@ struct LevelLadderView: View {
                 Text("POSTURE+")
                     .font(Theme.font(.caption2, weight: .semibold))
                     .tracking(0.8)
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
                 Text("The free ladder ends at level \(PracticeProgression.freeLevelCap).")
                     .font(Theme.display(20))
                     .foregroundStyle(Theme.ink)
@@ -201,7 +203,7 @@ struct LevelLadderView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 Text("See plans →")
                     .font(Theme.font(.footnote, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)

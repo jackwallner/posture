@@ -71,15 +71,21 @@ struct ProgressTabView: View {
     }
 
     private var programHeader: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        let minutes = PracticeProgression.sessionSeconds(forLevel: effectiveLevel) / 60
+        let target = PracticeProgression.targetPercent(forLevel: effectiveLevel)
+        return VStack(alignment: .leading, spacing: 4) {
             Text("Your program")
                 .font(Theme.font(.caption2, weight: .semibold))
                 .tracking(0.8)
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
             Text("Level \(effectiveLevel)")
                 .font(Theme.display(28))
                 .foregroundStyle(Theme.ink)
-            Text("Hold longer and aim higher as you prove you can hold tall.")
+            Text("Today's practice: hold tall for \(minutes) min. Score \(target)% aligned and it's a pass.")
+                .font(Theme.font(.footnote, weight: .semibold))
+                .foregroundStyle(Theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("Passes move you up the ladder. Each level adds a minute and nudges the target up.")
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -109,9 +115,9 @@ struct ProgressTabView: View {
     private var howItWorksAccordion: some View {
         DisclosureGroup(isExpanded: $showHowItWorks) {
             VStack(alignment: .leading, spacing: 8) {
-                explainerLine(icon: "flame", text: "Finish the minutes and the streak day is yours, every time.")
-                explainerLine(icon: "checkmark.circle", text: "Hit the aligned-% target and a pip fills in. Filled pips level you up.")
-                explainerLine(icon: "chevron.up.2", text: "Each level adds a minute to the hold and nudges the bar up.")
+                explainerLine(icon: "flame", text: "Finish the minutes and your streak day is safe, whatever the score.")
+                explainerLine(icon: "checkmark.circle", text: "Score at or above the day's aligned-% target and the session is a pass. A pip fills in.")
+                explainerLine(icon: "chevron.up.2", text: "Fill all the pips and you level up: one more minute, a slightly higher target.")
             }
             .padding(.top, 8)
         } label: {
@@ -145,7 +151,7 @@ struct ProgressTabView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: icon)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Theme.sage)
+                .foregroundStyle(Theme.goodText)
                 .frame(width: 22)
             Text(text)
                 .font(Theme.font(.footnote))
@@ -165,12 +171,12 @@ struct ProgressTabView: View {
         return HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(isCurrent ? Theme.sage : (reached ? Theme.sageTint : Theme.paper3))
+                    .fill(isCurrent ? Theme.goodText : (reached ? Theme.sageTint : Theme.paper3))
                     .frame(width: 26, height: 26)
                 if reached {
                     Image(systemName: "checkmark")
                         .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(Theme.goodText)
                 } else {
                     Text("\(level)")
                         .font(Theme.font(.caption2, weight: .bold))
@@ -190,7 +196,7 @@ struct ProgressTabView: View {
             if isCurrent {
                 Text("now")
                     .font(Theme.font(.caption2, weight: .bold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             } else if lockedForFree {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 11, weight: .semibold))
@@ -208,7 +214,7 @@ struct ProgressTabView: View {
                 Text("POSTURE+")
                     .font(Theme.font(.caption2, weight: .semibold))
                     .tracking(0.8)
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
                 Text("See the whole climb.")
                     .font(Theme.display(22))
                     .foregroundStyle(Theme.ink)
@@ -218,7 +224,7 @@ struct ProgressTabView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 Text("See plans →")
                     .font(Theme.font(.footnote, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)

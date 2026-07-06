@@ -308,7 +308,7 @@ struct HistoryView: View {
         HStack(spacing: 12) {
             Image(systemName: session.kind == .walk ? "figure.walk" : "figure.stand")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(session.completed ? Theme.sage : Theme.ink3)
+                .foregroundStyle(session.completed ? Theme.goodText : Theme.ink3)
                 .frame(width: 30, height: 30)
                 .background(session.completed ? Theme.sageTint : Theme.paper3, in: Circle())
             VStack(alignment: .leading, spacing: 1) {
@@ -322,7 +322,7 @@ struct HistoryView: View {
             Spacer()
             Text("\(session.alignedPercent)%")
                 .font(Theme.font(.subheadline, weight: .semibold).monospacedDigit())
-                .foregroundStyle(session.passed ? Theme.sage : Theme.ink2)
+                .foregroundStyle(session.passed ? Theme.goodText : Theme.ink2)
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(Theme.ink3)

@@ -45,7 +45,7 @@ struct ProgressPathView: View {
         VStack(spacing: 6) {
             ZStack {
                 Circle()
-                    .fill(isCurrent ? Theme.sage : (isPast ? Theme.sageTint : Theme.paper3))
+                    .fill(isCurrent ? Theme.goodText : (isPast ? Theme.sageTint : Theme.paper3))
                     .frame(width: isCurrent ? 36 : 30, height: isCurrent ? 36 : 30)
                 if locked {
                     Image(systemName: "lock.fill")
@@ -54,7 +54,7 @@ struct ProgressPathView: View {
                 } else if isPast {
                     Image(systemName: "checkmark")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(Theme.goodText)
                 } else {
                     Text("\(level)")
                         .font(Theme.font(.caption2, weight: .bold))
@@ -63,7 +63,7 @@ struct ProgressPathView: View {
             }
             Text("L\(level)")
                 .font(Theme.font(.caption2, weight: isCurrent ? .bold : .medium))
-                .foregroundStyle(isCurrent ? Theme.sage : Theme.ink3)
+                .foregroundStyle(isCurrent ? Theme.goodText : Theme.ink3)
         }
         .frame(minWidth: 44)
         .onTapGesture { if locked { onLockedTap?() } }
@@ -97,7 +97,7 @@ struct ProgramStageCompareView: View {
             Text(label)
                 .font(Theme.font(.caption2, weight: .semibold))
                 .tracking(0.8)
-                .foregroundStyle(emphasized ? Theme.sage : Theme.ink3)
+                .foregroundStyle(emphasized ? Theme.goodText : Theme.ink3)
             Text("Level \(level)")
                 .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink3)

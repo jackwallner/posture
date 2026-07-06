@@ -203,7 +203,7 @@ struct TodayView: View {
                         HStack(spacing: 5) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(Theme.sand)
+                                .foregroundStyle(Theme.borderlineText)
                             Text("\(currentStreak)-day streak")
                                 .font(Theme.font(.footnote, weight: .semibold))
                                 .foregroundStyle(Theme.ink)
@@ -320,7 +320,7 @@ struct TodayView: View {
                 Text("Today's practice")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
                 Spacer()
                 levelBadge
             }
@@ -350,14 +350,14 @@ struct TodayView: View {
                 Text("Practice complete")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
                 Spacer()
                 levelBadge
             }
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("\(session.alignedPercent)%")
                     .font(Theme.font(size: 40, weight: .regular))
-                    .foregroundStyle(session.passed ? Theme.sage : Theme.sand)
+                    .foregroundStyle(session.passed ? Theme.goodText : Theme.borderlineText)
                 Text(session.passed ? "aligned, target met." : "aligned today.")
                     .font(Theme.display(19))
                     .foregroundStyle(Theme.ink)
@@ -372,7 +372,7 @@ struct TodayView: View {
             Button { showingSession = true } label: {
                 Text("Practice again →")
                     .font(Theme.font(.footnote, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .buttonStyle(.plain)
             .padding(.top, 2)
@@ -399,7 +399,7 @@ struct TodayView: View {
                         .frame(width: 40, height: 40)
                     Image(systemName: "figure.walk")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(Theme.goodText)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Take it for a walk")
@@ -432,7 +432,7 @@ struct TodayView: View {
                 Text("Level \(practiceLevel)")
                     .font(Theme.font(.caption, weight: .semibold))
             }
-            .foregroundStyle(Theme.sage)
+            .foregroundStyle(Theme.goodText)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(Theme.sageTint, in: .capsule)
@@ -465,7 +465,7 @@ struct TodayView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Theme.sand)
+                                .foregroundStyle(Theme.borderlineText)
                             Text("\(currentStreak)")
                                 .font(Theme.font(.caption, weight: .bold))
                                 .foregroundStyle(Theme.ink)
@@ -634,7 +634,7 @@ struct TodayView: View {
             } label: {
                 Text("Start reading again →")
                     .font(Theme.font(.footnote, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .buttonStyle(.plain)
         }
@@ -878,7 +878,7 @@ struct TodayView: View {
                 Button(action: action) {
                     Text(actionLabel + " →")
                         .font(Theme.font(.footnote, weight: .semibold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(Theme.goodText)
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 4)
@@ -939,7 +939,7 @@ struct TodayView: View {
                 } label: {
                     Text("Turn on →")
                         .font(Theme.font(.caption, weight: .semibold))
-                        .foregroundStyle(Theme.sage)
+                        .foregroundStyle(Theme.goodText)
                 }
                 .buttonStyle(.plain)
             }

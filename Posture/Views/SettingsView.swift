@@ -24,6 +24,8 @@ struct SettingsView: View {
     @State private var trialOfferPackage: Package?
     #endif
     @State private var showingQuickRecalibrate = false
+    @State private var showingWalkBaselineReset = false
+    @State private var hasWalkBaseline = false
     @State private var notificationsDenied = false
     @State private var showingWatchSyncInfo = false
     @State private var showingAirpodsBackgroundConfirm = false
@@ -167,7 +169,17 @@ struct SettingsView: View {
                     Button("Recalibrate") {
                         showingQuickRecalibrate = true
                     }
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
+
+                    if hasWalkBaseline {
+                        Button("Reset walking posture") {
+                            showingWalkBaselineReset = true
+                        }
+                        .foregroundStyle(Theme.ink)
+                        Text("Forgets your saved walking posture. Your next walk runs the 30-second walking setup again.")
+                            .font(Theme.font(.caption))
+                            .foregroundStyle(Theme.ink2)
+                    }
                 }
 
                 // MARK: - Help
@@ -214,7 +226,10 @@ struct SettingsView: View {
             .dawnBackground()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .task { await refreshNotificationStatus() }
+            .task {
+                await refreshNotificationStatus()
+                refreshWalkBaseline()
+            }
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
                 if isPro { applyPendingFeatureEnable() }
             }
@@ -273,10 +288,23 @@ struct SettingsView: View {
             } message: {
                 Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded. Always-on tracking uses extra battery.")
             }
-            .sheet(isPresented: $showingQuickRecalibrate) {
+            .sheet(isPresented: $showingQuickRecalibrate, onDismiss: { refreshWalkBaseline() }) {
                 CalibrationView(mode: .quickRecalibrate)
             }
+            .alert("Reset walking posture?", isPresented: $showingWalkBaselineReset) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    CalibrationService(context: context).clearWalkingBaseline()
+                    refreshWalkBaseline()
+                }
+            } message: {
+                Text("Your next walk starts with the 30-second walking setup, so walks are scored against a fresh baseline.")
+            }
         }
+    }
+
+    private func refreshWalkBaseline() {
+        hasWalkBaseline = CalibrationService(context: context).current()?.airpodsWalkingPitch != nil
     }
 
     @ViewBuilder

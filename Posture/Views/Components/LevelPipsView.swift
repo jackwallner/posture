@@ -51,18 +51,18 @@ struct LevelPipsView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(min(filled, total)) of \(total) target-met sessions toward the next level")
+        .accessibilityLabel("\(min(filled, total)) of \(total) passed sessions toward the next level")
     }
 }
 
 struct LevelPipsLegend: View {
     var body: some View {
         HStack(spacing: 14) {
-            legendItem(filled: false, label: "finish")
-            legendItem(filled: true, label: "target met")
+            legendItem(filled: true, label: "session passed")
+            legendItem(filled: false, label: "still to go")
         }
         .font(Theme.font(.caption2))
-        .foregroundStyle(Theme.ink3)
+        .foregroundStyle(Theme.ink2)
     }
 
     private func legendItem(filled: Bool, label: String) -> some View {
@@ -80,11 +80,14 @@ struct LevelPipsLegend: View {
     }
 }
 
+/// One vocabulary everywhere: you *finish* a session (streak) and you *pass*
+/// it by hitting the day's aligned-% target (level progress). Every surface
+/// that talks about the ladder goes through here so the words never drift.
 enum PracticeProgressCopy {
     static func levelUpCaption(done: Int, needed: Int, nextLevel: Int) -> String {
         let remaining = max(0, needed - done)
         if remaining == 0 { return "Level \(nextLevel) unlocked" }
-        if remaining == 1 { return "1 target-met session to Level \(nextLevel)" }
-        return "\(remaining) target-met sessions to Level \(nextLevel)"
+        if remaining == 1 { return "Pass 1 more session to reach Level \(nextLevel)" }
+        return "Pass \(remaining) more sessions to reach Level \(nextLevel)"
     }
 }

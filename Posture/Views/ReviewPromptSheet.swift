@@ -99,7 +99,7 @@ struct ReviewPromptSheet: View {
                     .frame(width: 64, height: 64)
                 Image(systemName: "leaf.fill")
                     .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(Theme.sage)
+                    .foregroundStyle(Theme.goodText)
             }
             .padding(.top, 8)
 

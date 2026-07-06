@@ -143,6 +143,22 @@ enum PostureScoring {
         static let nudgeDebounceSeconds: Double = 45
         /// A verdict needs at least this much of the window observed.
         static var minSpanSeconds: Double { windowSeconds / 2 }
+        /// How far the walking baseline may drift from the standing
+        /// calibration (~7.5°). Walking adds a natural forward lean, but a
+        /// walking baseline captured mid-slouch would otherwise make every
+        /// slouched walk score as tall forever.
+        static let maxLeanFromStanding: Double = .pi / 24
+
+        /// The baseline walks are judged against: the captured walking
+        /// posture, clamped to within `maxLeanFromStanding` of the standing
+        /// calibration. Applied at scoring time (like the slouch cap) so a
+        /// bad capture - or a legacy one saved before the clamp existed -
+        /// tightens automatically. No walking capture ⇒ standing.
+        static func anchoredBaseline(walking: Double?, standing: Double) -> Double {
+            guard let walking else { return standing }
+            let lean = min(max(walking - standing, -maxLeanFromStanding), maxLeanFromStanding)
+            return standing + lean
+        }
     }
 
     /// Median deviation of the time-stamped samples inside the walk window.
