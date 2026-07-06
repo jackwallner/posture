@@ -24,6 +24,18 @@ final class PostureSession {
     /// The session met its aligned-% target (level credit).
     var passed: Bool = false
 
+    // Walk metrics (2026-07 walk rework). Defaulted so the migration stays
+    // lightweight; zero on practice rows and pre-rework walks.
+    /// Best available walked distance in meters (GPS when active, else the
+    /// pedometer estimate). 0 when unknown.
+    var distanceMeters: Double = 0
+    /// Steps counted during the walk (pedometer). 0 when unknown.
+    var steps: Int = 0
+    /// The walk's goal was a distance, not a duration.
+    var goalIsDistance: Bool = false
+    /// Target distance in meters when `goalIsDistance` (0 otherwise).
+    var targetDistanceMeters: Double = 0
+
     var source: PostureSource {
         get { PostureSource(rawValue: sourceRaw) ?? .camera }
         set { sourceRaw = newValue.rawValue }
@@ -50,7 +62,11 @@ final class PostureSession {
         targetPercent: Int = 0,
         alignedPercent: Int = 0,
         completed: Bool = false,
-        passed: Bool = false
+        passed: Bool = false,
+        distanceMeters: Double = 0,
+        steps: Int = 0,
+        goalIsDistance: Bool = false,
+        targetDistanceMeters: Double = 0
     ) {
         self.id = id
         self.startedAt = startedAt
@@ -66,6 +82,10 @@ final class PostureSession {
         self.alignedPercent = alignedPercent
         self.completed = completed
         self.passed = passed
+        self.distanceMeters = distanceMeters
+        self.steps = steps
+        self.goalIsDistance = goalIsDistance
+        self.targetDistanceMeters = targetDistanceMeters
     }
 }
 

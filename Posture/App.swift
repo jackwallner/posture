@@ -265,7 +265,15 @@ final class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate, @u
 struct RootView: View {
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
+    @State private var subscriptions = SubscriptionService.shared
     @State private var didMigrate = false
+
+    /// One "7 days on us" trial pitch after calibration for non-subscribers.
+    /// Still soft - the trial screen has a "Maybe later" that drops straight
+    /// into the free app.
+    private var shouldPitchTrial: Bool {
+        !settings.hasSeenOnboardingTrial && !subscriptions.isProSubscriber
+    }
 
     var body: some View {
         Group {
@@ -273,6 +281,8 @@ struct RootView: View {
                 OnboardingView()
             } else if !settings.hasCalibrated {
                 CalibrationView()
+            } else if shouldPitchTrial {
+                OnboardingTrialView()
             } else {
                 // No hard gate since the practice pivot: the core daily loop
                 // is free, the paywall appears after the first completed

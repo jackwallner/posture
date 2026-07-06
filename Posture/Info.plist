@@ -25,7 +25,9 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSMotionUsageDescription</key>
-	<string>Posture reads head-motion data from supported AirPods to detect when you slouch.</string>
+	<string>Posture reads head-motion data from supported AirPods to detect when you slouch, and step and distance data during walks.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Posture uses your location during a walk to measure distance and pace accurately. Turning it off falls back to a step-based estimate.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIAppFonts</key>
@@ -38,6 +40,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
+		<string>location</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

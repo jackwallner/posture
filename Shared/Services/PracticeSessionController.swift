@@ -47,6 +47,13 @@ final class PracticeSessionController {
         /// False for custom-length sessions that shouldn't advance the level
         /// ladder - they still credit the streak.
         var countsForLevel: Bool = true
+        /// Walk goal is a distance rather than a duration. `targetSeconds`
+        /// still acts as a safety cap so a stalled GPS can't run forever.
+        var goalIsDistance: Bool = false
+        /// Target distance in meters when `goalIsDistance` (walks only).
+        var targetDistanceMeters: Double = 0
+        /// Layer GPS on top of the pedometer for accurate walk distance.
+        var useGPS: Bool = false
     }
 
     struct Result: Sendable {
@@ -66,6 +73,10 @@ final class PracticeSessionController {
         let streakDays: Int
         /// Titles of badges this session newly earned, for the summary line.
         let newAchievementTitles: [String]
+        /// Walk metrics (0 on practice sessions).
+        var distanceMeters: Double = 0
+        var steps: Int = 0
+        var goalIsDistance: Bool = false
     }
 
     // MARK: - Observable state
@@ -127,6 +138,43 @@ final class PracticeSessionController {
     // most once a second off the window median (gait bob cancels out).
     private var walkSamples: [(t: TimeInterval, pitch: Double)] = []
     private var lastWalkVerdictAt: TimeInterval = 0
+
+    /// Walking's honest neutral (natural forward lean, head bob) differs from
+    /// standing calibration, so the first 30s of the walk auto-captures the
+    /// user's own walking head-pose as the baseline for the rest.
+    private var walkWarmupPitches: [Double] = []
+    private var autoWalkBaseline: Double?
+
+    /// Live walk metrics (steps, distance, cadence) + the "actually walking"
+    /// gate. Created lazily for walk sessions.
+    private var walkMetrics: WalkMetricsService?
+
+    /// Published for the walk UI: are we currently registering steps? When
+    /// false the walk clock is held so sitting still can't fake a good walk.
+    private(set) var isWalkingNow = true
+
+    // Live walk readouts for the UI (0 outside a walk).
+    var walkSteps: Int { walkMetrics?.steps ?? 0 }
+    var walkDistanceMeters: Double { walkMetrics?.distanceMeters ?? 0 }
+    var walkUsingGPS: Bool { walkMetrics?.usingGPS ?? false }
+    var walkLocationDenied: Bool { walkMetrics?.locationDenied ?? false }
+
+    /// Distance still to walk toward a distance goal (meters), else 0.
+    var walkDistanceRemaining: Double {
+        guard let config, config.goalIsDistance else { return 0 }
+        return max(0, config.targetDistanceMeters - walkDistanceMeters)
+    }
+
+    /// Progress toward the walk's goal (0…1): distance for distance goals,
+    /// elapsed time otherwise.
+    var walkProgressFraction: Double {
+        guard let config else { return 0 }
+        if config.goalIsDistance, config.targetDistanceMeters > 0 {
+            return min(1, walkDistanceMeters / config.targetDistanceMeters)
+        }
+        guard config.targetSeconds > 0 else { return 0 }
+        return min(1, elapsedSeconds / Double(config.targetSeconds))
+    }
 
     /// Sessions under this long aren't worth a row - an instant cancel is
     /// noise, not an attempt.
@@ -235,6 +283,9 @@ final class PracticeSessionController {
         minuteBucket = MinuteBucket()
         walkSamples = []
         lastWalkVerdictAt = 0
+        walkWarmupPitches = []
+        autoWalkBaseline = nil
+        isWalkingNow = true
         currentQuality = .good
         repsCompleted = 0
         repDetector = ChinTuckRepDetector()
@@ -242,6 +293,9 @@ final class PracticeSessionController {
             segmentLength = 60
             slouchNudgeSeconds = PostureScoring.Walk.nudgeSustainSeconds
             hapticDebounceSeconds = PostureScoring.Walk.nudgeDebounceSeconds
+            let metrics = WalkMetricsService()
+            metrics.start(useGPS: config.useGPS)
+            walkMetrics = metrics
         } else {
             segmentLength = 10
             slouchNudgeSeconds = 15
@@ -328,6 +382,25 @@ final class PracticeSessionController {
         guard let config, let calibration = calibrationService.current(),
               let baseline = calibration.airpodsPitch else { return }
 
+        // Walking gate + auto-baseline, before scoring: the walk clock holds
+        // while stationary, and the warmup window feeds the walking baseline.
+        if config.kind == .walk {
+            walkMetrics?.tick(now: now)
+            let walking = walkMetrics?.isWalking ?? true
+            if isWalkingNow != walking { isWalkingNow = walking }
+            if !walking {
+                // Not registering steps - don't score or credit. Sitting still
+                // in good posture can no longer bank a "good walk".
+                updateLiveActivity(paused: false, force: false)
+                return
+            }
+            if elapsedSeconds <= PostureScoring.Walk.warmupSeconds {
+                walkWarmupPitches.append(pitch)
+            } else if autoWalkBaseline == nil {
+                autoWalkBaseline = PostureScoring.median(walkWarmupPitches)
+            }
+        }
+
         let quality: PostureQuality
         if config.kind == .walk {
             quality = walkQuality(pitch: pitch, at: now, calibration: calibration, combined: baseline)
@@ -375,7 +448,14 @@ final class PracticeSessionController {
         startLiveActivityIfNeeded()
         updateLiveActivity(paused: false, force: false)
 
-        if Int(elapsedSeconds) >= config.targetSeconds {
+        if config.goalIsDistance {
+            // Distance goal ends on distance; targetSeconds is a safety cap so
+            // a stalled sensor can't run the session forever.
+            if walkDistanceMeters >= config.targetDistanceMeters
+                || (config.targetSeconds > 0 && Int(elapsedSeconds) >= config.targetSeconds) {
+                finish(completed: true)
+            }
+        } else if Int(elapsedSeconds) >= config.targetSeconds {
             finish(completed: true)
         }
     }
@@ -433,9 +513,9 @@ final class PracticeSessionController {
             walkSamples.removeFirst(firstKeep)
         }
         guard t - lastWalkVerdictAt >= 1 else { return currentQuality }
-        // Walking is standing - judge against the standing baseline when we
-        // have one instead of the sitting-blurred combined number.
-        let walkBaseline = calibration.airpodsStandingPitch ?? combined
+        // Prefer the walk's own auto-captured baseline (this walk's warmup
+        // median); fall back to standing calibration, then the combined number.
+        let walkBaseline = autoWalkBaseline ?? calibration.airpodsStandingPitch ?? combined
         guard let deviation = PostureScoring.walkWindowDeviation(
             samples: walkSamples, baseline: walkBaseline, now: t
         ) else { return currentQuality }
@@ -486,6 +566,9 @@ final class PracticeSessionController {
 
     private func finish(completed: Bool) {
         guard let config else { return }
+        // Snapshot walk metrics before teardown stops the service.
+        let walkDistance = config.kind == .walk ? walkDistanceMeters : 0
+        let walkStepCount = config.kind == .walk ? walkSteps : 0
         teardown()
 
         if segmentSeconds >= 2 {
@@ -524,7 +607,11 @@ final class PracticeSessionController {
             targetPercent: config.targetPercent,
             alignedPercent: alignedPercent,
             completed: completed,
-            passed: passed
+            passed: passed,
+            distanceMeters: walkDistance,
+            steps: walkStepCount,
+            goalIsDistance: config.goalIsDistance,
+            targetDistanceMeters: config.targetDistanceMeters
         )
         row.startedAt = Date.now.addingTimeInterval(-elapsedSeconds)
         context.insert(row)
@@ -560,7 +647,10 @@ final class PracticeSessionController {
             newLevel: newLevel,
             leveledUp: newLevel > levelBefore,
             streakDays: streakDays,
-            newAchievementTitles: newAchievements
+            newAchievementTitles: newAchievements,
+            distanceMeters: walkDistance,
+            steps: walkStepCount,
+            goalIsDistance: config.goalIsDistance
         )
         phase = .finished
         AnalyticsService.sessionCompleted(
@@ -575,6 +665,7 @@ final class PracticeSessionController {
     /// Stop motion, hand the stream back, drop the keep-alive, flush minutes.
     private func teardown() {
         motion.stop()
+        walkMetrics?.stop()
         persistFlush(minuteBucket.flush())
         AudioKeepAlive.shared.release(Self.keepAliveToken)
         AirpodsBackgroundMonitor.shared.resumeAfterForegroundRead()

@@ -2,6 +2,16 @@ import XCTest
 @testable import Posture
 
 final class PostureScoringTests: XCTestCase {
+    func testMedian() {
+        XCTAssertNil(PostureScoring.median([]))
+        XCTAssertEqual(PostureScoring.median([0.4]), 0.4)
+        // Odd count → middle value; robust to an outlier.
+        XCTAssertEqual(PostureScoring.median([0.1, 0.2, 0.9]), 0.2)
+        XCTAssertEqual(PostureScoring.median([0.9, 0.1, 0.2]), 0.2)  // unsorted input
+        // Even count → mean of the two middles.
+        XCTAssertEqual(PostureScoring.median([0.1, 0.2, 0.3, 0.4])!, 0.25, accuracy: 1e-9)
+    }
+
     func testQualityClassification() {
         // Normal sensitivity thresholds: good < 0.50, borderline < 0.90 of the
         // effective slouch reference. The reference is capped at π/16 (~11°)

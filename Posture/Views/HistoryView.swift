@@ -653,9 +653,35 @@ struct HistoryView: View {
 struct SessionDetailView: View {
     let session: PostureSession
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
+    /// Per-minute aligned fraction across the session's window, oldest first -
+    /// the minute-by-minute story of where you held tall vs slouched.
+    @State private var minuteFractions: [Double] = []
 
     private var totalSeconds: Int {
         max(session.goodSeconds + session.borderlineSeconds + session.badSeconds, 1)
+    }
+
+    private var isWalk: Bool { session.kind == .walk }
+
+    private var metric: Bool { Locale.current.measurementSystem == .metric }
+    private var distanceValue: String {
+        let d = metric ? session.distanceMeters / 1000 : session.distanceMeters / 1609.34
+        return String(format: d < 10 ? "%.2f" : "%.1f", d)
+    }
+
+    /// Load the minute rows overlapping this session's clock. Sessions write
+    /// one `PostureMinuteSample` per minute (source .airpods), so the walk's
+    /// (or practice's) minute-by-minute alignment is already on disk.
+    private func loadMinutes() {
+        let start = session.startedAt.addingTimeInterval(-30)
+        let end = session.startedAt.addingTimeInterval(Double(session.durationSeconds) + 90)
+        let descriptor = FetchDescriptor<PostureMinuteSample>(
+            predicate: #Predicate { $0.minuteStart >= start && $0.minuteStart <= end },
+            sortBy: [SortDescriptor(\.minuteStart)]
+        )
+        let rows = (try? context.fetch(descriptor)) ?? []
+        minuteFractions = rows.filter { $0.monitoredSeconds > 0 }.map(\.alignmentFraction)
     }
 
     var body: some View {
@@ -689,6 +715,17 @@ struct SessionDetailView: View {
                 if session.kind == .practice, session.targetPercent > 0 {
                     statCard(value: "\(session.targetPercent)%", label: "target", color: Theme.ink)
                 }
+            }
+
+            if isWalk, session.steps > 0 || session.distanceMeters > 0 {
+                HStack(spacing: 12) {
+                    statCard(value: distanceValue, label: metric ? "km walked" : "mi walked", color: Theme.ink)
+                    statCard(value: "\(session.steps)", label: "steps", color: Theme.ink)
+                }
+            }
+
+            if minuteFractions.count >= 2 {
+                minuteStrip
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -725,6 +762,45 @@ struct SessionDetailView: View {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
+        .task { loadMinutes() }
+    }
+
+    /// Minute-by-minute alignment: one bar per minute of the session, so you
+    /// can see which stretches held tall and where you slouched.
+    private var minuteStrip: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(isWalk ? "The walk, minute by minute" : "Minute by minute")
+                .font(Theme.font(.caption, weight: .semibold))
+                .tracking(0.6)
+                .foregroundStyle(Theme.ink3)
+            HStack(alignment: .bottom, spacing: 3) {
+                ForEach(Array(minuteFractions.enumerated()), id: \.offset) { _, fraction in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(minuteBarColor(fraction))
+                        .frame(height: 10 + 26 * fraction)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .frame(height: 40, alignment: .bottom)
+            HStack {
+                Text("start")
+                Spacer()
+                Text("end")
+            }
+            .font(Theme.font(.caption2))
+            .foregroundStyle(Theme.ink3)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .dawnCard(cornerRadius: 14)
+    }
+
+    private func minuteBarColor(_ fraction: Double) -> Color {
+        switch fraction {
+        case 0.75...: return Theme.sage
+        case 0.45..<0.75: return Theme.sand
+        default: return Theme.clay
+        }
     }
 
     private var headline: String {

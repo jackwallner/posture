@@ -41,7 +41,9 @@ self-report check-in loop (`AcknowledgmentRecord`). There is NO camera/Vision
 pipeline in the app.
 
 - `Shared/Models/` — `PostureSession` (practice/walk/legacy via `kindRaw`;
-  practice rows carry target/aligned %, `completed`, `passed`),
+  practice rows carry target/aligned %, `completed`, `passed`; walk rows also
+  carry `distanceMeters`, `steps`, `goalIsDistance`, `targetDistanceMeters` —
+  all defaulted, additive migration),
   `AcknowledgmentRecord` (check-ins), `PosturePassiveSample` (slouch events),
   `PostureMinuteSample` (per-minute good/borderline/bad aggregates from monitor
   AND sessions — powers % of day aligned, wear time, hour rhythm),
@@ -73,6 +75,12 @@ pipeline in the app.
   - `AudioKeepAlive` — refcounted silent-audio engine (`acquire`/`release`)
     keeping CoreMotion alive in background; held by the monitor (indefinite,
     Pro toggle) and by sessions (bounded).
+  - `WalkMetricsService` — iOS-only live walk metrics: `CMPedometer`
+    (steps, distance estimate, cadence) + optional `CoreLocation` GPS for
+    accurate distance. `isWalking` (step-delta gate) is what the controller
+    uses to hold the walk clock when you stop moving, so sitting still can't
+    fake a good walk; degrades to always-walking when the pedometer is absent
+    (Simulator). Owned by `PracticeSessionController` for walk sessions.
   - `PostureScoring` — pure scoring (testable). `postureReference` picks the
     *nearer* of the standing/sitting baselines AND that posture's own
     calibrated slouch delta (`Calibration.standingSlouchDelta` /
@@ -115,9 +123,17 @@ pipeline in the app.
     custom-length menu → chin-tuck warm-up reps → live ring → paused →
     summary); first hold shows in-session coach marks, replayable from
     Settings via `.postureReplaySessionCoachMarks`
-  - `Views/WalkSessionView.swift` — walk mode (Pro): 10/20/30-min chips +
-    custom wheel (5–120), rolling-median walk scoring (`PostureScoring.Walk`),
-    30s warmup excluded from the score; credits the streak, never the level
+  - `Views/WalkSessionView.swift` — walk mode (Pro): a **Time or Distance**
+    goal (minute chips / distance chips + custom wheels), an optional GPS
+    toggle, and a live steps + distance readout. Rolling-median walk scoring
+    (`PostureScoring.Walk`); the 30s warmup both stays out of the score AND
+    auto-captures the walking baseline (`autoWalkBaseline`). The clock holds
+    while `WalkMetricsService.isWalking` is false ("keep walking"). Credits the
+    streak, never the level.
+  - `Views/OnboardingTrialView.swift` — the "7 days on us" trial pitch shown
+    once after calibration to non-subscribers (`hasSeenOnboardingTrial` gate in
+    `RootView`); dismissible ("Maybe later"), opens `PaywallView` as a sheet
+    for the actual purchase (`posture_onboarding_trial`).
   - `Views/SessionSummaryView.swift` — kind-aware receipt (pass/fail + level
     for practice, % tall for walks), segment timeline, new-badge lines
   - `Views/HistoryView.swift` — practice-first: minutes/day chart, tappable
@@ -184,9 +200,12 @@ Enjoyment funnel after a **good scan** or **streak milestone** (7/14/30/60/100 d
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
 - HealthKit lives on the watch target only — the iOS target intentionally has no
   HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
-- The iOS app declares `UIBackgroundModes = ["audio"]` for AirPods background
-  motion sampling (Pro feature). Settings shows a disclosure when the toggle is
-  on (audit P0-3).
+- The iOS app declares `UIBackgroundModes = ["audio", "location"]` — `audio`
+  for AirPods background motion sampling (Pro), `location` so an opt-in GPS walk
+  keeps tracking when the phone is pocketed/locked. Usage strings:
+  `NSMotionUsageDescription` (head motion + walk steps/distance) and
+  `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure
+  when the AirPods-background toggle is on (audit P0-3).
 - Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)`
   so reminders survive app kill (audit P1-2). Slot cap is 60 (P1-4).
 

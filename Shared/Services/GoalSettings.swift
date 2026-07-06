@@ -24,6 +24,7 @@ final class GoalSettings {
         static let hasCalibrated = "hasCalibrated"
         static let calibrationDeferred = "calibrationDeferred"
         static let hasSeenIntroPaywall = "hasSeenIntroPaywall"
+        static let hasSeenOnboardingTrial = "hasSeenOnboardingTrial"
         static let hasSeenTrainingTour = "hasSeenTrainingTour"
         static let hasSeenSessionCoachMarks = "hasSeenSessionCoachMarks"
         static let hasSeenPivotExplainer = "hasSeenPivotExplainer"
@@ -84,6 +85,15 @@ final class GoalSettings {
     var hasSeenIntroPaywall: Bool {
         get { access(keyPath: \.hasSeenIntroPaywall); return defaults.bool(forKey: Key.hasSeenIntroPaywall) }
         set { withMutation(keyPath: \.hasSeenIntroPaywall) { defaults.set(newValue, forKey: Key.hasSeenIntroPaywall) } }
+    }
+
+    /// One-shot: the "7 days on us" trial screen shown once at the end of
+    /// onboarding (after calibration) to non-subscribers. Dismissible - the
+    /// core loop stays free - but it's the highest-intent moment to pitch the
+    /// trial. Set when the user starts the trial or taps "Maybe later".
+    var hasSeenOnboardingTrial: Bool {
+        get { access(keyPath: \.hasSeenOnboardingTrial); return defaults.bool(forKey: Key.hasSeenOnboardingTrial) }
+        set { withMutation(keyPath: \.hasSeenOnboardingTrial) { defaults.set(newValue, forKey: Key.hasSeenOnboardingTrial) } }
     }
 
     /// One-shot: the guided training tour runs on the first Today visit after

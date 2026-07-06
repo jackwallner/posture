@@ -33,6 +33,10 @@ struct SessionSummaryView: View {
 
                 scoreRow
 
+                if isWalk, result.steps > 0 || result.distanceMeters > 0 {
+                    walkStatsRow
+                }
+
                 if !result.timeline.isEmpty {
                     timelineStrip
                 }
@@ -79,6 +83,42 @@ struct SessionSummaryView: View {
             .padding(16)
             .dawnCard()
         }
+    }
+
+    /// Distance walked + steps, the workout half of a walk's receipt.
+    private var walkStatsRow: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(distanceValue)
+                    .font(Theme.font(size: 34, weight: .regular))
+                    .foregroundStyle(Theme.ink)
+                Text(distanceUnit)
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .dawnCard()
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(result.steps)")
+                    .font(Theme.font(size: 34, weight: .regular))
+                    .foregroundStyle(Theme.ink)
+                Text("steps")
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .dawnCard()
+        }
+    }
+
+    private var metric: Bool { Locale.current.measurementSystem == .metric }
+    private var distanceUnit: String { metric ? "kilometers" : "miles" }
+    private var distanceValue: String {
+        let d = metric ? result.distanceMeters / 1000 : result.distanceMeters / 1609.34
+        return String(format: d < 10 ? "%.2f" : "%.1f", d)
     }
 
     /// One bar per segment (10s of practice, minute of walk), colored by how

@@ -1,23 +1,34 @@
 import SwiftData
 import SwiftUI
 
-/// A walking posture session (Pro): pick a duration, pocket the phone, and
-/// AirPods track how tall you walk. Scoring uses a rolling window median so
-/// gait bob doesn't read as slouching, and the first 30 seconds don't count
-/// while you find your stride.
+/// A walking posture session (Pro): pick a time or a distance, pocket the
+/// phone, and AirPods track how tall you walk while the pedometer (and
+/// optional GPS) track how far. Scoring auto-baselines to your own walking
+/// posture in the first 30 seconds, and the clock only runs while you're
+/// actually walking - standing still can't fake a good walk.
 struct WalkSessionView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     @State private var controller: PracticeSessionController?
+    @State private var goalIsDistance = false
     @State private var targetMinutes = 20
+    @State private var targetMeters: Double = 2000
+    @State private var useGPS = false
     @State private var showingEndConfirm = false
-    @State private var showingCustomPicker = false
+    @State private var showingCustomTime = false
+    @State private var showingCustomDistance = false
     @State private var customMinutes = 45
 
-    private let durationOptions = [10, 20, 30]
-    private var isCustomSelected: Bool { !durationOptions.contains(targetMinutes) }
+    private let minuteOptions = [10, 20, 30]
+
+    private var metric: Bool { Locale.current.measurementSystem == .metric }
+    private var distanceUnit: String { metric ? "km" : "mi" }
+    /// Preset distances in the local unit, mapped to meters.
+    private var distancePresets: [Double] {
+        (metric ? [1.0, 2.0, 5.0] : [1.0, 2.0, 3.0]).map(displayToMeters)
+    }
 
     var body: some View {
         Group {
@@ -65,97 +76,186 @@ struct WalkSessionView: View {
     // MARK: - Pre-start
 
     private func preStartView(_ controller: PracticeSessionController) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                walkChip
-                Spacer()
-                closeButton
-            }
-            .padding(.top, 16)
-
-            Spacer()
-
-            Text("Walk tall.")
-                .font(Theme.display(40))
-                .foregroundStyle(Theme.ink)
-
-            Text("AirPods in, phone in your pocket. Posture reads how tall you carry your head while you walk. The first half minute doesn't count while you find your stride.")
-                .font(Theme.font(.body))
-                .foregroundStyle(Theme.ink2)
-                .lineSpacing(3)
-                .padding(.top, 14)
-
-            HStack(spacing: 10) {
-                ForEach(durationOptions, id: \.self) { minutes in
-                    Button {
-                        targetMinutes = minutes
-                    } label: {
-                        Text("\(minutes) min")
-                            .font(Theme.font(.subheadline, weight: .semibold))
-                            .foregroundStyle(targetMinutes == minutes ? Theme.sage : Theme.ink2)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(
-                                targetMinutes == minutes ? Theme.sageTint : Theme.paper2,
-                                in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("\(minutes) minute walk")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    walkChip
+                    Spacer()
+                    closeButton
                 }
-                Button {
-                    customMinutes = isCustomSelected ? targetMinutes : customMinutes
-                    showingCustomPicker = true
-                } label: {
-                    Text(isCustomSelected ? "\(targetMinutes) min" : "Custom")
-                        .font(Theme.font(.subheadline, weight: .semibold))
-                        .foregroundStyle(isCustomSelected ? Theme.sage : Theme.ink2)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            isCustomSelected ? Theme.sageTint : Theme.paper2,
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Custom walk length")
-            }
-            .padding(.top, 24)
+                .padding(.top, 16)
 
-            if let error = controller.lastError {
-                Text(error)
-                    .font(Theme.font(.footnote))
-                    .foregroundStyle(Theme.clay)
+                Text("Walk tall.")
+                    .font(Theme.display(40))
+                    .foregroundStyle(Theme.ink)
+                    .padding(.top, 20)
+
+                Text("AirPods in, phone in your pocket. Posture reads how tall you carry your head; your steps and distance track alongside. The first half minute sets your walking baseline.")
+                    .font(Theme.font(.body))
+                    .foregroundStyle(Theme.ink2)
+                    .lineSpacing(3)
                     .padding(.top, 12)
-            }
 
-            Spacer()
+                goalTypePicker
+                    .padding(.top, 20)
 
-            Button {
-                controller.start(config: .init(
-                    kind: .walk,
-                    targetSeconds: targetMinutes * 60,
-                    targetPercent: 0,
-                    level: 0
-                ))
-            } label: {
-                Text("Start walking")
-                    .frame(maxWidth: .infinity)
+                if goalIsDistance {
+                    distanceChips
+                        .padding(.top, 14)
+                } else {
+                    timeChips
+                        .padding(.top, 14)
+                }
+
+                gpsToggle
+                    .padding(.top, 18)
+
+                if let error = controller.lastError {
+                    Text(error)
+                        .font(Theme.font(.footnote))
+                        .foregroundStyle(Theme.clay)
+                        .padding(.top, 12)
+                }
+
+                Button {
+                    controller.start(config: .init(
+                        kind: .walk,
+                        targetSeconds: goalIsDistance ? 7200 : targetMinutes * 60,
+                        targetPercent: 0,
+                        level: 0,
+                        goalIsDistance: goalIsDistance,
+                        targetDistanceMeters: goalIsDistance ? targetMeters : 0,
+                        useGPS: useGPS
+                    ))
+                } label: {
+                    Text("Start walking")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.daylight(.primary))
+                .padding(.top, 26)
+                .padding(.bottom, 28)
             }
-            .buttonStyle(.daylight(.primary))
-            .padding(.bottom, 28)
+            .padding(.horizontal, 24)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
-        .sheet(isPresented: $showingCustomPicker) {
-            customDurationSheet
-                .presentationDetents([.height(300)])
+        .sheet(isPresented: $showingCustomTime) {
+            customTimeSheet.presentationDetents([.height(300)])
+        }
+        .sheet(isPresented: $showingCustomDistance) {
+            customDistanceSheet.presentationDetents([.height(300)])
         }
     }
 
-    /// Wheel picker for any walk length from a quick loop to a long hike.
-    private var customDurationSheet: some View {
+    private var goalTypePicker: some View {
+        HStack(spacing: 10) {
+            goalTab(title: "Time", isDistance: false)
+            goalTab(title: "Distance", isDistance: true)
+        }
+    }
+
+    private func goalTab(title: String, isDistance: Bool) -> some View {
+        let selected = goalIsDistance == isDistance
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) { goalIsDistance = isDistance }
+        } label: {
+            Text(title)
+                .font(Theme.font(.subheadline, weight: .semibold))
+                .foregroundStyle(selected ? Theme.sage : Theme.ink2)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    selected ? Theme.sageTint : Theme.paper2,
+                    in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
+    }
+
+    private var timeChips: some View {
+        HStack(spacing: 10) {
+            ForEach(minuteOptions, id: \.self) { minutes in
+                chip(
+                    label: "\(minutes) min",
+                    selected: !isCustomTime && targetMinutes == minutes
+                ) { targetMinutes = minutes }
+            }
+            chip(
+                label: isCustomTime ? "\(targetMinutes) min" : "Custom",
+                selected: isCustomTime
+            ) {
+                customMinutes = isCustomTime ? targetMinutes : customMinutes
+                showingCustomTime = true
+            }
+        }
+    }
+
+    private var isCustomTime: Bool { !minuteOptions.contains(targetMinutes) }
+
+    private var distanceChips: some View {
+        HStack(spacing: 10) {
+            ForEach(distancePresets, id: \.self) { meters in
+                chip(
+                    label: "\(distanceLabel(meters)) \(distanceUnit)",
+                    selected: !isCustomDistance && abs(targetMeters - meters) < 1
+                ) { targetMeters = meters }
+            }
+            chip(
+                label: isCustomDistance ? "\(distanceLabel(targetMeters)) \(distanceUnit)" : "Custom",
+                selected: isCustomDistance
+            ) { showingCustomDistance = true }
+        }
+    }
+
+    private var isCustomDistance: Bool {
+        !distancePresets.contains { abs($0 - targetMeters) < 1 }
+    }
+
+    private func chip(label: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(Theme.font(.subheadline, weight: .semibold))
+                .foregroundStyle(selected ? Theme.sage : Theme.ink2)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    selected ? Theme.sageTint : Theme.paper2,
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+    }
+
+    private var gpsToggle: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) { useGPS.toggle() }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: useGPS ? "location.fill" : "location")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(useGPS ? Theme.sage : Theme.ink3)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Use GPS for accurate distance")
+                        .font(Theme.font(.subheadline, weight: .medium))
+                        .foregroundStyle(Theme.ink)
+                    Text("Off uses a step-based estimate. GPS is more accurate outdoors and uses more battery.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 8)
+                Toggle("", isOn: $useGPS).labelsHidden().tint(Theme.sage)
+            }
+            .padding(16)
+            .dawnCard(cornerRadius: 14)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var customTimeSheet: some View {
         VStack(spacing: 8) {
             Text("Walk length")
                 .font(Theme.display(20))
@@ -169,9 +269,39 @@ struct WalkSessionView: View {
             .pickerStyle(.wheel)
             Button {
                 targetMinutes = customMinutes
-                showingCustomPicker = false
+                showingCustomTime = false
             } label: {
                 Text("Set \(customMinutes) minutes").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.daylight(.primary))
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
+        }
+        .frame(maxWidth: .infinity)
+        .dawnBackground()
+    }
+
+    private var customDistanceSheet: some View {
+        // Whole + tenth of a unit, 0.5 … 26.2 (a marathon's worth).
+        let steps = Array(stride(from: 0.5, through: metric ? 42.0 : 26.2, by: 0.5))
+        return VStack(spacing: 8) {
+            Text("Walk distance")
+                .font(Theme.display(20))
+                .foregroundStyle(Theme.ink)
+                .padding(.top, 18)
+            Picker("Distance", selection: Binding(
+                get: { (metric ? targetMeters / 1000 : targetMeters / 1609.34) },
+                set: { targetMeters = displayToMeters($0) }
+            )) {
+                ForEach(steps, id: \.self) { d in
+                    Text(String(format: "%.1f %@", d, distanceUnit)).tag(d)
+                }
+            }
+            .pickerStyle(.wheel)
+            Button {
+                showingCustomDistance = false
+            } label: {
+                Text("Set \(distanceLabel(targetMeters)) \(distanceUnit)").frame(maxWidth: .infinity)
             }
             .buttonStyle(.daylight(.primary))
             .padding(.horizontal, 24)
@@ -186,6 +316,7 @@ struct WalkSessionView: View {
     private func liveView(_ controller: PracticeSessionController) -> some View {
         let quality = controller.currentQuality
         let paused = isPaused(controller.phase)
+        let stationary = controller.phase == .running && !controller.isWalkingNow && !inWarmup(controller)
         return VStack(spacing: 0) {
             HStack {
                 walkChip
@@ -213,34 +344,37 @@ struct WalkSessionView: View {
                 Circle()
                     .stroke(Theme.ringTrack, lineWidth: 10)
                 Circle()
-                    .trim(from: 0, to: progress(controller))
-                    .stroke(paused ? Theme.ink3 : qualityColor(quality),
+                    .trim(from: 0, to: controller.walkProgressFraction)
+                    .stroke(paused || stationary ? Theme.ink3 : qualityColor(quality),
                             style: .init(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeOut(duration: 0.5), value: progress(controller))
+                    .animation(.easeOut(duration: 0.5), value: controller.walkProgressFraction)
                 VStack(spacing: 6) {
-                    Text(timeLabel(controller.remainingSeconds))
-                        .font(Theme.font(size: 54, weight: .regular))
+                    Text(centerValue(controller))
+                        .font(Theme.font(size: 52, weight: .regular))
                         .foregroundStyle(Theme.ink)
-                        .contentTransition(.numericText(countsDown: true))
-                        .animation(.easeOut(duration: 0.2), value: controller.remainingSeconds)
-                    Text(paused ? "paused" : qualityWord(quality))
+                        .contentTransition(.numericText())
+                        .monospacedDigit()
+                    Text(centerUnit(controller))
+                        .font(Theme.font(.footnote, weight: .semibold))
+                        .foregroundStyle(Theme.ink3)
+                    Text(stationary ? "keep walking" : (paused ? "paused" : qualityWord(quality)))
                         .font(Theme.display(19))
-                        .foregroundStyle(paused ? Theme.ink3 : qualityColor(quality))
-                    if !inWarmup(controller), controller.elapsedSeconds > 40 {
-                        Text("\(Int((controller.alignedFractionSoFar * 100).rounded()))% tall")
-                            .font(Theme.font(.caption, weight: .semibold))
-                            .foregroundStyle(Theme.ink3)
-                    }
+                        .foregroundStyle(stationary || paused ? Theme.ink3 : qualityColor(quality))
+                        .padding(.top, 2)
                 }
             }
             .frame(width: 240, height: 240)
 
-            Text(statusLine(controller))
+            metricsRow(controller)
+                .padding(.top, 22)
+
+            Text(statusLine(controller, stationary: stationary))
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
-                .padding(.top, 24)
+                .padding(.top, 18)
+                .padding(.horizontal, 12)
 
             Spacer()
 
@@ -259,6 +393,47 @@ struct WalkSessionView: View {
         } message: {
             Text("Ending early keeps the minutes you walked in today's timeline.")
         }
+    }
+
+    /// Steps + the metric the ring isn't already showing (distance for a time
+    /// goal, elapsed time for a distance goal), plus a GPS badge.
+    private func metricsRow(_ controller: PracticeSessionController) -> some View {
+        HStack(spacing: 28) {
+            metricStat(value: "\(controller.walkSteps)", label: "steps")
+            if goalIsDistance {
+                metricStat(value: timeLabel(Int(controller.elapsedSeconds)), label: "time")
+            } else {
+                metricStat(value: distanceLabel(controller.walkDistanceMeters), label: distanceUnit)
+            }
+            if controller.walkUsingGPS {
+                metricStat(value: "GPS", label: "on", tint: Theme.sage)
+            }
+        }
+    }
+
+    private func metricStat(value: String, label: String, tint: Color = Theme.ink) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(Theme.font(.title3, weight: .semibold).monospacedDigit())
+                .foregroundStyle(tint)
+            Text(label)
+                .font(Theme.font(.caption2, weight: .medium))
+                .foregroundStyle(Theme.ink3)
+        }
+    }
+
+    /// Big number in the ring: countdown for a time goal, distance for a
+    /// distance goal.
+    private func centerValue(_ controller: PracticeSessionController) -> String {
+        goalIsDistance
+            ? distanceLabel(controller.walkDistanceMeters)
+            : timeLabel(controller.remainingSeconds)
+    }
+
+    private func centerUnit(_ controller: PracticeSessionController) -> String {
+        goalIsDistance
+            ? "of \(distanceLabel(targetMeters)) \(distanceUnit)"
+            : "left"
     }
 
     // MARK: - Bits
@@ -296,7 +471,10 @@ struct WalkSessionView: View {
         return false
     }
 
-    private func statusLine(_ controller: PracticeSessionController) -> String {
+    private func statusLine(_ controller: PracticeSessionController, stationary: Bool) -> String {
+        if stationary {
+            return "Paused, you've stopped moving. The walk picks back up when you start walking again."
+        }
         switch controller.phase {
         case .waiting:
             return "Pop your AirPods in, the walk starts with your first reading."
@@ -306,7 +484,7 @@ struct WalkSessionView: View {
             return "Paused."
         case .running:
             if inWarmup(controller) {
-                return "Finding your stride, scoring starts in a moment."
+                return "Finding your stride and learning your walking posture."
             }
             switch controller.currentQuality {
             case .good: return "Walking tall. Eyes on the horizon."
@@ -316,11 +494,6 @@ struct WalkSessionView: View {
         default:
             return ""
         }
-    }
-
-    private func progress(_ controller: PracticeSessionController) -> Double {
-        guard let target = controller.config?.targetSeconds, target > 0 else { return 0 }
-        return min(controller.elapsedSeconds / Double(target), 1)
     }
 
     private func qualityColor(_ q: PostureQuality) -> Color {
@@ -341,5 +514,17 @@ struct WalkSessionView: View {
 
     private func timeLabel(_ seconds: Int) -> String {
         String(format: "%d:%02d", seconds / 60, seconds % 60)
+    }
+
+    // MARK: - Units
+
+    private func displayToMeters(_ display: Double) -> Double {
+        metric ? display * 1000 : display * 1609.34
+    }
+
+    /// A distance in local units, 1 decimal (or 2 under 10 for short walks).
+    private func distanceLabel(_ meters: Double) -> String {
+        let d = metric ? meters / 1000 : meters / 1609.34
+        return String(format: d < 10 ? "%.2f" : "%.1f", d)
     }
 }

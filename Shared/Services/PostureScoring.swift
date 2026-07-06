@@ -267,4 +267,16 @@ extension PostureScoring {
         guard !poseMeans.isEmpty else { return nil }
         return poseMeans.reduce(0, +) / Double(poseMeans.count)
     }
+
+    /// Median of a sample set - robust to the odd head turn while walking, so
+    /// it's what the walk auto-baseline uses to summarize the warmup window.
+    /// Returns nil for an empty set.
+    static func median(_ samples: [Double]) -> Double? {
+        guard !samples.isEmpty else { return nil }
+        let sorted = samples.sorted()
+        let mid = sorted.count / 2
+        return sorted.count.isMultiple(of: 2)
+            ? (sorted[mid - 1] + sorted[mid]) / 2
+            : sorted[mid]
+    }
 }
