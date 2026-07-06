@@ -15,10 +15,10 @@ struct PracticeLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.leading) {
                     HStack(spacing: 6) {
                         Image(systemName: icon(context))
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(color(context))
                         Text(qualityWord(context))
-                            .font(Theme.font(.subheadline, weight: .semibold))
+                            .font(Theme.font(.headline, weight: .bold))
                             .foregroundStyle(color(context))
                     }
                 }
@@ -56,15 +56,18 @@ struct PracticeLiveActivity: Widget {
             ZStack {
                 Circle()
                     .fill(color(context).opacity(0.18))
-                    .frame(width: 44, height: 44)
+                    .frame(width: 46, height: 46)
                 Image(systemName: icon(context))
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 19, weight: .bold))
                     .foregroundStyle(color(context))
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(context.attributes.kind == "walk" ? "Posture walk" : "Posture practice")
-                    .font(Theme.font(.subheadline, weight: .semibold))
-                    .foregroundStyle(Theme.ink)
+                // Lead with the live posture state, in its own color, so a
+                // glance at the lock screen reads "aligned / drifting /
+                // slouching" without decoding the icon tint.
+                Text(qualityWord(context))
+                    .font(Theme.font(.headline, weight: .bold))
+                    .foregroundStyle(color(context))
                 Text(bottomLine(context))
                     .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
@@ -89,9 +92,13 @@ struct PracticeLiveActivity: Widget {
         }
     }
 
+    private func kindWord(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
+        context.attributes.kind == "walk" ? "Walk" : "Practice"
+    }
+
     private func bottomLine(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
         if context.state.paused { return "Paused. Your minutes are safe." }
-        return "\(context.state.alignedPercent)% aligned so far"
+        return "\(kindWord(context)) · \(context.state.alignedPercent)% aligned"
     }
 
     /// The glyph itself carries the posture state, not just its color - the
