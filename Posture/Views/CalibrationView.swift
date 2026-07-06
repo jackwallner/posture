@@ -178,7 +178,8 @@ struct CalibrationView: View {
         switch step {
         case .standing: return .standing
         case .sitting: return .sitting
-        case .standingSlouch, .sittingSlouch: return .slouching
+        case .standingSlouch: return .standingSlouch
+        case .sittingSlouch: return .sittingSlouch
         }
     }
 

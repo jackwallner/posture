@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Install the generated illustration PNGs (scripts/illos/*.png) into the app's
-asset catalog as the imagesets PoseDiagram looks up (IlloStanding, IlloSitting,
-IlloSlouch, IlloStack). Run after generate-illustrations.py.
+asset catalog as the imagesets PoseDiagram looks up. Run after generate-illustrations.py.
 
-Only the four poses PoseDiagram renders are installed; illo_welcome / illo_nudge
-are left in scripts/illos/ for onboarding use."""
+illo_welcome / illo_nudge are left in scripts/illos/ for future onboarding use."""
 
 import json
 import os
@@ -19,6 +17,7 @@ CATALOG = os.path.join(ROOT, "Posture", "Assets.xcassets")
 MAP = {
     "illo_standing": "IlloStanding",
     "illo_sitting": "IlloSitting",
+    "illo_standing_slouch": "IlloStandingSlouch",
     "illo_slouch": "IlloSlouch",
     "illo_stack": "IlloStack",
 }

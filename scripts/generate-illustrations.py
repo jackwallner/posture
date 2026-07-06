@@ -51,9 +51,13 @@ SUBJECTS = [
      "spine straight as a vertical line, ears stacked over shoulders, chin level, "
      "chest open, feet flat on the floor, back against the chair back, hands resting "
      "on thighs, clearly tall and aligned not slouched"),
+    ("illo_standing_slouch",
+     "Side profile facing left of a person standing on their feet with a deep "
+     "upper-body slump: upper back heavily rounded, shoulders rolled forward, neck "
+     "bent forward, chin down, head ahead of shoulders, not sitting, no chair"),
     ("illo_slouch",
-     "A person slumped deeply in a chair in a classic lazy slouch, chin dropped "
-     "toward chest, shoulders rolled forward, spine curved like the letter C, "
+     "Side profile of a person slumped at a desk chair in a classic sitting slouch, "
+     "chin dropped toward chest, shoulders rolled forward, spine curved like C, "
      "clearly comfortable but clearly slouching"),
     ("illo_nudge",
      "A single wireless earbud, large and centered, with two or three gentle "

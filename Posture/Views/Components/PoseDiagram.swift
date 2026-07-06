@@ -10,7 +10,8 @@ struct PoseDiagram: View {
     enum Pose {
         case standing
         case sitting
-        case slouching
+        case standingSlouch
+        case sittingSlouch
         case stack      // side-profile alignment teaching diagram
     }
 
@@ -36,7 +37,8 @@ struct PoseDiagram: View {
         switch pose {
         case .standing: return "IlloStanding"
         case .sitting: return "IlloSitting"
-        case .slouching: return "IlloSlouch"
+        case .standingSlouch: return "IlloStandingSlouch"
+        case .sittingSlouch: return "IlloSlouch"
         case .stack: return "IlloStack"
         }
     }
@@ -122,19 +124,27 @@ struct PoseDiagram: View {
 
     /// How far forward of the plumb line the head sits (fraction of width).
     private var forwardHead: Double {
-        pose == .slouching ? 0.20 : 0
+        switch pose {
+        case .standingSlouch: 0.25
+        case .sittingSlouch: 0.20
+        default: 0
+        }
     }
 
     private var seated: Bool {
-        pose == .sitting || pose == .slouching
+        pose == .sitting || pose == .sittingSlouch
+    }
+
+    private var isSlouch: Bool {
+        pose == .standingSlouch || pose == .sittingSlouch
     }
 
     private var accent: Color {
-        pose == .slouching ? Theme.clay : Theme.sage
+        isSlouch ? Theme.clay : Theme.sage
     }
 
     private var wash: Color {
-        pose == .slouching ? Theme.clayTint : Theme.sageTint
+        isSlouch ? Theme.clayTint : Theme.sageTint
     }
 }
 
@@ -142,7 +152,8 @@ struct PoseDiagram: View {
     VStack(spacing: 24) {
         PoseDiagram(pose: .stack)
         PoseDiagram(pose: .sitting)
-        PoseDiagram(pose: .slouching, height: 140)
+        PoseDiagram(pose: .standingSlouch, height: 140)
+        PoseDiagram(pose: .sittingSlouch, height: 140)
     }
     .padding()
     .background(Theme.paper)
