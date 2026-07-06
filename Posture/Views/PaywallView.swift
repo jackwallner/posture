@@ -638,11 +638,11 @@ private struct PosturePlanCard: View {
 
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(package.posturePriceLabel)
-                        .font(.subheadline.weight(.semibold).monospacedDigit())
+                        .font(Theme.font(.subheadline, weight: .semibold).monospacedDigit())
                         .foregroundStyle(Theme.ink)
                     if let perWeek = perWeekLabel {
                         Text(perWeek)
-                            .font(.caption2.weight(.medium).monospacedDigit())
+                            .font(Theme.font(.caption2, weight: .medium).monospacedDigit())
                             .foregroundStyle(Theme.ink3)
                     }
                 }

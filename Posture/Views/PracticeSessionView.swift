@@ -278,8 +278,9 @@ struct PracticeSessionView: View {
         .dawnBackground()
         .task {
             // If detection isn't landing (odd AirPods pitch response, wrong
-            // fit), never dead-end the session behind the warm-up.
-            try? await Task.sleep(nanoseconds: 25_000_000_000)
+            // fit), never dead-end the session behind the warm-up. Offer the
+            // skip quickly so no one is stranded staring at "0 of 5".
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
             if controller.phase == .reps { withAnimation { showRepsSkip = true } }
         }
     }

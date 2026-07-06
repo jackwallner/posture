@@ -114,15 +114,33 @@ struct CalibrationView: View {
         }
     }
 
+    // MARK: - Step sequence
+
+    /// The reads to run, in order. Onboarding honors the user's posture focus:
+    /// a standing-only user shouldn't have to calibrate sitting (and vice
+    /// versa). The full four are always available later via Settings →
+    /// Recalibrate (`.quickRecalibrate`), where we don't filter.
+    private var steps: [PoseStep] {
+        guard mode == .onboarding else { return PoseStep.allCases }
+        switch settings.postureFocus {
+        case .standing: return [.standing, .standingSlouch]
+        case .sitting: return [.sitting, .sittingSlouch]
+        case .both: return PoseStep.allCases
+        }
+    }
+
     // MARK: - Step copy
 
     private func eyebrow(_ step: PoseStep) -> String {
+        let index = (steps.firstIndex(of: step) ?? 0) + 1
+        let name: String
         switch step {
-        case .standing: return "1 of 4 · Standing tall"
-        case .standingSlouch: return "2 of 4 · Standing slouch"
-        case .sitting: return "3 of 4 · Sitting tall"
-        case .sittingSlouch: return "4 of 4 · Sitting slouch"
+        case .standing: name = "Standing tall"
+        case .standingSlouch: name = "Standing slouch"
+        case .sitting: name = "Sitting tall"
+        case .sittingSlouch: name = "Sitting slouch"
         }
+        return "\(index) of \(steps.count) · \(name)"
     }
 
     private func prepTitle(_ step: PoseStep) -> String {
@@ -479,15 +497,22 @@ struct CalibrationView: View {
     }
 
     private var doneSubtitle: String {
+        let hasStanding = captures[.standing] != nil
+        let hasSitting = captures[.sitting] != nil
+        let poses: String
+        if hasStanding && hasSitting { poses = "your tall posture standing and sitting" }
+        else if hasStanding { poses = "your tall standing posture" }
+        else { poses = "your tall sitting posture" }
+
         let hasBothSlouches = captures[.standingSlouch] != nil && captures[.sittingSlouch] != nil
         let hasAnySlouch = captures[.standingSlouch] != nil || captures[.sittingSlouch] != nil
         if hasBothSlouches {
-            return "We've learned your tall posture standing and sitting, and your slouch in each. Every reading is scored against your own range for that posture."
+            return "We've learned \(poses), and your slouch in each. Every reading is scored against your own range for that posture."
         }
         if hasAnySlouch {
-            return "We've learned your tall posture standing and sitting, and one of your slouches. Every reading is scored against your own range."
+            return "We've learned \(poses), and your slouch. Every reading is scored against your own range."
         }
-        return "We've learned your tall posture standing and sitting. Readings are scored against the standard range until you capture your slouch."
+        return "We've learned \(poses). Readings are scored against the standard range until you capture your slouch."
     }
 
     // MARK: - State machine
@@ -592,7 +617,7 @@ struct CalibrationView: View {
         captures = [:]
         sequenceTask?.cancel()
         sequenceTask = Task {
-            for step in PoseStep.allCases {
+            for step in steps {
                 let outcome = await runStep(step)
                 switch outcome {
                 case .completed, .skipped:
@@ -710,13 +735,18 @@ struct CalibrationView: View {
     }
 
     private func save() {
-        guard let sitting = captures[.sitting] else { return }
         let standing = captures[.standing]
-        // Both aligned reads are "head level", so their mean is a more robust
-        // baseline than either alone; confidence is how tight the two holds were.
-        let poseMeans = [standing?.pitch, sitting.pitch].compactMap { $0 }
-        let baseline = PostureScoring.combinedBaseline(poseMeans) ?? sitting.pitch
-        let confidences = [standing?.standardDeviation, sitting.standardDeviation]
+        let sitting = captures[.sitting]
+        // A focused onboarding may capture only one posture; a real read of
+        // either is enough to save. Prefer the sitting read for the shared
+        // yaw/roll anchor when present, else fall back to standing.
+        guard standing != nil || sitting != nil else { return }
+        let anchor = sitting ?? standing
+        // Aligned reads are "head level", so the mean of whichever we captured
+        // is the baseline; confidence is how tight those holds were.
+        let poseMeans = [standing?.pitch, sitting?.pitch].compactMap { $0 }
+        let baseline = PostureScoring.combinedBaseline(poseMeans) ?? poseMeans.first ?? 0
+        let confidences = [standing?.standardDeviation, sitting?.standardDeviation]
             .compactMap { $0 }
             .map { PostureScoring.captureConfidence(standardDeviation: $0) }
         let confidence = confidences.isEmpty
@@ -727,9 +757,8 @@ struct CalibrationView: View {
         // Per-posture slouch ranges: each slouch read against its own tall pose.
         let standingSlouch: Double? = zip2(standing?.pitch, captures[.standingSlouch]?.pitch)
             .map { PostureScoring.calibratedSlouchDelta(uprightPitch: $0, slouchedPitch: $1) }
-        let sittingSlouch: Double? = captures[.sittingSlouch].map {
-            PostureScoring.calibratedSlouchDelta(uprightPitch: sitting.pitch, slouchedPitch: $0.pitch)
-        }
+        let sittingSlouch: Double? = zip2(sitting?.pitch, captures[.sittingSlouch]?.pitch)
+            .map { PostureScoring.calibratedSlouchDelta(uprightPitch: $0, slouchedPitch: $1) }
         // Legacy combined delta stays as the fallback for scoring paths that
         // don't know the posture.
         let combinedDeltas = [standingSlouch, sittingSlouch].compactMap { $0 }
@@ -743,10 +772,10 @@ struct CalibrationView: View {
             baseRoll: 0,
             slouchPitchDelta: combinedDelta,
             airpodsPitch: baseline,
-            airpodsRoll: sitting.roll,
-            airpodsYaw: sitting.yaw,
+            airpodsRoll: anchor?.roll,
+            airpodsYaw: anchor?.yaw,
             airpodsStandingPitch: standing?.pitch,
-            airpodsSittingPitch: sitting.pitch,
+            airpodsSittingPitch: sitting?.pitch,
             baselineConfidence: confidence,
             standingSlouchDelta: standingSlouch,
             sittingSlouchDelta: sittingSlouch

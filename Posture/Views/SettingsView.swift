@@ -66,7 +66,7 @@ struct SettingsView: View {
                 if settings.hasAirpods == true {
                     Section("Live readout") {
                         Toggle("Show my posture while the app is open", isOn: $settings.inAppLiveEnabled)
-                        Text("With AirPods in, the top of Today shows your alignment live and the minutes count toward your day report. Reading stops when you leave the app.")
+                        Text("With AirPods in, the top of Today shows your alignment live, so you can glance at how you're sitting. It's just a readout: these minutes don't count toward your day report or trends. Reading stops when you leave the app.")
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
@@ -206,6 +206,11 @@ struct SettingsView: View {
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
                 }
             }
+            // Form controls (Toggle/Picker/Stepper/LabeledContent labels) render
+            // in system SF by default, clashing with the Nunito captions. Set the
+            // Form's environment font so every unstyled label inherits Nunito;
+            // explicit `Theme.font(...)` on the captions still overrides this.
+            .font(Theme.font(.body))
             .scrollContentBackground(.hidden)
             .dawnBackground()
             .navigationTitle("Settings")

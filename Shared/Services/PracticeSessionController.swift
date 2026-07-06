@@ -192,12 +192,22 @@ final class PracticeSessionController {
             level: PracticeProgression.level(passedSessions: passed),
             isPro: isPro
         )
+        // The very first practice session skips the chin-tuck warm-up: a brand-
+        // new user should reach a completed, recorded session with zero friction
+        // (a warm-up that isn't detecting can otherwise strand them before any
+        // time is logged, so the session never lands in History). Reps begin
+        // from the second session onward, once they're oriented.
+        let practiceRaw = PostureSessionKind.practice.rawValue
+        let priorPractices = (try? context.fetchCount(FetchDescriptor<PostureSession>(
+            predicate: #Predicate { $0.kindRaw == practiceRaw }
+        ))) ?? 0
+        let reps = priorPractices == 0 ? 0 : PostureScoring.ChinTuck.defaultRepsTarget
         return Config(
             kind: .practice,
             targetSeconds: PracticeProgression.sessionSeconds(forLevel: level),
             targetPercent: PracticeProgression.targetPercent(forLevel: level),
             level: level,
-            repsTarget: PostureScoring.ChinTuck.defaultRepsTarget
+            repsTarget: reps
         )
     }
 

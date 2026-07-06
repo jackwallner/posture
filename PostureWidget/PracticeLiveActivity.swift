@@ -94,9 +94,20 @@ struct PracticeLiveActivity: Widget {
         return "\(context.state.alignedPercent)% aligned so far"
     }
 
+    /// The glyph itself carries the posture state, not just its color - the
+    /// compact and minimal Dynamic Island are too small (and color alone too
+    /// subtle, and colorblind-hostile) to read "tall vs slouched" from a tint.
+    /// Each state gets a distinct silhouette: an upright figure when you're
+    /// tall, a caution triangle when you drift, a head-down arrow when you
+    /// slouch, a pause glyph when stopped.
     private func icon(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
-        if context.attributes.kind == "walk" { return "figure.walk" }
-        return "figure.stand"
+        if context.state.paused { return "pause.circle.fill" }
+        let walk = context.attributes.kind == "walk"
+        switch context.state.quality {
+        case "good": return walk ? "figure.walk" : "figure.stand"
+        case "borderline": return "exclamationmark.triangle.fill"
+        default: return "arrow.down.circle.fill"
+        }
     }
 
     private func color(_ context: ActivityViewContext<PracticeActivityAttributes>) -> Color {

@@ -103,6 +103,13 @@ final class AirpodsBackgroundMonitor {
     /// `MinuteBucket` and persists as one `PostureMinuteSample` row per minute -
     /// that's what "% of day aligned", wear time, and the day timeline read.
     private var minuteBucket = MinuteBucket()
+    /// Only all-day *background* monitoring (the Pro opt-in) persists minute
+    /// rows into the day's stats. The free foreground "live readout" is just a
+    /// glance - a way to see if you're sitting tall while using the app - and
+    /// must not count toward % of day aligned, wear time, or the hour rhythm.
+    /// Captured at `start(background:)` and held until `stop()` finishes its
+    /// final flush so a real background run's last partial minute still lands.
+    private var persistsMinutes = false
     /// Keep the store from growing unbounded - a monitored year is ~350k
     /// minute rows. 90 days is more history than any view reads.
     private static let minuteRetentionDays = 90
@@ -191,6 +198,7 @@ final class AirpodsBackgroundMonitor {
         guard !isMonitoring else { return true }
         isMonitoring = true
         isBackground = background
+        persistsMinutes = background
         lastError = nil
         logEvent(.armed(background: background))
         pruneOldMinuteSamples()
@@ -226,6 +234,9 @@ final class AirpodsBackgroundMonitor {
         isConnected = false
         currentQuality = .good
         resetDetectionState()
+        // Cleared last: resetDetectionState() above flushes this run's final
+        // partial minute, which must still persist for a real background run.
+        persistsMinutes = false
     }
 
     /// Clear all smoothing state so the next bout starts clean. Called on
@@ -336,7 +347,8 @@ final class AirpodsBackgroundMonitor {
     // MARK: - Minute persistence
 
     private func persistFlush(_ flush: MinuteBucket.Flush?) {
-        guard let flush else { return }
+        // Foreground glance readouts never persist - see `persistsMinutes`.
+        guard persistsMinutes, let flush else { return }
         let row = PostureMinuteSample(
             minuteStart: flush.minuteStart,
             goodSeconds: flush.goodSeconds,

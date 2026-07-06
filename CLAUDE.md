@@ -59,7 +59,12 @@ pipeline in the app.
     + minute samples, credits the streak on completion, and runs the
     ActivityKit Live Activity (countdown + live alignment in the Dynamic
     Island). Custom-length sessions set `countsForLevel: false` (streak
-    only). Walks pass `repsTarget: 0`.
+    only). Walks pass `repsTarget: 0`. The user's *very first* practice session
+    also passes `repsTarget: 0` (see `nextConfig`) so a brand-new user reaches
+    a recorded, completed session with no warm-up friction; reps begin at
+    session 2. Onboarding calibration honors `GoalSettings.postureFocus` (a
+    standing-only user skips the sitting reads and vice versa); Settings →
+    Recalibrate always runs all four. `save()` is subset-safe.
   - `AchievementCatalog` — display-only badges derived at read time from
     streak + session rows (no persistence). Surfaces: `AchievementsView`
     grid, Today teaser row, summary unlock lines.
@@ -86,9 +91,11 @@ pipeline in the app.
   - `AirpodsBackgroundMonitor` — one shared monitor, two modes decided by
     `reconcileMonitoring` in App.swift: Pro all-day background (Settings
     toggle, silent-audio keep-alive) or the free in-app live readout
-    (`GoalSettings.inAppLiveEnabled`, default on, foreground only). Both
-    record minute samples. `userPaused` is the manual Stop from Today's
-    card — auto-start paths must respect it.
+    (`GoalSettings.inAppLiveEnabled`, default on, foreground only). Only the
+    Pro background mode persists minute samples (`persistsMinutes`, set from
+    `start(background:)`); the foreground glance is display-only and must NOT
+    count toward % of day aligned / wear / trends. `userPaused` is the manual
+    Stop from Today's card — auto-start paths must respect it.
     `suspendForForegroundRead()`/`resumeAfterForegroundRead()` is the handoff
     every foreground reader (calibration, scan, session) must use
   - `HeadphoneMotionService` — foreground `CMHeadphoneMotionManager` wrapper
@@ -97,7 +104,7 @@ pipeline in the app.
   - `AnalyticsService`, `PostureTipService`
 - `Posture/` — iOS UI
   - `App.swift` → onboarding (incl. posture-focus choice) → calibration →
-    MainTabView (Today / History / Posture+ [non-subscribers only] /
+    MainTabView (Today / History / Progress / Posture+ [non-subscribers only] /
     Settings). No hard paywall gate: free core loop, dismissible paywall
     after the first completed session (`posture_post_first_session`) and at
     Pro gates (`posture_level_gate`, `posture_walk_gate`,
@@ -117,6 +124,8 @@ pipeline in the app.
     session receipts (`SessionDetailView`), Pro-gated trends (week delta,
     monitoring chart, hour rhythm), free check-in journal
   - `Views/AcknowledgmentView.swift` — the fullscreen check-in on reminder tap
+  - `Views/ProgressTabView.swift` — the Progress tab: the full level ladder,
+    crisp for Pro, per-rung detail blurred for free (level rungs still shown)
   - `Views/LevelLadderView.swift`, `Views/StreakDetailView.swift`,
     `Views/AchievementsView.swift`, `Views/ProTabView.swift` — explainer /
     detail sheets opened from Today (level chip, streak chip, badges row)
