@@ -1,14 +1,17 @@
 import SwiftUI
+#if HAS_REVENUECAT
+import RevenueCat
+#endif
 
-/// The "7 days on us" trial pitch, shown once at the end of onboarding right
-/// after the user has invested in calibration - the highest-intent moment to
-/// convert. It's dismissible (the daily practice loop stays free forever), but
-/// this is where trial-led plans convert best. The real purchase happens in
-/// `PaywallView`, opened as a sheet, so all the RevenueCat plumbing is reused.
+/// The trial pitch shown once at the end of onboarding right after calibration.
+/// Dismissible (the daily practice loop stays free), but tapping the CTA starts
+/// the StoreKit purchase sheet directly — no second paywall in between.
 struct OnboardingTrialView: View {
     @Environment(GoalSettings.self) private var settings
     @State private var subscriptions = SubscriptionService.shared
-    @State private var showingPaywall = false
+    @State private var isPurchasing = false
+    @State private var isRestoring = false
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -18,11 +21,11 @@ struct OnboardingTrialView: View {
                 .font(Theme.font(.caption, weight: .semibold))
                 .tracking(1)
                 .foregroundStyle(Theme.sage)
-            Text("Your first 7 days\nare on us.")
+            Text(onboardingHeadline)
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 8)
-            Text("Try everything Posture can do, free for a week. The daily practice stays free forever either way.")
+            Text(onboardingSubheadline)
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(3)
@@ -44,32 +47,58 @@ struct OnboardingTrialView: View {
 
             Spacer(minLength: 16)
 
-            Button { showingPaywall = true } label: {
-                Text("Start my 7 free days").frame(maxWidth: .infinity)
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.clay)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 6)
+            }
+
+            Button(action: startTrialPurchase) {
+                ZStack {
+                    Text(ctaTitle)
+                        .frame(maxWidth: .infinity)
+                        .opacity(isPurchasing ? 0 : 1)
+                    if isPurchasing {
+                        ProgressView().tint(Theme.paper)
+                    }
+                }
             }
             .buttonStyle(.daylight(.primary))
+            .disabled(isPurchasing || isRestoring || !canStartTrial)
 
             Button { proceed() } label: {
                 Text("Maybe later").frame(maxWidth: .infinity)
             }
             .buttonStyle(.daylight(.ghost))
             .padding(.top, 4)
+            .disabled(isPurchasing)
 
-            Text("No charge for 7 days. Cancel anytime.")
+            Text(trialDisclosure)
                 .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink3)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
+
+            legalFooter
+                .frame(maxWidth: .infinity)
+                .padding(.top, 10)
                 .padding(.bottom, 20)
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
-        .sheet(isPresented: $showingPaywall) {
-            PaywallView(paywallImpressionId: "posture_onboarding_trial")
+        .task {
+            #if HAS_REVENUECAT
+            subscriptions.trackPaywallImpression(id: "posture_onboarding_trial")
+            if subscriptions.products.isEmpty {
+                await subscriptions.fetchProducts()
+            }
+            #endif
         }
-        // The sheet dismisses itself on purchase; catch the state flip here so
-        // we advance into the app rather than back to this pitch.
         .onChange(of: subscriptions.isProSubscriber) { _, isPro in
             if isPro { proceed() }
         }
@@ -77,6 +106,116 @@ struct OnboardingTrialView: View {
 
     private func proceed() {
         settings.hasSeenOnboardingTrial = true
+    }
+
+    // MARK: - Copy
+
+    private var onboardingHeadline: String {
+        if let label = trialIntroLabel {
+            return "Your \(label)\nis on us."
+        }
+        return "Your first 7 days\nare on us."
+    }
+
+    private var onboardingSubheadline: String {
+        "Try everything Posture can do, free for a week. The daily practice stays free forever either way."
+    }
+
+    private var ctaTitle: String {
+        if let label = trialIntroLabel {
+            return "Start my \(label)"
+        }
+        return "Start my 7 free days"
+    }
+
+    private var trialDisclosure: String {
+        #if HAS_REVENUECAT
+        if let package = directTrialPackage, subscriptions.isEligibleForIntroOffer(package) {
+            let trial = package.postureIntroOfferLabel?.capitalized ?? "Free trial"
+            return "\(trial), then \(package.posturePriceLabel). Auto-renews unless cancelled at least 24 hours before the trial ends."
+        }
+        #endif
+        return "No charge for 7 days. Cancel anytime."
+    }
+
+    #if HAS_REVENUECAT
+    private var canStartTrial: Bool {
+        directTrialPackage != nil
+    }
+
+    private var directTrialPackage: Package? {
+        let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
+        return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
+    }
+
+    private var trialIntroLabel: String? {
+        directTrialPackage?.postureIntroOfferLabel
+    }
+    #else
+    private var canStartTrial: Bool { false }
+    private var trialIntroLabel: String? { nil }
+    #endif
+
+    // MARK: - Actions
+
+    private func startTrialPurchase() {
+        #if HAS_REVENUECAT
+        guard let package = directTrialPackage else {
+            errorMessage = "Couldn't load plans. Try again in a moment."
+            return
+        }
+        errorMessage = nil
+        isPurchasing = true
+        Task { @MainActor in
+            defer { isPurchasing = false }
+            do {
+                switch try await subscriptions.purchase(package) {
+                case .purchased, .pending:
+                    break
+                case .cancelled:
+                    errorMessage = nil
+                }
+            } catch {
+                errorMessage = "Couldn't start your trial. Please try again."
+            }
+        }
+        #endif
+    }
+
+    private func startRestore() {
+        #if HAS_REVENUECAT
+        errorMessage = nil
+        isRestoring = true
+        Task { @MainActor in
+            defer { isRestoring = false }
+            await subscriptions.restorePurchases()
+            if subscriptions.isProSubscriber {
+                proceed()
+            } else {
+                errorMessage = subscriptions.lastError ?? "No purchases found to restore."
+            }
+        }
+        #endif
+    }
+
+    private var legalFooter: some View {
+        HStack(spacing: 14) {
+            Button(action: startRestore) {
+                Text(isRestoring ? "Restoring…" : "Restore Purchases")
+                    .font(Theme.font(.caption2, weight: .semibold))
+                    .foregroundStyle(Theme.ink2)
+            }
+            .buttonStyle(.plain)
+            .disabled(isRestoring || isPurchasing)
+
+            HStack(spacing: 4) {
+                Link("Terms of Use", destination: PaywallLinks.standardEULA)
+                Text("·")
+                Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
+            }
+            .font(Theme.font(.caption2, weight: .semibold))
+            .foregroundStyle(Theme.ink3)
+        }
     }
 
     private func benefit(icon: String, title: String, body: String) -> some View {

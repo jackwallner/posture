@@ -116,11 +116,7 @@ struct PaywallView: View {
         VStack(spacing: 10) {
             header
             trustStrip
-            if selectedTrialLabel != nil {
-                trialTimeline
-            } else {
-                compactFeatureList
-            }
+            featureSection
             planCards
             Spacer(minLength: 0)
             purchaseBlock
@@ -212,23 +208,67 @@ struct PaywallView: View {
         }
     }
 
+    /// Trial vs. feature list share one slot so picking lifetime doesn't shove
+    /// the plan cards (and their selection dots) up or down.
+    private var featureSection: some View {
+        ZStack(alignment: .topLeading) {
+            compactFeatureList
+                .opacity(selectedTrialLabel == nil ? 1 : 0)
+                .accessibilityHidden(selectedTrialLabel != nil)
+            trialTimeline
+                .opacity(selectedTrialLabel == nil ? 0 : 1)
+                .accessibilityHidden(selectedTrialLabel == nil)
+        }
+        .frame(minHeight: 158, alignment: .topLeading)
+    }
+
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("POSTURE+")
                 .font(Theme.font(.caption2, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.ink3)
-            Text(headlineText)
-                .font(Theme.display(26))
-                .foregroundStyle(Theme.ink)
-                .lineLimit(2)
-                .minimumScaleFactor(0.85)
+            headlineView
+                .frame(minHeight: 64, alignment: .topLeading)
             Text(subtitleText)
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .lineLimit(2)
                 .minimumScaleFactor(0.9)
+                .frame(minHeight: 34, alignment: .topLeading)
         }
+    }
+
+    @ViewBuilder
+    private var headlineView: some View {
+        #if HAS_REVENUECAT
+        if let trial = trialHeadlineLabel {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Start your \(trial)")
+                    .font(Theme.display(24))
+                    .foregroundStyle(Theme.ink)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+                Text("of Posture+")
+                    .font(Theme.display(24))
+                    .foregroundStyle(Theme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+            }
+        } else {
+            Text("Posture that grows with you.")
+                .font(Theme.display(26))
+                .foregroundStyle(Theme.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+        }
+        #else
+        Text("Posture that grows with you.")
+            .font(Theme.display(26))
+            .foregroundStyle(Theme.ink)
+            .lineLimit(2)
+            .minimumScaleFactor(0.85)
+        #endif
     }
 
     /// Under the trial headline, anchor the "then $X" price so the cost after the
@@ -244,17 +284,16 @@ struct PaywallView: View {
         return "Unlock every Posture+ feature."
     }
 
-    private var headlineText: String {
+    /// Intro-offer phrase for the headline's first line (e.g. "7-day free trial").
+    private var trialHeadlineLabel: String? {
         #if HAS_REVENUECAT
-        if let pkg = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
-           subscriptions.isEligibleForIntroOffer(pkg),
-           let trial = pkg.postureIntroOfferLabel {
-            // One flowing sentence - a hard \n here used to collide with
-            // lineLimit(2) and truncate to "Try Posture+…".
-            return "Start your \(trial) of Posture+"
-        }
+        guard let package = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
+              package.posturePackageKind != .lifetime,
+              subscriptions.isEligibleForIntroOffer(package) else { return nil }
+        return package.postureIntroOfferLabel
+        #else
+        return nil
         #endif
-        return "Posture that grows with you."
     }
 
     private var trustStrip: some View {
@@ -599,12 +638,12 @@ private struct PosturePlanCard: View {
                     Circle()
                         .stroke(isSelected ? Theme.sage : Theme.ink3.opacity(0.4), lineWidth: 2)
                         .frame(width: 22, height: 22)
-                    if isSelected {
-                        Circle()
-                            .fill(Theme.sage)
-                            .frame(width: 12, height: 12)
-                    }
+                    Circle()
+                        .fill(Theme.sage)
+                        .frame(width: 12, height: 12)
+                        .opacity(isSelected ? 1 : 0)
                 }
+                .animation(nil, value: isSelected)
 
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
@@ -627,11 +666,12 @@ private struct PosturePlanCard: View {
                                 .background(Theme.sage, in: Capsule())
                         }
                     }
-                    if let secondary = secondaryLine {
-                        Text(secondary)
-                            .font(Theme.font(.caption2, weight: .medium))
-                            .foregroundStyle(Theme.ink3)
-                    }
+                    Text(secondaryLine ?? " ")
+                        .font(Theme.font(.caption2, weight: .medium))
+                        .foregroundStyle(Theme.ink3)
+                        .lineLimit(1)
+                        .frame(minHeight: 14, alignment: .leading)
+                        .opacity(secondaryLine == nil ? 0 : 1)
                 }
 
                 Spacer(minLength: 8)
