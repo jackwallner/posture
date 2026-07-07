@@ -61,12 +61,15 @@ pipeline in the app.
     + minute samples, credits the streak on completion, and runs the
     ActivityKit Live Activity (countdown + live alignment in the Dynamic
     Island). Custom-length sessions set `countsForLevel: false` (streak
-    only). Walks pass `repsTarget: 0`. The user's *very first* practice session
-    also passes `repsTarget: 0` (see `nextConfig`) so a brand-new user reaches
-    a recorded, completed session with no warm-up friction; reps begin at
-    session 2. Onboarding calibration honors `GoalSettings.postureFocus` (a
-    standing-only user skips the sitting reads and vice versa); Settings →
-    Recalibrate always runs all four. `save()` is subset-safe.
+    only). Walks pass `repsTarget: 0`. Every practice session (including the
+    first) opens with the chin-tuck warm-up; the reps screen surfaces a "Skip
+    the warm-up" button after ~10s so undetected reps never strand a new user.
+    Onboarding calibration honors `GoalSettings.postureFocus` (a standing-only
+    user skips the sitting reads and vice versa); Settings → Recalibrate offers
+    a per-posture chooser (standing / sitting / walking / everything).
+    `CalibrationView.save()` is merge-safe: a partial recalibrate carries the
+    other posture's baseline/slouch range AND the walking baseline forward from
+    the previous `Calibration` row (a fresh row would otherwise drop them).
   - `AchievementCatalog` — display-only badges derived at read time from
     streak + session rows (no persistence). Surfaces: `AchievementsView`
     grid, Today teaser row, summary unlock lines.

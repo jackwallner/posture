@@ -11,6 +11,11 @@ struct CalibrationView: View {
     enum Mode {
         case onboarding
         case quickRecalibrate
+        /// Settings → Recalibrate lets the user retune just one posture. Only
+        /// that posture's two reads run; `save()` merges them onto the existing
+        /// calibration so the other posture (and the walk baseline) survive.
+        case recalibrateStanding
+        case recalibrateSitting
     }
 
     let mode: Mode
@@ -121,11 +126,19 @@ struct CalibrationView: View {
     /// versa). The full four are always available later via Settings →
     /// Recalibrate (`.quickRecalibrate`), where we don't filter.
     private var steps: [PoseStep] {
-        guard mode == .onboarding else { return PoseStep.allCases }
-        switch settings.postureFocus {
-        case .standing: return [.standing, .standingSlouch]
-        case .sitting: return [.sitting, .sittingSlouch]
-        case .both: return PoseStep.allCases
+        switch mode {
+        case .quickRecalibrate:
+            return PoseStep.allCases
+        case .recalibrateStanding:
+            return [.standing, .standingSlouch]
+        case .recalibrateSitting:
+            return [.sitting, .sittingSlouch]
+        case .onboarding:
+            switch settings.postureFocus {
+            case .standing: return [.standing, .standingSlouch]
+            case .sitting: return [.sitting, .sittingSlouch]
+            case .both: return PoseStep.allCases
+            }
         }
     }
 
@@ -742,24 +755,38 @@ struct CalibrationView: View {
         // either is enough to save. Prefer the sitting read for the shared
         // yaw/roll anchor when present, else fall back to standing.
         guard standing != nil || sitting != nil else { return }
+
+        // A partial recalibrate (one posture) must not wipe the rest. Carry the
+        // existing calibration's values forward for anything this session
+        // didn't recapture - the other posture's baseline/slouch range AND the
+        // walking baseline (which a fresh row would otherwise silently drop).
+        let existing = CalibrationService(context: context).current()
+
+        // Per-posture aligned baselines, merged with what's already stored.
+        let standingPitch = standing?.pitch ?? existing?.airpodsStandingPitch
+        let sittingPitch = sitting?.pitch ?? existing?.airpodsSittingPitch
+
         let anchor = sitting ?? standing
-        // Aligned reads are "head level", so the mean of whichever we captured
-        // is the baseline; confidence is how tight those holds were.
-        let poseMeans = [standing?.pitch, sitting?.pitch].compactMap { $0 }
+        // Aligned reads are "head level", so the mean of the merged poses is the
+        // combined baseline; confidence is how tight this session's holds were.
+        let poseMeans = [standingPitch, sittingPitch].compactMap { $0 }
         let baseline = PostureScoring.combinedBaseline(poseMeans) ?? poseMeans.first ?? 0
         let confidences = [standing?.standardDeviation, sitting?.standardDeviation]
             .compactMap { $0 }
             .map { PostureScoring.captureConfidence(standardDeviation: $0) }
         let confidence = confidences.isEmpty
-            ? nil
+            ? existing?.baselineConfidence
             : confidences.reduce(0, +) / Double(confidences.count)
         savedConfidence = confidence
 
-        // Per-posture slouch ranges: each slouch read against its own tall pose.
+        // Per-posture slouch ranges: each slouch read against its own tall pose,
+        // falling back to the stored range when this session skipped that pose.
         let standingSlouch: Double? = zip2(standing?.pitch, captures[.standingSlouch]?.pitch)
             .map { PostureScoring.calibratedSlouchDelta(uprightPitch: $0, slouchedPitch: $1) }
+            ?? existing?.standingSlouchDelta
         let sittingSlouch: Double? = zip2(sitting?.pitch, captures[.sittingSlouch]?.pitch)
             .map { PostureScoring.calibratedSlouchDelta(uprightPitch: $0, slouchedPitch: $1) }
+            ?? existing?.sittingSlouchDelta
         // Legacy combined delta stays as the fallback for scoring paths that
         // don't know the posture.
         let combinedDeltas = [standingSlouch, sittingSlouch].compactMap { $0 }
@@ -773,14 +800,16 @@ struct CalibrationView: View {
             baseRoll: 0,
             slouchPitchDelta: combinedDelta,
             airpodsPitch: baseline,
-            airpodsRoll: anchor?.roll,
-            airpodsYaw: anchor?.yaw,
-            airpodsStandingPitch: standing?.pitch,
-            airpodsSittingPitch: sitting?.pitch,
+            airpodsRoll: anchor?.roll ?? existing?.airpodsRoll,
+            airpodsYaw: anchor?.yaw ?? existing?.airpodsYaw,
+            airpodsStandingPitch: standingPitch,
+            airpodsSittingPitch: sittingPitch,
             baselineConfidence: confidence,
             standingSlouchDelta: standingSlouch,
             sittingSlouchDelta: sittingSlouch
         )
+        // Preserve the one-time walking baseline across any recalibrate.
+        cal.airpodsWalkingPitch = existing?.airpodsWalkingPitch
         CalibrationService(context: context).save(cal)
         // A real AirPods capture happened - clear any deferred/no-AirPods flags.
         settings.calibrationDeferred = false

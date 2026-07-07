@@ -171,7 +171,7 @@ struct HistoryView: View {
             }
             .sheet(item: $selectedSession) { session in
                 SessionDetailView(session: session)
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
             }
         }
     }

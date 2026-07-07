@@ -18,8 +18,12 @@ struct WalkBaselineCaptureView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    /// Called when the user taps "Start my walk" on the confirmation; the
-    /// caller then starts the real walk.
+    /// Label for the done-screen button. The walk flow starts the real walk
+    /// ("Start my walk"); the Settings recalibrate path just closes ("Done").
+    var doneButtonTitle: String = "Start my walk"
+
+    /// Called when the user taps the done-screen button; the walk flow then
+    /// starts the real walk, the recalibrate flow simply dismisses.
     let onCaptured: () -> Void
 
     private enum Stage: Equatable {
@@ -199,7 +203,7 @@ struct WalkBaselineCaptureView: View {
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
             Button { onCaptured() } label: {
-                Text("Start my walk").frame(maxWidth: .infinity)
+                Text(doneButtonTitle).frame(maxWidth: .infinity)
             }
             .buttonStyle(.daylight(.primary))
             .padding(.top, 10)

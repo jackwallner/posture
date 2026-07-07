@@ -46,34 +46,38 @@ struct ProgressTabView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    if trainsBothPostures { modePicker }
-                    programHeader
-                    ProgressPathView(
-                        currentLevel: effectiveLevel,
-                        maxLevel: shownLevels.last!,
-                        isPro: isPro,
-                        onLockedTap: { showingPaywall = true }
-                    )
-                    if climbing, effectiveLevel < shownLevels.last! {
-                        ProgramStageCompareView(
+            VStack(spacing: 0) {
+                // Posture+ is pitched at the very top, pinned above the scroll,
+                // so a free user always sees the upgrade without scrolling.
+                if !isPro { proBanner }
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        if trainsBothPostures { modePicker }
+                        programHeader
+                        ProgressPathView(
                             currentLevel: effectiveLevel,
-                            nextLevel: effectiveLevel + 1
+                            maxLevel: shownLevels.last!,
+                            isPro: isPro,
+                            onLockedTap: { showingPaywall = true }
                         )
-                        levelProgressBlock
-                    } else if !isPro {
-                        Text("Top of the free program. Posture+ opens every level above.")
-                            .font(Theme.font(.footnote))
-                            .foregroundStyle(Theme.ink2)
-                            .padding(.horizontal, 4)
+                        if climbing, effectiveLevel < shownLevels.last! {
+                            ProgramStageCompareView(
+                                currentLevel: effectiveLevel,
+                                nextLevel: effectiveLevel + 1
+                            )
+                            levelProgressBlock
+                        } else if !isPro {
+                            Text("Top of the free program. Posture+ opens every level above.")
+                                .font(Theme.font(.footnote))
+                                .foregroundStyle(Theme.ink2)
+                                .padding(.horizontal, 4)
+                        }
+                        howItWorksAccordion
+                        fullProgramAccordion
                     }
-                    howItWorksAccordion
-                    fullProgramAccordion
-                    if !isPro { proCTA }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
             }
             .dawnBackground()
             .navigationTitle("Progress")
@@ -82,6 +86,43 @@ struct ProgressTabView: View {
                 PaywallView(paywallImpressionId: "posture_progress_tab")
             }
         }
+    }
+
+    /// Slim, always-visible upgrade bar pinned to the top of the tab for free
+    /// users - the omnipresent pitch, like the baseball app.
+    private var proBanner: some View {
+        Button { showingPaywall = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Theme.goodText)
+                    .frame(width: 32, height: 32)
+                    .background(Theme.paper2, in: Circle())
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Unlock the full program")
+                        .font(Theme.font(.subheadline, weight: .bold))
+                        .foregroundStyle(Theme.ink)
+                    Text("Every level above \(PracticeProgression.freeLevelCap), longer holds, higher targets.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink2)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                }
+                Spacer(minLength: 0)
+                Text("Posture+")
+                    .font(Theme.font(.caption, weight: .bold))
+                    .foregroundStyle(Theme.goodText)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.goodText)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.sageTint)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Unlock the full program with Posture+")
     }
 
     /// Standing | Sitting switch for `.both`-focus users - each posture has its
@@ -101,8 +142,8 @@ struct ProgressTabView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .foregroundStyle(selected ? Theme.paper : Theme.ink2)
-                    .background(selected ? Theme.goodText : Color.clear, in: Capsule())
+                    .foregroundStyle(selected ? Theme.ink : Theme.ink2)
+                    .background(selected ? Theme.sage : Color.clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
@@ -253,28 +294,4 @@ struct ProgressTabView: View {
         .onTapGesture { if !showDetail { showingPaywall = true } }
     }
 
-    private var proCTA: some View {
-        Button { showingPaywall = true } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("POSTURE+")
-                    .font(Theme.font(.caption2, weight: .semibold))
-                    .tracking(0.8)
-                    .foregroundStyle(Theme.goodText)
-                Text("See the whole climb.")
-                    .font(Theme.display(22))
-                    .foregroundStyle(Theme.ink)
-                Text("Unlock every level above \(PracticeProgression.freeLevelCap): longer holds, higher bars, and the training dose that rebuilds your default posture.")
-                    .font(Theme.font(.footnote))
-                    .foregroundStyle(Theme.ink2)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("See plans →")
-                    .font(Theme.font(.footnote, weight: .semibold))
-                    .foregroundStyle(Theme.goodText)
-            }
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.sageTint, in: RoundedRectangle(cornerRadius: 14))
-        }
-        .buttonStyle(.plain)
-    }
 }

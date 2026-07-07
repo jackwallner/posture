@@ -24,6 +24,9 @@ struct SettingsView: View {
     @State private var trialOfferPackage: Package?
     #endif
     @State private var showingQuickRecalibrate = false
+    @State private var showingRecalibrateChoice = false
+    @State private var recalibratePosture: RecalibratePosture?
+    @State private var showingWalkRecapture = false
     @State private var showingWalkBaselineReset = false
     @State private var hasWalkBaseline = false
     @State private var notificationsDenied = false
@@ -31,6 +34,14 @@ struct SettingsView: View {
     @State private var showingAirpodsBackgroundConfirm = false
 
     private let intervalOptions = [15, 30, 60]
+
+    /// Which posture the Recalibrate chooser is retuning. Standing/sitting run
+    /// the two-read calibration scoped to that posture; walking runs the
+    /// walking-baseline capture. Each is merge-safe, so the others are kept.
+    private enum RecalibratePosture: Int, Identifiable {
+        case standing, sitting
+        var id: Int { rawValue }
+    }
 
     var body: some View {
         @Bindable var settings = settings
@@ -167,16 +178,19 @@ struct SettingsView: View {
                     // zero baseline. A completed capture supersedes the old
                     // row anyway (`current()` returns the newest).
                     Button("Recalibrate") {
-                        showingQuickRecalibrate = true
+                        showingRecalibrateChoice = true
                     }
                     .foregroundStyle(Theme.goodText)
+                    Text("Retune just the posture that's drifted, standing, sitting, or your walking stride. Recalibrating one keeps the others as they are.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink2)
 
                     if hasWalkBaseline {
                         Button("Reset walking posture") {
                             showingWalkBaselineReset = true
                         }
                         .foregroundStyle(Theme.ink)
-                        Text("Forgets your saved walking posture. Your next walk runs the 30-second walking setup again.")
+                        Text("Forgets your saved walking posture entirely. Your next walk runs the 30-second walking setup again.")
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
@@ -291,6 +305,21 @@ struct SettingsView: View {
             .sheet(isPresented: $showingQuickRecalibrate, onDismiss: { refreshWalkBaseline() }) {
                 CalibrationView(mode: .quickRecalibrate)
             }
+            .confirmationDialog("What would you like to recalibrate?",
+                                isPresented: $showingRecalibrateChoice,
+                                titleVisibility: .visible) {
+                Button("Standing posture") { recalibratePosture = .standing }
+                Button("Sitting posture") { recalibratePosture = .sitting }
+                Button("Walking posture") { showingWalkRecapture = true }
+                Button("Everything (all four reads)") { showingQuickRecalibrate = true }
+                Button("Cancel", role: .cancel) { }
+            }
+            .sheet(item: $recalibratePosture, onDismiss: { refreshWalkBaseline() }) { posture in
+                CalibrationView(mode: posture == .standing ? .recalibrateStanding : .recalibrateSitting)
+            }
+            .sheet(isPresented: $showingWalkRecapture, onDismiss: { refreshWalkBaseline() }) {
+                WalkBaselineCaptureView(doneButtonTitle: "Done") { showingWalkRecapture = false }
+            }
             .alert("Reset walking posture?", isPresented: $showingWalkBaselineReset) {
                 Button("Cancel", role: .cancel) { }
                 Button("Reset", role: .destructive) {
@@ -352,10 +381,6 @@ struct SettingsView: View {
     }
 
     #if HAS_REVENUECAT
-    private var hasTrialOffer: Bool {
-        subscriptions.products.contains { subscriptions.isEligibleForIntroOffer($0) }
-    }
-
     private var directTrialPackage: Package? {
         let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
         return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
@@ -386,12 +411,11 @@ struct SettingsView: View {
         paywallImpressionId = feature.paywallImpressionId
         trialOfferDetent = .fraction(0.68)
         #if HAS_REVENUECAT
-        if hasTrialOffer {
-            trialOfferPackage = directTrialPackage
-            showTrialOffer = true
-        } else {
-            showTrialPaywall = true
-        }
+        // Always lead with the focused trial sheet. When no intro-eligible
+        // package exists, it presents as a plain upgrade pitch and "Start"
+        // routes through to the full paywall (directPurchase == false).
+        trialOfferPackage = directTrialPackage
+        showTrialOffer = true
         #else
         showTrialPaywall = true
         #endif

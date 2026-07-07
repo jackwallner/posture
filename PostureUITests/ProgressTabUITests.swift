@@ -34,12 +34,11 @@ final class ProgressTabUITests: XCTestCase {
         app.tabBars.buttons["Progress"].tap()
 
         XCTAssertTrue(app.staticTexts["Your program"].waitForExistence(timeout: 8))
-        XCTAssertTrue(app.staticTexts["Level 1"].exists)
-        XCTAssertTrue(app.staticTexts["NOW"].exists)
-        XCTAssertTrue(app.staticTexts["NEXT"].exists)
+        // Free users see the pinned Posture+ upgrade banner at the very top.
+        XCTAssertTrue(app.staticTexts["Unlock the full program"].exists)
         XCTAssertTrue(app.staticTexts.matching(
-            NSPredicate(format: "label CONTAINS 'to reach Level'")
-        ).firstMatch.exists)
+            NSPredicate(format: "label BEGINSWITH 'Level '")
+        ).firstMatch.waitForExistence(timeout: 4))
         XCTAssertTrue(app.staticTexts["How the program works"].exists)
         XCTAssertTrue(app.staticTexts["Full program"].exists)
     }

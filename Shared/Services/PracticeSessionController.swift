@@ -264,16 +264,12 @@ final class PracticeSessionController {
             level: PracticeProgression.level(passedSessions: passed),
             isPro: isPro
         )
-        // The very first practice session skips the chin-tuck warm-up: a brand-
-        // new user should reach a completed, recorded session with zero friction
-        // (a warm-up that isn't detecting can otherwise strand them before any
-        // time is logged, so the session never lands in History). Reps begin
-        // from the second session onward, once they're oriented.
-        let practiceRaw = PostureSessionKind.practice.rawValue
-        let priorPractices = (try? context.fetchCount(FetchDescriptor<PostureSession>(
-            predicate: #Predicate { $0.kindRaw == practiceRaw }
-        ))) ?? 0
-        let reps = priorPractices == 0 ? 0 : PostureScoring.ChinTuck.defaultRepsTarget
+        // Every practice session opens with the chin-tuck warm-up, including
+        // the first. The pre-start copy promises it, and it's the neck reset
+        // that makes the hold worthwhile. If detection never lands (odd AirPods
+        // pitch response), the reps screen surfaces a "Skip the warm-up" button
+        // after ~10s so no one is stranded before any time is logged.
+        let reps = PostureScoring.ChinTuck.defaultRepsTarget
         return Config(
             kind: .practice,
             targetSeconds: PracticeProgression.sessionSeconds(forLevel: level),

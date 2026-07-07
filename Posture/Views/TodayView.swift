@@ -401,8 +401,8 @@ struct TodayView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .foregroundStyle(selected ? Theme.paper : Theme.ink2)
-                    .background(selected ? Theme.goodText : Color.clear, in: Capsule())
+                    .foregroundStyle(selected ? Theme.ink : Theme.ink2)
+                    .background(selected ? Theme.sage : Color.clear, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
@@ -531,22 +531,17 @@ struct TodayView: View {
         walkTrialError = nil
         walkTrialDetent = .fraction(0.68)
         #if HAS_REVENUECAT
-        if walkHasTrialOffer {
-            walkTrialPackage = walkDirectTrialPackage
-            showingWalkTrialOffer = true
-        } else {
-            showingWalkPaywall = true
-        }
+        // Always lead with the focused trial sheet (same as Settings' locked
+        // toggles). No eligible intro offer → it shows as a plain upgrade pitch
+        // and "Start" falls through to the full paywall (directPurchase false).
+        walkTrialPackage = walkDirectTrialPackage
+        showingWalkTrialOffer = true
         #else
         showingWalkPaywall = true
         #endif
     }
 
     #if HAS_REVENUECAT
-    private var walkHasTrialOffer: Bool {
-        subscriptions.products.contains { subscriptions.isEligibleForIntroOffer($0) }
-    }
-
     private var walkDirectTrialPackage: Package? {
         let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
         return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
