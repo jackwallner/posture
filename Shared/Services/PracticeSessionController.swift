@@ -54,6 +54,9 @@ final class PracticeSessionController {
         var targetDistanceMeters: Double = 0
         /// Layer GPS on top of the pedometer for accurate walk distance.
         var useGPS: Bool = false
+        /// Which posture ladder this practice session belongs to. nil for walks
+        /// and legacy paths; scoring then falls back to the nearest baseline.
+        var postureMode: PostureMode? = nil
     }
 
     struct Result: Sendable {
@@ -237,10 +240,26 @@ final class PracticeSessionController {
         return (try? context.fetchCount(descriptor)) ?? 0
     }
 
-    /// Today's practice config from the level ramp (free users cap at
-    /// `PracticeProgression.freeLevelCap`).
-    static func nextConfig(context: ModelContext, isPro: Bool) -> Config {
-        let passed = passedPracticeCount(context: context)
+    /// Passed practice sessions for one posture ladder. Pre-split rows carry no
+    /// mode (`postureModeRaw == ""`) and are grandfathered into *every* ladder
+    /// so existing users keep their level when the standing/sitting split ships.
+    static func passedPracticeCount(context: ModelContext, mode: PostureMode) -> Int {
+        let practiceRaw = PostureSessionKind.practice.rawValue
+        let modeRaw = mode.rawValue
+        let descriptor = FetchDescriptor<PostureSession>(
+            predicate: #Predicate {
+                $0.kindRaw == practiceRaw && $0.passed
+                    && ($0.postureModeRaw == modeRaw || $0.postureModeRaw == "")
+            }
+        )
+        return (try? context.fetchCount(descriptor)) ?? 0
+    }
+
+    /// Today's practice config from the level ramp for one posture (free users
+    /// cap at `PracticeProgression.freeLevelCap`). Each mode ramps on its own
+    /// passed-session count.
+    static func nextConfig(context: ModelContext, isPro: Bool, mode: PostureMode) -> Config {
+        let passed = passedPracticeCount(context: context, mode: mode)
         let level = PracticeProgression.effectiveLevel(
             level: PracticeProgression.level(passedSessions: passed),
             isPro: isPro
@@ -260,7 +279,8 @@ final class PracticeSessionController {
             targetSeconds: PracticeProgression.sessionSeconds(forLevel: level),
             targetPercent: PracticeProgression.targetPercent(forLevel: level),
             level: level,
-            repsTarget: reps
+            repsTarget: reps,
+            postureMode: mode
         )
     }
 
@@ -428,7 +448,8 @@ final class PracticeSessionController {
                 combined: baseline,
                 standingSlouchDelta: calibration.standingSlouchDelta,
                 sittingSlouchDelta: calibration.sittingSlouchDelta,
-                fallbackSlouchDelta: calibration.slouchPitchDelta
+                fallbackSlouchDelta: calibration.slouchPitchDelta,
+                mode: config.postureMode
             )
             quality = PostureScoring.quality(
                 deviation: scoredPitch - reference.baseline,
@@ -611,7 +632,14 @@ final class PracticeSessionController {
         let passed = config.kind == .practice && completed && config.countsForLevel
             && alignedPercent >= config.targetPercent
 
-        let passedBefore = Self.passedPracticeCount(context: context)
+        // Level math is scoped to this session's posture ladder (each posture
+        // ramps independently). Non-practice paths fall back to the total.
+        let passedBefore: Int = {
+            if config.kind == .practice, let mode = config.postureMode {
+                return Self.passedPracticeCount(context: context, mode: mode)
+            }
+            return Self.passedPracticeCount(context: context)
+        }()
         let levelBefore = PracticeProgression.level(passedSessions: passedBefore)
 
         // Snapshot the badge set before this session lands, so the summary
@@ -628,6 +656,7 @@ final class PracticeSessionController {
             badSeconds: bad,
             source: .airpods,
             kind: config.kind,
+            postureMode: config.postureMode,
             targetSeconds: config.targetSeconds,
             targetPercent: config.targetPercent,
             alignedPercent: alignedPercent,

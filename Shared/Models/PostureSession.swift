@@ -24,6 +24,13 @@ final class PostureSession {
     /// The session met its aligned-% target (level credit).
     var passed: Bool = false
 
+    // Which posture this practice session trained (2026-07 standing/sitting
+    // split). Empty on walks, legacy rows, and pre-split practice sessions;
+    // those pre-split passes are grandfathered into BOTH ladders at read time
+    // (see `PracticeSessionController.passedPracticeCount(context:mode:)`), so
+    // nobody loses a level. Additive, defaulted -> lightweight migration.
+    var postureModeRaw: String = ""
+
     // Walk metrics (2026-07 walk rework). Defaulted so the migration stays
     // lightweight; zero on practice rows and pre-rework walks.
     /// Best available walked distance in meters (GPS when active, else the
@@ -46,6 +53,12 @@ final class PostureSession {
         set { kindRaw = newValue.rawValue }
     }
 
+    /// Standing/sitting for practice rows; nil on walks, legacy, and pre-split rows.
+    var postureMode: PostureMode? {
+        get { PostureMode(rawValue: postureModeRaw) }
+        set { postureModeRaw = newValue?.rawValue ?? "" }
+    }
+
     var dayKey: Date { Calendar.current.startOfDay(for: startedAt) }
 
     init(
@@ -58,6 +71,7 @@ final class PostureSession {
         badSeconds: Int,
         source: PostureSource,
         kind: PostureSessionKind = .legacy,
+        postureMode: PostureMode? = nil,
         targetSeconds: Int = 0,
         targetPercent: Int = 0,
         alignedPercent: Int = 0,
@@ -77,6 +91,7 @@ final class PostureSession {
         self.badSeconds = badSeconds
         self.sourceRaw = source.rawValue
         self.kindRaw = kind.rawValue
+        self.postureModeRaw = postureMode?.rawValue ?? ""
         self.targetSeconds = targetSeconds
         self.targetPercent = targetPercent
         self.alignedPercent = alignedPercent
@@ -102,4 +117,34 @@ enum PostureSource: String, Codable, CaseIterable, Sendable {
     case camera
     case airpods
     case watch
+}
+
+/// Which posture a practice session trains. A "both"-focus user picks one per
+/// session and each has its own level ladder; single-focus users only ever use
+/// their one mode. Legacy/walk rows carry no mode.
+enum PostureMode: String, Codable, CaseIterable, Sendable {
+    case standing
+    case sitting
+
+    var label: String {
+        switch self {
+        case .standing: return "Standing"
+        case .sitting: return "Sitting"
+        }
+    }
+
+    /// Lowercased for inline copy ("standing tall").
+    var word: String {
+        switch self {
+        case .standing: return "standing"
+        case .sitting: return "sitting"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .standing: return "figure.stand"
+        case .sitting: return "figure.seated.side"
+        }
+    }
 }

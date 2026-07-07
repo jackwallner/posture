@@ -24,15 +24,28 @@ enum AchievementCatalog {
         let passedPractices = practices.filter(\.passed).sorted { $0.startedAt < $1.startedAt }
         let walks = sessions.filter { $0.kind == .walk && $0.completed }.sorted { $0.startedAt < $1.startedAt }
 
-        let level = PracticeProgression.level(passedSessions: passedPractices.count)
+        // Levels are per-posture ladders now (standing/sitting). Pre-split rows
+        // (nil mode) are grandfathered into both, matching the ladder counts.
+        // A level badge reflects the *highest* ladder reached, and is earned the
+        // moment *either* ladder crosses it - so a "both" user doesn't have to
+        // double the work, and a legacy/single-focus user is unaffected.
+        let standingPassed = passedPractices.filter { $0.postureMode == .standing || $0.postureMode == nil }
+        let sittingPassed = passedPractices.filter { $0.postureMode == .sitting || $0.postureMode == nil }
+        let level = max(
+            PracticeProgression.level(passedSessions: standingPassed.count),
+            PracticeProgression.level(passedSessions: sittingPassed.count)
+        )
         let bestStreak = max(streak?.longestStreak ?? 0, StreakService.displayStreak(for: streak, at: date))
         let streakDate = streak?.lastActiveDay
 
-        /// The session whose pass pushed the ladder to `target`, if reached.
+        /// The earliest date at which *either* ladder reached `target`.
         func levelEarnedAt(_ target: Int) -> Date? {
             let needed = PracticeProgression.threshold(forLevel: target)
-            guard passedPractices.count >= needed, needed > 0 else { return nil }
-            return passedPractices[needed - 1].startedAt
+            guard needed > 0 else { return nil }
+            func date(_ rows: [PostureSession]) -> Date? {
+                rows.count >= needed ? rows[needed - 1].startedAt : nil
+            }
+            return [date(standingPassed), date(sittingPassed)].compactMap { $0 }.min()
         }
 
         func streakBadge(_ days: Int, icon: String, subtitle: String) -> Achievement {

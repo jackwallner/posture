@@ -6,13 +6,21 @@ import SwiftUI
 /// hold a minute longer and the bar a notch higher. Free tier climbs to
 /// level 2; the rest of the ladder is Posture+.
 struct LevelLadderView: View {
+    /// When set (a `.both`-focus user), the ladder is scoped to one posture;
+    /// nil counts every passed practice (single-focus or generic entry).
+    var mode: PostureMode? = nil
+
     @Environment(\.dismiss) private var dismiss
     @Query private var sessions: [PostureSession]
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
 
     private var passedCount: Int {
-        sessions.filter { $0.kind == .practice && $0.passed }.count
+        sessions.filter {
+            guard $0.kind == .practice, $0.passed else { return false }
+            guard let mode else { return true }
+            return $0.postureMode == mode || $0.postureMode == nil
+        }.count
     }
 
     private var trueLevel: Int {
@@ -63,11 +71,13 @@ struct LevelLadderView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Level \(effectiveLevel)")
+            Text(mode.map { "\($0.label) · Level \(effectiveLevel)" } ?? "Level \(effectiveLevel)")
                 .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.goodText)
-            Text("Your practice grows with you.")
+            Text(mode == nil
+                 ? "Your practice grows with you."
+                 : "Your \(mode!.word) practice grows with you.")
                 .font(Theme.display(26))
                 .foregroundStyle(Theme.ink)
             let progress = PracticeProgression.progressInLevel(passedSessions: passedCount)

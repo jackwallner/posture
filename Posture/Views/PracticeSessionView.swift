@@ -10,6 +10,10 @@ struct PracticeSessionView: View {
     @Environment(GoalSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
+    /// Which posture ladder this session trains. Today passes the user's
+    /// selected mode; the notification-tap path defaults to standing.
+    var mode: PostureMode = .standing
+
     @State private var controller: PracticeSessionController?
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
@@ -78,7 +82,7 @@ struct PracticeSessionView: View {
 
     private func preStartView(_ controller: PracticeSessionController) -> some View {
         let base = PracticeSessionController.nextConfig(
-            context: context, isPro: subscriptions.isProSubscriber
+            context: context, isPro: subscriptions.isProSubscriber, mode: mode
         )
         let config = configApplyingCustomDuration(base)
         return VStack(alignment: .leading, spacing: 0) {
@@ -91,7 +95,7 @@ struct PracticeSessionView: View {
 
             Spacer()
 
-            Text("Today's practice.")
+            Text("\(mode.label) practice.")
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
 
@@ -145,7 +149,8 @@ struct PracticeSessionView: View {
             targetPercent: base.targetPercent,
             level: base.level,
             repsTarget: base.repsTarget,
-            countsForLevel: false
+            countsForLevel: false,
+            postureMode: base.postureMode
         )
     }
 
@@ -605,12 +610,11 @@ struct PracticeSessionView: View {
         return minutes == 1 ? "1 minute" : "\(minutes) minutes"
     }
 
-    /// Coaching copy leans toward the posture the user said they want to fix.
+    /// Coaching copy names the posture this session is training.
     private var focusPhrase: String {
-        switch settings.postureFocus {
-        case .sitting: return "sitting tall"
+        switch mode {
         case .standing: return "standing tall"
-        case .both: return "held tall, sitting or standing"
+        case .sitting: return "sitting tall"
         }
     }
 }

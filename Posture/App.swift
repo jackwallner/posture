@@ -89,7 +89,7 @@ private struct AirpodsRootView: View {
                 AcknowledgmentView(scheduledAt: cover.scheduledAt, notificationIndex: cover.index)
             }
             .fullScreenCover(isPresented: $showingPracticeFromReminder) {
-                PracticeSessionView()
+                PracticeSessionView(mode: settings.postureFocus.defaultMode)
             }
             .onChange(of: settings.hasCompletedOnboarding) { _, completed in
                 // First time the user finishes onboarding - now the

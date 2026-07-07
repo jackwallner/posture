@@ -3,14 +3,27 @@ import SwiftUI
 
 /// Program map: path, now/next requirements, pips toward the next level.
 struct ProgressTabView: View {
+    @Environment(GoalSettings.self) private var settings
     @Query private var sessions: [PostureSession]
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
     @State private var showHowItWorks = false
     @State private var showFullProgram = false
+    /// Selected posture ladder for `.both`-focus users.
+    @State private var selectedMode: PostureMode = .standing
 
+    private var trainsBothPostures: Bool { settings.postureFocus.trainsBoth }
+    private var activeMode: PostureMode {
+        trainsBothPostures ? selectedMode : settings.postureFocus.defaultMode
+    }
+
+    /// Passed practices for the active posture; pre-split rows (nil mode) are
+    /// grandfathered into every ladder so no level is lost on migration.
     private var passedCount: Int {
-        sessions.filter { $0.kind == .practice && $0.passed }.count
+        sessions.filter {
+            $0.kind == .practice && $0.passed
+                && ($0.postureMode == activeMode || $0.postureMode == nil)
+        }.count
     }
 
     private var isPro: Bool { subscriptions.isProSubscriber }
@@ -35,6 +48,7 @@ struct ProgressTabView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    if trainsBothPostures { modePicker }
                     programHeader
                     ProgressPathView(
                         currentLevel: effectiveLevel,
@@ -70,10 +84,41 @@ struct ProgressTabView: View {
         }
     }
 
+    /// Standing | Sitting switch for `.both`-focus users - each posture has its
+    /// own program ladder.
+    private var modePicker: some View {
+        HStack(spacing: 4) {
+            ForEach(PostureMode.allCases, id: \.self) { m in
+                let selected = activeMode == m
+                Button {
+                    withAnimation(.snappy(duration: 0.22)) { selectedMode = m }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: m.icon)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(m.label)
+                            .font(Theme.font(.footnote, weight: .semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(selected ? Theme.paper : Theme.ink2)
+                    .background(selected ? Theme.goodText : Color.clear, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
+            }
+        }
+        .padding(4)
+        .background(Theme.paper3, in: Capsule())
+        .accessibilityLabel("Choose posture program")
+    }
+
     private var programHeader: some View {
         let minutes = PracticeProgression.sessionSeconds(forLevel: effectiveLevel) / 60
         let target = PracticeProgression.targetPercent(forLevel: effectiveLevel)
         return VStack(alignment: .leading, spacing: 4) {
+            // Eyebrow stays generic; the Standing|Sitting toggle directly above
+            // scopes which program this is (and keeps the copy stable).
             Text("Your program")
                 .font(Theme.font(.caption2, weight: .semibold))
                 .tracking(0.8)

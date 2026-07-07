@@ -63,7 +63,7 @@ struct StreakDetailView: View {
             HStack(spacing: 8) {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(Theme.borderlineText)
+                    .foregroundStyle(Theme.streakFlame)
                 Text(currentStreak == 1 ? "1 day" : "\(currentStreak) days")
                     .font(Theme.display(34))
                     .foregroundStyle(Theme.ink)

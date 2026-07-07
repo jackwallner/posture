@@ -56,6 +56,20 @@ struct TrialOfferSheet: View {
         )
     }
 
+    /// A brighter, higher-contrast gradient for the primary CTA - the muted
+    /// hero gradient read as low-energy on the button. Vivid green into the
+    /// ritual lavender pops against the pale sheet and says "tap me".
+    private var ctaGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                Color(red: 0.216, green: 0.792, blue: 0.545), // vivid green
+                Color(red: 0.416, green: 0.671, blue: 0.898)  // bright sky-blue
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+
     var body: some View {
         ZStack {
             Theme.paper.ignoresSafeArea()
@@ -162,17 +176,28 @@ struct TrialOfferSheet: View {
 
                     Button(action: onStartTrial) {
                         ZStack {
-                            Text("Start My Free Trial")
-                                .font(Theme.font(.headline, weight: .bold))
-                                .foregroundStyle(.white)
-                                .opacity(isPurchasing ? 0 : 1)
+                            HStack(spacing: 8) {
+                                Text("Start My Free Trial")
+                                    .font(Theme.font(.headline, weight: .bold))
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 15, weight: .bold))
+                            }
+                            .foregroundStyle(.white)
+                            .opacity(isPurchasing ? 0 : 1)
                             if isPurchasing {
                                 ProgressView().tint(.white)
                             }
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 13)
-                        .background(heroGradient, in: Capsule())
+                        .padding(.vertical, 16)
+                        .background(ctaGradient, in: Capsule())
+                        .overlay(
+                            Capsule()
+                                .strokeBorder(.white.opacity(0.35), lineWidth: 1)
+                        )
+                        .shadow(color: Theme.sage.opacity(0.55), radius: 16, x: 0, y: 6)
+                        .scaleEffect(reduceMotion ? 1 : (animateGlow ? 1.02 : 0.99))
+                        .animation(glowAnimation, value: animateGlow)
                     }
                     .buttonStyle(.plain)
                     .disabled(isPurchasing)

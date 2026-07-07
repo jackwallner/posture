@@ -432,6 +432,9 @@ struct SettingsView: View {
             showingWatchSyncInfo = true
         case .airpodsBackground:
             showingAirpodsBackgroundConfirm = true
+        case .walkMode:
+            // Walk mode gates from Today, not Settings; nothing to toggle here.
+            break
         }
     }
 

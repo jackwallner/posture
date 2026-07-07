@@ -69,8 +69,21 @@ enum PostureScoring {
         combined: Double,
         standingSlouchDelta: Double?,
         sittingSlouchDelta: Double?,
-        fallbackSlouchDelta: Double
+        fallbackSlouchDelta: Double,
+        mode: PostureMode? = nil
     ) -> (baseline: Double, slouchDelta: Double) {
+        // When the session explicitly trains one posture, lock the reference to
+        // it - never auto-switch to the other baseline just because the head
+        // drifted nearer to it (that would let a standing slouch "become" a
+        // sitting pose and score fine).
+        switch mode {
+        case .standing:
+            return (standing ?? combined, standingSlouchDelta ?? fallbackSlouchDelta)
+        case .sitting:
+            return (sitting ?? combined, sittingSlouchDelta ?? fallbackSlouchDelta)
+        case .none:
+            break
+        }
         switch (standing, sitting) {
         case let (s?, t?):
             if abs(pitch - s) < abs(pitch - t) {

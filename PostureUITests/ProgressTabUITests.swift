@@ -38,7 +38,7 @@ final class ProgressTabUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["NOW"].exists)
         XCTAssertTrue(app.staticTexts["NEXT"].exists)
         XCTAssertTrue(app.staticTexts.matching(
-            NSPredicate(format: "label CONTAINS 'target-met session'")
+            NSPredicate(format: "label CONTAINS 'to reach Level'")
         ).firstMatch.exists)
         XCTAssertTrue(app.staticTexts["How the program works"].exists)
         XCTAssertTrue(app.staticTexts["Full program"].exists)

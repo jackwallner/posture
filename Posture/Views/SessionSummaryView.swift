@@ -68,7 +68,7 @@ struct SessionSummaryView: View {
                     HStack(spacing: 5) {
                         Image(systemName: "flame.fill")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(Theme.borderlineText)
+                            .foregroundStyle(Theme.streakFlame)
                         Text("Day \(result.streakDays)")
                             .font(Theme.font(.footnote, weight: .semibold))
                             .foregroundStyle(Theme.ink)

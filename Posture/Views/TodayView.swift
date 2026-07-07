@@ -1,5 +1,8 @@
 import SwiftData
 import SwiftUI
+#if HAS_REVENUECAT
+import RevenueCat
+#endif
 
 struct TodayView: View {
     @Environment(\.modelContext) private var context
@@ -14,9 +17,23 @@ struct TodayView: View {
     @State private var showingSession = false
     @State private var showingWalk = false
     @State private var showingWalkPaywall = false
+    // Walk gate now leads with the focused trial sheet (like Settings' locked
+    // toggles) rather than the full paywall; "See all plans" falls through to it.
+    @State private var showingWalkTrialOffer = false
+    @State private var walkTrialInFlight = false
+    @State private var walkTrialError: String?
+    @State private var walkTrialDetent: PresentationDetent = .fraction(0.68)
+    @State private var pendingWalkPaywall = false
+    #if HAS_REVENUECAT
+    @State private var walkTrialPackage: Package?
+    #endif
     @State private var showingAchievements = false
     @State private var showingLevelLadder = false
     @State private var showingStreakDetail = false
+    /// Which posture ladder the practice card is showing. Only meaningful for
+    /// `.both`-focus users (they see the Standing|Sitting switch); single-focus
+    /// users are pinned to their one mode via `activeMode`.
+    @State private var selectedMode: PostureMode = .standing
     @State private var nextReminderText = "–"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
@@ -78,11 +95,28 @@ struct TodayView: View {
 
     // MARK: - Practice progression inputs
 
-    private var passedPracticeCount: Int {
-        sessions.filter { $0.kind == .practice && $0.passed }.count
+    /// True when the user trains both postures and therefore sees the
+    /// Standing|Sitting switch on the practice card.
+    private var trainsBothPostures: Bool { settings.postureFocus.trainsBoth }
+
+    /// The posture the practice card is currently acting on. `.both` users use
+    /// the toggle; everyone else is pinned to their single focus.
+    private var activeMode: PostureMode {
+        trainsBothPostures ? selectedMode : settings.postureFocus.defaultMode
     }
 
-    /// The practice level, capped for free users.
+    /// Passed practice sessions for one posture ladder. Pre-split rows (nil
+    /// mode) are grandfathered into every ladder, mirroring
+    /// `PracticeSessionController.passedPracticeCount(context:mode:)`.
+    private func passedCount(for mode: PostureMode) -> Int {
+        sessions.filter {
+            $0.kind == .practice && $0.passed && ($0.postureMode == mode || $0.postureMode == nil)
+        }.count
+    }
+
+    private var passedPracticeCount: Int { passedCount(for: activeMode) }
+
+    /// The active posture's level, capped for free users.
     private var practiceLevel: Int {
         PracticeProgression.effectiveLevel(
             level: PracticeProgression.level(passedSessions: passedPracticeCount),
@@ -95,10 +129,14 @@ struct TodayView: View {
             && PracticeProgression.level(passedSessions: passedPracticeCount) > PracticeProgression.freeLevelCap
     }
 
-    /// Today's completed practice session, if any (newest first).
+    /// Today's completed practice session for the active posture, if any. Each
+    /// ladder is independent: finishing standing still leaves sitting "to do".
     private var todayCompletedPractice: PostureSession? {
         let today = DateHelpers.startOfDay()
-        return sessions.first { $0.kind == .practice && $0.completed && $0.startedAt >= today }
+        return sessions.first {
+            $0.kind == .practice && $0.completed && $0.startedAt >= today
+                && $0.postureMode == activeMode
+        }
     }
 
     private var scoredAcks: [AcknowledgmentRecord] {
@@ -143,10 +181,42 @@ struct TodayView: View {
                 AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
             }
             .fullScreenCover(isPresented: $showingSession) {
-                PracticeSessionView()
+                PracticeSessionView(mode: activeMode)
             }
             .fullScreenCover(isPresented: $showingWalk) {
                 WalkSessionView()
+            }
+            .sheet(isPresented: $showingWalkTrialOffer, onDismiss: {
+                walkTrialError = nil
+                if pendingWalkPaywall {
+                    pendingWalkPaywall = false
+                    showingWalkPaywall = true
+                }
+            }) {
+                TrialOfferSheet(
+                    focus: .walkMode,
+                    offerLabel: walkTrialIntroLabel,
+                    priceLabel: walkTrialPriceLabel,
+                    directPurchase: walkTrialIsDirect,
+                    isPurchasing: walkTrialInFlight,
+                    errorMessage: walkTrialError,
+                    onStartTrial: {
+                        if walkTrialIsDirect {
+                            startWalkTrialPurchase()
+                        } else {
+                            pendingWalkPaywall = true
+                            showingWalkTrialOffer = false
+                        }
+                    },
+                    onSeeAllPlans: {
+                        pendingWalkPaywall = true
+                        showingWalkTrialOffer = false
+                    },
+                    onDismiss: { showingWalkTrialOffer = false }
+                )
+                .presentationDetents([.fraction(0.68), .large], selection: $walkTrialDetent)
+                .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled(walkTrialInFlight)
             }
             .sheet(isPresented: $showingWalkPaywall) {
                 PaywallView(paywallImpressionId: "posture_walk_gate")
@@ -161,7 +231,7 @@ struct TodayView: View {
                 AchievementsView()
             }
             .sheet(isPresented: $showingLevelLadder) {
-                LevelLadderView()
+                LevelLadderView(mode: trainsBothPostures ? activeMode : nil)
             }
             .sheet(isPresented: $showingStreakDetail) {
                 StreakDetailView()
@@ -203,7 +273,7 @@ struct TodayView: View {
                         HStack(spacing: 5) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 12, weight: .semibold))
-                                .foregroundStyle(Theme.borderlineText)
+                                .foregroundStyle(Theme.streakFlame)
                             Text("\(currentStreak)-day streak")
                                 .font(Theme.font(.footnote, weight: .semibold))
                                 .foregroundStyle(Theme.ink)
@@ -314,10 +384,40 @@ struct TodayView: View {
         }
     }
 
+    /// Standing | Sitting switch for `.both`-focus users. Each posture is its
+    /// own ladder, so flipping this swaps the level, target, and today's state.
+    private var modePicker: some View {
+        HStack(spacing: 4) {
+            ForEach(PostureMode.allCases, id: \.self) { m in
+                let selected = activeMode == m
+                Button {
+                    withAnimation(.snappy(duration: 0.22)) { selectedMode = m }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: m.icon)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(m.label)
+                            .font(Theme.font(.footnote, weight: .semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(selected ? Theme.paper : Theme.ink2)
+                    .background(selected ? Theme.goodText : Color.clear, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
+            }
+        }
+        .padding(4)
+        .background(Theme.paper3, in: Capsule())
+        .accessibilityLabel("Choose posture to train")
+    }
+
     private var practiceStartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if trainsBothPostures { modePicker }
             HStack {
-                Text("Today's practice")
+                Text(trainsBothPostures ? "\(activeMode.label) practice" : "Today's practice")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.goodText)
@@ -346,8 +446,9 @@ struct TodayView: View {
 
     private func practiceCompletedCard(_ session: PostureSession) -> some View {
         VStack(alignment: .leading, spacing: 12) {
+            if trainsBothPostures { modePicker }
             HStack {
-                Text("Practice complete")
+                Text(trainsBothPostures ? "\(activeMode.label) complete" : "Practice complete")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.goodText)
@@ -386,11 +487,7 @@ struct TodayView: View {
     /// walk paywall, so the feature sells itself.
     private var walkCard: some View {
         Button {
-            if subscriptions.isProSubscriber {
-                showingWalk = true
-            } else {
-                showingWalkPaywall = true
-            }
+            requestWalk()
         } label: {
             HStack(spacing: 14) {
                 ZStack {
@@ -423,6 +520,77 @@ struct TodayView: View {
             ? "Start a posture walk"
             : "Posture walks, a Posture plus feature")
     }
+
+    /// Pro users go straight to the walk; free users get the focused trial
+    /// sheet (with "See all plans" falling through to the full paywall).
+    private func requestWalk() {
+        if subscriptions.isProSubscriber {
+            showingWalk = true
+            return
+        }
+        walkTrialError = nil
+        walkTrialDetent = .fraction(0.68)
+        #if HAS_REVENUECAT
+        if walkHasTrialOffer {
+            walkTrialPackage = walkDirectTrialPackage
+            showingWalkTrialOffer = true
+        } else {
+            showingWalkPaywall = true
+        }
+        #else
+        showingWalkPaywall = true
+        #endif
+    }
+
+    #if HAS_REVENUECAT
+    private var walkHasTrialOffer: Bool {
+        subscriptions.products.contains { subscriptions.isEligibleForIntroOffer($0) }
+    }
+
+    private var walkDirectTrialPackage: Package? {
+        let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
+        return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
+    }
+
+    private var walkTrialIsDirect: Bool { walkDirectTrialPackage != nil }
+
+    private var walkTrialIntroLabel: String? {
+        walkTrialPackage?.postureIntroOfferLabel
+            ?? subscriptions.products.compactMap(\.postureIntroOfferLabel).first
+    }
+
+    private var walkTrialPriceLabel: String? {
+        walkTrialPackage?.posturePriceLabel ?? walkDirectTrialPackage?.posturePriceLabel
+    }
+
+    private func startWalkTrialPurchase() {
+        guard let package = walkTrialPackage ?? walkDirectTrialPackage else {
+            pendingWalkPaywall = true
+            showingWalkTrialOffer = false
+            return
+        }
+        walkTrialError = nil
+        walkTrialInFlight = true
+        Task { @MainActor in
+            defer { walkTrialInFlight = false }
+            do {
+                switch try await subscriptions.purchase(package) {
+                case .purchased, .pending:
+                    showingWalkTrialOffer = false
+                case .cancelled:
+                    walkTrialError = "Trial wasn't started. Tap again, or pick a different plan."
+                }
+            } catch {
+                walkTrialError = "Couldn't start your trial. Please try again."
+            }
+        }
+    }
+    #else
+    private var walkTrialIntroLabel: String? { nil }
+    private var walkTrialPriceLabel: String? { nil }
+    private var walkTrialIsDirect: Bool { false }
+    private func startWalkTrialPurchase() {}
+    #endif
 
     private var levelBadge: some View {
         Button { showingLevelLadder = true } label: {
@@ -465,7 +633,7 @@ struct TodayView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Theme.borderlineText)
+                                .foregroundStyle(Theme.streakFlame)
                             Text("\(currentStreak)")
                                 .font(Theme.font(.caption, weight: .bold))
                                 .foregroundStyle(Theme.ink)

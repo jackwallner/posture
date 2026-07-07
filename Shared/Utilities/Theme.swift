@@ -91,7 +91,11 @@ enum Theme {
     /// rebuilt; remove once no view references them.
     static let brandPrimary   = sage
     static let brandSecondary = sage
-    static let streakFlame    = ink2
+    /// A real flame color. The old `ink2` (grey-green) and the amber
+    /// `borderlineText` both read as a muddy blob at small sizes ("poop"); a
+    /// warm ember orange reads unmistakably as a streak flame on both the mint
+    /// canvas and the watch's black background.
+    static let streakFlame    = Color(red: 0.953, green: 0.553, blue: 0.208) // #F38D35 ember
 
     static var brandGradient: LinearGradient {
         LinearGradient(colors: [sage, sage], startPoint: .topLeading, endPoint: .bottomTrailing)

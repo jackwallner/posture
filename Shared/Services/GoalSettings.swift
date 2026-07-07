@@ -6,6 +6,24 @@ enum PostureFocus: String, CaseIterable, Sendable {
     case sitting
     case standing
     case both
+
+    /// Modes the user can train. A `.both` user gets both ladders; a
+    /// single-focus user only their one, so no picker is shown.
+    var trainableModes: [PostureMode] {
+        switch self {
+        case .standing: return [.standing]
+        case .sitting: return [.sitting]
+        case .both: return [.standing, .sitting]
+        }
+    }
+
+    var trainsBoth: Bool { self == .both }
+
+    /// Fallback mode when a picker isn't presented (single-focus users,
+    /// notification-tap sessions). A `.both` user defaults to standing.
+    var defaultMode: PostureMode {
+        self == .sitting ? .sitting : .standing
+    }
 }
 
 @MainActor

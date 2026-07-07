@@ -128,98 +128,14 @@ struct PaywallView: View {
         .frame(maxHeight: .infinity)
     }
 
-    /// Trial label ("7-day free trial") for the current selection, nil when the
-    /// selection has no usable intro offer (lifetime, or trial already spent).
-    private var selectedTrialLabel: String? {
-        #if HAS_REVENUECAT
-        guard let package = selectedPackage,
-              package.posturePackageKind != .lifetime,
-              subscriptions.isEligibleForIntroOffer(package) else { return nil }
-        return package.postureIntroOfferLabel
-        #else
-        return nil
-        #endif
-    }
-
-    /// "How your free trial works" - the timeline that spells out the deal:
-    /// everything unlocked today, a reminder before it ends, nothing charged
-    /// until then. Lifts trial conversion and cuts surprise-charge complaints.
-    private var trialTimeline: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            timelineRow(
-                icon: "lock.open.fill",
-                title: "Today",
-                text: "Unlock all-day monitoring, live nudges, and your full report, free.",
-                showsLine: true
-            )
-            timelineRow(
-                icon: "bell.fill",
-                title: reminderTitle,
-                text: "We remind you before the trial ends. Standing taller yet?",
-                showsLine: true
-            )
-            timelineRow(
-                icon: "star.fill",
-                title: trialEndTitle,
-                text: "First charge, only if you keep it. Cancel before then and pay nothing.",
-                showsLine: false
-            )
-        }
-        .padding(14)
-        .background(Theme.sageTint.opacity(0.6), in: RoundedRectangle(cornerRadius: 16))
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var reminderTitle: String {
-        guard let days = trialDays else { return "Reminder" }
-        return "Day \(max(1, days - 2))"
-    }
-
-    private var trialEndTitle: String {
-        guard let days = trialDays else { return "Trial ends" }
-        return "Day \(days)"
-    }
-
-    private func timelineRow(icon: String, title: String, text: String, showsLine: Bool) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            VStack(spacing: 2) {
-                Image(systemName: icon)
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(Theme.paper)
-                    .frame(width: 24, height: 24)
-                    .background(Theme.sage, in: Circle())
-                if showsLine {
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(Theme.sage.opacity(0.35))
-                        .frame(width: 2, height: 14)
-                }
-            }
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(Theme.font(.caption, weight: .bold))
-                    .foregroundStyle(Theme.ink)
-                Text(text)
-                    .font(Theme.font(.caption2))
-                    .foregroundStyle(Theme.ink2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(.bottom, showsLine ? 6 : 0)
-            Spacer(minLength: 0)
-        }
-    }
-
-    /// Trial vs. feature list share one slot so picking lifetime doesn't shove
-    /// the plan cards (and their selection dots) up or down.
+    /// One clean feature list for every plan. The old trial-only timeline
+    /// crammed three dated rows in and clipped the last one ("Day 7"); the
+    /// lifetime layout read better, so subscriptions use it too. The trial's
+    /// dates still surface up front - in the headline/subtitle and the
+    /// reminder/billing line under the CTA - so nothing is lost.
     private var featureSection: some View {
-        ZStack(alignment: .topLeading) {
-            compactFeatureList
-                .opacity(selectedTrialLabel == nil ? 1 : 0)
-                .accessibilityHidden(selectedTrialLabel != nil)
-            trialTimeline
-                .opacity(selectedTrialLabel == nil ? 0 : 1)
-                .accessibilityHidden(selectedTrialLabel == nil)
-        }
-        .frame(minHeight: 158, alignment: .topLeading)
+        compactFeatureList
+            .frame(minHeight: 158, alignment: .topLeading)
     }
 
     private var header: some View {
