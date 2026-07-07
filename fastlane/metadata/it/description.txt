@@ -28,4 +28,9 @@ PRIVACY FIN DALLA PROGETTAZIONE
 • Nessuna pubblicità e nessun tracciamento tra app
 • I dati sul movimento della testa vengono elaborati sul dispositivo e non lasciano mai il tuo telefono
 
+Dettagli dell'abbonamento
+
 Posture+ è un abbonamento a rinnovo automatico con opzioni mensili e annuali, oltre a uno sblocco a vita con pagamento unico. È disponibile una prova gratuita sui piani in abbonamento; al termine della prova si rinnova al prezzo indicato salvo disdetta. Gestisci o annulla in qualsiasi momento in Impostazioni › ID Apple › Abbonamenti. Il pagamento viene addebitato sul tuo ID Apple alla conferma dell'acquisto. Gli abbonamenti si rinnovano automaticamente a meno che non vengano disattivati almeno 24 ore prima della fine del periodo in corso.
+
+Informativa sulla privacy: https://jackwallner.github.io/posture/privacy-policy.html
+Condizioni d'uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

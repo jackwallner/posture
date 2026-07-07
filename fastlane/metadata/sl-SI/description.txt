@@ -28,4 +28,9 @@ ZASEBNOST ŽE PO ZASNOVI
 • Brez oglasov in brez sledenja med aplikacijami
 • Podatki o gibanju glave se obdelujejo na napravi in nikoli ne zapustijo tvojega telefona
 
+Podrobnosti naročnine
+
 Posture+ je naročnina s samodejnim podaljševanjem, z mesečnimi in letnimi možnostmi ter enkratno dosmrtno odklepanje. Za naročniške pakete je na voljo brezplačno preizkusno obdobje; po preizkusu se podaljša po navedeni ceni, razen če jo prekličeš. Upravljaj ali prekliči kadar koli v Nastavitve › Apple ID › Naročnine. Plačilo se obračuna tvojemu Apple ID ob potrditvi nakupa. Naročnine se samodejno podaljšajo, razen če jih izklopiš vsaj 24 ur pred koncem trenutnega obdobja.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -26,14 +26,13 @@ enum ReminderScheduler {
         #if DEBUG
         // Don't fire the iOS permission alert during UI tests - it lives
         // outside the app process and would stall the harness.
-        if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") { return }
+        if LaunchArguments.contains("UITEST_FRESH") { return }
         #endif
         let settings = GoalSettings.shared
-        // Never fire the iOS notification prompt before onboarding has
-        // explained the nudge cadence - a cold launch posts
-        // willEnterForeground, which would otherwise put the system alert
-        // on top of the Welcome screen.
-        guard settings.hasCompletedOnboarding else { return }
+        // Never fire the iOS notification prompt before setup is complete.
+        // Onboarding flips first, then calibration (or the no-AirPods escape)
+        // owns the screen; prompting there contradicts the motion-permission copy.
+        guard settings.hasCompletedOnboarding, settings.hasCalibrated else { return }
         defer { NotificationCenter.default.post(name: .postureRemindersRescheduled, object: nil) }
 
         // The practice session needs AirPods - no-AirPods users live on the

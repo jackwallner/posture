@@ -146,7 +146,7 @@ final class SubscriptionService: NSObject {
         // Simulator/screenshot/UI-test hook: keep the local override authoritative
         // and skip RevenueCat entirely so a customerInfo refresh can't undo it.
         // Lets automated runs walk past the hard paywall gate.
-        if ProcessInfo.processInfo.arguments.contains("-PostureProOverride") {
+        if LaunchArguments.contains("PostureProOverride") {
             isProSubscriber = true
             return
         }
@@ -215,7 +215,7 @@ final class SubscriptionService: NSObject {
     func trackPaywallImpression(id: String, oncePerSession: Bool = false) {
         guard isConfigured else { return }
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") { return }
+        if LaunchArguments.contains("UITEST_FRESH") { return }
         #endif
         if oncePerSession {
             guard !paywallImpressionsThisSession.contains(id) else { return }

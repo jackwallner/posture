@@ -6,7 +6,7 @@ import SwiftUI
 /// progress bar and the today-summary tile row.
 struct DayStrip: View {
     let acks: [AcknowledgmentRecord]
-    var now: Date = .now
+    var now: Date = AppClock.now
     var activeWindow: ClosedRange<Int> = 8...20
 
     private var hours: [Int] { Array(activeWindow.lowerBound...activeWindow.upperBound) }

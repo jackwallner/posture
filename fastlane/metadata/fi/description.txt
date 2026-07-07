@@ -28,4 +28,9 @@ YKSITYISYYS ALUSTA ASTI
 • Ei mainoksia eikä sovellusten välistä seurantaa
 • Pään liikedata käsitellään laitteella eikä poistu puhelimestasi koskaan
 
+Tilaustiedot
+
 Posture+ on automaattisesti uusiutuva tilaus, jossa on kuukausi- ja vuosivaihtoehdot sekä kertamaksullinen elinikäinen avaus. Tilaussuunnitelmissa on saatavilla ilmainen kokeilujakso; kokeilun jälkeen tilaus uusiutuu ilmoitettuun hintaan, ellei sitä peruuteta. Hallinnoi tai peruuta milloin tahansa kohdasta Asetukset › Apple-tunnus › Tilaukset. Maksu veloitetaan Apple-tunnukseltasi oston vahvistuksen yhteydessä. Tilaukset uusiutuvat automaattisesti, ellei niitä poisteta käytöstä vähintään 24 tuntia ennen kuluvan jakson päättymistä.
+
+Tietosuojakäytäntö: https://jackwallner.github.io/posture/privacy-policy.html
+Käyttöehdot (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

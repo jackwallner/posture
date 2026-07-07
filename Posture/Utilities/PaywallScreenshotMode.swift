@@ -11,7 +11,7 @@ enum PaywallScreenshotMode: String {
 
     static var current: PaywallScreenshotMode? {
         let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: "-PaywallSnapshot"),
+        guard let index = arguments.firstIndex(where: { $0 == "-PaywallSnapshot" || $0 == "PaywallSnapshot" }),
               index + 1 < arguments.count else { return nil }
         return PaywallScreenshotMode(rawValue: arguments[index + 1])
     }

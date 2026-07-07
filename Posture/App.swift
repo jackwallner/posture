@@ -10,7 +10,7 @@ struct PostureApp: App {
 
     init() {
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("UITEST_FRESH") {
+        if LaunchArguments.contains("UITEST_FRESH") {
             GoalSettings.shared.resetForUITest()
         }
         ScreenshotSeed.seedIfNeeded()
@@ -90,12 +90,6 @@ private struct AirpodsRootView: View {
             }
             .fullScreenCover(isPresented: $showingPracticeFromReminder) {
                 PracticeSessionView(mode: settings.postureFocus.defaultMode)
-            }
-            .onChange(of: settings.hasCompletedOnboarding) { _, completed in
-                // First time the user finishes onboarding - now the
-                // "a few nudges a day" copy has been read, so the iOS
-                // notification prompt has context.
-                if completed { Task { await ReminderScheduler.reschedule() } }
             }
             .onChange(of: settings.reminderEnabled) { _, _ in
                 Task { await ReminderScheduler.reschedule() }
@@ -303,7 +297,7 @@ struct RootView: View {
             didMigrate = true
             // Hold the iOS notification prompt until after onboarding so
             // the user reads the reminder pitch before the system asks.
-            if settings.hasCompletedOnboarding {
+            if settings.hasCompletedOnboarding, settings.hasCalibrated, !shouldPitchTrial {
                 await ReminderScheduler.reschedule()
             }
         }
@@ -341,27 +335,32 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             TodayView()
-                .tabItem { Label("Today", systemImage: "leaf.fill") }
+                .tabItem { Label("Today", systemImage: "leaf.fill").accessibilityLabel("Today") }
                 .tag(0)
             HistoryView()
-                .tabItem { Label("History", systemImage: "chart.bar.fill") }
+                .tabItem { Label("History", systemImage: "chart.bar.fill").accessibilityLabel("History") }
                 .tag(1)
             ProgressTabView()
-                .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis") }
+                .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis").accessibilityLabel("Progress") }
                 .tag(4)
             // The upgrade pitch gets its own tab until the user subscribes.
             if !subscriptions.isProSubscriber {
                 ProTabView()
-                    .tabItem { Label("Posture+", systemImage: "lock.fill") }
+                    .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
                     .tag(3)
             }
             SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+                .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }
                 .tag(2)
         }
         .tint(Theme.sage)
         .onReceive(NotificationCenter.default.publisher(for: .posturePositiveMomentForReview)) { _ in
             scheduleReviewPromptAfterPositiveMoment()
+        }
+        .task {
+            // Entering the main tabs is the first calm moment after onboarding,
+            // calibration, and the optional trial pitch.
+            await ReminderScheduler.reschedule()
         }
         // Settings' "Replay practice coach marks" - the session opens from
         // Today, so switch there; TodayView receives the same notification

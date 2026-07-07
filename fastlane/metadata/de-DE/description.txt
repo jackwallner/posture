@@ -28,4 +28,9 @@ PRIVATSPHÄRE VON GRUND AUF
 • Keine Werbung und kein App-übergreifendes Tracking
 • Kopfbewegungsdaten werden auf dem Gerät verarbeitet und verlassen dein iPhone nie
 
+Abonnementdetails
+
 Posture+ ist ein automatisch verlängerbares Abonnement mit monatlichen und jährlichen Optionen sowie einer einmaligen lebenslangen Freischaltung. Für die Abo-Pläne ist eine kostenlose Testphase verfügbar; danach verlängert sich das Abo automatisch zum angegebenen Preis, sofern es nicht gekündigt wird. Verwalte oder kündige jederzeit unter Einstellungen › Apple ID › Abonnements. Die Zahlung wird deiner Apple ID bei Kaufbestätigung belastet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums deaktiviert werden.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

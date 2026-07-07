@@ -14,7 +14,12 @@ final class HeadphoneMotionService {
     /// headphones anywhere in sight (and false on the simulator). It says nothing
     /// about whether AirPods are currently connected; connection truth comes from
     /// the delegate callbacks and from samples actually arriving.
-    var isAvailable: Bool { manager.isDeviceMotionAvailable }
+    var isAvailable: Bool {
+        #if DEBUG
+        if usesDebugMotionStub { return true }
+        #endif
+        return manager.isDeviceMotionAvailable
+    }
 
     /// True when the user has denied (or is restricted from) motion access, so a
     /// calibration/scan failure is a permission problem, not missing hardware.
@@ -38,6 +43,13 @@ final class HeadphoneMotionService {
 
     private let manager = CMHeadphoneMotionManager()
     private let delegateBox: HeadphoneDelegateBox
+    #if DEBUG
+    private var debugMotionTask: Task<Void, Never>?
+
+    private var usesDebugMotionStub: Bool {
+        LaunchArguments.contains("SimulateAirpodsConnected")
+    }
+    #endif
     private let queue: OperationQueue = {
         let q = OperationQueue()
         q.qualityOfService = .userInitiated
@@ -78,6 +90,12 @@ final class HeadphoneMotionService {
 
     func start() {
         wantsToRun = true
+        #if DEBUG
+        if usesDebugMotionStub {
+            startDebugMotion()
+            return
+        }
+        #endif
         // Do NOT infer connection from `isDeviceMotionAvailable` - that's device
         // capability and is always true on a real iPhone, AirPods or not. Forcing
         // `isConnected = true` here made the calibration/scan views start a capture
@@ -117,10 +135,44 @@ final class HeadphoneMotionService {
 
     func stop() {
         wantsToRun = false
+        #if DEBUG
+        debugMotionTask?.cancel()
+        debugMotionTask = nil
+        if usesDebugMotionStub {
+            isConnected = false
+            isRunning = false
+            return
+        }
+        #endif
         guard manager.isDeviceMotionActive else { return }
         manager.stopDeviceMotionUpdates()
         isRunning = false
     }
+
+    #if DEBUG
+    private func startDebugMotion() {
+        guard debugMotionTask == nil else { return }
+        isConnected = true
+        isRunning = true
+        onConnect?(true)
+
+        debugMotionTask = Task { @MainActor [weak self] in
+            var phase = 0.0
+            while !Task.isCancelled {
+                guard let self, self.wantsToRun else { break }
+                let pitch = 0.03 + sin(phase) * 0.004
+                let yaw = sin(phase * 0.5) * 0.002
+                let roll = cos(phase * 0.7) * 0.002
+                self.lastPitch = pitch
+                self.lastYaw = yaw
+                self.lastRoll = roll
+                self.onSample?(pitch, yaw, roll)
+                phase += 0.17
+                try? await Task.sleep(nanoseconds: 40_000_000)
+            }
+        }
+    }
+    #endif
 }
 
 /// Delegate has to live outside the @MainActor service so it can conform to the

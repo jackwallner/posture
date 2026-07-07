@@ -28,4 +28,9 @@ PRIVATNOST VEĆ U TEMELJIMA
 • Bez oglasa i bez praćenja između aplikacija
 • Podaci o pokretima glave obrađuju se na uređaju i nikada ne napuštaju tvoj telefon
 
+Pojedinosti pretplate
+
 Posture+ je pretplata s automatskim obnavljanjem, s mjesečnim i godišnjim opcijama, te jednokratnim doživotnim otključavanjem. Besplatno probno razdoblje dostupno je uz pretplatničke planove; nakon probnog razdoblja obnavlja se po navedenoj cijeni, osim ako se ne otkaže. Upravljaj ili otkaži bilo kada u Postavke › Apple ID › Pretplate. Plaćanje se naplaćuje na tvoj Apple ID prilikom potvrde kupnje. Pretplate se automatski obnavljaju osim ako se ne isključe najmanje 24 sata prije kraja trenutnog razdoblja.
+
+Pravila privatnosti: https://jackwallner.github.io/posture/privacy-policy.html
+Uvjeti korištenja (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

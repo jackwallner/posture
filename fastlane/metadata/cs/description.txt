@@ -28,4 +28,9 @@ SOUKROMÍ OD ZÁKLADU
 • Žádné reklamy a žádné sledování mezi aplikacemi
 • Data o pohybu hlavy se zpracovávají přímo v zařízení a nikdy neopustí tvůj telefon
 
+Podrobnosti o předplatném
+
 Posture+ je automaticky se obnovující předplatné s měsíční a roční variantou a jednorázovým doživotním odemčením. U předplatných je k dispozici bezplatná zkušební doba; po jejím skončení se předplatné obnoví za uvedenou cenu, pokud jej nezrušíš. Spravuj nebo zruš kdykoli v Nastavení › Apple ID › Předplatná. Platba se strhává z tvého Apple ID při potvrzení nákupu. Předplatná se automaticky obnovují, pokud nejsou vypnuta alespoň 24 hodin před koncem aktuálního období.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

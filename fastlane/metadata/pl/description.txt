@@ -28,4 +28,9 @@ PRYWATNOŚĆ W FUNDAMENCIE
 • Bez reklam i bez śledzenia między aplikacjami
 • Dane o ruchu głowy są przetwarzane na urządzeniu i nigdy nie opuszczają Twojego telefonu
 
+Szczegóły subskrypcji
+
 Posture+ to subskrypcja z automatycznym odnawianiem, dostępna w opcji miesięcznej i rocznej, a także jednorazowa dożywotnia odblokada. W planach subskrypcyjnych dostępny jest bezpłatny okres próbny; po jego zakończeniu subskrypcja odnawia się w podanej cenie, chyba że zostanie anulowana. Zarządzaj lub anuluj w dowolnym momencie w Ustawienia › Apple ID › Subskrypcje. Płatność zostanie pobrana z Twojego konta Apple ID w momencie potwierdzenia zakupu. Subskrypcje odnawiają się automatycznie, chyba że zostaną wyłączone co najmniej 24 godziny przed końcem bieżącego okresu.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -79,6 +79,9 @@ struct AcknowledgmentView: View {
                 .foregroundStyle(Theme.ink2)
                 .padding(.top, 14)
 
+            checkInMotivationCard
+                .padding(.top, 28)
+
             Spacer()
 
             // No AirPods, so self-report is the check-in. AirPods owners never
@@ -108,6 +111,28 @@ struct AcknowledgmentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("I'm sitting \(label.lowercased())")
+    }
+
+    private var checkInMotivationCard: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "flame.fill")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Theme.streakFlame)
+                .frame(width: 32, height: 32)
+                .background(Theme.sandTint, in: Circle())
+            VStack(alignment: .leading, spacing: 3) {
+                Text("A tiny reset counts.")
+                    .font(Theme.font(.subheadline, weight: .semibold))
+                    .foregroundStyle(Theme.ink)
+                Text("One honest check-in protects today's streak and helps the pattern show up over time.")
+                    .font(Theme.font(.footnote))
+                    .foregroundStyle(Theme.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .dawnCard(cornerRadius: 16)
     }
 
     private func recordManual(quality: PostureQuality?) {
@@ -271,7 +296,9 @@ struct AcknowledgmentView: View {
 
     private func recordAcknowledgment(method: AcknowledgmentMethod, quality: PostureQuality?) {
         recordedMethod = method
+        let now = AppClock.now
         let record = AcknowledgmentRecord(
+            timestamp: now,
             method: method,
             quality: quality,
             scheduledAt: scheduledAt
@@ -281,10 +308,10 @@ struct AcknowledgmentView: View {
 
         let streakService = StreakService(context: context)
         let streakBefore = streakService.currentState().currentStreak
-        let state = streakService.recordAcknowledgment(at: .now)
+        let state = streakService.recordAcknowledgment(at: now)
         streakAfterRecord = state.currentStreak
 
-        let todayStart = DateHelpers.startOfDay()
+        let todayStart = DateHelpers.startOfDay(now)
         let todayDescriptor = FetchDescriptor<AcknowledgmentRecord>(
             predicate: #Predicate { $0.timestamp >= todayStart }
         )

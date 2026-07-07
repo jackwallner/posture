@@ -29,3 +29,6 @@ PRIVACIDADE DESDE A CONCEÇÃO
 • Os dados de movimento da cabeça são processados no dispositivo e nunca saem do teu telemóvel
 
 O Posture+ é uma subscrição com renovação automática, com opções mensais e anuais, além de um desbloqueio vitalício com pagamento único. Está disponível um período de teste gratuito nos planos de subscrição; após o teste, renova-se ao preço indicado, salvo cancelamento. Gere ou cancela a qualquer momento em Definições › ID Apple › Subscrições. O pagamento é cobrado ao teu ID Apple na confirmação da compra. As subscrições renovam-se automaticamente, salvo se forem desativadas pelo menos 24 horas antes do fim do período atual.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

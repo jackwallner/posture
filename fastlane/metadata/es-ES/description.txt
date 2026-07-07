@@ -28,4 +28,9 @@ PRIVACIDAD POR DISEÑO
 • Sin anuncios y sin seguimiento entre aplicaciones
 • Los datos de movimiento de la cabeza se procesan en el dispositivo y nunca salen de tu teléfono
 
+Detalles de la suscripción
+
 Posture+ es una suscripción de renovación automática con opciones mensuales y anuales, además de un desbloqueo de por vida de pago único. Hay una prueba gratuita disponible en los planes de suscripción; tras la prueba, se renueva al precio indicado salvo que se cancele. Gestiónala o cancélala cuando quieras en Ajustes › ID de Apple › Suscripciones. El pago se cobra a tu ID de Apple al confirmar la compra. Las suscripciones se renuevan automáticamente salvo que se desactiven al menos 24 horas antes de que finalice el periodo actual.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

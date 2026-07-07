@@ -28,4 +28,9 @@ PRIVASI SEJAK REKA BENTUK
 • Tiada iklan dan tiada penjejakan merentas aplikasi
 • Data pergerakan kepala diproses pada peranti dan tidak pernah meninggalkan telefon anda
 
+Butiran Langganan
+
 Posture+ ialah langganan pembaharuan automatik dengan pilihan bulanan dan tahunan, serta pembukaan seumur hidup sekali bayar. Percubaan percuma tersedia untuk pelan langganan; selepas tempoh percubaan, ia akan diperbaharui pada harga yang disenaraikan melainkan dibatalkan. Urus atau batalkan pada bila-bila masa di Tetapan › Apple ID › Langganan. Bayaran akan dicaj ke Apple ID anda semasa pengesahan pembelian. Langganan akan diperbaharui secara automatik melainkan dimatikan sekurang-kurangnya 24 jam sebelum tamat tempoh semasa.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

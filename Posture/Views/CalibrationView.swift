@@ -225,6 +225,15 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
 
+            HStack(spacing: 10) {
+                ProgressView()
+                    .tint(Theme.lavender)
+                Text(showSkipHint ? "Still listening for AirPods." : "Listening for AirPods...")
+                    .font(Theme.font(.footnote, weight: .semibold))
+                    .foregroundStyle(Theme.ink3)
+            }
+            .padding(.top, 2)
+
             Spacer()
 
             // Never leave the user stranded on a static screen. After a few

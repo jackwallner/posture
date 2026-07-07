@@ -28,4 +28,9 @@ PRIVATE BY DESIGN
 • No ads and no cross-app tracking
 • Head-motion data is processed on-device and never leaves your phone
 
+Subscription Details
+
 Posture+ is an auto-renewing subscription with monthly and yearly options, plus a one-time lifetime unlock. A free trial is available on the subscription plans; after the trial it renews at the listed price unless cancelled. Manage or cancel any time in Settings › Apple ID › Subscriptions. Payment is charged to your Apple ID at confirmation of purchase. Subscriptions automatically renew unless turned off at least 24 hours before the end of the current period.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

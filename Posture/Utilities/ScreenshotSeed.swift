@@ -10,7 +10,7 @@ import SwiftData
 @MainActor
 enum ScreenshotSeed {
     static var isActive: Bool {
-        ProcessInfo.processInfo.arguments.contains("SCREENSHOT_SEED")
+        LaunchArguments.contains("SCREENSHOT_SEED")
     }
 
     static func seedIfNeeded() {

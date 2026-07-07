@@ -28,4 +28,9 @@ TASARIMDAN GELEN GİZLİLİK
 • Reklam yok ve uygulamalar arası takip yok
 • Baş hareketi verileri cihazda işlenir ve telefonundan asla ayrılmaz
 
+Abonelik Ayrıntıları
+
 Posture+, aylık ve yıllık seçeneklerin yanı sıra tek seferlik ömür boyu kilit açma özelliği sunan otomatik yenilenen bir abonelliktir. Abonelik planlarında ücretsiz deneme sunulur; deneme sonunda iptal edilmediği sürece listelenen fiyattan yenilenir. Ayarlar › Apple Kimliği › Abonelikler bölümünden istediğin zaman yönetebilir veya iptal edebilirsin. Ödeme, satın alma onaylandığında Apple Kimliğinden tahsil edilir. Abonelikler, mevcut dönemin bitiminden en az 24 saat önce kapatılmadığı sürece otomatik olarak yenilenir.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

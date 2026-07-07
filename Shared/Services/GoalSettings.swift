@@ -286,7 +286,7 @@ final class GoalSettings {
     /// Wipe onboarding/calibration state so a UI test starts at the
     /// welcome screen regardless of prior installs. Test-only.
     func resetForUITest() {
-        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasSeenTrainingTour, Key.hasSeenSessionCoachMarks, Key.hasSeenPivotExplainer, Key.didApplyPracticePivotGrace, Key.practiceReminderEnabled, Key.practiceReminderHour, Key.practiceReminderMinute, Key.hasAirpods] {
+        for key in [Key.hasCompletedOnboarding, Key.hasCalibrated, Key.calibrationDeferred, Key.hasSeenIntroPaywall, Key.hasSeenOnboardingTrial, Key.hasSeenTrainingTour, Key.hasSeenSessionCoachMarks, Key.hasSeenPivotExplainer, Key.didApplyPracticePivotGrace, Key.practiceReminderEnabled, Key.practiceReminderHour, Key.practiceReminderMinute, Key.reminderEnabled, Key.reminderIntervalMinutes, Key.activeHoursStart, Key.activeHoursEnd, Key.airpodsBackgroundEnabled, Key.hasAirpods, Key.postureFocus, Key.inAppLiveEnabled] {
             defaults.removeObject(forKey: key)
         }
     }

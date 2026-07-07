@@ -82,7 +82,7 @@ enum ReviewPromptTracker {
     }
 
     private static var isUITest: Bool {
-        ProcessInfo.processInfo.arguments.contains("UITEST_FRESH")
+        LaunchArguments.contains("UITEST_FRESH")
     }
 
     static func recordAppLaunch(now: Date = .now) {

@@ -75,7 +75,7 @@ struct OnboardingView: View {
                 .font(Theme.font(size: 36, weight: .semibold))
                 .foregroundStyle(Theme.ink)
 
-            Text("We'll capture your posture both ways either way, but your coaching leans where you need it.")
+            Text("We'll capture both, but coaching leans where you need it.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)

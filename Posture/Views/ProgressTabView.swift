@@ -77,6 +77,7 @@ struct ProgressTabView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
+                    .padding(.bottom, 88)
                 }
             }
             .dawnBackground()

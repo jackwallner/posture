@@ -28,4 +28,9 @@ INTEGRITET FRÅN GRUNDEN
 • Inga annonser och ingen spårning mellan appar
 • Data om huvudrörelser bearbetas på enheten och lämnar aldrig din telefon
 
+Prenumerationsinfo
+
 Posture+ är en prenumeration med automatisk förnyelse med månads- och årsalternativ, plus en engångsupplåsning för livstid. En gratis provperiod finns tillgänglig för prenumerationsplanerna; efter provperioden förnyas den till angivet pris om den inte sägs upp. Hantera eller avsluta när som helst under Inställningar › Apple-ID › Prenumerationer. Betalningen dras från ditt Apple-ID vid bekräftelse av köpet. Prenumerationer förnyas automatiskt om de inte stängs av minst 24 timmar innan den aktuella perioden tar slut.
+
+Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

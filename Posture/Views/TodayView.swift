@@ -44,13 +44,13 @@ struct TodayView: View {
     @Query(sort: \PostureSession.startedAt, order: .reverse) private var sessions: [PostureSession]
 
     private var passiveSamplesToday: Int {
-        let today = DateHelpers.startOfDay()
+        let today = DateHelpers.startOfDay(AppClock.now)
         return passiveSamples.filter { $0.timestamp >= today }.count
     }
 
     /// Live day stats from the continuous monitor's minute aggregates.
     private var dayStats: PostureDayStats {
-        let today = DateHelpers.startOfDay()
+        let today = DateHelpers.startOfDay(AppClock.now)
         return PostureDayStats.compute(
             minutes: minuteSamples.filter { $0.minuteStart >= today }.map(\.statsIngest)
         )
@@ -75,7 +75,7 @@ struct TodayView: View {
     /// differently each time).
     private var needsRecalibration: Bool {
         guard let last = calibrations.first else { return false }
-        let days = Calendar.current.dateComponents([.day], from: last.capturedAt, to: .now).day ?? 0
+        let days = Calendar.current.dateComponents([.day], from: last.capturedAt, to: AppClock.now).day ?? 0
         return days >= 30
     }
 
@@ -83,13 +83,13 @@ struct TodayView: View {
     /// evaluation (audit P1-10) - creation is owned by StreakService.
     /// `displayStreak` zeroes out a run that already lapsed, so we never
     /// show "12 days" when the streak is dead.
-    private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
+    private var currentStreak: Int { StreakService.displayStreak(for: streaks.first, at: AppClock.now) }
 
     /// Display-only freeze count - so users know their streak has a safety net.
     private var freezesAvailable: Int { streaks.first?.freezesAvailable ?? 0 }
 
     private var todayAcks: [AcknowledgmentRecord] {
-        let today = DateHelpers.startOfDay()
+        let today = DateHelpers.startOfDay(AppClock.now)
         return acknowledgments.filter { $0.timestamp >= today }
     }
 
@@ -132,7 +132,7 @@ struct TodayView: View {
     /// Today's completed practice session for the active posture, if any. Each
     /// ladder is independent: finishing standing still leaves sitting "to do".
     private var todayCompletedPractice: PostureSession? {
-        let today = DateHelpers.startOfDay()
+        let today = DateHelpers.startOfDay(AppClock.now)
         return sessions.first {
             $0.kind == .practice && $0.completed && $0.startedAt >= today
                 && $0.postureMode == activeMode
@@ -178,7 +178,7 @@ struct TodayView: View {
                 showingSession = true
             }
             .fullScreenCover(isPresented: $showingAck) {
-                AcknowledgmentView(scheduledAt: .now, notificationIndex: nil)
+                AcknowledgmentView(scheduledAt: AppClock.now, notificationIndex: nil)
             }
             .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView(mode: activeMode)
@@ -300,7 +300,7 @@ struct TodayView: View {
     }
 
     private var timeOfDayGreeting: String {
-        let hour = Calendar.current.component(.hour, from: .now)
+        let hour = Calendar.current.component(.hour, from: AppClock.now)
         switch hour {
         case 5..<12: return "Good morning"
         case 12..<17: return "Good afternoon"
@@ -311,7 +311,9 @@ struct TodayView: View {
 
     /// AirPods owners are the core experience: continuous monitoring is the
     /// product, so the manual check-in is demoted to a tiny link.
-    private var isAirpodsUser: Bool { settings.hasAirpods == true }
+    private var isAirpodsUser: Bool {
+        settings.hasAirpods == true || (hasAirpodsBaseline && !settings.calibrationDeferred)
+    }
 
     // MARK: - AirPods (practice-first) content
 
@@ -686,7 +688,7 @@ struct TodayView: View {
         if settings.calibrationDeferred {
             softBanner(
                 title: "Get AirPods for the full experience.",
-                body: "With AirPods, Posture watches your posture all day on its own. Without them, log how you're sitting to keep your streak.",
+                body: "With AirPods, Posture coaches a short daily practice and can watch your posture live. Without them, log how you're sitting to keep your streak.",
                 actionLabel: "Set up AirPods",
                 action: { showingRecalibrate = true }
             )
@@ -903,12 +905,13 @@ struct TodayView: View {
                     .tracking(0.8)
                     .foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("\(todayAcks.count) today")
+                Text(checkInHoursLabel)
                     .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
             }
             DayStrip(
                 acks: todayAcks,
+                now: AppClock.now,
                 activeWindow: settings.activeHoursStart...settings.activeHoursEnd
             )
         }
@@ -1066,7 +1069,7 @@ struct TodayView: View {
 
     private var readoutLabel: String {
         guard let s = alignmentScore else {
-            return todayAcks.isEmpty ? "No scans yet" : "Checked in"
+            return todayAcks.isEmpty ? "No check-ins yet" : "Checked in"
         }
         switch s {
         case 70...: return "Aligned"
@@ -1077,10 +1080,10 @@ struct TodayView: View {
 
     private var readoutSubtitle: String {
         if scoredAcks.isEmpty {
-            return todayAcks.isEmpty ? "Your first reading lands after a scan." : "Manual check-ins only"
+            return todayAcks.isEmpty ? "Your first check-in starts the pattern." : "Manual check-ins only"
         }
         let onTrack = scoredAcks.filter { $0.quality == .good }.count
-        return "\(onTrack) of \(scoredAcks.count) scans on track"
+        return "\(onTrack) of \(scoredAcks.count) check-ins on track"
     }
 
     // MARK: - Meta row
@@ -1119,6 +1122,22 @@ struct TodayView: View {
         }
     }
 
+    private var visibleCheckInHourCount: Int {
+        let window = settings.activeHoursStart...settings.activeHoursEnd
+        let hours = todayAcks
+            .map { Calendar.current.component(.hour, from: $0.timestamp) }
+            .filter { window.contains($0) }
+        return Set(hours).count
+    }
+
+    private var checkInHoursLabel: String {
+        switch visibleCheckInHourCount {
+        case 0: return todayAcks.isEmpty ? "0 today" : "\(todayAcks.count) today"
+        case 1: return "1 check-in hour"
+        default: return "\(visibleCheckInHourCount) check-in hours"
+        }
+    }
+
     private func refreshReminderStatus() async {
         if settings.reminderEnabled {
             let next = await ReminderScheduler.nextReminderDate()
@@ -1133,6 +1152,7 @@ struct TodayView: View {
     private func formatReminderTime(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h:mm a"
-        return formatter.string(from: date)
+        let time = formatter.string(from: date)
+        return Calendar.current.isDate(date, inSameDayAs: AppClock.now) ? time : "tomorrow at \(time)"
     }
 }
