@@ -3,104 +3,30 @@ import SwiftUI
 import RevenueCat
 #endif
 
-/// The trial pitch shown once at the end of onboarding right after calibration.
-/// Dismissible (the daily practice loop stays free), but tapping the CTA starts
-/// the StoreKit purchase sheet directly — no second paywall in between.
+/// The trial pitch shown once at the end of onboarding, right after calibration.
+///
+/// Restyled (OT710) to read as the next onboarding *step*, not a Posture+ sales
+/// pivot: same dawn background, type scale, and card chrome as `OnboardingView`,
+/// with the primary CTA sitting in the exact same bottom slot as the onboarding
+/// "Continue" / "Set up my baseline" button so the user's thumb never moves.
+///
+/// Dismissible ("Maybe later" drops straight into the free daily practice loop).
+/// Tapping the primary starts the yearly-trial purchase directly — Apple's system
+/// confirm sheet, no plan picker. Falls back to the full `PaywallView` only when
+/// the trial package failed to load, so the step never dead-ends.
 struct OnboardingTrialView: View {
     @Environment(GoalSettings.self) private var settings
     @State private var subscriptions = SubscriptionService.shared
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
+    @State private var showFallbackPaywall = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Spacer(minLength: 12)
-
-            Text("POSTURE+")
-                .font(Theme.font(.caption, weight: .semibold))
-                .tracking(1)
-                .foregroundStyle(Theme.goodText)
-            Text(onboardingHeadline)
-                .font(Theme.display(34))
-                .foregroundStyle(Theme.ink)
-                .minimumScaleFactor(0.7)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 8)
-            Text(onboardingSubheadline)
-                .font(Theme.font(.body))
-                .foregroundStyle(Theme.ink2)
-                .lineSpacing(3)
-                .padding(.top, 12)
-
-            VStack(spacing: 12) {
-                benefit(icon: "chevron.up.2", title: "The full level ladder",
-                        body: "Longer holds, higher bars, the dose that rebuilds your posture.")
-                benefit(icon: "figure.walk", title: "Walk mode",
-                        body: "Distance, steps, and how tall you carry your head.")
-                benefit(icon: "clock.arrow.circlepath", title: "Trends & all-day monitoring",
-                        body: "Your day scored hour by hour, plus Apple Watch nudges.")
-            }
-            .padding(.top, 22)
-
-            Spacer(minLength: 16)
-
-            trialTimeline
-
-            Spacer(minLength: 16)
-
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(Theme.font(.caption))
-                    .foregroundStyle(Theme.badText)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                    .padding(.bottom, 6)
-            }
-
-            Button(action: startTrialPurchase) {
-                ZStack {
-                    Text(ctaTitle)
-                        .frame(maxWidth: .infinity)
-                        .opacity(isPurchasing ? 0 : 1)
-                    if isPurchasing {
-                        ProgressView().tint(Theme.paper)
-                    }
-                }
-            }
-            .buttonStyle(.daylight(.primary))
-            .disabled(isPurchasing || isRestoring || !canStartTrial)
-
-            if let trialPriceLine {
-                Text(trialPriceLine)
-                    .font(Theme.font(.caption, weight: .semibold))
-                    .foregroundStyle(Theme.ink)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 8)
-            }
-
-            Button { proceed() } label: {
-                Text("Maybe later").frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.daylight(.ghost))
-            .padding(.top, 4)
-            .disabled(isPurchasing)
-
-            Text(trialDisclosure)
-                .font(Theme.font(.caption2))
-                .foregroundStyle(Theme.ink3)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding(.top, 8)
-
-            legalFooter
-                .frame(maxWidth: .infinity)
-                .padding(.top, 10)
-                .padding(.bottom, 20)
+        VStack(spacing: 0) {
+            content
+            ctaStack
         }
-        .padding(.horizontal, 24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .dawnBackground()
         .task {
             #if HAS_REVENUECAT
@@ -113,6 +39,104 @@ struct OnboardingTrialView: View {
         .onChange(of: subscriptions.isProSubscriber) { _, isPro in
             if isPro { proceed() }
         }
+        .sheet(isPresented: $showFallbackPaywall, onDismiss: {
+            // If the fallback purchase went through, the onChange handler already
+            // called proceed(); nothing else to do here.
+        }) {
+            #if HAS_REVENUECAT
+            PaywallView(paywallImpressionId: "posture_onboarding_trial")
+            #endif
+        }
+    }
+
+    // MARK: - Content (same card chrome as OnboardingView)
+
+    /// Mirrors `OnboardingView.pageScaffold`: a leading-aligned, vertically
+    /// centered column that fills the viewport so it reads as one more card in
+    /// the flow. Same headline scale, body font, and dawn cards.
+    private var content: some View {
+        GeometryReader { geo in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text(headline)
+                        .font(Theme.font(size: 36, weight: .semibold))
+                        .foregroundStyle(Theme.ink)
+
+                    Text(subheadline)
+                        .font(Theme.font(.body))
+                        .foregroundStyle(Theme.ink)
+                        .lineSpacing(3)
+
+                    VStack(spacing: 10) {
+                        benefitCard(icon: "chart.bar.fill", title: "The full level ladder",
+                                    body: "Longer holds and higher targets, the dose that actually rebuilds your posture.")
+                        benefitCard(icon: "figure.walk", title: "Walk mode and all-day trends",
+                                    body: "Distance, steps, and your day scored hour by hour.")
+                        benefitCard(icon: "applewatch", title: "Apple Watch nudges",
+                                    body: "A gentle tap the moment you start to slouch, wherever you are.")
+                    }
+                    .padding(.top, 8)
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .center)
+            }
+        }
+    }
+
+    // MARK: - CTA stack (primary in the Continue slot)
+
+    private var ctaStack: some View {
+        VStack(spacing: 10) {
+            // Soft exit ABOVE the primary so the trial CTA lands in the exact
+            // spot the user has been tapping "Continue" — the thumb never moves.
+            Button { proceed() } label: {
+                Text("Maybe later").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.daylight(.ghost))
+            .disabled(isPurchasing)
+
+            // Apple 3.1.2 disclosure adjacent to the purchase point: trial length,
+            // then the real yearly price, then auto-renew / cancel terms. Price is
+            // pulled live from the loaded package — never hardcoded.
+            if let disclosure = trialDisclosure {
+                Text(disclosure)
+                    .font(Theme.font(.caption2))
+                    .foregroundStyle(Theme.ink3)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity)
+            }
+
+            Button(action: startTrialPurchase) {
+                ZStack {
+                    Text(ctaTitle)
+                        .frame(maxWidth: .infinity)
+                        .opacity(isPurchasing ? 0 : 1)
+                    if isPurchasing {
+                        ProgressView().tint(Theme.ink)
+                    }
+                }
+            }
+            .buttonStyle(.daylight(.primary))
+            .disabled(isPurchasing || isRestoring)
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(Theme.font(.caption2))
+                    .foregroundStyle(Theme.badText)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+            }
+
+            legalFooter
+                .frame(maxWidth: .infinity)
+        }
+        // Same horizontal inset + bottom padding as OnboardingView's Continue
+        // button, so the primary CTA matches its geometry and thumb position.
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .padding(.bottom, 28)
     }
 
     private func proceed() {
@@ -121,50 +145,42 @@ struct OnboardingTrialView: View {
 
     // MARK: - Copy
 
-    private var onboardingHeadline: String {
-        if let label = trialIntroLabel {
-            return "Your \(label)\nis on us."
-        }
-        return "Your first 7 days\nare on us."
+    private var headline: String {
+        "Your first week is on us."
     }
 
-    private var onboardingSubheadline: String {
-        "Try everything Posture can do, free for a week. The daily practice stays free forever either way."
+    private var subheadline: String {
+        "You're calibrated and ready to practice. Try everything Posture can do free for 7 days. The daily practice stays free forever either way."
     }
 
+    /// Leads with the yearly free-trial offer when eligible so the primary reads
+    /// as "start trial", matching the direct-purchase CTAs elsewhere.
     private var ctaTitle: String {
         if let label = trialIntroLabel {
-            return "Start my \(label)"
+            return "Start \(label)"
         }
-        return "Start my 7 free days"
+        return "Start 7-day free trial"
     }
 
-    /// The 3.1.2(c) money line, shown prominently right under the CTA: how long
-    /// the trial lasts and the exact amount billed automatically when it ends.
-    private var trialPriceLine: String? {
+    /// Full Apple-3.1.2 auto-renew disclosure for the trial-led yearly plan,
+    /// mirroring StatScout's `yearlyCTADisclosureText` structure: trial length,
+    /// then live price, then renew/cancel terms.
+    private var trialDisclosure: String? {
         #if HAS_REVENUECAT
-        if let package = directTrialPackage, subscriptions.isEligibleForIntroOffer(package) {
-            let trial = package.postureIntroOfferLabel?.capitalized ?? "7-day free trial"
-            return "\(trial), then \(package.posturePriceLabel)"
+        guard let package = directTrialPackage else { return nil }
+        let renew = "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings › Apple ID › Subscriptions."
+        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
+            return "\(trial.capitalized), then \(package.posturePriceLabel). \(renew)"
         }
-        #endif
+        return "\(package.posturePriceLabel). \(renew)"
+        #else
         return nil
-    }
-
-    private var trialDisclosure: String {
-        #if HAS_REVENUECAT
-        if directTrialPackage != nil {
-            return "Payment is charged to your Apple Account automatically when the free trial ends, and the subscription auto-renews unless cancelled in Settings at least 24 hours before the end of the trial or current period."
-        }
         #endif
-        return "7 days free, then the subscription auto-renews at the price shown at checkout unless cancelled at least 24 hours before the trial ends."
     }
 
     #if HAS_REVENUECAT
-    private var canStartTrial: Bool {
-        directTrialPackage != nil
-    }
-
+    /// The yearly trial package is the one-tap conversion target. `PaywallView`
+    /// is only the fallback when this is nil (products didn't load).
     private var directTrialPackage: Package? {
         let trialPackages = subscriptions.products.filter { subscriptions.isEligibleForIntroOffer($0) }
         return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
@@ -174,7 +190,6 @@ struct OnboardingTrialView: View {
         directTrialPackage?.postureIntroOfferLabel
     }
     #else
-    private var canStartTrial: Bool { false }
     private var trialIntroLabel: String? { nil }
     #endif
 
@@ -183,7 +198,9 @@ struct OnboardingTrialView: View {
     private func startTrialPurchase() {
         #if HAS_REVENUECAT
         guard let package = directTrialPackage else {
-            errorMessage = "Couldn't load plans. Try again in a moment."
+            // Products failed to load — hand off to the full paywall rather than
+            // dead-ending the onboarding step (Apple confirm needs a product).
+            showFallbackPaywall = true
             return
         }
         errorMessage = nil
@@ -201,6 +218,8 @@ struct OnboardingTrialView: View {
                 errorMessage = "Couldn't start your trial. Please try again."
             }
         }
+        #else
+        showFallbackPaywall = true
         #endif
     }
 
@@ -219,6 +238,8 @@ struct OnboardingTrialView: View {
         }
         #endif
     }
+
+    // MARK: - Building blocks
 
     private var legalFooter: some View {
         HStack(spacing: 14) {
@@ -240,63 +261,30 @@ struct OnboardingTrialView: View {
         }
     }
 
-    private func benefit(icon: String, title: String, body: String) -> some View {
+    /// Benefit row styled to match `OnboardingView`'s `cueCard` exactly (same
+    /// 36pt sage-tint icon chip, title/body fonts, and dawn card).
+    private func benefitCard(icon: String, title: String, body: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
             ZStack {
-                Circle().fill(Theme.sageTint).frame(width: 34, height: 34)
+                Circle()
+                    .fill(Theme.sageTint)
+                    .frame(width: 36, height: 36)
                 Image(systemName: icon)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Theme.goodText)
             }
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(Theme.font(.subheadline, weight: .semibold))
+                    .font(Theme.font(.body, weight: .semibold))
                     .foregroundStyle(Theme.ink)
                 Text(body)
-                    .font(Theme.font(.caption))
-                    .foregroundStyle(Theme.ink2)
+                    .font(Theme.font(.subheadline))
+                    .foregroundStyle(Theme.ink)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
         }
-    }
-
-    /// The three-beat "how the trial works" reassurance that lifts conversion
-    /// and cuts surprise-charge complaints.
-    private var trialTimeline: some View {
-        HStack(alignment: .top, spacing: 0) {
-            timelineStep(icon: "lock.open.fill", title: "Today", body: "Full access, free")
-            timelineConnector
-            timelineStep(icon: "bell.fill", title: "Day 5", body: "We'll remind you")
-            timelineConnector
-            timelineStep(icon: "creditcard.fill", title: "Day 7", body: "Billing starts")
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Theme.sageTint.opacity(0.6), in: RoundedRectangle(cornerRadius: 16))
-    }
-
-    private func timelineStep(icon: String, title: String, body: String) -> some View {
-        VStack(spacing: 5) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Theme.goodText)
-            Text(title)
-                .font(Theme.font(.caption, weight: .bold))
-                .foregroundStyle(Theme.ink)
-            Text(body)
-                .font(Theme.font(.caption2))
-                .foregroundStyle(Theme.ink2)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private var timelineConnector: some View {
-        Rectangle()
-            .fill(Theme.sage.opacity(0.35))
-            .frame(height: 1.5)
-            .frame(width: 16)
-            .padding(.top, 8)
+        .padding(14)
+        .dawnCard()
     }
 }
