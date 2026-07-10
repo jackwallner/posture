@@ -58,7 +58,7 @@ Phase 5: Before/after photos. Phase 6: Widgets, App Store polish.
 - `AVCaptureSession` is non-Sendable — `FaceTrackingService` uses `@preconcurrency import AVFoundation`.
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
 - HealthKit lives on the watch target only — the iOS target intentionally has no HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
-- The iOS app declares `UIBackgroundModes = ["audio", "location"]` — `audio` for AirPods background motion sampling (Pro), `location` so an opt-in GPS walk keeps tracking when the phone is pocketed/locked. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
+- The iOS app declares `UIBackgroundModes = ["audio"]` only — `audio` for AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77): don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
 - Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)` so reminders survive app kill (audit P1-2). Slot cap is 60 (P1-4).
 
 ## App-specific review

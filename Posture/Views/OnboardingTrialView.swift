@@ -22,8 +22,10 @@ struct OnboardingTrialView: View {
                 .tracking(1)
                 .foregroundStyle(Theme.goodText)
             Text(onboardingHeadline)
-                .font(Theme.display(40))
+                .font(Theme.display(34))
                 .foregroundStyle(Theme.ink)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 8)
             Text(onboardingSubheadline)
                 .font(Theme.font(.body))
@@ -68,6 +70,15 @@ struct OnboardingTrialView: View {
             }
             .buttonStyle(.daylight(.primary))
             .disabled(isPurchasing || isRestoring || !canStartTrial)
+
+            if let trialPriceLine {
+                Text(trialPriceLine)
+                    .font(Theme.font(.caption, weight: .semibold))
+                    .foregroundStyle(Theme.ink)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
+            }
 
             Button { proceed() } label: {
                 Text("Maybe later").frame(maxWidth: .infinity)
@@ -128,14 +139,25 @@ struct OnboardingTrialView: View {
         return "Start my 7 free days"
     }
 
-    private var trialDisclosure: String {
+    /// The 3.1.2(c) money line, shown prominently right under the CTA: how long
+    /// the trial lasts and the exact amount billed automatically when it ends.
+    private var trialPriceLine: String? {
         #if HAS_REVENUECAT
         if let package = directTrialPackage, subscriptions.isEligibleForIntroOffer(package) {
-            let trial = package.postureIntroOfferLabel?.capitalized ?? "Free trial"
-            return "\(trial), then \(package.posturePriceLabel). Auto-renews unless cancelled at least 24 hours before the trial ends."
+            let trial = package.postureIntroOfferLabel?.capitalized ?? "7-day free trial"
+            return "\(trial), then \(package.posturePriceLabel)"
         }
         #endif
-        return "No charge for 7 days. Cancel anytime."
+        return nil
+    }
+
+    private var trialDisclosure: String {
+        #if HAS_REVENUECAT
+        if directTrialPackage != nil {
+            return "Payment is charged to your Apple Account automatically when the free trial ends, and the subscription auto-renews unless cancelled in Settings at least 24 hours before the end of the trial or current period."
+        }
+        #endif
+        return "7 days free, then the subscription auto-renews at the price shown at checkout unless cancelled at least 24 hours before the trial ends."
     }
 
     #if HAS_REVENUECAT
@@ -247,7 +269,7 @@ struct OnboardingTrialView: View {
             timelineConnector
             timelineStep(icon: "bell.fill", title: "Day 5", body: "We'll remind you")
             timelineConnector
-            timelineStep(icon: "checkmark.seal.fill", title: "Day 7", body: "Trial ends")
+            timelineStep(icon: "creditcard.fill", title: "Day 7", body: "Billing starts")
         }
         .padding(16)
         .frame(maxWidth: .infinity)

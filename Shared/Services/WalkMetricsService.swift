@@ -12,8 +12,8 @@ import Foundation
 /// - `CMPedometer` always supplies steps, an estimated distance, and cadence -
 ///   no permission beyond Motion & Fitness (already requested) and it works
 ///   with the phone pocketed.
-/// - `CoreLocation` is layered on *only* when the user opts into GPS, for an
-///   accurate distance and to survive backgrounding; it never blocks a walk.
+/// - `CoreLocation` is layered on *only* when the user opts into GPS, for a
+///   more accurate distance while the app is in use; it never blocks a walk.
 ///
 /// The `isWalking` gate is the fix for "a walk can be fooled by sitting still":
 /// when no new steps arrive for a grace window we report stationary, and the
@@ -150,8 +150,10 @@ final class WalkMetricsService: NSObject, CLLocationManagerDelegate {
 
     private func beginLocationUpdates() {
         usingGPS = true
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.pausesLocationUpdatesAutomatically = false
+        // No background-location mode (App Review 2.5.4): with when-in-use
+        // authorization GPS fixes stop while the phone is locked/pocketed and
+        // the pedometer distance carries the walk; on return the gap is closed
+        // as a straight line by `ingestFixes`.
         locationManager.startUpdatingLocation()
     }
 
