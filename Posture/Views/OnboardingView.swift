@@ -25,24 +25,25 @@ struct OnboardingView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: page)
 
-            pageDots
-                .padding(.top, 4)
-
-            Button {
-                if page < lastPage {
-                    withAnimation { page += 1 }
-                } else {
-                    settings.postureFocus = focus
-                    settings.hasAirpods = true
-                    settings.hasCompletedOnboarding = true
-                }
-            } label: {
-                Text(page < lastPage ? "Continue" : "Set up my baseline")
+            // Shared bottom bar: primary CTA bottom-pinned above a fixed-height
+            // legal-footer slot (invisible placeholder here) so its geometry is
+            // byte-identical to the trial page's "Start … free trial" button.
+            OnboardingBottomBar(
+                primaryTitle: page < lastPage ? "Continue" : "Set up my baseline",
+                primaryAction: {
+                    if page < lastPage {
+                        withAnimation { page += 1 }
+                    } else {
+                        settings.postureFocus = focus
+                        settings.hasAirpods = true
+                        settings.hasCompletedOnboarding = true
+                    }
+                },
+                footer: OnboardingLegalFooter(isPlaceholder: true)
+            ) {
+                pageDots
+                    .padding(.top, 4)
             }
-            .buttonStyle(.daylight(.primary))
-            .padding(.horizontal, 24)
-            .padding(.top, 16)
-            .padding(.bottom, 28)
         }
         .dawnBackground()
     }

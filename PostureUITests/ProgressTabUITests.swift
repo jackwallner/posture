@@ -23,8 +23,8 @@ final class ProgressTabUITests: XCTestCase {
         }
         XCTAssertTrue(app.buttons["I don't have AirPods"].waitForExistence(timeout: 25))
         app.buttons["I don't have AirPods"].tap()
-        if app.buttons["Maybe later"].waitForExistence(timeout: 8) {
-            app.buttons["Maybe later"].tap()
+        if app.buttons["Get Started"].waitForExistence(timeout: 8) {
+            app.buttons["Get Started"].tap()
         }
         XCTAssertTrue(progressTab.waitForExistence(timeout: timeout))
     }

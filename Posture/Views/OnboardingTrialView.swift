@@ -25,7 +25,7 @@ struct OnboardingTrialView: View {
     var body: some View {
         VStack(spacing: 0) {
             content
-            ctaStack
+            bottomBar
         }
         .dawnBackground()
         .task {
@@ -84,59 +84,52 @@ struct OnboardingTrialView: View {
         }
     }
 
-    // MARK: - CTA stack (primary in the Continue slot)
+    // MARK: - CTA stack (primary in the exact Continue slot)
 
-    private var ctaStack: some View {
-        VStack(spacing: 10) {
-            // Soft exit ABOVE the primary so the trial CTA lands in the exact
-            // spot the user has been tapping "Continue" — the thumb never moves.
-            Button { proceed() } label: {
-                Text("Maybe later").frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.daylight(.ghost))
-            .disabled(isPurchasing)
+    /// The primary trial CTA sits in the identical bottom-pinned slot as the
+    /// onboarding "Continue" button (`OnboardingBottomBar`): the real
+    /// Terms/Privacy/Restore footer fills the reserved slot below it, and all
+    /// variable content (soft exit, disclosure, error) rides ABOVE the button
+    /// where it cannot shift the button's frame.
+    private var bottomBar: some View {
+        OnboardingBottomBar(
+            primaryTitle: ctaTitle,
+            isBusy: isPurchasing,
+            isDisabled: isPurchasing || isRestoring,
+            primaryAction: startTrialPurchase,
+            footer: OnboardingLegalFooter(isRestoring: isRestoring, onRestore: startRestore)
+        ) {
+            VStack(spacing: 10) {
+                // Soft free exit ABOVE the primary (StatScout pattern) so the
+                // trial CTA owns the Continue thumb zone. Secondary "Get Started"
+                // styling keeps it clearly de-emphasized.
+                Button { proceed() } label: {
+                    Text("Get Started").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.daylight(.ghost))
+                .disabled(isPurchasing)
 
-            // Apple 3.1.2 disclosure adjacent to the purchase point: trial length,
-            // then the real yearly price, then auto-renew / cancel terms. Price is
-            // pulled live from the loaded package — never hardcoded.
-            if let disclosure = trialDisclosure {
-                Text(disclosure)
-                    .font(Theme.font(.caption2))
-                    .foregroundStyle(Theme.ink3)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity)
-            }
-
-            Button(action: startTrialPurchase) {
-                ZStack {
-                    Text(ctaTitle)
+                // Apple 3.1.2 disclosure adjacent to the purchase point: trial
+                // length, then the real yearly price, then auto-renew / cancel
+                // terms. Price is pulled live from the loaded package.
+                if let disclosure = trialDisclosure {
+                    Text(disclosure)
+                        .font(Theme.font(.caption2))
+                        .foregroundStyle(Theme.ink3)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity)
-                        .opacity(isPurchasing ? 0 : 1)
-                    if isPurchasing {
-                        ProgressView().tint(Theme.ink)
-                    }
+                }
+
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(Theme.font(.caption2))
+                        .foregroundStyle(Theme.badText)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                 }
             }
-            .buttonStyle(.daylight(.primary))
-            .disabled(isPurchasing || isRestoring)
-
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(Theme.font(.caption2))
-                    .foregroundStyle(Theme.badText)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-            }
-
-            legalFooter
-                .frame(maxWidth: .infinity)
         }
-        // Same horizontal inset + bottom padding as OnboardingView's Continue
-        // button, so the primary CTA matches its geometry and thumb position.
-        .padding(.horizontal, 24)
-        .padding(.top, 16)
-        .padding(.bottom, 28)
     }
 
     private func proceed() {
@@ -240,26 +233,6 @@ struct OnboardingTrialView: View {
     }
 
     // MARK: - Building blocks
-
-    private var legalFooter: some View {
-        HStack(spacing: 14) {
-            Button(action: startRestore) {
-                Text(isRestoring ? "Restoring…" : "Restore Purchases")
-                    .font(Theme.font(.caption2, weight: .semibold))
-                    .foregroundStyle(Theme.ink2)
-            }
-            .buttonStyle(.plain)
-            .disabled(isRestoring || isPurchasing)
-
-            HStack(spacing: 4) {
-                Link("Terms of Use", destination: PaywallLinks.standardEULA)
-                Text("·")
-                Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
-            }
-            .font(Theme.font(.caption2, weight: .semibold))
-            .foregroundStyle(Theme.ink3)
-        }
-    }
 
     /// Benefit row styled to match `OnboardingView`'s `cueCard` exactly (same
     /// 36pt sage-tint icon chip, title/body fonts, and dawn card).
