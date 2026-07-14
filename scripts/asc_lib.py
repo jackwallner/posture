@@ -193,8 +193,13 @@ def ensure_draft_version(client: ASCClient, app_id: str, preferred: str | None =
         return editable
     live = find_live_version(client, app_id)
     base = preferred or (live["attributes"]["versionString"] if live else "1.0.0")
-    if preferred and find_version_by_string(client, app_id, preferred):
-        return find_version_by_string(client, app_id, preferred)  # type: ignore
+    if preferred:
+        existing = find_version_by_string(client, app_id, preferred)
+        # Only reuse it if it is still editable; a shipped version (e.g. a stale
+        # draftVersion in .asc-state.json that has since gone READY_FOR_SALE)
+        # must not be handed back as the upload target.
+        if existing and existing.get("attributes", {}).get("appStoreState") in EDITABLE_STATES:
+            return existing
     candidate = bump_version(base)
     for _ in range(8):
         if find_version_by_string(client, app_id, candidate):
