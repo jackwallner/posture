@@ -47,6 +47,8 @@ struct ReviewPromptSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var step: Step
     @State private var feedbackText = ""
+    /// Mail refused to open (no mail client / no account). Offer the address.
+    @State private var mailFailed = false
     @FocusState private var feedbackFocused: Bool
 
     init(initialStep: Step = .enjoyment, onFinish: @escaping (ReviewPromptDismissOutcome) -> Void) {
@@ -179,9 +181,25 @@ struct ReviewPromptSheet: View {
                 .background(Theme.paper3, in: RoundedRectangle(cornerRadius: 12))
                 .focused($feedbackFocused)
 
-            Text("Opens your mail app with a draft to the developer. No analytics, just your words.")
-                .font(Theme.font(.caption))
-                .foregroundStyle(Theme.ink3)
+            if mailFailed {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Your mail app didn't open. Copy the address and send it from anywhere.")
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.badText)
+                    Button {
+                        UIPasteboard.general.string = Self.supportEmail
+                    } label: {
+                        Text("Copy \(Self.supportEmail)")
+                            .font(Theme.font(.caption, weight: .semibold))
+                            .foregroundStyle(Theme.ink)
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("Opens your mail app with a draft to the developer. No analytics, just your words.")
+                    .font(Theme.font(.caption))
+                    .foregroundStyle(Theme.ink3)
+            }
 
             Button { sendFeedback() } label: {
                 Text("Send feedback")
@@ -203,9 +221,16 @@ struct ReviewPromptSheet: View {
     private func sendFeedback() {
         let trimmed = feedbackText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let url = Self.feedbackMailURL(body: trimmed) else { return }
-        ReviewPromptTracker.markFeedbackSubmitted()
-        UIApplication.shared.open(url)
-        finish(.feedbackSubmitted)
+        // Only claim the feedback landed if Mail actually opened. With no mail
+        // client the sheet used to dismiss as "submitted" and drop the note.
+        UIApplication.shared.open(url) { opened in
+            guard opened else {
+                mailFailed = true
+                return
+            }
+            ReviewPromptTracker.markFeedbackSubmitted()
+            finish(.feedbackSubmitted)
+        }
     }
 
     private func finish(_ outcome: ReviewPromptDismissOutcome) {
@@ -213,10 +238,12 @@ struct ReviewPromptSheet: View {
         dismiss()
     }
 
+    static let supportEmail = "jackwallner+q@gmail.com"
+
     static func feedbackMailURL(body: String) -> URL? {
         var components = URLComponents()
         components.scheme = "mailto"
-        components.path = "jackwallner+q@gmail.com"
+        components.path = supportEmail
         components.queryItems = [
             URLQueryItem(name: "subject", value: "Posture feedback"),
             URLQueryItem(name: "body", value: body),

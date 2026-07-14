@@ -17,7 +17,8 @@ enum AchievementCatalog {
     nonisolated static func all(
         streak: StreakState?,
         sessions: [PostureSession],
-        at date: Date = .now
+        at date: Date = .now,
+        isPro: Bool = true
     ) -> [Achievement] {
         let practices = sessions.filter { $0.kind == .practice }
         let completedPractices = practices.filter(\.completed).sorted { $0.startedAt < $1.startedAt }
@@ -31,9 +32,15 @@ enum AchievementCatalog {
         // double the work, and a legacy/single-focus user is unaffected.
         let standingPassed = passedPractices.filter { $0.postureMode == .standing || $0.postureMode == nil }
         let sittingPassed = passedPractices.filter { $0.postureMode == .sitting || $0.postureMode == nil }
-        let level = max(
-            PracticeProgression.level(passedSessions: standingPassed.count),
-            PracticeProgression.level(passedSessions: sittingPassed.count)
+        // Capped for free users, matching the ladder they actually play: a level
+        // badge can't be earned for a level the app never let them reach. It
+        // lands retroactively the moment they upgrade.
+        let level = PracticeProgression.effectiveLevel(
+            level: max(
+                PracticeProgression.level(passedSessions: standingPassed.count),
+                PracticeProgression.level(passedSessions: sittingPassed.count)
+            ),
+            isPro: isPro
         )
         let bestStreak = max(streak?.longestStreak ?? 0, StreakService.displayStreak(for: streak, at: date))
         let streakDate = streak?.lastActiveDay
@@ -82,7 +89,7 @@ enum AchievementCatalog {
                 subtitle: "Seven minutes held tall.",
                 systemImage: "chevron.up.2",
                 isEarned: level >= 5,
-                earnedAt: levelEarnedAt(5)
+                earnedAt: level >= 5 ? levelEarnedAt(5) : nil
             ),
             Achievement(
                 id: "level_10",
@@ -90,7 +97,7 @@ enum AchievementCatalog {
                 subtitle: "Twelve minutes, high bar.",
                 systemImage: "chevron.up.2",
                 isEarned: level >= 10,
-                earnedAt: levelEarnedAt(10)
+                earnedAt: level >= 10 ? levelEarnedAt(10) : nil
             ),
             streakBadge(7, icon: "flame", subtitle: "A full week of practice."),
             streakBadge(14, icon: "flame", subtitle: "Two weeks straight."),
@@ -129,17 +136,22 @@ enum AchievementCatalog {
     nonisolated static func earnedIDs(
         streak: StreakState?,
         sessions: [PostureSession],
-        at date: Date = .now
+        at date: Date = .now,
+        isPro: Bool = true
     ) -> Set<String> {
-        Set(all(streak: streak, sessions: sessions, at: date).filter(\.isEarned).map(\.id))
+        Set(
+            all(streak: streak, sessions: sessions, at: date, isPro: isPro)
+                .filter(\.isEarned).map(\.id)
+        )
     }
 
     /// The next unearned badge worth chasing, for the Today teaser row.
     nonisolated static func nextUp(
         streak: StreakState?,
         sessions: [PostureSession],
-        at date: Date = .now
+        at date: Date = .now,
+        isPro: Bool = true
     ) -> Achievement? {
-        all(streak: streak, sessions: sessions, at: date).first { !$0.isEarned }
+        all(streak: streak, sessions: sessions, at: date, isPro: isPro).first { !$0.isEarned }
     }
 }

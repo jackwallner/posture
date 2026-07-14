@@ -7,9 +7,14 @@ struct AchievementsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var streaks: [StreakState]
     @Query private var sessions: [PostureSession]
+    @State private var subscriptions = SubscriptionService.shared
 
     private var achievements: [Achievement] {
-        AchievementCatalog.all(streak: streaks.first, sessions: sessions)
+        AchievementCatalog.all(
+            streak: streaks.first,
+            sessions: sessions,
+            isPro: subscriptions.isProSubscriber
+        )
     }
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]

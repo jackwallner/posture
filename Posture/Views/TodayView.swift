@@ -981,10 +981,13 @@ struct TodayView: View {
     /// Compact badge strip: the latest earned badge or the next one worth
     /// chasing. Tap for the full badge wall.
     private var achievementsRow: some View {
-        let latest = AchievementCatalog.all(streak: streaks.first, sessions: sessions)
+        let isPro = subscriptions.isProSubscriber
+        let latest = AchievementCatalog
+            .all(streak: streaks.first, sessions: sessions, isPro: isPro)
             .filter(\.isEarned)
             .max { ($0.earnedAt ?? .distantPast) < ($1.earnedAt ?? .distantPast) }
-        let next = AchievementCatalog.nextUp(streak: streaks.first, sessions: sessions)
+        let next = AchievementCatalog
+            .nextUp(streak: streaks.first, sessions: sessions, isPro: isPro)
         return Button { showingAchievements = true } label: {
             HStack(spacing: 12) {
                 Image(systemName: latest?.systemImage ?? "rosette")

@@ -210,6 +210,9 @@ struct SessionSummaryView: View {
             } else if result.leveledUp {
                 receiptLine(icon: "chevron.up.2", color: Theme.sage,
                             text: "Level \(result.newLevel) unlocked. Tomorrow's hold grows a little.")
+            } else if result.passed, result.levelCapped {
+                receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
+                            text: "Target met. Level \(result.newLevel) is the last free level. Posture+ opens the rest of the ladder.")
             } else if result.passed {
                 receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
                             text: "Target met. One pip toward Level \(result.level + 1).")

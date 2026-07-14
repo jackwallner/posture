@@ -181,7 +181,7 @@ struct LevelLadderView: View {
             Text("Why the ramp matters")
                 .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink3)
-            Text("Posture is endurance, not willpower. The muscles that hold your head tall respond to graded training the way any muscle does: a little longer, a little more often. Clinical studies of daily neck-and-posture training find measurable change in about six to eight weeks of consistent practice.")
+            Text("Posture is endurance, not willpower. The muscles that hold your head tall respond to graded training the way any muscle does: a little longer, a little more often. Research on neck and postural training suggests people often notice a difference after several weeks of consistent practice.")
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(2)

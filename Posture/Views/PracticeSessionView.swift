@@ -150,7 +150,8 @@ struct PracticeSessionView: View {
             level: base.level,
             repsTarget: base.repsTarget,
             countsForLevel: false,
-            postureMode: base.postureMode
+            postureMode: base.postureMode,
+            isPro: base.isPro
         )
     }
 

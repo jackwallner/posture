@@ -57,6 +57,10 @@ final class PracticeSessionController {
         /// Which posture ladder this practice session belongs to. nil for walks
         /// and legacy paths; scoring then falls back to the nearest baseline.
         var postureMode: PostureMode? = nil
+        /// Pro unlocks the full ladder. Free sessions cap at
+        /// `PracticeProgression.freeLevelCap`, and the summary must report the
+        /// *capped* level so it can't promise a level the user can't play.
+        var isPro: Bool = true
     }
 
     struct Result: Sendable {
@@ -77,6 +81,9 @@ final class PracticeSessionController {
         let levelProgressDone: Int
         let levelProgressNeeded: Int
         let levelPipAnimateIndex: Int?
+        /// The ladder has more levels but this user is held at the free cap, so
+        /// the summary points at Posture+ instead of a next level.
+        var levelCapped: Bool = false
         /// Titles of badges this session newly earned, for the summary line.
         let newAchievementTitles: [String]
         /// Walk metrics (0 on practice sessions).
@@ -276,7 +283,8 @@ final class PracticeSessionController {
             targetPercent: PracticeProgression.targetPercent(forLevel: level),
             level: level,
             repsTarget: reps,
-            postureMode: mode
+            postureMode: mode,
+            isPro: isPro
         )
     }
 
@@ -636,13 +644,22 @@ final class PracticeSessionController {
             }
             return Self.passedPracticeCount(context: context)
         }()
-        let levelBefore = PracticeProgression.level(passedSessions: passedBefore)
+        // Report the level the user can actually *play*. Free users ramp only to
+        // `freeLevelCap`, so the raw ladder would otherwise announce "Level 3
+        // unlocked. Tomorrow's hold grows" while tomorrow's session stays at the
+        // capped length forever.
+        let levelBefore = PracticeProgression.effectiveLevel(
+            level: PracticeProgression.level(passedSessions: passedBefore),
+            isPro: config.isPro
+        )
 
         // Snapshot the badge set before this session lands, so the summary
         // can celebrate anything newly earned.
         let sessionsBefore = (try? context.fetch(FetchDescriptor<PostureSession>())) ?? []
         let streakBefore = try? context.fetch(FetchDescriptor<StreakState>()).first
-        let earnedBefore = AchievementCatalog.earnedIDs(streak: streakBefore, sessions: sessionsBefore)
+        let earnedBefore = AchievementCatalog.earnedIDs(
+            streak: streakBefore, sessions: sessionsBefore, isPro: config.isPro
+        )
 
         let row = PostureSession(
             durationSeconds: Int(elapsedSeconds.rounded()),
@@ -674,18 +691,19 @@ final class PracticeSessionController {
         }
 
         // Walks never advance the practice level.
-        let newLevel = PracticeProgression.level(
-            passedSessions: passedBefore + (passed ? 1 : 0)
-        )
+        let passedTotal = passedBefore + (passed ? 1 : 0)
+        let rawLevel = PracticeProgression.level(passedSessions: passedTotal)
+        let newLevel = PracticeProgression.effectiveLevel(level: rawLevel, isPro: config.isPro)
+        let levelCapped = !config.isPro && rawLevel >= PracticeProgression.freeLevelCap
 
         let sessionsAfter = (try? context.fetch(FetchDescriptor<PostureSession>())) ?? []
         let streakAfter = try? context.fetch(FetchDescriptor<StreakState>()).first
-        let newAchievements = AchievementCatalog.all(streak: streakAfter, sessions: sessionsAfter)
+        let newAchievements = AchievementCatalog
+            .all(streak: streakAfter, sessions: sessionsAfter, isPro: config.isPro)
             .filter { $0.isEarned && !earnedBefore.contains($0.id) }
             .map(\.title)
 
-        let passedAfter = passedBefore + (passed ? 1 : 0)
-        let progressAfter = PracticeProgression.progressInLevel(passedSessions: passedAfter)
+        let progressAfter = PracticeProgression.progressInLevel(passedSessions: passedTotal)
         let pipAnimateIndex = passed ? progressAfter.done - 1 : nil
 
         result = Result(
@@ -704,6 +722,7 @@ final class PracticeSessionController {
             levelProgressDone: progressAfter.done,
             levelProgressNeeded: progressAfter.needed,
             levelPipAnimateIndex: pipAnimateIndex,
+            levelCapped: levelCapped,
             newAchievementTitles: newAchievements,
             distanceMeters: walkDistance,
             steps: walkStepCount,

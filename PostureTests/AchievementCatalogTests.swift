@@ -47,6 +47,20 @@ final class AchievementCatalogTests: XCTestCase {
         XCTAssertFalse(earned.contains("level_10"))
     }
 
+    /// A free user is capped at `freeLevelCap`, so grinding passes at the capped
+    /// length must not hand them a level badge for a level they never played.
+    func testFreeUserCannotEarnLevelBadgesAboveTheCap() {
+        let needed = PracticeProgression.threshold(forLevel: 5)
+        let sessions = (0..<needed).map { practice(passed: true, daysAgo: needed - $0) }
+        let free = AchievementCatalog.earnedIDs(streak: nil, sessions: sessions, isPro: false)
+        XCTAssertFalse(free.contains("level_5"))
+        XCTAssertTrue(free.contains("first_pass"))
+
+        // The same history unlocks it retroactively once they upgrade.
+        let pro = AchievementCatalog.earnedIDs(streak: nil, sessions: sessions, isPro: true)
+        XCTAssertTrue(pro.contains("level_5"))
+    }
+
     func testStreakBadgesUseLongestStreak() {
         let streak = StreakState(currentStreak: 3, longestStreak: 31, lastActiveDay: .now)
         let earned = AchievementCatalog.earnedIDs(streak: streak, sessions: [])
