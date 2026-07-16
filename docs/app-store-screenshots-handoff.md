@@ -93,7 +93,7 @@ For each screenshot above, Claude Design should produce:
 
 ## Dependencies
 
-Engineer needs to provide actual app screenshots first. Capture from iPhone 17 Pro simulator with fake data populated. See `docs/claude-design-handoff/assets/CAPTURE_INSTRUCTIONS.md` for process. Relevant screens to capture:
+Engineer needs to provide actual app screenshots first. Capture from iPhone 17 Pro simulator with fake data populated. See `docs/archive/design/2026-05/claude-design-handoff/assets/CAPTURE_INSTRUCTIONS.md` for process. Relevant screens to capture:
 1. `assets/screenshot-1-hero.png` — TodayView with streak data
 2. `assets/screenshot-2-scan.png` — AcknowledgmentView scanning state  
 3. `assets/screenshot-3-alert.png` — TodayView with reminder active

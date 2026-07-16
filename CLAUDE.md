@@ -42,7 +42,7 @@ paper / ink / sage / sand / clay / lavender). Type is bundled **Nunito**
 `.system(design: .rounded)` in new UI code; watchOS falls back to system
 rounded (no bundled fonts there). No serif italics, no em dashes in copy.
 Posture qualities map: good→sage, borderline→sand, bad→clay. The
-look-and-feel brief is in `docs/design-response/`.
+look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 
 ## Plan reference
 

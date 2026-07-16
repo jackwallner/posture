@@ -4,7 +4,7 @@ Last optimized: **2026-07-04** · Astro temp app **Posture** (`104`) · ASC `676
 
 ## Astro scope (normal setup — not 91 stores)
 
-**Do not run `astro-sync-all-stores.sh` / `astro-finish-sync.py` for Posture.** Those scripts are for the one-off `astro-global-aso-go-2026.md` pipeline (Headaches ran it once). Day-to-day Astro for Jack's live apps uses:
+**Do not run `astro-sync-all-stores.sh` / `astro-finish-sync.py` for Posture.** Those scripts are for the one-off `~/ios/archive/aso/2026-05/astro-global-aso-go-2026.md` pipeline (Headaches ran it once). Day-to-day Astro for Jack's live apps uses:
 
 | Pattern | Stores | How |
 |---------|--------|-----|
@@ -58,4 +58,4 @@ PYTHONPATH=scripts python3 scripts/astro-optimize-keywords.py --analyze
 
 ## Optional: full global ASO pass
 
-Only when explicitly asked to run `astro-global-aso-go-2026.md` **go** — optimizes all 50 ASC locales + 91 Astro Search Ads countries. Not the default workflow.
+Only when explicitly asked to run `~/ios/archive/aso/2026-05/astro-global-aso-go-2026.md` **go** — optimizes all 50 ASC locales + 91 Astro Search Ads countries. Not the default workflow.
