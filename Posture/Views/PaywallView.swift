@@ -236,9 +236,9 @@ struct PaywallView: View {
 
     private var compactFeatureList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            compactBenefit(icon: "chevron.up.2", title: "The full level ladder: longer practices, higher targets")
-            compactBenefit(icon: "clock.arrow.circlepath", title: "Trends and your day scored, hour by hour")
-            compactBenefit(icon: "airpods.gen3", title: "All-day monitoring and Watch nudges, if you want them")
+            compactBenefit(icon: "chevron.up.2", title: "Every practice level, from 3 to 15 minutes")
+            compactBenefit(icon: "chart.xyaxis.line", title: "Weekly trends, walk mode, and hour-by-hour patterns")
+            compactBenefit(icon: "airpods.gen3", title: "Optional AirPods and Watch nudges beyond practice")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

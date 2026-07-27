@@ -105,10 +105,8 @@ final class GoalSettings {
         set { withMutation(keyPath: \.hasSeenIntroPaywall) { defaults.set(newValue, forKey: Key.hasSeenIntroPaywall) } }
     }
 
-    /// One-shot: the "7 days on us" trial screen shown once at the end of
-    /// onboarding (after calibration) to non-subscribers. Dismissible - the
-    /// core loop stays free - but it's the highest-intent moment to pitch the
-    /// trial. Set when the user starts the trial or taps "Maybe later".
+    /// One-shot: the trial screen shown after the first completed practice to
+    /// non-subscribers. Dismissible, with the core daily practice staying free.
     var hasSeenOnboardingTrial: Bool {
         get { access(keyPath: \.hasSeenOnboardingTrial); return defaults.bool(forKey: Key.hasSeenOnboardingTrial) }
         set { withMutation(keyPath: \.hasSeenOnboardingTrial) { defaults.set(newValue, forKey: Key.hasSeenOnboardingTrial) } }

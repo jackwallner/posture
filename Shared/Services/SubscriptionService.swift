@@ -152,6 +152,12 @@ final class SubscriptionService: NSObject {
         }
         #endif
         #if HAS_REVENUECAT
+        #if targetEnvironment(simulator)
+        // Simulator and agent runs must never create customers in the production
+        // RevenueCat project. StoreKit-testing screenshots use local products.
+        isProSubscriber = sharedDefaults?.bool(forKey: "isProSubscriber") ?? false
+        return
+        #endif
         guard !isConfigured else { return }
         Purchases.configure(withAPIKey: Self.apiKey)
         Purchases.shared.delegate = self

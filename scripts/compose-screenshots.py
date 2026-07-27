@@ -33,18 +33,18 @@ SERIF_ITALIC = "/System/Library/Fonts/Supplemental/Georgia Bold Italic.ttf"
 
 # (raw, output, tint, headline line 1, headline line 2 [italic serif], subline)
 FRAMES = [
-    ("raw-1-today.png",    "store-1-today.png",    "sage",
-     "Sit taller,", "every day.", "A gentle daily score, no scolding."),
-    ("raw-2-practice.png", "store-2-practice.png", "lavender",
-     "Your AirPods,", "your coach.", "A few guided minutes. No camera, no wearable."),
+    ("raw-2-practice.png", "store-1-practice.png", "lavender",
+     "Fix your slouch", "in 3 minutes.", "Live posture coaching from the AirPods you own."),
+    ("raw-1-today.png",    "store-2-today.png",    "sage",
+     "Build a posture", "habit that sticks.", "One short practice. A streak worth protecting."),
     ("raw-3-summary.png",  "store-3-summary.png",  "sage",
-     "Gentle words,", "not nagging.", "Aligned, drifting, or slouched. Never scolded."),
-    ("raw-4-history.png",  "store-4-history.png",  "sand",
-     "Watch it", "add up.", "Practice minutes and passes, private on-device."),
-    ("raw-5-progress.png", "store-5-progress.png", "clay",
-     "Level up,", "gently.", "Sessions grow from 3 to 15 minutes as you improve."),
+     "See when you", "sit up straighter.", "Live alignment, clear targets, no camera."),
+    ("raw-5-progress.png", "store-4-progress.png", "clay",
+     "Start free.", "Grow when ready.", "Daily practice stays free. Full program has a 7-day trial."),
+    ("raw-4-history.png",  "store-5-history.png",  "sand",
+     "Watch your effort", "add up.", "Practice minutes, passes, and trends on your device."),
     ("raw-6-checkin.png",  "store-6-checkin.png",  "sand",
-     "No AirPods in?", "Just tell us.", "Check in by hand and keep your streak."),
+     "No AirPods in?", "Keep the habit.", "Check in by hand and protect your streak."),
 ]
 
 

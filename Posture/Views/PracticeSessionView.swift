@@ -48,8 +48,8 @@ struct PracticeSessionView: View {
             // stream back and record an honest partial if one exists.
             controller?.cancel()
         }
-        .sheet(isPresented: $showingPaywall, onDismiss: { dismiss() }) {
-            PaywallView(paywallImpressionId: "posture_post_first_session")
+        .fullScreenCover(isPresented: $showingPaywall, onDismiss: { dismiss() }) {
+            OnboardingTrialView()
         }
         .interactiveDismissDisabled(isLive)
     }
@@ -509,7 +509,7 @@ struct PracticeSessionView: View {
     // MARK: - Finish
 
     private func finishAndMaybePaywall(_ result: PracticeSessionController.Result) {
-        if result.completed, !subscriptions.isProSubscriber, !settings.hasSeenIntroPaywall {
+        if result.completed, !subscriptions.isProSubscriber, !settings.hasSeenOnboardingTrial {
             settings.hasSeenIntroPaywall = true
             showingPaywall = true
         } else {

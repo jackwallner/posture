@@ -263,25 +263,16 @@ struct RootView: View {
     @State private var subscriptions = SubscriptionService.shared
     @State private var didMigrate = false
 
-    /// One "7 days on us" trial pitch after calibration for non-subscribers.
-    /// Still soft - the trial screen has a "Maybe later" that drops straight
-    /// into the free app.
-    private var shouldPitchTrial: Bool {
-        !settings.hasSeenOnboardingTrial && !subscriptions.isProSubscriber
-    }
-
     var body: some View {
         Group {
             if !settings.hasCompletedOnboarding {
                 OnboardingView()
             } else if !settings.hasCalibrated {
                 CalibrationView()
-            } else if shouldPitchTrial {
-                OnboardingTrialView()
             } else {
-                // No hard gate since the practice pivot: the core daily loop
-                // is free, the paywall appears after the first completed
-                // session and at Pro feature gates.
+                // Let new users feel the calibrated practice before asking them
+                // to subscribe. The first completed session is the proof moment;
+                // PracticeSessionView presents the trial from its summary.
                 MainTabView()
             }
         }
@@ -297,7 +288,7 @@ struct RootView: View {
             didMigrate = true
             // Hold the iOS notification prompt until after onboarding so
             // the user reads the reminder pitch before the system asks.
-            if settings.hasCompletedOnboarding, settings.hasCalibrated, !shouldPitchTrial {
+            if settings.hasCompletedOnboarding, settings.hasCalibrated {
                 await ReminderScheduler.reschedule()
             }
         }

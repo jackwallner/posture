@@ -3,17 +3,10 @@ import SwiftUI
 import RevenueCat
 #endif
 
-/// The trial pitch shown once at the end of onboarding, right after calibration.
-///
-/// Restyled (OT710) to read as the next onboarding *step*, not a Posture+ sales
-/// pivot: same dawn background, type scale, and card chrome as `OnboardingView`,
-/// with the primary CTA sitting in the exact same bottom slot as the onboarding
-/// "Continue" / "Set up my baseline" button so the user's thumb never moves.
-///
-/// Dismissible ("Maybe later" drops straight into the free daily practice loop).
-/// Tapping the primary starts the yearly-trial purchase directly — Apple's system
-/// confirm sheet, no plan picker. Falls back to the full `PaywallView` only when
-/// the trial package failed to load, so the step never dead-ends.
+/// Trial pitch shown after the first completed practice, when the user has felt
+/// the core loop and has a concrete result. Dismissible, with the daily practice
+/// remaining free. The primary starts the yearly trial directly and falls back
+/// to the full plan picker only when products fail to load.
 struct OnboardingTrialView: View {
     @Environment(GoalSettings.self) private var settings
     @State private var subscriptions = SubscriptionService.shared
@@ -68,12 +61,12 @@ struct OnboardingTrialView: View {
                         .lineSpacing(3)
 
                     VStack(spacing: 10) {
-                        benefitCard(icon: "chart.bar.fill", title: "The full level ladder",
-                                    body: "Longer holds and higher targets, the dose that actually rebuilds your posture.")
-                        benefitCard(icon: "figure.walk", title: "Walk mode and all-day trends",
-                                    body: "Distance, steps, and your day scored hour by hour.")
-                        benefitCard(icon: "applewatch", title: "Apple Watch nudges",
-                                    body: "A gentle tap the moment you start to slouch, wherever you are.")
+                        benefitCard(icon: "chevron.up.2", title: "Keep the program growing",
+                                    body: "Unlock every level as practices gradually grow from 3 to 15 minutes.")
+                        benefitCard(icon: "figure.walk", title: "Add walk mode and trends",
+                                    body: "See distance, steps, weekly patterns, and your day hour by hour.")
+                        benefitCard(icon: "applewatch", title: "Get optional background nudges",
+                                    body: "Use AirPods or Apple Watch for gentle reminders beyond the daily practice.")
                     }
                     .padding(.top, 8)
                 }
@@ -100,11 +93,8 @@ struct OnboardingTrialView: View {
             footer: OnboardingLegalFooter(isRestoring: isRestoring, onRestore: startRestore)
         ) {
             VStack(spacing: 10) {
-                // Soft free exit ABOVE the primary (StatScout pattern) so the
-                // trial CTA owns the Continue thumb zone. Secondary "Get Started"
-                // styling keeps it clearly de-emphasized.
                 Button { proceed() } label: {
-                    Text("Get Started").frame(maxWidth: .infinity)
+                    Text("Keep the free practice").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.daylight(.ghost))
                 .disabled(isPurchasing)
@@ -134,16 +124,17 @@ struct OnboardingTrialView: View {
 
     private func proceed() {
         settings.hasSeenOnboardingTrial = true
+        settings.hasSeenIntroPaywall = true
     }
 
     // MARK: - Copy
 
     private var headline: String {
-        "Your first week is on us."
+        "Keep building on today."
     }
 
     private var subheadline: String {
-        "You're calibrated and ready to practice. Try everything Posture can do free for 7 days. The daily practice stays free forever either way."
+        "Your daily practice is free forever. Try the full program for 7 days to unlock every level, deeper trends, walk mode, and optional background nudges."
     }
 
     /// Leads with the yearly free-trial offer when eligible so the primary reads
