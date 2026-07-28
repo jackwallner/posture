@@ -9,6 +9,7 @@ import RevenueCat
 /// to the full plan picker only when products fail to load.
 struct OnboardingTrialView: View {
     @Environment(GoalSettings.self) private var settings
+    @Environment(\.dismiss) private var dismiss
     @State private var subscriptions = SubscriptionService.shared
     @State private var isPurchasing = false
     @State private var isRestoring = false
@@ -125,6 +126,7 @@ struct OnboardingTrialView: View {
     private func proceed() {
         settings.hasSeenOnboardingTrial = true
         settings.hasSeenIntroPaywall = true
+        dismiss()
     }
 
     // MARK: - Copy
