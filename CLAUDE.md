@@ -3,7 +3,7 @@
 iOS app that uses iPhone camera + (later) AirPods + Apple Watch to coach better posture.
 Duolingo-style streaks. Premium = always-on background monitoring (Phase 4).
 
-XcodeGen project/scheme: `Posture`, simulator device `agent-posture`.
+XcodeGen project/scheme: `Posture`, sim lease owner `posture`.
 
 ## Tech Stack
 
