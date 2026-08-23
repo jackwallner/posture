@@ -862,3 +862,43 @@ This audit is complete when the implementation agent has a concrete path to:
 - remove camera-era or stale documents from the active agent context without deleting history;
 - validate all changes with local StoreKit, headless simulator tests, physical-device testing, and live ASC and RevenueCat evidence.
 
+## Activity and success context, 2026-08-23
+
+Classification: **low-scale monetizing**. Confidence: **medium**. Trend: **no ASC comparison displayed**.
+
+ASC release state: `iOS 1.0.4 Ready for Distribution`. ASC evidence: [Analytics Overview](https://appstoreconnect.apple.com/apps/6768514450/analytics/overview?dateSpec=d90), selected range `dateSpec=d90`.
+RevenueCat evidence: [Project Overview](https://app.revenuecat.com/projects/a1790d83/overview), production mode, selected range `Last 28 days, 2026-07-27 through 2026-08-23`.
+
+### Observed activity
+
+| Source | Metric | Value | Window or comparison |
+| --- | --- | ---: | --- |
+| ASC | First-time downloads | 33 | 90-day Analytics Overview |
+| ASC | Redownloads | 3 | 90-day Analytics Overview |
+| ASC | Conversion rate | 1.58% | comparison not displayed |
+| ASC | Proceeds | $36 | 90-day Analytics Overview |
+| ASC | In-app purchases | 3 | 90-day Analytics Overview |
+| RevenueCat | New customers | 16 | last 28 days |
+| RevenueCat | Active customers | 21 | last 28 days |
+| RevenueCat | Active trials | 0 | current total |
+| RevenueCat | Active subscriptions | 0 | current total |
+| RevenueCat | MRR | $0 | current total |
+| RevenueCat | Revenue | $52 | last 28 days |
+
+A missing value above means the source did not expose that metric in this read-only snapshot. It is not a zero.
+
+### Interpretation and implementation focus
+
+Posture has low acquisition but real one-time revenue signals: 33 ASC first-time downloads, $36 ASC proceeds, 16 RevenueCat new customers, and $52 of RevenueCat revenue, with no active subscriptions. This points to a lifetime or non-subscription mix that must be separated from the trial funnel. Validate entitlement and product mix, then make the free posture check the first value before testing subscription language.
+
+The deterministic classifier recommends: Protect the current paid path, then use release and cohort baselines to decide whether acquisition or conversion is the next constraint.
+
+- Join ASC first-time download, first launch, first value, paywall shown, offer loaded, trial started, trial canceled, trial converted, entitlement active, restore, and purchase failure events with the app version and build.
+- Keep ASC's 90-day acquisition and proceeds window separate from RevenueCat's 28-day customer and revenue window. Do not calculate a conversion rate by dividing values from different windows.
+- Use a mature trial cohort and a minimum sample before choosing a native paywall or onboarding A/B winner. Record the offering identifier, package, placement, experiment variant, and build.
+- Put the app's classification and the next baseline date in the release handoff so Cursor, Claude, and Codex do not optimize from an old qualitative audit.
+
+### Boundary on success or death
+
+This snapshot supports the label **low-scale monetizing**, not a lifetime verdict. The app has current paid activity, but ASC does not expose a positive comparison for the selected window. A later decision should include a clean 28-day RevenueCat trend, ASC acquisition and conversion trend, ratings and review count, crash and hang evidence, and a release-specific cohort.
+This dated section supersedes earlier statements in this file that per-app ASC or RevenueCat activity was unavailable as of 2026-08-23. Earlier statements remain historical evidence boundaries for their original audit pass.
