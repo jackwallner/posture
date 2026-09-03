@@ -24,6 +24,14 @@ struct PostureApp: App {
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         WatchSyncService.shared.activate()
         ReviewPromptTracker.recordAppLaunch()
+        ConversionDiagnostics.recordAppOpen()
+        #if DEBUG && HAS_REVENUECAT
+        if RevenueCatProbe.isEnabled {
+            // Same entry point the real paywall screens call, so what this
+            // proves is the actual path and not a parallel one.
+            SubscriptionService.shared.trackPaywallImpression(id: RevenueCatProbe.impressionID)
+        }
+        #endif
     }
 
     var body: some Scene {
