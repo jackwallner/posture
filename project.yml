@@ -22,6 +22,21 @@ packages:
     from: 5.71.0
 
 schemes:
+  # The paywall purchase probe, on its own scheme so it does not build
+  # PostureWatch. The full Posture scheme does, and that clean build is several
+  # minutes the probe has no use for.
+  PostureUITests:
+    build:
+      targets:
+        Posture: all
+        PostureUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - PostureUITests
+    run:
+      config: Debug
+
   Posture:
     build:
       targets:
