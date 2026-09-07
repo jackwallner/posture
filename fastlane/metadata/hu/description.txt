@@ -1,34 +1,11 @@
-Ülj egyenesen, anélkül, hogy gondolnod kellene rá.
+Tedd a testtartást napi gyakorlássá az AirPodsszal. Kezdj 3 perccel, kövesd az élő útmutatást, és haladj 15 perc felé. Jogosultság esetén próbáld ki a Posture+-t 7 napig ingyen.
 
-A Posture a már meglévő AirPodsodat egy folyamatosan aktív testtartás-edzővé alakítja. Tedd be, és a Posture egész nap csendben figyeli a fejed helyzetét, másodpercenként kb. 25 mérést végezve, majd finoman jelez, amint tényleg összegörnyedsz. Nincs rád irányított kamera, nincs újabb eszköz, amit meg kell venned, nincs mire emlékezned.
+Ingyenes: 1. és 2. szint 3 perctől, napi sorozattal.
+Posture+: 3-tól 15 percig tartó szintek, Séta mód, trendek és választható egész napos AirPods-figyelés.
+AirPods nélkül a kézi ellenőrzés megtartja a sorozatot.
 
-Vége a "tech necknek" és a telefonnyaknak. Akár az íróasztalnál ülsz, a kanapén heversz, vagy otthonról dolgozol, a Posture pontosan akkor kapja el a görnyedést, amikor történik, amikor még ki tudod javítani.
+Csak a testtartás tudatosítására és gyakorlására. Nem orvosi tanács, diagnózis vagy kezelés.
 
-HOGYAN MŰKÖDIK
-• Kalibrálj egyszer. Állj egyenesen, ülj egyenesen, majd görnyedj össze szándékosan. Az AirPodsod egy percen belül megtanulja a személyes tartományodat.
-• Viseld az AirPodsodat úgy, ahogy eddig is. A Posture a háttérben figyel, még akkor is, ha a telefonod a zsebedben van.
-• Érezd a jelzést. Ha egy ideig görnyedt maradsz, finom rezgést kapsz. Egyenesedj ki, és elhallgat. Ennyi az egész szokás.
-• Nézd, ahogy kirajzolódik a napod. Minden figyelt perc bekerül a napi jelentésedbe: a nap hány százalékában voltál egyenes tartásban, óráról órára változó ritmus, legjobb szakaszok, elkapott görnyedések.
-
-MIT KAPSZ
-• Egész napos háttérben futó testtartás-figyelés AirPodson keresztül
-• Élő testtartás-állapot: egyenes, sodródó vagy görnyedt, valós időben
-• Napi jelentés a tényleges ülésed alapján, nem szúrópróbákból
-• Heti trendek: nézd meg, mely napokon és órákban tartod legjobban a tartásod
-• Napi sorozatok fagyasztásvédelemmel, minden figyelt nap számít
-• Finom emlékeztetők az aktív óráidban, ha szeretnéd
-• Apple Watch kísérőalkalmazás és lezárási képernyő widgetek
-• Végigvezetett bemutató, amely egy perc alatt megtanítja a folyamatot
-
-MELYIK AIRPODS MŰKÖDIK
-A Posture a fejmozgást az AirPods Pro (1. és 2. generáció), az AirPods (3. generáció), az AirPods 4 aktív zajszűréssel, vagy az AirPods Max eszközökről olvassa. Nincs kompatibilis AirPodsod? A testtartás-ellenőrzéseket kézzel is rögzítheted, így sorozatod életben marad.
-
-ADATVÉDELEM ALAPBEÁLLÍTÁSKÉNT
-• Nincs fiók, nincs regisztráció
-• Nincs hirdetés és nincs alkalmazások közötti nyomkövetés
-• A fejmozgási adatok a készüléken kerülnek feldolgozásra, és soha nem hagyják el a telefonodat
-
-A Posture+ egy automatikusan megújuló előfizetés havi és éves opciókkal, valamint egyszeri, élethosszig tartó feloldással. Az előfizetési csomagokhoz ingyenes próbaidőszak is elérhető; a próbaidőszak után a megadott áron megújul, hacsak nem mondod le. Kezelheted vagy lemondhatod bármikor a Beállítások › Apple ID › Előfizetések menüben. A fizetés a vásárlás megerősítésekor kerül levonásra az Apple ID-dről. Az előfizetések automatikusan megújulnak, hacsak nem kapcsolod ki őket legalább 24 órával a jelenlegi időszak vége előtt.
-
+A havi csomag ára US$2.99, az évesé US$19.99. Mindkettő automatikusan megújul, és jogosultság esetén 7 napos ingyenes próba jár hozzá. Az Apple a vásárlás megerősítésekor vagy jogosult próba után terheli meg az Apple-fiókodat. Jogosultság nélkül a terhelés megerősítéskor történik. A megújítási díjat az időszak vége előtti 24 órán belül számítjuk fel. Kezeld vagy mondd le a Beállítások › Apple-fiók › Előfizetések menüben, legalább 24 órával a vége előtt. Az árak régiónként eltérnek, és vásárlás előtt láthatók.
 Adatvédelmi szabályzat: https://jackwallner.github.io/posture/privacy-policy.html
 Felhasználási feltételek (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

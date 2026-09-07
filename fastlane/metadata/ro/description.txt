@@ -1,36 +1,11 @@
-Stai drept, fără să te gândești măcar la asta.
+Transformă postura într-o practică zilnică cu AirPods. Începe cu 3 minute, urmează indicațiile live și ajungi la 15. Dacă ești eligibil, încearcă Posture+ gratuit 7 zile.
 
-Posture transformă AirPods-urile pe care le ai deja într-un antrenor de postură mereu activ. Pune-ți-le și Posture îți urmărește discret poziția capului toată ziua, aproximativ 25 de măsurători pe secundă, oferindu-ți un semnal blând chiar în momentul în care te aduni cu adevărat. Fără cameră îndreptată spre tine, fără un alt dispozitiv de cumpărat, fără nimic de reținut ca să verifici.
+Gratuit: nivelurile 1 și 2 de la 3 minute, cu serie zilnică.
+Posture+: niveluri de la 3 la 15 minute, mod mers, tendințe și monitorizare AirPods opțională toată ziua.
+Fără AirPods, verificările manuale păstrează seria.
 
-Gata cu "tech neck" sau gâtul de la telefon. Fie că stai la birou, pe canapea sau lucrezi de acasă, Posture surprinde aplecarea chiar în momentul în care se întâmplă, când încă o mai poți corecta.
+Doar pentru conștientizarea și exersarea posturii. Nu este sfat medical, diagnostic sau tratament.
 
-CUM FUNCȚIONEAZĂ
-• Calibrează o singură dată. Stai drept în picioare, stai drept așezat, apoi apleacă-te intenționat. AirPods-urile tale îți învață intervalul personal în mai puțin de un minut.
-• Poartă-ți AirPods-urile ca de obicei. Posture monitorizează în fundal, chiar și cu telefonul în buzunar.
-• Simte semnalul. Dacă rămâi aplecat o vreme, primești o vibrație blândă. Îndreaptă-te și se oprește. Acesta este întregul obicei de format.
-• Urmărește-ți ziua completându-se. Fiecare minut monitorizat alimentează raportul tău zilnic: procentul din zi cu postură corectă, ritmul oră cu oră, cele mai bune perioade, aplecările surprinse.
-
-CE PRIMEȘTI
-• Monitorizare a posturii în fundal pe toată durata zilei, prin AirPods
-• Status live al posturii: aliniată, în derivă sau aplecată, în timp real
-• Un raport zilnic construit pe baza felului în care stai cu adevărat, nu pe verificări punctuale
-• Tendințe săptămânale: vezi în ce zile și ore postura ta se menține cel mai bine
-• Serii zilnice cu protecție de înghețare, fiecare zi monitorizată contează
-• Mementouri blânde în orele tale active, dacă le dorești
-• Aplicație companion pentru Apple Watch și widgeturi pentru ecranul de blocare
-• Un ghid pas cu pas care explică întregul proces într-un minut
-
-CE AIRPODS-URI FUNCȚIONEAZĂ
-Posture citește mișcarea capului de la AirPods Pro (generația 1 și 2), AirPods (generația 3), AirPods 4 cu anulare activă a zgomotului, sau AirPods Max. Nu ai AirPods compatibile? Poți înregistra manual verificările de postură și îți poți menține seria activă.
-
-CONFIDENȚIALITATE PRIN DESIGN
-• Fără conturi, fără înregistrare
-• Fără reclame și fără urmărire între aplicații
-• Datele despre mișcarea capului sunt procesate pe dispozitiv și nu părăsesc niciodată telefonul tău
-
-Detalii abonament
-
-Posture+ este un abonament cu reînnoire automată, cu opțiuni lunare și anuale, plus o deblocare pe viață cu plată unică. O perioadă de probă gratuită este disponibilă pentru planurile de abonament; după perioada de probă, se reînnoiește la prețul afișat, dacă nu este anulat. Gestionează sau anulează oricând din Setări › ID Apple › Abonamente. Plata este taxată pe ID-ul tău Apple la confirmarea achiziției. Abonamentele se reînnoiesc automat, dacă nu sunt dezactivate cu cel puțin 24 de ore înainte de sfârșitul perioadei curente.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Planul lunar costă US$2.99, iar cel anual US$19.99. Ambele se reînnoiesc automat și oferă o perioadă de probă gratuită de 7 zile dacă ești eligibil. Apple îți debitează contul Apple la confirmarea achiziției sau după o perioadă de probă eligibilă. Dacă nu ești eligibil, debitarea are loc la confirmare. Taxa de reînnoire se percepe în cele 24 de ore dinaintea încheierii perioadei curente. Gestionează sau anulează în Configurări › Cont Apple › Abonamente cu cel puțin 24 de ore înainte de încheiere. Prețurile diferă în funcție de regiune și sunt afișate înainte de cumpărare.
+Politica de confidențialitate: https://jackwallner.github.io/posture/privacy-policy.html
+Termeni de utilizare (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

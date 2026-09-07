@@ -1,0 +1,429 @@
+{
+  "app": "posture",
+  "manifest": "/Users/jackwallner/posture/docs/aso97-screenshots.json",
+  "target": "iphone_69",
+  "copy_contract": "single-header-benefit-story-v3",
+  "background_override": null,
+  "sets": [
+    {
+      "id": "daily-practice",
+      "style": "editorial",
+      "frames": [
+        {
+          "filename": "01-practice.png",
+          "path": "daily-practice/01-practice.png",
+          "output_sha256": "25efa84bd7d4f61cc44d3cd94abcb61d611b9373779421217265657be7a7ec5b",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Practice posture with Posture+",
+          "pitch": {
+            "benefit": "Practice posture with Posture+",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Practice posture with Posture+",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "A short guided practice setup turns an abstract posture goal into a repeatable session."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/practice.png",
+          "source_sha256": "c701a157736e8afcd9f328ac9392d8dac3bd078a5c4666071b00924cfed51930",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/01-practice.foreground.png",
+          "foreground_sha256": "0636025a2787d5269d6a1e5839d1f5dcd410ced36f893c54730f586f16763481",
+          "ui_mask": "manifests/daily-practice/01-practice.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 160,
+          "header_lines": 2,
+          "header_text": "Practice posture with Posture+",
+          "header_bounds": [
+            115,
+            142,
+            1204,
+            420
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/practice.png",
+          "source_evidence_sha256": "c701a157736e8afcd9f328ac9392d8dac3bd078a5c4666071b00924cfed51930",
+          "manifest": "manifests/daily-practice/01-practice.json"
+        },
+        {
+          "filename": "02-today.png",
+          "path": "daily-practice/02-today.png",
+          "output_sha256": "b5d0aba1d2ee8a59cc11d62d25bbc8ccb7d9437e601ec7597f308162b326d07e",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Track daily streaks with Pro",
+          "pitch": {
+            "benefit": "Track daily streaks with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Track daily streaks with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The Today screen shows the next practice and the current streak."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/today.png",
+          "source_sha256": "61cbbbe98142b648d542abbb4fa56c34bc29d5695aa7aab11660737baacdee3e",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/02-today.foreground.png",
+          "foreground_sha256": "2575d484f250c5222eb6b79c047aeba820fb1310548690f45130ac6d8ee6d9b9",
+          "ui_mask": "manifests/daily-practice/02-today.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 160,
+          "header_lines": 2,
+          "header_text": "Track daily streaks with Pro",
+          "header_bounds": [
+            130,
+            140,
+            1190,
+            420
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/today.png",
+          "source_evidence_sha256": "61cbbbe98142b648d542abbb4fa56c34bc29d5695aa7aab11660737baacdee3e",
+          "manifest": "manifests/daily-practice/02-today.json"
+        },
+        {
+          "filename": "03-progress.png",
+          "path": "daily-practice/03-progress.png",
+          "output_sha256": "2aa408d0b01ed1e0e85cf7d1ae49facdf9e38c0efd4b265a427739f7f2175a65",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "See practice add up with Pro",
+          "pitch": {
+            "benefit": "See practice add up with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "See practice add up with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The Progress screen shows practice progress from seeded recent sessions."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/progress.png",
+          "source_sha256": "fd4766712dd45a974e0c58c354180ff278c04b7d9b75a4f954eca3d16eddd0ae",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/03-progress.foreground.png",
+          "foreground_sha256": "7ad904c4646346ab5bf796c6b6ed7c579f632bb9b6529f1aa65bd1230525bd3f",
+          "ui_mask": "manifests/daily-practice/03-progress.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 160,
+          "header_lines": 2,
+          "header_text": "See practice add up with Pro",
+          "header_bounds": [
+            98,
+            140,
+            1221,
+            447
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/progress.png",
+          "source_evidence_sha256": "fd4766712dd45a974e0c58c354180ff278c04b7d9b75a4f954eca3d16eddd0ae",
+          "manifest": "manifests/daily-practice/03-progress.json"
+        },
+        {
+          "filename": "04-history.png",
+          "path": "daily-practice/04-history.png",
+          "output_sha256": "578706228ccc3f418e9a25ca583fce0b2dae2dd626d424ff885f3a330113a0bd",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Review practice days with Pro",
+          "pitch": {
+            "benefit": "Review practice days with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Review practice days with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The History screen shows practice minutes and sessions across the week."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/history.png",
+          "source_sha256": "70d9f2f6edf2fe323c5b1c7fcaf5be9e1af83d48cb8389cebc6abbfd71ae270e",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/04-history.foreground.png",
+          "foreground_sha256": "402633b321caa9a954478f1bc71e67612ebb6739b82eebde634a4497a6cd95cd",
+          "ui_mask": "manifests/daily-practice/04-history.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 160,
+          "header_lines": 2,
+          "header_text": "Review practice days with Pro",
+          "header_bounds": [
+            131,
+            142,
+            1189,
+            449
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/history.png",
+          "source_evidence_sha256": "70d9f2f6edf2fe323c5b1c7fcaf5be9e1af83d48cb8389cebc6abbfd71ae270e",
+          "manifest": "manifests/daily-practice/04-history.json"
+        },
+        {
+          "filename": "05-checkin.png",
+          "path": "daily-practice/05-checkin.png",
+          "output_sha256": "95983aae7ade110472a5a5e16b12af6aa046e0c034109071286044c528df22b4",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Reach new milestones with Pro",
+          "pitch": {
+            "benefit": "Reach new milestones with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Reach new milestones with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The badges screen records practice milestones using seeded activity."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/checkin.png",
+          "source_sha256": "cae3550fb6966961e99f8fa6e76c0134934d628b9739e7b442265b192f9addef",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/05-checkin.foreground.png",
+          "foreground_sha256": "6826c8ec7bee5049b34a18f06f4bd42504b1b4e8fe923ad2933d05499664d8ae",
+          "ui_mask": "manifests/daily-practice/05-checkin.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 148,
+          "header_lines": 2,
+          "header_text": "Reach new milestones with Pro",
+          "header_bounds": [
+            61,
+            138,
+            1259,
+            396
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/checkin.png",
+          "source_evidence_sha256": "cae3550fb6966961e99f8fa6e76c0134934d628b9739e7b442265b192f9addef",
+          "manifest": "manifests/daily-practice/05-checkin.json"
+        },
+        {
+          "filename": "06-walk.png",
+          "path": "daily-practice/06-walk.png",
+          "output_sha256": "c64cd29aa8fdd7b7a76774d8c546922d3d261601b434c8818c62718f18b03358",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Take posture walks with Pro",
+          "pitch": {
+            "benefit": "Take posture walks with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Take posture walks with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "A Pro walk setup carries posture practice into a timed walk."
+          },
+          "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/walk.png",
+          "source_sha256": "4bd4bf7bd31bc9c24ccadc5a4379dd9bf0145355c403cd4799f775e33dfa87bc",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/daily-practice/06-walk.foreground.png",
+          "foreground_sha256": "1301c91b1fae294cd39a42b9b56f1c31878ec897089344c1755da2e7f68b086e",
+          "ui_mask": "manifests/daily-practice/06-walk.ui-mask.png",
+          "ui_coverage": 0.5985,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 129,
+            "y": 573,
+            "width": 1062,
+            "height": 2260,
+            "screen_x": 150,
+            "screen_y": 594,
+            "screen_width": 1020,
+            "screen_height": 2218
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 160,
+          "header_lines": 2,
+          "header_text": "Take posture walks with Pro",
+          "header_bounds": [
+            183,
+            140,
+            1136,
+            420
+          ],
+          "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/walk.png",
+          "source_evidence_sha256": "4bd4bf7bd31bc9c24ccadc5a4379dd9bf0145355c403cd4799f775e33dfa87bc",
+          "manifest": "manifests/daily-practice/06-walk.json"
+        }
+      ]
+    }
+  ]
+}

@@ -1,36 +1,11 @@
-Aklından bile geçirmeden dik otur.
+AirPods ile duruşu günlük bir pratiğe dönüştür. 3 dakikayla başla, canlı yönlendirmeyi izle ve 15 dakikaya ilerle. Uygunsan Posture+’ı 7 gün ücretsiz dene.
 
-Posture, zaten sahip olduğun AirPods'ları her zaman aktif bir duruş koçuna dönüştürür. Tak ve Posture, gün boyu başının konumunu sessizce izler, saniyede yaklaşık 25 ölçüm, ve gerçekten çöktüğün anda sana hafif bir uyarı verir. Sana yönelmiş bir kamera yok, satın alınacak ek bir cihaz yok, hatırlaman gereken bir kontrol yok.
+Ücretsiz: 3 dakikadan başlayan 1. ve 2. seviyeler, günlük seriyle.
+Posture+: 3-15 dakika arası tüm seviyeler, Yürüme modu, trendler ve isteğe bağlı tüm gün AirPods takibi.
+AirPods olmadan manuel kontroller seriyi sürdürür.
 
-Artık "tech neck" ya da telefon boynu yok. İster masa başında, ister kanepede, ister evden çalışırken ol, Posture çökmeyi tam da olduğu anda yakalar, hâlâ düzeltebileceğin bir sırada.
+Yalnızca duruş farkındalığı ve pratiği içindir. Tıbbi tavsiye, tanı veya tedavi değildir.
 
-NASIL ÇALIŞIR
-• Bir kez kalibre et. Dik dur, dik otur, sonra kasıtlı olarak çök. AirPods'ların kişisel aralığını bir dakikadan kısa sürede öğrenir.
-• AirPods'larını her zamanki gibi tak. Posture, telefon cebinde olsa bile arka planda izlemeye devam eder.
-• Uyarıyı hisset. Bir süre çökük kalırsan hafif bir titreşim alırsın. Dikleş, kesilir. Kazanılacak alışkanlığın tamamı bu.
-• Günün nasıl doluyor izle. İzlenen her dakika günlük raporuna eklenir: günün ne kadarının doğru duruşta geçtiği, saat saat ritim, en iyi dönemler, yakalanan çökmeler.
-
-NELER ALIYORSUN
-• AirPods üzerinden gün boyu arka planda duruş izleme
-• Canlı duruş durumu: dik, kayıyor ya da çökük, gerçek zamanlı
-• Gerçek oturuşuna dayalı günlük rapor, rastgele kontrollere değil
-• Haftalık eğilimler: duruşunun hangi gün ve saatlerde en iyi kaldığını gör
-• Dondurma korumalı günlük seriler, izlenen her gün sayılır
-• Aktif saatlerinde istersen nazik hatırlatmalar
-• Apple Watch companion uygulaması ve kilit ekranı widget'ları
-• Tüm döngüyü bir dakikada anlatan rehberli bir tur
-
-HANGİ AIRPODS ÇALIŞIR
-Posture, baş hareketini AirPods Pro (1. ve 2. nesil), AirPods (3. nesil), Aktif Gürültü Engelleme özellikli AirPods 4 veya AirPods Max'ten okur. Uyumlu AirPods'ın yok mu? Duruş kontrollerini elle kaydedebilir ve serini canlı tutabilirsin.
-
-TASARIMDAN GELEN GİZLİLİK
-• Hesap yok, kayıt yok
-• Reklam yok ve uygulamalar arası takip yok
-• Baş hareketi verileri cihazda işlenir ve telefonundan asla ayrılmaz
-
-Abonelik Ayrıntıları
-
-Posture+, aylık ve yıllık seçeneklerin yanı sıra tek seferlik ömür boyu kilit açma özelliği sunan otomatik yenilenen bir abonelliktir. Abonelik planlarında ücretsiz deneme sunulur; deneme sonunda iptal edilmediği sürece listelenen fiyattan yenilenir. Ayarlar › Apple Kimliği › Abonelikler bölümünden istediğin zaman yönetebilir veya iptal edebilirsin. Ödeme, satın alma onaylandığında Apple Kimliğinden tahsil edilir. Abonelikler, mevcut dönemin bitiminden en az 24 saat önce kapatılmadığı sürece otomatik olarak yenilenir.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Aylık plan US$2.99, yıllık plan US$19.99 tutarındadır. İkisi de otomatik yenilenir ve uygunsanız 7 günlük ücretsiz deneme sunar. Apple, satın almayı onayladığınızda veya uygun bir denemeden sonra Apple Hesabınızdan ücret alır. Uygun değilseniz ücret onay sırasında alınır. Yenileme ücreti mevcut dönemin bitiminden önceki 24 saat içinde alınır. Dönem bitmeden en az 24 saat önce Ayarlar › Apple Hesabı › Abonelikler bölümünden yönetin veya iptal edin. Fiyatlar bölgeye göre değişir ve satın almadan önce gösterilir.
+Gizlilik Politikası: https://jackwallner.github.io/posture/privacy-policy.html
+Kullanım Koşulları (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

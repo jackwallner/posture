@@ -1,0 +1,68 @@
+{
+  "filename": "04-history.png",
+  "path": "daily-practice/04-history.png",
+  "output_sha256": "578706228ccc3f418e9a25ca583fce0b2dae2dd626d424ff885f3a330113a0bd",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Review practice days with Pro",
+  "pitch": {
+    "benefit": "Review practice days with Pro",
+    "problem": "Posture awareness is easy to forget without a concrete routine",
+    "advantage": "Short guided sessions and visible history make practice repeatable",
+    "header_problem": "posture awareness is easy to forget",
+    "header_advantage": "Review practice days with Pro",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The History screen shows practice minutes and sessions across the week."
+  },
+  "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/history.png",
+  "source_sha256": "70d9f2f6edf2fe323c5b1c7fcaf5be9e1af83d48cb8389cebc6abbfd71ae270e",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/daily-practice/04-history.foreground.png",
+  "foreground_sha256": "402633b321caa9a954478f1bc71e67612ebb6739b82eebde634a4497a6cd95cd",
+  "ui_mask": "manifests/daily-practice/04-history.ui-mask.png",
+  "ui_coverage": 0.5985,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 129,
+    "y": 573,
+    "width": 1062,
+    "height": 2260,
+    "screen_x": 150,
+    "screen_y": 594,
+    "screen_width": 1020,
+    "screen_height": 2218
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 160,
+  "header_lines": 2,
+  "header_text": "Review practice days with Pro",
+  "header_bounds": [
+    131,
+    142,
+    1189,
+    449
+  ],
+  "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/history.png",
+  "source_evidence_sha256": "70d9f2f6edf2fe323c5b1c7fcaf5be9e1af83d48cb8389cebc6abbfd71ae270e"
+}

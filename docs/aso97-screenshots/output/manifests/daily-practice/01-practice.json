@@ -1,0 +1,68 @@
+{
+  "filename": "01-practice.png",
+  "path": "daily-practice/01-practice.png",
+  "output_sha256": "25efa84bd7d4f61cc44d3cd94abcb61d611b9373779421217265657be7a7ec5b",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Practice posture with Posture+",
+  "pitch": {
+    "benefit": "Practice posture with Posture+",
+    "problem": "Posture awareness is easy to forget without a concrete routine",
+    "advantage": "Short guided sessions and visible history make practice repeatable",
+    "header_problem": "posture awareness is easy to forget",
+    "header_advantage": "Practice posture with Posture+",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "A short guided practice setup turns an abstract posture goal into a repeatable session."
+  },
+  "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/practice.png",
+  "source_sha256": "c701a157736e8afcd9f328ac9392d8dac3bd078a5c4666071b00924cfed51930",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/daily-practice/01-practice.foreground.png",
+  "foreground_sha256": "0636025a2787d5269d6a1e5839d1f5dcd410ced36f893c54730f586f16763481",
+  "ui_mask": "manifests/daily-practice/01-practice.ui-mask.png",
+  "ui_coverage": 0.5985,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 129,
+    "y": 573,
+    "width": 1062,
+    "height": 2260,
+    "screen_x": 150,
+    "screen_y": 594,
+    "screen_width": 1020,
+    "screen_height": 2218
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 160,
+  "header_lines": 2,
+  "header_text": "Practice posture with Posture+",
+  "header_bounds": [
+    115,
+    142,
+    1204,
+    420
+  ],
+  "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/practice.png",
+  "source_evidence_sha256": "c701a157736e8afcd9f328ac9392d8dac3bd078a5c4666071b00924cfed51930"
+}

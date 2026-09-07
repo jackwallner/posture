@@ -1,36 +1,11 @@
-Aufrecht sitzen, ohne daran zu denken.
+Mach Haltung zu einer täglichen Übung mit AirPods. Starte mit 3 Minuten, folge Live-Hinweisen und arbeite dich bis 15 Minuten vor. Teste Posture+ 7 Tage kostenlos, wenn du berechtigt bist.
 
-Posture verwandelt die AirPods, die du bereits besitzt, in einen ständig aktiven Haltungscoach. Setz sie einfach ein: Posture beobachtet den ganzen Tag über unauffällig deine Kopfhaltung, etwa 25 Messungen pro Sekunde, und gibt dir einen sanften Hinweis, sobald du wirklich in dich zusammensackst. Keine Kamera, die auf dich gerichtet ist, kein zusätzliches Gerät, kein Gedanke daran, selbst nachzuschauen.
+Kostenlos: Level 1 und 2 ab 3 Minuten mit täglicher Serie.
+Posture+: Level von 3 bis 15 Minuten, Walk-Modus, Trends und optionale ganztägige AirPods-Hintergrundüberwachung.
+Ohne AirPods hältst du die Serie mit manuellen Check-ins.
 
-Schluss mit Tech-Nacken oder Handy-Nacken. Ob am Schreibtisch, auf dem Sofa oder im Homeoffice: Posture erkennt das Absacken genau dann, wenn es passiert, solange du es noch korrigieren kannst.
+Nur zur Wahrnehmung und Übung der Körperhaltung. Keine medizinische Beratung, Diagnose oder Behandlung.
 
-SO FUNKTIONIERT ES
-• Einmal kalibrieren. Steh aufrecht, sitz aufrecht, dann lehn dich bewusst in eine schlechte Haltung. Deine AirPods lernen deinen persönlichen Bereich in unter einer Minute.
-• Trage deine AirPods wie gewohnt. Posture überwacht im Hintergrund, auch wenn dein iPhone in der Tasche steckt.
-• Spüre den Hinweis. Sackst du länger zusammen, bekommst du einen sanften Vibrationsimpuls. Richtest du dich auf, wird es wieder still. Das ist die ganze Gewohnheit.
-• Sieh deinen Tag entstehen. Jede überwachte Minute wird Teil deines Tagesberichts: Anteil des Tages in guter Haltung, Rhythmus Stunde für Stunde, beste Phasen, erkannte Slouches.
-
-DAS BEKOMMST DU
-• Ganztägige Haltungsüberwachung im Hintergrund über AirPods
-• Live-Haltungsstatus: aufrecht, driftend oder zusammengesackt, in Echtzeit
-• Ein Tagesbericht aus deinem tatsächlichen Sitzverhalten, keine Stichproben
-• Wochentrends: sieh, an welchen Tagen und zu welchen Stunden deine Haltung stabil bleibt
-• Tägliche Serien mit Freeze-Schutz, jeder überwachte Tag zählt
-• Sanfte Erinnerungen während deiner aktiven Stunden, wenn du sie möchtest
-• Apple Watch-Begleit-App und Sperrbildschirm-Widgets
-• Eine geführte Einführung, die dir den Ablauf in einer Minute zeigt
-
-WELCHE AIRPODS FUNKTIONIEREN
-Posture liest die Kopfbewegung von AirPods Pro (1. & 2. Generation), AirPods (3. Generation), AirPods 4 mit Active Noise Cancellation oder AirPods Max. Keine kompatiblen AirPods? Du kannst Haltungs-Check-ins manuell eintragen und deine Serie am Leben halten.
-
-PRIVATSPHÄRE VON GRUND AUF
-• Keine Konten, keine Anmeldung
-• Keine Werbung und kein App-übergreifendes Tracking
-• Kopfbewegungsdaten werden auf dem Gerät verarbeitet und verlassen dein iPhone nie
-
-Abonnementdetails
-
-Posture+ ist ein automatisch verlängerbares Abonnement mit monatlichen und jährlichen Optionen sowie einer einmaligen lebenslangen Freischaltung. Für die Abo-Pläne ist eine kostenlose Testphase verfügbar; danach verlängert sich das Abo automatisch zum angegebenen Preis, sofern es nicht gekündigt wird. Verwalte oder kündige jederzeit unter Einstellungen › Apple ID › Abonnements. Die Zahlung wird deiner Apple ID bei Kaufbestätigung belastet. Abonnements verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende des aktuellen Zeitraums deaktiviert werden.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Das Monatsabo kostet US$2.99, das Jahresabo US$19.99. Beide verlängern sich automatisch und enthalten bei Berechtigung eine 7-tägige kostenlose Probe. Apple belastet deinen Apple Account bei Bestätigung des Kaufs oder nach einer berechtigten Probe. Ohne Berechtigung erfolgt die Belastung bei Bestätigung. Die Verlängerung wird innerhalb der letzten 24 Stunden vor Periodenende berechnet. Verwalte oder kündige mindestens 24 Stunden vor Periodenende unter Einstellungen › Apple Account › Abonnements. Preise variieren je nach Region und werden vor dem Kauf angezeigt.
+Datenschutzerklärung: https://jackwallner.github.io/posture/privacy-policy.html
+Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

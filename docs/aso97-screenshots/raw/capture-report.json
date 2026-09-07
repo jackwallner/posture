@@ -1,0 +1,146 @@
+{
+  "status": "ok",
+  "manifest": "/Users/jackwallner/posture/docs/aso97-screenshots.json",
+  "app": "posture",
+  "mode": "generic",
+  "lease": "aso97-posture-capture",
+  "output": "/Users/jackwallner/posture/docs/aso97-screenshots/raw",
+  "proof_only": false,
+  "checkout_options": [],
+  "lease_checked_in": true,
+  "screenshots": [
+    "permission-ready.png",
+    "practice.png",
+    "today.png",
+    "progress.png",
+    "history.png",
+    "checkin.png",
+    "walk.png"
+  ],
+  "screenshot_records": [
+    {
+      "name": "permission-ready.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/permission-ready.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "d9493b1b84030ecde2035c8481f18a099dcfba93deb1cd61987f2f6ce15de899"
+    },
+    {
+      "name": "practice.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/practice.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "c701a157736e8afcd9f328ac9392d8dac3bd078a5c4666071b00924cfed51930"
+    },
+    {
+      "name": "today.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/today.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "61cbbbe98142b648d542abbb4fa56c34bc29d5695aa7aab11660737baacdee3e"
+    },
+    {
+      "name": "progress.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/progress.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "fd4766712dd45a974e0c58c354180ff278c04b7d9b75a4f954eca3d16eddd0ae"
+    },
+    {
+      "name": "history.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/history.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "70d9f2f6edf2fe323c5b1c7fcaf5be9e1af83d48cb8389cebc6abbfd71ae270e"
+    },
+    {
+      "name": "checkin.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/checkin.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "cae3550fb6966961e99f8fa6e76c0134934d628b9739e7b442265b192f9addef"
+    },
+    {
+      "name": "walk.png",
+      "path": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/walk.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "4bd4bf7bd31bc9c24ccadc5a4379dd9bf0145355c403cd4799f775e33dfa87bc"
+    }
+  ],
+  "flows": [
+    {
+      "id": "notification-permission",
+      "screenshots": [
+        "permission-ready.png"
+      ]
+    },
+    {
+      "id": "practice",
+      "screenshots": [
+        "practice.png"
+      ]
+    },
+    {
+      "id": "today",
+      "screenshots": [
+        "today.png"
+      ]
+    },
+    {
+      "id": "progress",
+      "screenshots": [
+        "progress.png"
+      ]
+    },
+    {
+      "id": "history",
+      "screenshots": [
+        "history.png"
+      ]
+    },
+    {
+      "id": "checkin",
+      "screenshots": [
+        "checkin.png"
+      ]
+    },
+    {
+      "id": "walk",
+      "screenshots": [
+        "walk.png"
+      ]
+    }
+  ],
+  "app_repo": {
+    "path": "/Users/jackwallner/posture",
+    "git_commit": "33cff189de955a4fc4191870f5deeaa759fad657"
+  },
+  "device": {
+    "udid": "2C7A80C1-1228-411A-B9AD-A7DEED683F79",
+    "name": "agent-sim-1",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"
+  }
+}

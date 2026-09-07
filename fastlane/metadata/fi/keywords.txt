@@ -1,1 +1,1 @@
-muistutus,tapa,skannaus,terveys,keho,selkä,hoito,selkäranka,hyvinvointi,seuranta,sarja,airpods,kello
+ryhti,harjoitus,muistutus,työpöytä,istuminen,tapa,tietoisuus,putki,edistyminen,airpods,kello

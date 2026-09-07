@@ -1,36 +1,11 @@
-Duduk tegak, tanpa perlu memikirkannya.
+Jadikan postur latihan harian dengan AirPods. Mulai 3 menit, ikuti panduan langsung, dan tingkatkan hingga 15 menit. Coba Posture+ gratis 7 hari jika memenuhi syarat.
 
-Posture mengubah AirPods yang sudah kamu miliki menjadi pelatih postur yang selalu aktif. Pasang saja, dan Posture akan diam-diam mengamati posisi kepalamu sepanjang hari, sekitar 25 pembacaan per detik, lalu memberimu isyarat lembut begitu kamu benar-benar membungkuk. Tidak ada kamera yang mengarah padamu, tidak ada perangkat tambahan yang perlu dibeli, tidak perlu mengingat untuk memeriksa sendiri.
+Gratis: level 1 dan 2 mulai 3 menit, dengan streak harian.
+Posture+: level 3 hingga 15 menit, mode berjalan, tren, dan pemantauan AirPods opsional sepanjang hari.
+Tanpa AirPods, check-in manual menjaga streak.
 
-Tidak ada lagi "tech neck" atau leher tegang karena ponsel. Baik saat di meja kerja, di sofa, atau bekerja dari rumah, Posture menangkap postur membungkuk tepat saat itu terjadi, ketika kamu masih bisa memperbaikinya.
+Hanya untuk kesadaran dan latihan postur. Bukan nasihat medis, diagnosis, atau perawatan.
 
-CARA KERJANYA
-• Kalibrasi sekali saja. Berdiri tegak, duduk tegak, lalu bungkukkan badan dengan sengaja. AirPods-mu akan mempelajari rentang pribadimu dalam waktu kurang dari satu menit.
-• Pakai AirPods seperti biasa. Posture memantau di latar belakang, bahkan saat ponsel ada di sakumu.
-• Rasakan isyaratnya. Jika kamu membungkuk beberapa saat, kamu akan menerima getaran lembut. Tegakkan kembali, dan getaran akan berhenti. Itulah seluruh kebiasaan yang perlu dibangun.
-• Lihat harimu terisi. Setiap menit yang dipantau akan masuk ke laporan harianmu: persentase hari dengan postur tegak, ritme per jam, periode terbaik, momen membungkuk yang terdeteksi.
-
-YANG KAMU DAPATKAN
-• Pemantauan postur di latar belakang sepanjang hari melalui AirPods
-• Status postur langsung: tegak, mulai bergeser, atau membungkuk, secara real-time
-• Laporan harian berdasarkan posisi dudukmu yang sebenarnya, bukan pemeriksaan acak
-• Tren mingguan: lihat di hari dan jam mana posturmu paling terjaga
-• Rentetan harian dengan perlindungan freeze, setiap hari yang dipantau dihitung
-• Pengingat lembut selama jam aktifmu, jika kamu menginginkannya
-• Aplikasi pendamping Apple Watch dan widget layar terkunci
-• Panduan langkah demi langkah yang menjelaskan seluruh alur dalam satu menit
-
-AIRPODS APA SAJA YANG DIDUKUNG
-Posture membaca gerakan kepala dari AirPods Pro (generasi 1 & 2), AirPods (generasi 3), AirPods 4 dengan Peredam Bising Aktif, atau AirPods Max. Tidak punya AirPods yang kompatibel? Kamu bisa mencatat pemeriksaan postur secara manual dan menjaga rentetan harianmu tetap hidup.
-
-PRIVASI SEJAK DIRANCANG
-• Tanpa akun, tanpa pendaftaran
-• Tanpa iklan dan tanpa pelacakan antar-aplikasi
-• Data gerakan kepala diproses di perangkat dan tidak pernah meninggalkan ponselmu
-
-Detail Langganan
-
-Posture+ adalah langganan yang diperpanjang otomatis dengan pilihan bulanan dan tahunan, ditambah pembukaan akses seumur hidup dengan pembayaran satu kali. Uji coba gratis tersedia untuk paket langganan; setelah masa uji coba, langganan akan diperpanjang dengan harga yang tercantum kecuali dibatalkan. Kelola atau batalkan kapan saja di Pengaturan › Apple ID › Langganan. Pembayaran akan dibebankan ke Apple ID-mu saat konfirmasi pembelian. Langganan akan diperpanjang otomatis kecuali dimatikan setidaknya 24 jam sebelum akhir periode saat ini.
-
+Paket bulanan seharga US$2.99 dan paket tahunan seharga US$19.99. Keduanya diperpanjang otomatis dan masing-masing menawarkan uji coba gratis 7 hari jika memenuhi syarat. Apple menagih Akun Apple Anda saat mengonfirmasi pembelian atau setelah uji coba yang memenuhi syarat. Jika tidak memenuhi syarat, penagihan dilakukan saat konfirmasi. Biaya perpanjangan ditagihkan dalam 24 jam sebelum periode berjalan berakhir. Kelola atau batalkan di Pengaturan › Akun Apple › Langganan setidaknya 24 jam sebelum periode berakhir. Harga berbeda menurut wilayah dan ditampilkan sebelum pembelian.
 Kebijakan Privasi: https://jackwallner.github.io/posture/privacy-policy.html
 Ketentuan Penggunaan (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

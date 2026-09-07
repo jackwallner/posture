@@ -1,36 +1,11 @@
-Siediti dritto, senza nemmeno pensarci.
+Trasforma la postura in una pratica quotidiana con AirPods. Inizia da 3 minuti, segui le indicazioni dal vivo e arriva a 15. Prova Posture+ gratis per 7 giorni se idoneo.
 
-Posture trasforma le AirPods che già possiedi in un coach di postura sempre attivo. Indossale e Posture osserva silenziosamente la posizione della tua testa per tutto il giorno, circa 25 rilevazioni al secondo, dandoti un lieve segnale non appena ti incurvi davvero. Nessuna fotocamera puntata su di te, nessun dispositivo da acquistare, niente da ricordarti di controllare.
+Gratis: livelli 1 e 2 da 3 minuti, con serie giornaliera.
+Posture+: livelli da 3 a 15 minuti, modalità camminata, tendenze e monitoraggio AirPods opzionale tutto il giorno.
+Senza AirPods, i check-in manuali mantengono la serie.
 
-Basta con il "tech neck" o il collo da smartphone. Che tu sia alla scrivania, sul divano o in smart working, Posture rileva l'incurvamento mentre accade, quando puoi ancora correggerlo.
+Solo per la consapevolezza e la pratica della postura. Non è un consiglio medico, una diagnosi o un trattamento.
 
-COME FUNZIONA
-• Calibra una sola volta. Stai in piedi dritto, siediti dritto, poi incurvati di proposito. Le tue AirPods imparano il tuo intervallo personale in meno di un minuto.
-• Indossa le AirPods come fai già. Posture monitora in background, anche con il telefono in tasca.
-• Percepisci il segnale. Se resti incurvato per un po', ricevi una leggera vibrazione. Raddrizzati e si ferma. Questa è tutta l'abitudine da creare.
-• Guarda la tua giornata prendere forma. Ogni minuto monitorato alimenta il tuo report giornaliero: percentuale della giornata con postura corretta, andamento ora per ora, momenti migliori, incurvamenti rilevati.
-
-COSA OTTIENI
-• Monitoraggio della postura in background per tutto il giorno tramite AirPods
-• Stato della postura in tempo reale: allineata, in deriva o incurvata
-• Un report giornaliero basato su come ti siedi davvero, non su controlli occasionali
-• Tendenze settimanali: scopri in quali giorni e ore la tua postura regge meglio
-• Serie giornaliere con protezione freeze, ogni giorno monitorato conta
-• Promemoria discreti durante le tue ore attive, se li vuoi
-• App companion per Apple Watch e widget per la schermata di blocco
-• Un tutorial guidato che spiega il ciclo in un minuto
-
-QUALI AIRPODS FUNZIONANO
-Posture legge il movimento della testa da AirPods Pro (1ª e 2ª generazione), AirPods (3ª generazione), AirPods 4 con cancellazione attiva del rumore o AirPods Max. Non hai AirPods compatibili? Puoi registrare i controlli di postura manualmente e mantenere viva la tua serie.
-
-PRIVACY FIN DALLA PROGETTAZIONE
-• Nessun account, nessuna registrazione
-• Nessuna pubblicità e nessun tracciamento tra app
-• I dati sul movimento della testa vengono elaborati sul dispositivo e non lasciano mai il tuo telefono
-
-Dettagli dell'abbonamento
-
-Posture+ è un abbonamento a rinnovo automatico con opzioni mensili e annuali, oltre a uno sblocco a vita con pagamento unico. È disponibile una prova gratuita sui piani in abbonamento; al termine della prova si rinnova al prezzo indicato salvo disdetta. Gestisci o annulla in qualsiasi momento in Impostazioni › ID Apple › Abbonamenti. Il pagamento viene addebitato sul tuo ID Apple alla conferma dell'acquisto. Gli abbonamenti si rinnovano automaticamente a meno che non vengano disattivati almeno 24 ore prima della fine del periodo in corso.
-
+Il piano mensile costa US$2.99 e quello annuale US$19.99. Entrambi si rinnovano automaticamente e includono una prova gratuita di 7 giorni se idoneo. Apple addebita il tuo Account Apple alla conferma dell’acquisto o dopo una prova idonea. Se non sei idoneo, l’addebito avviene alla conferma. Il rinnovo viene addebitato entro le 24 ore precedenti la fine del periodo corrente. Gestisci o annulla in Impostazioni › Account Apple › Abbonamenti almeno 24 ore prima della fine. I prezzi variano in base alla regione e sono mostrati prima dell’acquisto.
 Informativa sulla privacy: https://jackwallner.github.io/posture/privacy-policy.html
-Condizioni d'uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Termini di utilizzo (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

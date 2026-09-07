@@ -1,36 +1,11 @@
-Sid oprejst, uden overhovedet at tænke over det.
+Gør holdning til daglig øvelse med AirPods. Start med 3 minutter, følg live-vejledningen, og arbejd dig mod 15 minutter. Prøv Posture+ gratis i 7 dage, hvis du er berettiget.
 
-Posture forvandler de AirPods, du allerede har, til en altid aktiv holdningscoach. Sæt dem i, og Posture holder stille øje med din hovedposition hele dagen, omkring 25 målinger i sekundet, og giver dig et blidt praj, lige så snart du for alvor synker sammen. Intet kamera rettet mod dig, ingen wearable at købe, ingen grund til at huske at tjekke.
+Gratis: niveau 1 og 2 fra 3 minutter med daglig serie.
+Posture+: niveauer fra 3 til 15 minutter, gåtilstand, trends og valgfri heldags AirPods-overvågning.
+Uden AirPods holder man serien med manuelle check-ins.
 
-Farvel til tech neck og tekstnakke. Uanset om du sidder ved skrivebordet, på sofaen eller arbejder hjemmefra, opdager Posture den dårlige holdning, mens den sker, mens du stadig kan rette den.
+Kun til kropsholdningsbevidsthed og øvelse. Ikke lægelig rådgivning, diagnose eller behandling.
 
-SÅDAN FUNGERER DET
-• Kalibrér én gang. Stå oprejst, sid oprejst, og læn dig så bevidst ned i en dårlig holdning. Dine AirPods lærer dit personlige spænd på under et minut.
-• Bær dine AirPods som du plejer. Posture overvåger i baggrunden, selv med telefonen i lommen.
-• Mærk praj'et. Sidder du sammensunket et stykke tid, får du en blid vibration. Ret dig op, og den stopper. Det er hele vanen.
-• Se din dag blive fyldt ud. Hvert overvåget minut bliver en del af din daglige rapport: hvor stor en andel af dagen du var korrekt oprejst, time-for-time-rytme, bedste perioder, opfangede sammensynkninger.
-
-HVAD DU FÅR
-• Heldags baggrundsovervågning af holdning via AirPods
-• Live holdningsstatus: oprejst, glidende eller sammensunket, i realtid
-• En daglig rapport bygget på, hvordan du faktisk sidder, ikke stikprøver
-• Ugentlige tendenser: se hvilke dage og timer din holdning holder bedst
-• Daglige stimer med frysebeskyttelse, hver overvåget dag tæller
-• Blide påmindelser i dine aktive timer, hvis du ønsker det
-• Apple Watch-companion-app og låseskærmswidgets
-• En guidet gennemgang, der lærer dig rutinen på et minut
-
-HVILKE AIRPODS VIRKER
-Posture læser hovedbevægelser fra AirPods Pro (1. og 2. generation), AirPods (3. generation), AirPods 4 med aktiv støjreduktion, eller AirPods Max. Har du ikke kompatible AirPods? Du kan logge holdningstjek manuelt og holde din stime i live.
-
-PRIVATLIV FRA BUNDEN
-• Ingen konti, ingen tilmelding
-• Ingen annoncer og ingen sporing på tværs af apps
-• Hovedbevægelsesdata behandles på enheden og forlader aldrig din telefon
-
-Abonnementsoplysninger
-
-Posture+ er et abonnement med automatisk fornyelse med månedlige og årlige muligheder samt en engangs livstidsoplåsning. En gratis prøveperiode er tilgængelig på abonnementsplanerne; efter prøveperioden fornyes det til den angivne pris, medmindre det opsiges. Administrer eller opsig når som helst under Indstillinger › Apple ID › Abonnementer. Betalingen trækkes på dit Apple ID ved bekræftelse af købet. Abonnementer fornyes automatisk, medmindre de slås fra mindst 24 timer før udgangen af den aktuelle periode.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Månedsplanen koster US$2.99, og årsplanen koster US$19.99. Begge fornyes automatisk og har en gratis prøveperiode på 7 dage, hvis du er berettiget. Apple opkræver din Apple-konto ved bekræftelse af købet eller efter en berettiget prøveperiode. Hvis du ikke er berettiget, opkræves du ved bekræftelse. Fornyelsesbeløbet opkræves inden for de sidste 24 timer før periodens udløb. Administrer eller opsig i Indstillinger › Apple-konto › Abonnementer mindst 24 timer før periodens udløb. Priser varierer efter område og vises før køb.
+Privatlivspolitik: https://jackwallner.github.io/posture/privacy-policy.html
+Brugsbetingelser (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

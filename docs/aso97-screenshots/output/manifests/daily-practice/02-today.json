@@ -1,0 +1,68 @@
+{
+  "filename": "02-today.png",
+  "path": "daily-practice/02-today.png",
+  "output_sha256": "b5d0aba1d2ee8a59cc11d62d25bbc8ccb7d9437e601ec7597f308162b326d07e",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Track daily streaks with Pro",
+  "pitch": {
+    "benefit": "Track daily streaks with Pro",
+    "problem": "Posture awareness is easy to forget without a concrete routine",
+    "advantage": "Short guided sessions and visible history make practice repeatable",
+    "header_problem": "posture awareness is easy to forget",
+    "header_advantage": "Track daily streaks with Pro",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The Today screen shows the next practice and the current streak."
+  },
+  "source": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/today.png",
+  "source_sha256": "61cbbbe98142b648d542abbb4fa56c34bc29d5695aa7aab11660737baacdee3e",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/daily-practice/02-today.foreground.png",
+  "foreground_sha256": "2575d484f250c5222eb6b79c047aeba820fb1310548690f45130ac6d8ee6d9b9",
+  "ui_mask": "manifests/daily-practice/02-today.ui-mask.png",
+  "ui_coverage": 0.5985,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 129,
+    "y": 573,
+    "width": 1062,
+    "height": 2260,
+    "screen_x": 150,
+    "screen_y": 594,
+    "screen_width": 1020,
+    "screen_height": 2218
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 160,
+  "header_lines": 2,
+  "header_text": "Track daily streaks with Pro",
+  "header_bounds": [
+    130,
+    140,
+    1190,
+    420
+  ],
+  "source_evidence": "/Users/jackwallner/posture/docs/aso97-screenshots/raw/today.png",
+  "source_evidence_sha256": "61cbbbe98142b648d542abbb4fa56c34bc29d5695aa7aab11660737baacdee3e"
+}

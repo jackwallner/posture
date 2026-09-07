@@ -1,36 +1,11 @@
-Siedź prosto, nawet o tym nie myśląc.
+Zamień postawę w codzienną praktykę z AirPods. Zacznij od 3 minut, korzystaj ze wskazówek na żywo i przejdź do 15 minut. Jeśli się kwalifikujesz, wypróbuj Posture+ 7 dni za darmo.
 
-Posture zamienia AirPods, które już masz, w stale aktywnego trenera postawy. Włóż je, a Posture przez cały dzień dyskretnie obserwuje pozycję Twojej głowy, około 25 pomiarów na sekundę, i delikatnie Cię ostrzega, gdy naprawdę się zgarbisz. Żadnej kamery skierowanej na Ciebie, żadnego dodatkowego urządzenia do kupienia, nic do pamiętania.
+Bezpłatnie: poziomy 1 i 2 od 3 minut oraz codzienna seria.
+Posture+: poziomy od 3 do 15 minut, tryb spaceru, trendy i opcjonalne całodzienne monitorowanie AirPods.
+Bez AirPods ręczne sprawdzanie podtrzymuje serię.
 
-Koniec z tech neckiem czy szyją od telefonu. Niezależnie od tego, czy siedzisz przy biurku, na kanapie, czy pracujesz zdalnie, Posture wychwytuje garbienie się w momencie, gdy się dzieje, gdy nadal możesz je poprawić.
+Wyłącznie do świadomości postawy i ćwiczeń. To nie jest porada medyczna, diagnoza ani leczenie.
 
-JAK TO DZIAŁA
-• Skalibruj raz. Stań prosto, usiądź prosto, a potem celowo się zgarb. Twoje AirPods poznają Twój indywidualny zakres w mniej niż minutę.
-• Noś AirPods tak jak zawsze. Posture monitoruje w tle, nawet gdy telefon jest w kieszeni.
-• Poczuj sygnał. Jeśli garbisz się przez chwilę, otrzymasz delikatną wibrację. Wyprostuj się, a ucichnie. To cały nawyk do wyrobienia.
-• Obserwuj, jak wypełnia się Twój dzień. Każda monitorowana minuta trafia do dziennego raportu: procent dnia w dobrej postawie, rytm godzina po godzinie, najlepsze okresy, wychwycone momenty garbienia.
-
-CO OTRZYMUJESZ
-• Całodniowe monitorowanie postawy w tle za pomocą AirPods
-• Status postawy na żywo: wyprostowana, dryfująca lub zgarbiona, w czasie rzeczywistym
-• Dzienny raport oparty na rzeczywistym sposobie siedzenia, a nie na wyrywkowych kontrolach
-• Trendy tygodniowe: sprawdź, w które dni i godziny Twoja postawa jest najlepsza
-• Codzienne serie z ochroną zamrożenia, każdy monitorowany dzień się liczy
-• Delikatne przypomnienia w Twoich aktywnych godzinach, jeśli tego chcesz
-• Aplikacja towarzysząca dla Apple Watch i widżety ekranu blokady
-• Prowadzony samouczek, który w minutę wyjaśnia cały rytuał
-
-KTÓRE AIRPODS DZIAŁAJĄ
-Posture odczytuje ruchy głowy z AirPods Pro (1. i 2. generacji), AirPods (3. generacji), AirPods 4 z aktywną redukcją hałasu lub AirPods Max. Nie masz kompatybilnych AirPods? Możesz ręcznie zapisywać kontrole postawy i podtrzymywać swoją serię.
-
-PRYWATNOŚĆ W FUNDAMENCIE
-• Bez kont, bez rejestracji
-• Bez reklam i bez śledzenia między aplikacjami
-• Dane o ruchu głowy są przetwarzane na urządzeniu i nigdy nie opuszczają Twojego telefonu
-
-Szczegóły subskrypcji
-
-Posture+ to subskrypcja z automatycznym odnawianiem, dostępna w opcji miesięcznej i rocznej, a także jednorazowa dożywotnia odblokada. W planach subskrypcyjnych dostępny jest bezpłatny okres próbny; po jego zakończeniu subskrypcja odnawia się w podanej cenie, chyba że zostanie anulowana. Zarządzaj lub anuluj w dowolnym momencie w Ustawienia › Apple ID › Subskrypcje. Płatność zostanie pobrana z Twojego konta Apple ID w momencie potwierdzenia zakupu. Subskrypcje odnawiają się automatycznie, chyba że zostaną wyłączone co najmniej 24 godziny przed końcem bieżącego okresu.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Plan miesięczny kosztuje US$2.99, a roczny US$19.99. Oba odnawiają się automatycznie i oferują 7-dniowy bezpłatny okres próbny, jeśli się kwalifikujesz. Apple obciąży Twoje konto Apple przy potwierdzeniu zakupu lub po kwalifikującym okresie próbnym. Jeśli się nie kwalifikujesz, opłata zostanie pobrana przy potwierdzeniu. Opłata za odnowienie jest pobierana w ciągu 24 godzin przed końcem bieżącego okresu. Zarządzaj subskrypcją lub anuluj ją w Ustawienia › Konto Apple › Subskrypcje co najmniej 24 godziny przed końcem okresu. Ceny różnią się w zależności od regionu i są wyświetlane przed zakupem.
+Polityka prywatności: https://jackwallner.github.io/posture/privacy-policy.html
+Warunki użytkowania (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

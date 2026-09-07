@@ -1,36 +1,11 @@
-Se tenir droit, sans même y penser.
+Faites de la posture une pratique quotidienne avec vos AirPods. Commencez par 3 minutes, suivez les conseils en direct et progressez vers 15 minutes. Essayez Posture+ gratuitement 7 jours si vous y êtes admissible.
 
-Posture transforme les AirPods que vous possédez déjà en coach de posture toujours actif. Mettez-les, et Posture surveille discrètement la position de votre tête toute la journée, environ 25 mesures par seconde, puis vous envoie une légère vibration dès que vous vous affaissez vraiment. Pas de caméra braquée sur vous, pas d'accessoire à acheter, pas besoin de penser à vérifier.
+Gratuit : niveaux 1 et 2 dès 3 minutes, avec série quotidienne.
+Posture+ : niveaux de 3 à 15 minutes, mode Marche, tendances et suivi AirPods facultatif toute la journée.
+Sans AirPods, les contrôles manuels maintiennent votre série.
 
-Fini le "tech neck" ou le cou penché sur l'écran. Que vous soyez au bureau, sur le canapé ou en télétravail, Posture repère l'affaissement au moment où il se produit, pendant que vous pouvez encore le corriger.
+Pour la prise de conscience et la pratique de la posture uniquement. Ne constitue pas un avis médical, un diagnostic ni un traitement.
 
-COMMENT ÇA MARCHE
-• Calibrez une seule fois. Tenez-vous droit debout, puis assis, puis affaissez-vous volontairement. Vos AirPods apprennent votre amplitude personnelle en moins d'une minute.
-• Portez vos AirPods comme d'habitude. Posture surveille en arrière-plan, même avec votre téléphone dans la poche.
-• Ressentez la vibration. Restez affaissé un moment et vous recevez un léger signal. Redressez-vous et il s'arrête. C'est toute l'habitude à prendre.
-• Regardez votre journée se remplir. Chaque minute surveillée alimente votre rapport quotidien : pourcentage de la journée bien aligné, rythme heure par heure, meilleures périodes, affaissements détectés.
-
-CE QUE VOUS OBTENEZ
-• Surveillance de posture en arrière-plan toute la journée via AirPods
-• Statut de posture en direct : aligné, en dérive ou affaissé, en temps réel
-• Un rapport quotidien basé sur votre position réelle, pas des contrôles ponctuels
-• Tendances hebdomadaires : voyez quels jours et quelles heures votre posture tient bon
-• Séries quotidiennes avec protection de gel, chaque jour surveillé compte
-• Rappels doux pendant vos heures actives, si vous le souhaitez
-• Application compagnon Apple Watch et widgets pour l'écran verrouillé
-• Un guide pas à pas qui explique la routine en une minute
-
-QUELS AIRPODS FONCTIONNENT
-Posture lit les mouvements de tête depuis les AirPods Pro (1re et 2e génération), les AirPods (3e génération), les AirPods 4 avec réduction active du bruit, ou les AirPods Max. Pas d'AirPods compatibles ? Vous pouvez enregistrer vos contrôles de posture manuellement et garder votre série intacte.
-
-CONFIDENTIALITÉ PAR CONCEPTION
-• Aucun compte, aucune inscription
-• Aucune publicité et aucun suivi entre applications
-• Les données de mouvement de tête sont traitées sur l'appareil et ne quittent jamais votre téléphone
-
-Détails d'abonnement
-
-Posture+ est un abonnement à renouvellement automatique avec des options mensuelles et annuelles, ainsi qu'un déblocage à vie en paiement unique. Un essai gratuit est proposé sur les formules d'abonnement ; à l'issue de l'essai, il se renouvelle au prix indiqué sauf annulation. Gérez ou annulez à tout moment dans Réglages › Apple ID › Abonnements. Le paiement est débité de votre identifiant Apple à la confirmation de l'achat. Les abonnements se renouvellent automatiquement sauf désactivation au moins 24 heures avant la fin de la période en cours.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Le forfait mensuel coûte US$2.99 et l’annuel US$19.99. Tous deux se renouvellent automatiquement et proposent un essai gratuit de 7 jours si vous êtes admissible. Apple facture votre compte Apple lors de la confirmation de l’achat ou après un essai admissible. Si vous n’êtes pas admissible, le débit est effectué à la confirmation. Le renouvellement est facturé dans les 24 heures précédant la fin de la période en cours. Gérez ou annulez dans Réglages › Compte Apple › Abonnements, au moins 24 heures avant la fin. Les prix varient selon la région et sont affichés avant l’achat.
+Politique de confidentialité: https://jackwallner.github.io/posture/privacy-policy.html
+Conditions d’utilisation (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

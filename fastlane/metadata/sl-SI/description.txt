@@ -1,36 +1,11 @@
-Sedi pokončno, ne da bi sploh razmišljal/a o tem.
+Naj bo drža vsakodnevna vaja z AirPods. Začni s 3 minutami, sledi navodilom v živo in napreduj do 15 minut. Če si upravičen, preizkusi Posture+ 7 dni brezplačno.
 
-Posture spremeni AirPods, ki jih že imaš, v vedno aktivnega trenerja drže. Vstavi jih, in Posture bo ves dan tiho spremljal položaj tvoje glave, približno 25 meritev na sekundo, ter ti nežno namigne, takoj ko se resnično zgrbiš. Brez kamere, usmerjene vate, brez dodatne naprave za nakup, brez potrebe, da si zapomniš preveriti.
+Brezplačno: ravni 1 in 2 od 3 minut z dnevnim nizom.
+Posture+: ravni od 3 do 15 minut, način hoje, trendi in izbirno celodnevno spremljanje AirPods.
+Brez AirPods ročni pregledi ohranijo niz.
 
-Konec "tech necka" ali vratu od telefona. Ne glede na to, ali sediš za mizo, na kavču ali delaš od doma, Posture zazna zgrbljenost, medtem ko se dogaja, ko jo lahko še popraviš.
+Samo za zavedanje drže in vajo. Ni zdravstveni nasvet, diagnoza ali zdravljenje.
 
-KAKO DELUJE
-• Kalibriraj enkrat. Stoj pokončno, sedi pokončno, nato se namerno zgrbi. Tvoji AirPods se tvojega osebnega razpona naučijo v manj kot minuti.
-• Nosi AirPods, kot že sicer. Posture spremlja v ozadju, tudi ko je telefon v žepu.
-• Začuti namig. Če ostaneš zgrbljen/a nekaj časa, dobiš nežno vibracijo. Zravnaj se in preneha. To je cela navada.
-• Opazuj, kako se ti dan zapolnjuje. Vsaka spremljana minuta se prišteje k dnevnemu poročilu: odstotek dneva v pravilni drži, ritem od ure do ure, najboljša obdobja, zaznane zgrbljenosti.
-
-KAJ DOBIŠ
-• Celodnevno spremljanje drže v ozadju prek AirPods
-• Stanje drže v živo: pokončno, odstopajoče ali zgrbljeno, v realnem času
-• Dnevno poročilo, zgrajeno na podlagi tvojega dejanskega sedenja, ne naključnih preverjanj
-• Tedenski trendi: poglej, kateri dnevi in ure ti najbolje uspevajo
-• Dnevni nizi z zaščito zamrznitve, vsak spremljan dan šteje
-• Nežni opomniki v tvojih aktivnih urah, če jih želiš
-• Spremljevalna aplikacija za Apple Watch in pripomočki za zaklenjen zaslon
-• Vodeni vodnik, ki v eni minuti razloži celoten potek
-
-KATERI AIRPODS DELUJEJO
-Posture bere gibanje glave iz AirPods Pro (1. in 2. generacija), AirPods (3. generacija), AirPods 4 z aktivnim odpravljanjem hrupa, ali AirPods Max. Nimaš združljivih AirPods? Preverjanja drže lahko beležiš ročno in ohraniš svoj niz živ.
-
-ZASEBNOST ŽE PO ZASNOVI
-• Brez računov, brez registracije
-• Brez oglasov in brez sledenja med aplikacijami
-• Podatki o gibanju glave se obdelujejo na napravi in nikoli ne zapustijo tvojega telefona
-
-Podrobnosti naročnine
-
-Posture+ je naročnina s samodejnim podaljševanjem, z mesečnimi in letnimi možnostmi ter enkratno dosmrtno odklepanje. Za naročniške pakete je na voljo brezplačno preizkusno obdobje; po preizkusu se podaljša po navedeni ceni, razen če jo prekličeš. Upravljaj ali prekliči kadar koli v Nastavitve › Apple ID › Naročnine. Plačilo se obračuna tvojemu Apple ID ob potrditvi nakupa. Naročnine se samodejno podaljšajo, razen če jih izklopiš vsaj 24 ur pred koncem trenutnega obdobja.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Mesečni paket stane US$2.99, letni pa US$19.99. Oba se samodejno podaljšujeta in ob upravičenosti vključujeta 7-dnevni brezplačni preizkus. Apple ob potrditvi nakupa ali po upravičenem preizkusu bremeni tvoj račun Apple. Če nisi upravičen, se bremenitev izvede ob potrditvi. Strošek podaljšanja se zaračuna v 24 urah pred koncem trenutnega obdobja. Upravljaj ali prekliči v Nastavitve › Račun Apple › Naročnine vsaj 24 ur pred koncem. Cene se razlikujejo glede na regijo in so prikazane pred nakupom.
+Pravilnik o zasebnosti: https://jackwallner.github.io/posture/privacy-policy.html
+Pogoji uporabe (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

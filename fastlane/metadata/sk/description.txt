@@ -1,36 +1,11 @@
-Seď vzpriamene, bez toho, aby si nad tým musel/a rozmýšľať.
+Urob z držania tela každodenné cvičenie s AirPods. Začni na 3 minútach, riaď sa živými pokynmi a postupuj k 15 minútam. Ak máš nárok, vyskúšaj Posture+ 7 dní zadarmo.
 
-Posture premení AirPods, ktoré už vlastníš, na stále aktívneho trénera držania tela. Nasaď si ich a Posture bude celý deň nenápadne sledovať polohu tvojej hlavy, približne 25 meraní za sekundu, a jemne ťa upozorní vo chvíli, keď sa naozaj zhrbíš. Žiadna kamera namierená na teba, žiadne ďalšie zariadenie na kúpu, nič, čo by si si musel/a pamätať.
+Zdarma: úrovne 1 a 2 od 3 minút s dennou sériou.
+Posture+: úrovne od 3 do 15 minút, režim chôdze, trendy a voliteľné celodenné monitorovanie AirPods.
+Bez AirPods udrží sériu manuálny check-in.
 
-Koniec s "tech neckom" aj krkom od telefónu. Či už sedíš pri stole, na gauči, alebo pracuješ z domu, Posture zachytí zhrbenie presne vo chvíli, keď sa deje, keď ho ešte môžeš napraviť.
+Iba na uvedomenie si držania tela a cvičenie. Nejde o lekársku radu, diagnózu ani liečbu.
 
-AKO TO FUNGUJE
-• Zakalibruj raz. Postav sa rovno, sadni si rovno, potom sa zámerne zhrbi. Tvoje AirPods sa naučia tvoj osobný rozsah za menej ako minútu.
-• Nos AirPods tak ako doteraz. Posture monitoruje na pozadí, aj keď máš telefón vo vrecku.
-• Pocítiš upozornenie. Ak zostaneš zhrbený/á chvíľu, príde jemná vibrácia. Narovnaj sa a prestane. To je celý návyk.
-• Sleduj, ako sa ti vypĺňa deň. Každá sledovaná minúta sa počíta do denného prehľadu: percento dňa so správnym držaním tela, rytmus hodinu po hodine, najlepšie úseky, zachytené zhrbenia.
-
-ČO ZÍSKAŠ
-• Celodenné sledovanie držania tela na pozadí cez AirPods
-• Živý stav držania tela: vzpriamené, unikajúce alebo zhrbené, v reálnom čase
-• Denný prehľad zostavený z tvojho skutočného sedenia, nie z náhodných kontrol
-• Týždenné trendy: zisti, v ktoré dni a hodiny sa ti drží najlepšie
-• Denné série s ochranou zamrazenia, každý sledovaný deň sa počíta
-• Jemné pripomienky počas tvojich aktívnych hodín, ak o ne stojíš
-• Sprievodná aplikácia pre Apple Watch a widgety pre uzamknutú obrazovku
-• Sprievodca krok za krokom, ktorý vysvetlí celý postup za minútu
-
-KTORÉ AIRPODS FUNGUJÚ
-Posture číta pohyb hlavy z AirPods Pro (1. a 2. generácie), AirPods (3. generácie), AirPods 4 s aktívnym potlačením hluku, alebo AirPods Max. Nemáš kompatibilné AirPods? Kontroly držania tela si môžeš zaznamenávať ručne a udržať svoju sériu nažive.
-
-SÚKROMIE OD ZÁKLADU
-• Žiadne účty, žiadna registrácia
-• Žiadne reklamy a žiadne sledovanie medzi aplikáciami
-• Údaje o pohybe hlavy sa spracúvajú priamo v zariadení a nikdy neopustia tvoj telefón
-
-Podrobnosti o predplatnom
-
-Posture+ je automaticky obnovované predplatné s mesačnou a ročnou možnosťou a jednorazovým doživotným odomknutím. Pri predplatných je k dispozícii bezplatná skúšobná doba; po jej skončení sa predplatné obnoví za uvedenú cenu, pokiaľ ho nezrušíš. Spravuj alebo zruš kedykoľvek v Nastavenia › Apple ID › Predplatné. Platba sa strháva z tvojho Apple ID pri potvrdení nákupu. Predplatné sa automaticky obnovuje, pokiaľ nie je vypnuté aspoň 24 hodín pred koncom aktuálneho obdobia.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Mesačný plán stojí US$2.99 a ročný US$19.99. Obe predplatné sa automaticky obnovujú a pri nároku ponúkajú 7-dňovú bezplatnú skúšku. Apple zaúčtuje platbu na tvoj účet Apple pri potvrdení nákupu alebo po oprávnenej skúške. Ak nárok nemáš, platba sa zaúčtuje pri potvrdení. Poplatok za obnovenie sa účtuje do 24 hodín pred koncom aktuálneho obdobia. Spravuj alebo zruš v Nastavenia › Účet Apple › Predplatné aspoň 24 hodín pred koncom. Ceny sa líšia podľa regiónu a zobrazia sa pred nákupom.
+Zásady ochrany súkromia: https://jackwallner.github.io/posture/privacy-policy.html
+Podmienky používania (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

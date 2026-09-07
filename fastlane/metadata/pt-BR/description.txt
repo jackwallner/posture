@@ -1,34 +1,11 @@
-Sente-se ereto, sem nem precisar pensar nisso.
+Transforme a postura em uma prática diária com AirPods. Comece com 3 minutos, siga as orientações ao vivo e avance até 15. Se elegível, experimente o Posture+ por 7 dias grátis.
 
-O Posture transforma os AirPods que você já tem em um treinador de postura sempre ativo. Coloque-os e o Posture observa discretamente a posição da sua cabeça o dia todo, cerca de 25 leituras por segundo, e te dá um aviso suave assim que você realmente se encurva. Sem câmera apontada para você, sem acessório para comprar, sem precisar lembrar de conferir.
+Grátis: níveis 1 e 2 a partir de 3 minutos, com sequência diária.
+Posture+: níveis de 3 a 15 minutos, Modo Caminhada, tendências e monitoramento opcional dos AirPods o dia todo.
+Sem AirPods, check-ins manuais mantêm sua sequência.
 
-Chega de "tech neck" ou pescoço de texto. Seja na mesa, no sofá ou trabalhando de casa, o Posture flagra a má postura enquanto ela acontece, quando você ainda pode corrigi-la.
+Apenas para consciência e prática postural. Não é aconselhamento médico, diagnóstico ou tratamento.
 
-COMO FUNCIONA
-• Calibre uma vez. Fique em pé ereto, sente-se ereto e depois se encurve de propósito. Seus AirPods aprendem sua faixa pessoal em menos de um minuto.
-• Use seus AirPods como já faz. O Posture monitora em segundo plano, mesmo com o celular no bolso.
-• Sinta o aviso. Fique encurvado por um tempo e você recebe uma vibração suave. Endireite-se e ela para. Esse é todo o hábito a criar.
-• Veja seu dia se preencher. Cada minuto monitorado alimenta seu relatório diário: porcentagem do dia bem alinhado, ritmo hora a hora, melhores períodos, encurvamentos detectados.
-
-O QUE VOCÊ GANHA
-• Monitoramento de postura em segundo plano o dia todo pelos AirPods
-• Status de postura ao vivo: alinhado, oscilando ou encurvado, em tempo real
-• Um relatório diário baseado em como você realmente se sentou, não em checagens pontuais
-• Tendências semanais: veja em quais dias e horários sua postura se mantém melhor
-• Sequências diárias com proteção de congelamento, todo dia monitorado conta
-• Lembretes suaves durante seus horários ativos, se você quiser
-• App complementar para Apple Watch e widgets da tela bloqueada
-• Um tutorial guiado que explica o ciclo em um minuto
-
-QUAIS AIRPODS FUNCIONAM
-O Posture lê o movimento da cabeça com AirPods Pro (1ª e 2ª geração), AirPods (3ª geração), AirPods 4 com cancelamento ativo de ruído, ou AirPods Max. Não tem AirPods compatíveis? Você pode registrar suas checagens de postura manualmente e manter sua sequência viva.
-
-PRIVACIDADE POR DESIGN
-• Sem contas, sem cadastro
-• Sem anúncios e sem rastreamento entre apps
-• Os dados de movimento da cabeça são processados no dispositivo e nunca saem do seu celular
-
-O Posture+ é uma assinatura com renovação automática, com opções mensal e anual, além de um desbloqueio vitalício com pagamento único. Um teste grátis está disponível nos planos de assinatura; depois do teste, ela renova pelo preço indicado, a menos que seja cancelada. Gerencie ou cancele quando quiser em Ajustes › ID Apple › Assinaturas. O pagamento é cobrado no seu ID Apple na confirmação da compra. As assinaturas renovam automaticamente, a menos que sejam desativadas pelo menos 24 horas antes do fim do período atual.
-
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
-Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+O plano mensal custa US$2.99 e o anual custa US$19.99. Ambos são renovados automaticamente e oferecem teste grátis de 7 dias se você for elegível. A Apple cobra sua Conta Apple na confirmação da compra ou após um teste elegível. Se você não for elegível, a cobrança ocorre na confirmação. A cobrança da renovação é feita nas 24 horas anteriores ao fim do período atual. Gerencie ou cancele em Ajustes › Conta Apple › Assinaturas pelo menos 24 horas antes do fim do período. Os preços variam por região e são exibidos antes da compra.
+Política de Privacidade: https://jackwallner.github.io/posture/privacy-policy.html
+Termos de Uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

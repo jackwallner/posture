@@ -1,36 +1,26 @@
-Sit up straight, without thinking about it.
+Make posture a daily practice, not an all-day chore.
 
-Posture turns the AirPods you already own into an always-on posture coach. Pop them in, and Posture quietly watches your head position all day, about 25 readings a second, and gives you a gentle nudge the moment you settle into a real slouch. No camera pointed at you, no wearable to buy, no remembering to check in.
+Posture Coach turns a few minutes with your AirPods into guided practice. Start with a 3-minute session, follow live cues, and build a streak as your practice grows toward 15 minutes. Motion is processed on your device during the session.
 
-No more tech neck or text neck. Whether you're at a desk, on the couch, or working from home, Posture catches the slouch while it's happening, when you can still fix it.
+FREE DAILY PRACTICE
+• Live AirPods guidance for compatible models
+• Free levels 1 and 2, starting at 3 minutes
+• Streaks and progress toward the next level
+• Manual check-ins when you do not have AirPods
 
-HOW IT WORKS
-• Calibrate once. Stand tall, sit tall, then slouch on purpose. Your AirPods learn your personal range in under a minute.
-• Wear your AirPods like you already do. Posture monitors in the background, even with your phone in your pocket.
-• Feel the nudge. Slouch for a while and you get a soft buzz. Straighten up and it goes quiet. That's the whole habit.
-• Watch your day fill in. Every monitored minute becomes your daily report: % of the day aligned, hour-by-hour rhythm, best stretches, slouches caught.
+POSTURE+
+• Unlock every level and the full 3-to-15-minute progression
+• Walk mode with steps and distance
+• Alignment trends, history, and time-of-day insights
+• Optional all-day AirPods background monitoring
+• Apple Watch support and gentle nudges
 
-WHAT YOU GET
-• All-day background posture monitoring through AirPods
-• Live posture status: aligned, drifting, or slouching, in real time
-• A daily report built from your actual sitting, not spot checks
-• Weekly trends: see which days and hours your posture holds up
-• Daily streaks with freeze protection, every monitored day counts
-• Gentle reminders during your active hours if you want them
-• Apple Watch companion and Lock Screen widgets
-• A guided walkthrough that teaches the loop in one minute
+Complete a session, review your alignment, and come back tomorrow. You set the pace. Posture is for awareness and practice, not medical advice.
 
-WHICH AIRPODS WORK
-Posture reads head motion from AirPods Pro (1st & 2nd gen), AirPods (3rd gen), AirPods 4 with Active Noise Cancellation, or AirPods Max. No compatible AirPods? You can log posture check-ins by hand and keep your streak alive.
+AirPods are required for live coaching and monitoring. Without AirPods, manual check-ins keep your streak going.
 
-PRIVATE BY DESIGN
-• No accounts, no sign-up
-• No ads and no cross-app tracking
-• Head-motion data is processed on-device and never leaves your phone
+For posture awareness and practice only. Not medical advice, diagnosis or treatment.
 
-Subscription Details
-
-Posture+ is an auto-renewing subscription with monthly and yearly options, plus a one-time lifetime unlock. A free trial is available on the subscription plans; after the trial it renews at the listed price unless cancelled. Manage or cancel any time in Settings › Apple ID › Subscriptions. Payment is charged to your Apple ID at confirmation of purchase. Subscriptions automatically renew unless turned off at least 24 hours before the end of the current period.
-
+Monthly plan: US$2.99. Yearly plan: US$19.99. Both subscriptions renew automatically, and each offers a 7-day free trial when eligible. Apple charges your Apple Account when you confirm the purchase or after an eligible trial. If you are not eligible, Apple charges at confirmation. The renewal charge is made within 24 hours before the current period ends. Manage or cancel in Settings › Apple Account › Subscriptions at least 24 hours before the period ends. Prices vary by region and are shown before purchase.
 Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

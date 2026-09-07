@@ -1,0 +1,319 @@
+{
+  "app": "posture",
+  "display_name": "Posture Coach",
+  "health_app": true,
+  "target": "iphone_69",
+  "copy_contract": "single-header-benefit-story-v3",
+  "capture_report": "aso97-screenshots/raw/capture-report.json",
+  "market": {
+    "category": "Posture awareness and practice",
+    "audience": "Desk workers with compatible AirPods who want a short daily posture practice",
+    "problem": "Remembering to check posture is difficult during a busy day",
+    "advantage": "Short guided AirPods practice, streaks and manual check-ins make the habit concrete",
+    "competitive_context": "Posture tools often focus on all-day correction. This app starts with a short practice and leaves monitoring optional",
+    "search_intent": ["posture coach", "airpods posture", "slouch alerts"],
+    "proof_points": [
+      {
+        "claim": "Practice starts at three minutes and progresses through levels",
+        "source": "../Posture/Views/PracticeSessionView.swift"
+      },
+      {
+        "claim": "Manual check-ins are available without AirPods",
+        "source": "../Posture/Views/TodayView.swift"
+      }
+    ]
+  },
+  "theme": {
+    "background": "#ece7f3",
+    "background_2": "#fafcfb",
+    "ink": "#2f3e3a",
+    "muted": "#6b7b76",
+    "accent": "#719d85",
+    "accent_2": "#9581ae",
+    "headline_font": "rounded",
+    "body_font": "sans"
+  },
+  "capture": {
+    "mode": "generic",
+    "lease": "aso97-posture-capture",
+    "project_root": "/Users/jackwallner/posture",
+    "project": "Posture.xcodeproj",
+    "scheme": "Posture",
+    "app_name": "Posture",
+    "bundle_id": "com.jackwallner.posture",
+    "generate_project": false,
+    "launch_args": ["-SCREENSHOT_SEED", "-PostureProOverride"],
+    "flows": [
+      {
+        "id": "notification-permission",
+        "optional_tap_labels": ["Allow"],
+        "launch_wait": 5,
+        "dwell": 2,
+        "screenshots": [
+          {
+            "name": "permission-ready.png"
+          }
+        ]
+      },
+      {
+        "id": "practice",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["Begin today's practice"],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "practice.png"
+          }
+        ]
+      },
+      {
+        "id": "today",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": [],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "today.png"
+          }
+        ]
+      },
+      {
+        "id": "progress",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["Progress"],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "progress.png"
+          }
+        ]
+      },
+      {
+        "id": "history",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["History"],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "history.png"
+          }
+        ]
+      },
+      {
+        "id": "checkin",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["Badges. Tap to see all badges."],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "checkin.png"
+          }
+        ]
+      },
+      {
+        "id": "walk",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["Start a posture walk"],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "walk.png"
+          }
+        ]
+      }
+    ]
+  },
+  "sets": [
+    {
+      "id": "daily-practice",
+      "submission": true,
+      "style": "editorial",
+      "story": {
+        "throughline": "Make daily posture awareness practical, see completion and accumulated practice, and keep going in everyday situations",
+        "sequence": ["problem", "mechanism", "proof"]
+      },
+      "frames": [
+        {
+          "filename": "01-practice.png",
+          "header": "Practice posture with Posture+",
+          "story_role": "problem",
+          "story_focus": "Practice posture with Posture+",
+          "pitch": {
+            "benefit": "Practice posture with Posture+",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Practice posture with Posture+",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "A short guided practice setup turns an abstract posture goal into a repeatable session."
+          },
+          "source": "aso97-screenshots/raw/practice.png",
+          "source_evidence": "aso97-screenshots/raw/practice.png",
+          "capture_flow": "practice",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        },
+        {
+          "filename": "02-today.png",
+          "header": "Track daily streaks with Pro",
+          "story_role": "mechanism",
+          "story_focus": "Track daily streaks with Pro",
+          "pitch": {
+            "benefit": "Track daily streaks with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Track daily streaks with Pro",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "The Today screen shows the next practice and the current streak."
+          },
+          "source": "aso97-screenshots/raw/today.png",
+          "source_evidence": "aso97-screenshots/raw/today.png",
+          "capture_flow": "today",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        },
+        {
+          "filename": "03-progress.png",
+          "header": "See practice add up with Pro",
+          "story_role": "proof",
+          "story_focus": "See practice add up with Pro",
+          "pitch": {
+            "benefit": "See practice add up with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "See practice add up with Pro",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "The Progress screen shows practice progress from seeded recent sessions."
+          },
+          "source": "aso97-screenshots/raw/progress.png",
+          "source_evidence": "aso97-screenshots/raw/progress.png",
+          "capture_flow": "progress",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        },
+        {
+          "filename": "04-history.png",
+          "header": "Review practice days with Pro",
+          "story_role": "support",
+          "story_focus": "Review practice days with Pro",
+          "pitch": {
+            "benefit": "Review practice days with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Review practice days with Pro",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "The History screen shows practice minutes and sessions across the week."
+          },
+          "source": "aso97-screenshots/raw/history.png",
+          "source_evidence": "aso97-screenshots/raw/history.png",
+          "capture_flow": "history",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        },
+        {
+          "filename": "05-checkin.png",
+          "header": "Reach new milestones with Pro",
+          "story_role": "support",
+          "story_focus": "Reach new milestones with Pro",
+          "pitch": {
+            "benefit": "Reach new milestones with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Reach new milestones with Pro",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "The badges screen records practice milestones using seeded activity."
+          },
+          "source": "aso97-screenshots/raw/checkin.png",
+          "source_evidence": "aso97-screenshots/raw/checkin.png",
+          "capture_flow": "checkin",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        },
+        {
+          "filename": "06-walk.png",
+          "header": "Take posture walks with Pro",
+          "story_role": "support",
+          "story_focus": "Take posture walks with Pro",
+          "pitch": {
+            "benefit": "Take posture walks with Pro",
+            "problem": "Posture awareness is easy to forget without a concrete routine",
+            "advantage": "Short guided sessions and visible history make practice repeatable",
+            "header_problem": "posture awareness is easy to forget",
+            "header_advantage": "Take posture walks with Pro",
+            "search_terms": ["posture coach", "airpods posture"],
+            "proof": "A Pro walk setup carries posture practice into a timed walk."
+          },
+          "source": "aso97-screenshots/raw/walk.png",
+          "source_evidence": "aso97-screenshots/raw/walk.png",
+          "capture_flow": "walk",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 100,
+            "header_size": 160,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "header_margin": 60,
+            "header_bottom_padding": 36,
+            "bottom_margin": 36,
+            "phone_width": 1170
+          }
+        }
+      ]
+    }
+  ]
+}
