@@ -1,10 +1,15 @@
-Gör hållning till daglig träning med AirPods. Börja med 3 minuter, följ livevägledning och arbeta mot 15 minuter. Prova Posture+ gratis i 7 dagar om du är berättigad.
+En arbetsdag kan gå utan att du märker hur du sitter. Ta en kort paus, uppmärksamma hållningen och skapa en övningsvana att återvända till.
 
-Gratis: nivå 1 och 2 från 3 minuter, med daglig serie.
-Posture+: nivåer från 3 till 15 minuter, gåläge, trender och valfri AirPods-övervakning hela dagen.
-Utan AirPods håller manuella avstämningar serien vid liv.
+BÖRJA SMÅTT
+Börja med tre minuter sittande eller stående. Kompatibla AirPods med rörelsesensor ger direkt återkoppling om din position. Nivå 1 och 2 är gratis, och en svit visar din regelbundenhet.
 
-Endast för hållningsmedvetenhet och övning. Inte medicinsk rådgivning, diagnos eller behandling.
+UTAN AIRPODS
+En manuell incheckning håller vanan igång men mäter inte din position. Rörelseåterkoppling och coachning i realtid kräver kompatibla AirPods.
+
+BYGG VIDARE
+Betalversionen ger hela stegen upp till 15 minuter, hållningspromenader, historik och positionstrender. AirPods-övervakning under dagen och påminnelser på Apple Watch är valfria. Dagens övning kan fortfarande vara kort.
+
+Rörelse bearbetas på din enhet. Appen stöder hållningsmedvetenhet och övning, inte medicinsk rådgivning, diagnos eller behandling. Den lovar inte att korrigera sjukdomstillstånd eller lindra smärta.
 
 Månadsplanen kostar US$2.99 och årsplanen US$19.99. Båda förnyas automatiskt och erbjuder 7 dagars kostnadsfri provperiod om du är berättigad. Apple debiterar ditt Apple-konto när du bekräftar köpet eller efter en berättigad provperiod. Om du inte är berättigad debiteras du vid bekräftelsen. Förnyelseavgiften debiteras inom 24 timmar före den aktuella periodens slut. Hantera eller avsluta i Inställningar › Apple-konto › Abonnemang minst 24 timmar före periodens slut. Priserna varierar beroende på region och visas före köp.
 Integritetspolicy: https://jackwallner.github.io/posture/privacy-policy.html

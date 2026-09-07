@@ -1,10 +1,15 @@
-Tedd a testtartást napi gyakorlássá az AirPodsszal. Kezdj 3 perccel, kövesd az élő útmutatást, és haladj 15 perc felé. Jogosultság esetén próbáld ki a Posture+-t 7 napig ingyen.
+Egy munkanap eltelhet anélkül, hogy észrevennéd, hogyan ülsz. Tarts rövid szünetet, figyelj a testtartásodra, és alakíts ki rendszeres gyakorlást.
 
-Ingyenes: 1. és 2. szint 3 perctől, napi sorozattal.
-Posture+: 3-tól 15 percig tartó szintek, Séta mód, trendek és választható egész napos AirPods-figyelés.
-AirPods nélkül a kézi ellenőrzés megtartja a sorozatot.
+KEZDD KICSIBEN
+Kezdd három perccel, ülve vagy állva. A kompatibilis, mozgásérzékelős AirPods élő visszajelzést ad a tested helyzetéről. Az 1. és 2. szint ingyenes, a sorozat pedig jelzi a rendszerességet.
 
-Csak a testtartás tudatosítására és gyakorlására. Nem orvosi tanács, diagnózis vagy kezelés.
+AIRPODS NÉLKÜL
+A kézi bejelentkezés fenntartja a figyelem szokását, de nem méri a testhelyzetet. Az élő mozgás-visszajelzéshez és útmutatáshoz kompatibilis AirPods kell.
+
+HALADJ TOVÁBB
+A fizetős változat megnyitja a teljes, 15 percig tartó fejlődési sort, a testtartásra figyelő sétákat, az előzményeket és a testhelyzet trendjeit. A napközbeni AirPods-követés és az Apple Watch-jelzések választhatók. A napi gyakorlás maradhat rövid.
+
+A mozgás feldolgozása a készülékeden történik. Az app a testtartás tudatosítását és gyakorlását segíti, nem orvosi tanács, diagnózis vagy kezelés. Nem ígér betegségkorrekciót vagy fájdalomcsillapítást.
 
 A havi csomag ára US$2.99, az évesé US$19.99. Mindkettő automatikusan megújul, és jogosultság esetén 7 napos ingyenes próba jár hozzá. Az Apple a vásárlás megerősítésekor vagy jogosult próba után terheli meg az Apple-fiókodat. Jogosultság nélkül a terhelés megerősítéskor történik. A megújítási díjat az időszak vége előtti 24 órán belül számítjuk fel. Kezeld vagy mondd le a Beállítások › Apple-fiók › Előfizetések menüben, legalább 24 órával a vége előtt. Az árak régiónként eltérnek, és vásárlás előtt láthatók.
 Adatvédelmi szabályzat: https://jackwallner.github.io/posture/privacy-policy.html

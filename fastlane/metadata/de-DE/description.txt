@@ -1,10 +1,15 @@
-Mach Haltung zu einer täglichen Übung mit AirPods. Starte mit 3 Minuten, folge Live-Hinweisen und arbeite dich bis 15 Minuten vor. Teste Posture+ 7 Tage kostenlos, wenn du berechtigt bist.
+Im Büroalltag vergisst man leicht, wie man sitzt. Nimm dir eine kurze Pause, um deine Haltung bewusst wahrzunehmen und regelmäßig zu üben.
 
-Kostenlos: Level 1 und 2 ab 3 Minuten mit täglicher Serie.
-Posture+: Level von 3 bis 15 Minuten, Walk-Modus, Trends und optionale ganztägige AirPods-Hintergrundüberwachung.
-Ohne AirPods hältst du die Serie mit manuellen Check-ins.
+KLEIN ANFANGEN
+Beginne mit drei Minuten im Sitzen oder Stehen. Kompatible AirPods mit Bewegungssensor liefern dir direktes Feedback zur Ausrichtung. Stufen 1 und 2 sind kostenlos; deine Serie zeigt, wie regelmäßig du übst.
 
-Nur zur Wahrnehmung und Übung der Körperhaltung. Keine medizinische Beratung, Diagnose oder Behandlung.
+OHNE AIRPODS
+Ein manueller Check-in hält die Gewohnheit lebendig. Er misst deine Ausrichtung nicht. Live-Bewegungsfeedback und Coaching erfordern kompatible AirPods.
+
+WEITERÜBEN
+Das kostenpflichtige Upgrade bietet die gesamte Entwicklung bis zu 15 Minuten, Haltungs-Spaziergänge, Verlauf und Ausrichtungstrends. Optional sind ganztägige AirPods-Beobachtung und Hinweise auf der Apple Watch verfügbar. Die tägliche Übung darf trotzdem kurz bleiben.
+
+Bewegungsdaten werden auf deinem Gerät verarbeitet. Die App dient der Haltungswahrnehmung und Übung, nicht der medizinischen Beratung, Diagnose oder Behandlung. Sie verspricht weder die Korrektur einer Erkrankung noch Schmerzlinderung.
 
 Das Monatsabo kostet US$2.99, das Jahresabo US$19.99. Beide verlängern sich automatisch und enthalten bei Berechtigung eine 7-tägige kostenlose Probe. Apple belastet deinen Apple Account bei Bestätigung des Kaufs oder nach einer berechtigten Probe. Ohne Berechtigung erfolgt die Belastung bei Bestätigung. Die Verlängerung wird innerhalb der letzten 24 Stunden vor Periodenende berechnet. Verwalte oder kündige mindestens 24 Stunden vor Periodenende unter Einstellungen › Apple Account › Abonnements. Preise variieren je nach Region und werden vor dem Kauf angezeigt.
 Datenschutzerklärung: https://jackwallner.github.io/posture/privacy-policy.html

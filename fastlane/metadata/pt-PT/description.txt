@@ -1,10 +1,15 @@
-Transforma a postura numa prática diária com AirPods. Começa com 3 minutos, segue as indicações em direto e avança até 15. Se fores elegível, experimenta o Posture+ grátis durante 7 dias.
+Um dia à secretária pode passar sem reparar em como se senta. Faça uma pausa breve para prestar atenção à postura e criar uma prática regular.
 
-Grátis: níveis 1 e 2 a partir de 3 minutos, com série diária.
-Posture+: níveis de 3 a 15 minutos, Modo Caminhada, tendências e monitorização opcional dos AirPods todo o dia.
-Sem AirPods, os check-ins manuais mantêm a tua série.
+COMECE DEVAGAR
+A prática gratuita começa com três minutos, sentado ou de pé. Utilize AirPods compatíveis com deteção de movimento para seguir indicações de alinhamento em tempo real. Os níveis 1 e 2 são gratuitos e uma sequência regista a sua regularidade.
 
-Apenas para consciência e prática postural. Não constitui aconselhamento médico, diagnóstico ou tratamento.
+SEM AIRPODS
+Um registo manual mantém o hábito de atenção, mas não mede o alinhamento. O feedback de movimento e a orientação em direto exigem AirPods compatíveis.
+
+DESENVOLVA A PRÁTICA
+A opção paga disponibiliza a progressão completa até 15 minutos, caminhadas posturais, histórico e tendências de alinhamento. O acompanhamento com AirPods ao longo do dia e os avisos Apple Watch são opcionais. A prática diária pode continuar breve.
+
+O movimento é processado no dispositivo. A app apoia a consciência postural e a prática, não fornece aconselhamento médico, diagnóstico ou tratamento. Não promete corrigir uma doença nem aliviar a dor.
 
 O plano mensal custa US$2.99 e o anual US$19.99. Ambos renovam automaticamente e incluem um teste gratuito de 7 dias se fores elegível. A Apple cobra a tua Conta Apple ao confirmares a compra ou após um teste elegível. Se não fores elegível, a cobrança é feita na confirmação. A cobrança da renovação ocorre nas 24 horas anteriores ao fim do período atual. Gere ou cancele em Definições › Conta Apple › Subscrições pelo menos 24 horas antes do fim. Os preços variam consoante a região e são mostrados antes da compra.
 Política de privacidade: https://jackwallner.github.io/posture/privacy-policy.html
