@@ -1,7 +1,6 @@
 # Posture — Project Guide
-
-iOS app that uses iPhone camera + (later) AirPods + Apple Watch to coach better posture.
-Duolingo-style streaks. Premium = always-on background monitoring (Phase 4).
+iOS app that uses AirPods and Apple Watch to coach better posture.
+Duolingo-style streaks. Pro adds opt-in all-day monitoring.
 
 XcodeGen project/scheme: `Posture`, sim lease owner `posture`.
 
@@ -9,8 +8,7 @@ XcodeGen project/scheme: `Posture`, sim lease owner `posture`.
 
 - Swift 6 / SwiftUI (strict concurrency)
 - SwiftData (App Group container `group.com.jackwallner.posture` — shared with widgets)
-- Vision (`VNDetectFaceRectanglesRequest`) for head-pose during sessions
-- AVFoundation for the front-camera capture pipeline
+- AVFoundation for the audio session only (`AudioKeepAlive`, `AirpodsBackgroundMonitor`), which keeps AirPods background motion sampling alive
 - XcodeGen (`project.yml`). Target: iOS 17+
 
 ## Architecture
@@ -44,18 +42,7 @@ rounded (no bundled fonts there). No serif italics, no em dashes in copy.
 Posture qualities map: good→sage, borderline→sand, bad→clay. The
 look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 
-## Plan reference
-
-Full multi-phase plan: `~/.claude/plans/plan-first-floating-pretzel.md`
-Phase 1 (current): iPhone-only camera mode, calibration, sessions, streak.
-Phase 2: AirPods (`CMHeadphoneMotionManager`). Phase 3: Watch app + complications.
-Phase 4: Premium — always-on watch background monitoring (`HKWorkoutSession`).
-Phase 5: Before/after photos. Phase 6: Widgets, App Store polish.
-
 ## App-specific gotchas
-
-- Free dev account can't build to device (App Group entitlement). Use the simulator.
-- `AVCaptureSession` is non-Sendable — `FaceTrackingService` uses `@preconcurrency import AVFoundation`.
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
 - HealthKit lives on the watch target only — the iOS target intentionally has no HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
 - The iOS app declares `UIBackgroundModes = ["audio"]` only — `audio` for AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77): don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
@@ -68,6 +55,3 @@ Enjoyment funnel after a **good scan** or **streak milestone** (7/14/30/60/100 d
 ---
 Shared iOS conventions (build, simulator, release/TestFlight, ASC key, signing, review funnel, gotchas):
 always-loaded global CLAUDE.md + the `ios-dev` skill.
-
-## Subagent delegation
-Follow the global CLAUDE.md subagent rules: ask Jack for the model before spawning, spawn at most one at a time unless Jack explicitly approves more, and never allow a subagent to spawn another subagent.
