@@ -1,4 +1,4 @@
-# Posture — Project Guide
+# Posture Project Guide
 iOS app that uses AirPods and Apple Watch to coach better posture.
 Duolingo-style streaks. Pro adds opt-in all-day monitoring.
 
@@ -23,11 +23,11 @@ self-report check-in loop (`AcknowledgmentRecord`). There is NO camera/Vision
 pipeline in the app.
 
 Top-level layout:
-- `Shared/Models/` — `PostureSession`, `AcknowledgmentRecord`, `PosturePassiveSample`, `PostureMinuteSample`, `Calibration`, `StreakState`, `BeforeAfterPhoto`
-- `Shared/Services/` — data/session/scoring/monitoring/notifications (App Group SwiftData; widgets mirror `DataService` schema)
-- `Posture/` — iOS UI (onboarding → calibration → MainTabView; dismissible paywall, no hard gate)
+- `Shared/Models/`: `PostureSession`, `AcknowledgmentRecord`, `PosturePassiveSample`, `PostureMinuteSample`, `Calibration`, `StreakState`, `BeforeAfterPhoto`
+- `Shared/Services/`: data/session/scoring/monitoring/notifications (App Group SwiftData; widgets mirror `DataService` schema)
+- `Posture/`: iOS UI (onboarding → calibration → MainTabView; dismissible paywall, no hard gate)
 - `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets (+ `PracticeLiveActivity`)
-- `PostureWatch/` — companion watch app
+- `PostureWatch/`: companion watch app
 
 **Full service/view/model catalog with responsibilities and invariants: `posture-architecture` skill.** Load it before working on Posture internals.
 
@@ -54,4 +54,4 @@ Enjoyment funnel after a **good scan** or **streak milestone** (7/14/30/60/100 d
 
 ---
 Shared iOS conventions (build, simulator, release/TestFlight, ASC key, signing, review funnel, gotchas):
-always-loaded global CLAUDE.md + the `ios-dev` skill.
+the global agent rules + the `ios-dev` skill.
