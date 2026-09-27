@@ -7,7 +7,7 @@ XcodeGen project/scheme: `Posture`, sim lease owner `posture`.
 ## Tech Stack
 
 - Swift 6 / SwiftUI (strict concurrency)
-- SwiftData (App Group container `group.com.jackwallner.posture` — shared with widgets)
+- SwiftData (App Group container `group.com.jackwallner.posture`, shared with widgets)
 - AVFoundation for the audio session only (`AudioKeepAlive`, `AirpodsBackgroundMonitor`), which keeps AirPods background motion sampling alive
 - XcodeGen (`project.yml`). Target: iOS 17+
 
@@ -26,7 +26,7 @@ Top-level layout:
 - `Shared/Models/`: `PostureSession`, `AcknowledgmentRecord`, `PosturePassiveSample`, `PostureMinuteSample`, `Calibration`, `StreakState`, `BeforeAfterPhoto`
 - `Shared/Services/`: data/session/scoring/monitoring/notifications (App Group SwiftData; widgets mirror `DataService` schema)
 - `Posture/`: iOS UI (onboarding → calibration → MainTabView; dismissible paywall, no hard gate)
-- `PostureWidget/`, `PostureWatchWidget/` — lockscreen + watch widgets (+ `PracticeLiveActivity`)
+- `PostureWidget/`, `PostureWatchWidget/`: lockscreen and watch widgets, plus `PracticeLiveActivity`
 - `PostureWatch/`: companion watch app
 
 **Full service/view/model catalog with responsibilities and invariants: `posture-architecture` skill.** Load it before working on Posture internals.
@@ -36,7 +36,7 @@ Top-level layout:
 Palette + type tokens in `Shared/Utilities/Theme.swift` (literal colors:
 paper / ink / sage / sand / clay / lavender). Type is bundled **Nunito**
 (`Posture/Fonts/*.ttf`, OFL) via `Theme.font(_:weight:)` /
-`Theme.font(size:weight:)` / `Theme.display(_:)` — never use
+Use `Theme.font(size:weight:)` / `Theme.display(_:)`. Never use
 `.system(design: .rounded)` in new UI code; watchOS falls back to system
 rounded (no bundled fonts there). No serif italics, no em dashes in copy.
 Posture qualities map: good→sage, borderline→sand, bad→clay. The
@@ -44,8 +44,8 @@ look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 
 ## App-specific gotchas
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
-- HealthKit lives on the watch target only — the iOS target intentionally has no HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
-- The iOS app declares `UIBackgroundModes = ["audio"]` only — `audio` for AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77): don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
+- HealthKit lives on the watch target only. The iOS target intentionally has no HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
+- The iOS app declares only `UIBackgroundModes = ["audio"]`. Audio supports AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77), so don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
 - Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)` so reminders survive app kill (audit P1-2). Slot cap is 60 (P1-4).
 
 ## App-specific review
