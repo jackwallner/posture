@@ -110,7 +110,7 @@ The requested read-only Chrome inspection was attempted at https://x.com/i/histo
 | P1-07 | P1 | Trial offer path has ambiguous loading and pending states | OnboardingTrialView.swift; TrialOfferSheet.swift; PaywallView.swift | Product-load failures can look like a trial CTA, while deferred purchase can strand the user | Test offline, no offerings, ineligible user, cancellation, pending, restore, and retry |
 | P1-08 | P1 | Review prompt is only tied to acknowledgment moments | AcknowledgmentView.swift:50-54; ReviewPromptTracker.swift; CLAUDE.md | Strong practice completions and level-ups are not used as high-intent positive moments | Trace every positive event and measure prompt display, App Store click, review, and feedback outcome |
 | P1-09 | P1 | 49 localized marketing URLs are blank and review notes are stale | fastlane/metadata; fastlane/metadata/review_information/notes.txt | Localized product pages lose a useful landing-page path and reviewers may follow outdated instructions | Query ASC per-locale state and compare submitted metadata with the current build |
-| P1-10 | P1 | Current agent instructions mix camera-era and practice-era product truths | CLAUDE.md; docs/MVP_AUDIT.md; docs/POSTURE_EXPANSION_PLAN.md; phasec.md; missing referenced plan | Cursor, Claude, or Codex may reintroduce removed camera architecture or old pricing | Establish one current source of truth and mark historical documents machine-visible as archived |
+| P1-10 | P1 | Current agent instructions mix camera-era and practice-era product truths | CLAUDE.md; docs/MVP_AUDIT.md; docs/POSTURE_EXPANSION_PLAN.md; ../plans/phasec.md; missing referenced plan | Cursor, Claude, or Codex may reintroduce removed camera architecture or old pricing | Establish one current source of truth and mark historical documents machine-visible as archived |
 | P2-01 | P2 | Current funnel has little instrumentation around activation and gates | AnalyticsService.swift contains only a small local event set | A/B decisions will optimize clicks without knowing activation, trial quality, or retention | Add stable event schema and customer-context attributes |
 | P2-02 | P2 | Screenshot and ASO source sets conflict | fastlane/screenshots; claude-design/output/store; docs/sim76-screenshots; design handoff docs | A future release can upload the wrong narrative or duplicate seeded screenshots | Declare one canonical source and run dimension, duplication, and copy checks |
 | P2-03 | P2 | Support and landing-page copy describe an older flow | docs/support.html; docs/index.html | Users arrive with wrong expectations about onboarding, check-ins, streaks, and pricing | Align website and support copy with the shipped flow, then verify the deployed mirror |
@@ -280,7 +280,7 @@ Observed in Shared/Services/PracticeProgression.swift:
 
 - Session length begins at 180 seconds and grows by 60 seconds per level, capped at 900 seconds.
 - The target begins at 50 percent and grows by 3 percentage points per level, capped at 80 percent.
-- The free tier cap is level 2, not level 5. This contradicts older phasec.md language.
+- The free tier cap is level 2, not level 5. This contradicts older ../plans/phasec.md language.
 - Passed sessions advance the level. Completing duration credits the streak.
 
 Observed in PracticeSessionView.swift and SessionSummaryView.swift:
@@ -716,8 +716,8 @@ Observed in other documents:
 
 - docs/MVP_AUDIT.md is a historical camera and reminder audit. Several findings are now fixed or obsolete, including camera QuickScan, old session model, iOS HealthKit mismatch, one-shot reminders, and old reminder caps. Its background-audio and data-integrity concerns remain relevant.
 - docs/POSTURE_EXPANSION_PLAN.md describes a camera, Vision, SessionEngine, and older architecture that does not match the current code.
-- phasec.md describes the practice pivot but says the free cap is level 5. Current PracticeProgression.freeLevelCap is level 2.
-- aso-plan.md and docs/astro-aso-setup.md contain old Astro placeholder or pre-launch instructions and old product names. The local Astro state has app ID 6768514450 but an old name.
+- ../plans/phasec.md describes the practice pivot but says the free cap is level 5. Current PracticeProgression.freeLevelCap is level 2.
+- ../marketing/aso-plan.md and docs/astro-aso-setup.md contain old Astro placeholder or pre-launch instructions and old product names. The local Astro state has app ID 6768514450 but an old name.
 - docs/localization-aso.md refers to ASC version 1.0 in PREPARE_FOR_SUBMISSION, while current local project metadata is 1.0.4 build 86.
 - docs/app-store-screenshots-handoff.md contains camera-era screenshot copy and an older narrative. claude-design/CAPTURE-LIST.md, claude-design/SCREENSHOT-PROMPT.md, and claude-design/scripts/compose-screenshots.py also need one declared source of truth because they describe different screenshot sequences.
 - archive/README.md clearly says archive material is historical, which is good, but broad agent searches can still ingest it. Historical files should have a machine-readable archived marker or live under an explicitly excluded archive path.
