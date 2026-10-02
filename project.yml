@@ -22,9 +22,10 @@ packages:
     from: 5.71.0
 
 schemes:
-  # The paywall purchase probe, on its own scheme so it does not build
-  # PostureWatch. The full Posture scheme does, and that clean build is several
-  # minutes the probe has no use for.
+  # UI tests, on their own scheme so the default `xcodebuild test -scheme
+  # Posture` run stays unit-only and they do not build PostureWatch. The full
+  # Posture scheme does, and that clean build is several minutes they have no
+  # use for.
   PostureUITests:
     build:
       targets:
@@ -46,7 +47,6 @@ schemes:
     test:
       targets:
         - PostureTests
-        - PostureUITests
     run:
       config: Debug
   PostureWatch:
