@@ -6,6 +6,8 @@ import RevenueCat
 #endif
 
 struct SettingsView: View {
+    private static let feedbackMailURL = URL(string: "mailto:jackwallner+q@gmail.com?subject=Posture%20feedback")!
+
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
     @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
@@ -209,10 +211,21 @@ struct SettingsView: View {
                     }
                     .foregroundStyle(Theme.ink)
 
+                    // Two separate rows, no question in front of either (App
+                    // Review 5.6.1). The rating row deep-links to the review page.
                     Button {
-                        ReviewPromptCoordinator.shared.requestEnjoymentPrompt()
+                        ReviewPromptTracker.markOpenedWriteReview()
+                        UIApplication.shared.open(AppStoreReviewLinks.writeReviewURL)
                     } label: {
-                        Label("Rate or Send Feedback", systemImage: "star.bubble")
+                        Label("Rate Posture", systemImage: "star")
+                    }
+                    .foregroundStyle(Theme.ink)
+
+                    Button {
+                        ReviewPromptTracker.markFeedbackSubmitted()
+                        UIApplication.shared.open(Self.feedbackMailURL)
+                    } label: {
+                        Label("Send Feedback", systemImage: "envelope")
                     }
                     .foregroundStyle(Theme.ink)
 

@@ -50,7 +50,12 @@ look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 
 ## App-specific review
 
-Enjoyment funnel after a **good scan** or **streak milestone** (7/14/30/60/100 days); `AppStoreReviewLinks.writeReviewURL`, App Store ID `6768514450`. (Shared funnel mechanics + playbook in the `ios-dev` skill.)
+No in-app rating question (App Review 5.6.1). After a **good check-in** or
+**streak milestone** (7/14/30/60/100 days), `MainTabView` calls the system
+`requestReview()` about 3s later if Today is clear (from the 2nd launch,
+30-day cooldown). Settings has separate "Rate Posture"
+(`AppStoreReviewLinks.writeReviewURL`) and "Send Feedback" rows. App Store ID
+`6768514450`. (Shared rules in the `ios-dev` skill.)
 
 ---
 Shared iOS conventions (build, simulator, release/TestFlight, ASC key, signing, review funnel, gotchas):

@@ -117,6 +117,9 @@ private struct AirpodsRootView: View {
             .fullScreenCover(isPresented: $showingPracticeFromReminder) {
                 PracticeSessionView(mode: settings.postureFocus.defaultMode)
             }
+            .onChange(of: ackScheduledAt != nil || showingPracticeFromReminder, initial: true) { _, covered in
+                ReviewPromptCoordinator.shared.rootIsCovered = covered
+            }
             .onChange(of: settings.reminderEnabled) { _, _ in
                 Task { await ReminderScheduler.reschedule() }
             }
@@ -339,10 +342,7 @@ struct MainTabView: View {
     @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
     @State private var subscriptions = SubscriptionService.shared
     @State private var selectedTab = 0
-    @State private var showReviewPrompt = false
-    @State private var reviewPromptInitialStep: ReviewPromptSheet.Step = .enjoyment
     @State private var reviewPromptShownThisSession = false
-    @State private var pendingNativeReviewAfterDismiss = false
     @Environment(\.requestReview) private var requestReview
 
     private var hasCompletedSetup: Bool {
@@ -388,65 +388,55 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .postureSelectProgressTab)) { _ in
             selectedTab = 4
         }
-        .onChange(of: selectedTab) { _, tab in
-            if tab == 0 {
+        .onChange(of: selectedTab) { oldTab, tab in
+            // A check-in from History leaves its moment pending; coming back to
+            // Today picks it up. Never straight off the Posture+ paywall tab.
+            if tab == 0, oldTab != 3 {
                 scheduleReviewPromptAfterPositiveMoment()
             }
         }
-        .onChange(of: reviewPromptCoordinator.pendingPresentation) { _, presentation in
-            guard let presentation else { return }
-            defer { reviewPromptCoordinator.clear() }
-            switch presentation {
-            case .enjoymentPrompt:
-                presentReviewPrompt(step: .enjoyment)
-            case .feedbackOnly:
-                presentReviewPrompt(step: .feedback)
-            }
-        }
-        .sheet(isPresented: $showReviewPrompt, onDismiss: {
-            // Swipe-to-dismiss skips every button path - start the cooldown
-            // here too, or the prompt can come back at the next positive
-            // moment. Redundant after a button outcome, which is harmless.
-            ReviewPromptTracker.markShown()
-            if pendingNativeReviewAfterDismiss {
-                pendingNativeReviewAfterDismiss = false
-                requestReview()
-            }
-        }) {
-            ReviewPromptSheet(initialStep: reviewPromptInitialStep, onFinish: handleReviewPromptFinish)
-        }
     }
 
+    /// The rating ask after a good check-in or streak milestone: Apple's own
+    /// prompt, no question in front of it. Waits for the check-in to close,
+    /// then asks only if Today is still clear. A blocked ask keeps the moment
+    /// pending in the tracker; it never retries off a paywall or pitch.
     private func scheduleReviewPromptAfterPositiveMoment() {
-        guard ReviewPromptTracker.shouldShowAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
+        guard ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
               !reviewPromptShownThisSession,
-              selectedTab == 0,
-              !showReviewPrompt
+              isTodayClear
         else { return }
 
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 3_500_000_000)
-            guard selectedTab == 0,
-                  !showReviewPrompt,
-                  ReviewPromptTracker.shouldShowAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup)
+            guard isTodayClear,
+                  !reviewPromptShownThisSession,
+                  ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup)
             else { return }
-            ReviewPromptTracker.consumePendingPositiveMoment()
-            reviewPromptInitialStep = .enjoyment
             reviewPromptShownThisSession = true
-            showReviewPrompt = true
+            ReviewPromptTracker.markShown()
+            requestReview()
         }
     }
 
-    private func handleReviewPromptFinish(_ outcome: ReviewPromptDismissOutcome) {
-        showReviewPrompt = false
-        if outcome == .enjoyedMaybeLater {
-            pendingNativeReviewAfterDismiss = true
-        }
+    /// Today is on screen with no sheet, cover, paywall or trial pitch over it.
+    private var isTodayClear: Bool {
+        selectedTab == 0
+            && !reviewPromptCoordinator.todayIsCovered
+            && !reviewPromptCoordinator.rootIsCovered
     }
+}
 
-    private func presentReviewPrompt(step: ReviewPromptSheet.Step) {
-        reviewPromptInitialStep = step
-        reviewPromptShownThisSession = true
-        showReviewPrompt = true
-    }
+/// Lets Today and the app root report what they have on screen, so the
+/// rating ask never lands on top of a sheet, cover or paywall.
+@MainActor
+final class ReviewPromptCoordinator: ObservableObject {
+    static let shared = ReviewPromptCoordinator()
+
+    /// Set by `TodayView` while any of its sheets or covers is up.
+    @Published var todayIsCovered = false
+    /// Set by the app root while a reminder's check-in or practice cover is up.
+    @Published var rootIsCovered = false
+
+    private init() {}
 }

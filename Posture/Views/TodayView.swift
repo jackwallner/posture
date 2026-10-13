@@ -236,6 +236,9 @@ struct TodayView: View {
             .sheet(isPresented: $showingStreakDetail) {
                 StreakDetailView()
             }
+            .onChange(of: isCovered, initial: true) { _, covered in
+                ReviewPromptCoordinator.shared.todayIsCovered = covered
+            }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
             // queue while our .task above is reading it, so the first read
@@ -251,6 +254,13 @@ struct TodayView: View {
                 Task { await refreshReminderStatus() }
             }
         }
+    }
+
+    /// Anything presented over Today. The rating ask waits for all of it.
+    private var isCovered: Bool {
+        showingAck || showingRecalibrate || showingMonitorLog || showingSession
+            || showingWalk || showingWalkPaywall || showingWalkTrialOffer || pendingWalkPaywall
+            || showingAchievements || showingLevelLadder || showingStreakDetail
     }
 
     // MARK: - Header
