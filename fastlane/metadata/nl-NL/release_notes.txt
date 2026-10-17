@@ -1,1 +1,1 @@
-App Store-informatie en abonnementsdiagnostiek bijgewerkt.
+Verbeteringen achter de schermen en bugfixes zodat Desk Reset soepel werkt. Bedankt dat je er bent.

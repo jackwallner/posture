@@ -200,6 +200,9 @@ def ensure_draft_version(client: ASCClient, app_id: str, preferred: str | None =
         # must not be handed back as the upload target.
         if existing and existing.get("attributes", {}).get("appStoreState") in EDITABLE_STATES:
             return existing
+        if not existing:
+            # An explicit unused version is created verbatim, never bumped.
+            return create_draft_version(client, app_id, preferred)
     candidate = bump_version(base)
     for _ in range(8):
         if find_version_by_string(client, app_id, candidate):
