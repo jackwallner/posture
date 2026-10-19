@@ -329,6 +329,16 @@ final class SubscriptionService: NSObject {
         isProSubscriber = isPro
         sharedDefaults?.set(isPro, forKey: "isProSubscriber")
     }
+
+    #if DEBUG
+    /// Drop the cached Pro flag so a UI test starts free. A Test Store purchase
+    /// from an earlier test persists it in the app group, which outlives the
+    /// app's own defaults reset. Test-only.
+    func resetForUITest() {
+        isProSubscriber = false
+        sharedDefaults?.removeObject(forKey: "isProSubscriber")
+    }
+    #endif
 }
 
 #if HAS_REVENUECAT

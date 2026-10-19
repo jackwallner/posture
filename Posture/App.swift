@@ -12,6 +12,7 @@ struct PostureApp: App {
         #if DEBUG
         if LaunchArguments.contains("UITEST_FRESH") {
             GoalSettings.shared.resetForUITest()
+            SubscriptionService.shared.resetForUITest()
         }
         ScreenshotSeed.seedIfNeeded()
         #endif
