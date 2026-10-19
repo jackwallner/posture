@@ -72,6 +72,13 @@ final class ReviewPromptTrackerTests: XCTestCase {
         XCTAssertTrue(ReviewPromptTracker.canRequestReview(hasCompletedSetup: true))
     }
 
+    func testFailedMailOpenIsNotFeedback() {
+        ReviewPromptTracker.recordFeedbackMailOpened(false)
+        XCTAssertNil(ReviewPromptTracker.outcome)
+        ReviewPromptTracker.recordFeedbackMailOpened(true)
+        XCTAssertEqual(ReviewPromptTracker.outcome, .submittedFeedback)
+    }
+
     func testFeedbackAfterTheReviewPageKeepsTheAsksEnded() {
         ReviewPromptTracker.markOpenedWriteReview()
         ReviewPromptTracker.markFeedbackSubmitted()

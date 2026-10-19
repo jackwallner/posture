@@ -146,4 +146,11 @@ enum ReviewPromptTracker {
             outcome = .submittedFeedback
         }
     }
+
+    /// The Send Feedback row's result: only a mail compose that actually
+    /// opened counts as feedback sent.
+    static func recordFeedbackMailOpened(_ opened: Bool) {
+        guard opened else { return }
+        markFeedbackSubmitted()
+    }
 }

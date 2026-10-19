@@ -222,8 +222,11 @@ struct SettingsView: View {
                     .foregroundStyle(Theme.ink)
 
                     Button {
-                        ReviewPromptTracker.markFeedbackSubmitted()
-                        UIApplication.shared.open(Self.feedbackMailURL)
+                        // Count it only once Mail actually opened. With no mail
+                        // account the open fails and nothing was sent.
+                        UIApplication.shared.open(Self.feedbackMailURL) { opened in
+                            ReviewPromptTracker.recordFeedbackMailOpened(opened)
+                        }
                     } label: {
                         Label("Send Feedback", systemImage: "envelope")
                     }
