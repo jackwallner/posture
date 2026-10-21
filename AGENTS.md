@@ -35,8 +35,8 @@ Top-level layout:
 
 Palette + type tokens in `Shared/Utilities/Theme.swift` (literal colors:
 paper / ink / sage / sand / clay / lavender). Type is bundled **Nunito**
-(`Posture/Fonts/*.ttf`, OFL) via `Theme.font(_:weight:)` /
-Use `Theme.font(size:weight:)` / `Theme.display(_:)`. Never use
+(`Posture/Fonts/*.ttf`, OFL). Use `Theme.font(size:weight:)`,
+`Theme.font(_:weight:)` or `Theme.display(_:)`. Never use
 `.system(design: .rounded)` in new UI code; watchOS falls back to system
 rounded (no bundled fonts there). No serif italics, no em dashes in copy.
 Posture qualities map: good→sage, borderline→sand, bad→clay. The
