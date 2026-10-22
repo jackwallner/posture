@@ -515,7 +515,9 @@ struct MainTabView: View {
                 guard !Task.isCancelled else { return }
                 NSLog("DUOTOUR %@ route=%@ width=%.1f fold=%@", isSplit ? "inner" : "outer", route,
                       paneGeometry.width, String(describing: paneGeometry.fold))
-                withAnimation(.easeInOut(duration: 0.3)) { openDuoRoute(route) }
+                // Unanimated, like a tab tap; an animated switch grows the new
+                // tab in from a zero frame, which no user ever sees.
+                openDuoRoute(route)
                 try? await Task.sleep(for: .seconds(DuoScreenshotTour.step))
             }
         }
