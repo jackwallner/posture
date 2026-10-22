@@ -8,12 +8,14 @@ import Foundation
 /// raises a confirmation alert and the capture job cannot tap. `-DuoRoutes a,b`
 /// is the walk while folded and `-DuoRoutesRegular a,b` while split (the inner
 /// display). `-DuoTourFirst <s>` is the delay before the first route and
-/// `-DuoTourStep <s>` the dwell on each. The walk repeats, and restarts when
-/// the panes split or join, so each display gets all of it. Every step is
-/// logged as a `DUOTOUR` line, which maps the captures to routes.
+/// `-DuoTourStep <s>` the dwell on each. The walk runs once and holds its last
+/// route, which is what gh-sim's single screenshot per display captures; it
+/// restarts when the panes split or join, so each display gets all of it.
+/// Every step is logged as a `DUOTOUR` line, which maps the captures to routes.
 ///
 /// Routes: today, history, progress, settings, and session (the latest
-/// session's detail, in the History pane while split).
+/// session's detail; while split it opens in the History pane and leaves the
+/// leading tab as it is).
 enum DuoScreenshotTour {
     private static let arguments = ProcessInfo.processInfo.arguments
 

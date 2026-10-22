@@ -74,16 +74,12 @@ extension View {
         }
     }
 
-    /// Unfolded, the tab bar floats along the bottom of the leading pane, and
-    /// with the soft edge the cards behind it read through the glass. The hard
-    /// edge backs the bar instead. Folded keeps the system default.
-    @ViewBuilder
-    func unfoldedBarEdge(isSplit: Bool) -> some View {
-        if #available(iOS 26.0, *) {
-            scrollEdgeEffectStyle(isSplit ? .hard : nil, for: .bottom)
-        } else {
-            self
-        }
+    /// Unfolded, the tab bar floats along the bottom of the leading pane. A
+    /// tab's content fades out just above the bar, so the bar sits on the page
+    /// wash with nothing behind it, and scrolling to the end still clears the
+    /// fade. Folded keeps the system default (content scrolls under the bar).
+    func unfoldedBarClearance(isSplit: Bool) -> some View {
+        modifier(UnfoldedBarClearance(isSplit: isSplit))
     }
 
     /// Keeps a single-column setup screen (onboarding, calibration) on the
@@ -120,5 +116,46 @@ private struct UnfoldedLeadingPane<Trailing: View>: ViewModifier {
                 .accessibilityHidden(split == nil)
         }
         .measuresPaneGeometry($geometry)
+    }
+}
+
+/// See `unfoldedBarClearance(isSplit:)`. The mask stays in place folded (fully
+/// open there), so folding never rebuilds the tab's content.
+private struct UnfoldedBarClearance: ViewModifier {
+    let isSplit: Bool
+    @State private var bottomInset: CGFloat = 0
+
+    /// Height of the fade between the content and the bar.
+    static let fade: CGFloat = 28
+    /// Space between the fade and the bar's safe-area edge.
+    static let gap: CGFloat = 8
+
+    func body(content: Content) -> some View {
+        content
+            .safeAreaPadding(.bottom, isSplit ? Self.fade + Self.gap : 0)
+            .scrollEdgeEffectHiddenIfAvailable(isSplit)
+            .mask {
+                VStack(spacing: 0) {
+                    Rectangle()
+                    LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                        .frame(height: isSplit ? Self.fade : 0)
+                    Color.clear
+                        .frame(height: isSplit ? bottomInset + Self.gap : 0)
+                }
+                .ignoresSafeArea()
+            }
+            .background(Theme.dawnWash.ignoresSafeArea())
+            .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { bottomInset = $0 }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func scrollEdgeEffectHiddenIfAvailable(_ hidden: Bool) -> some View {
+        if #available(iOS 26.0, *) {
+            scrollEdgeEffectHidden(hidden, for: .bottom)
+        } else {
+            self
+        }
     }
 }
