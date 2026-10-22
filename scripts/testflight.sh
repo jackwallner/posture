@@ -5,4 +5,4 @@
 # Flags (--upload-only, --no-bump, --clean, --post-archive) and credentials are
 # documented in ~/ios/release/testflight.sh.
 cd "$(dirname "$0")/.." || exit 1
-exec "$HOME/ios/release/testflight.sh" --project Posture.xcodeproj --scheme Posture -- -parallelizeTargets IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4 "$@"
+exec "$HOME/ios/release/testflight.sh" --project Posture.xcodeproj --scheme Posture "$@" -- -parallelizeTargets IDEBuildOperationMaxNumberOfConcurrentCompileTasks=4
