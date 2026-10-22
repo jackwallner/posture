@@ -880,7 +880,8 @@ struct SessionDetailView: View {
     private func legend(color: Color, label: String, seconds: Int) -> some View {
         HStack(spacing: 5) {
             Circle().fill(color).frame(width: 7, height: 7)
-            Text("\(label) \(seconds / 60)m")
+            // Under a minute reads in seconds, so a 32 s drift isn't "0m".
+            Text(seconds < 60 ? "\(label) \(seconds)s" : "\(label) \(seconds / 60)m")
                 .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink2)
         }
