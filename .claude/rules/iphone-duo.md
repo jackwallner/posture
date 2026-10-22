@@ -23,7 +23,12 @@ paths:
   `horizontalSizeClass = .compact` and, while split, `toolbarVerticalBehavior(.disabled)`
   so a pane's back button stays leading instead of moving beside the fold.
   Never set the size class on the `TabView` itself: its bar placement is the
-  system's. Split, the tabs use a hard bottom scroll edge (`unfoldedBarEdge`).
+  system's. Split, each tab gets `unfoldedBarClearance`: its content fades out
+  just above the floating tab bar (bar on the plain wash, no scroll edge
+  effect) and bottom safe-area padding lets scrolled-to-end content clear the
+  fade. The mask stays on folded (fully open) so folding never rebuilds a tab.
+  The old hard scroll edge sliced text rows in static captures (shots review
+  2026-10-22).
 - In the History pane a session opens as a push inside the pane
   (`HistoryView(opensSessionsInPane: true)`, nav bar hidden, its own close
   button pops); folded it stays a sheet.
@@ -31,14 +36,18 @@ paths:
   `SetupFoldPanel` in the trailing pane. Today's sheets (streak, levels,
   achievements, paywall, trial offer) and practice/walk covers still present
   across the whole inner display.
-- Captures: `gh-sim launch --device 'iPhone Duo' --scheme Posture --wait 6
-  --record-seconds 60 --args "-SCREENSHOT_SEED -PostureProOverride -DuoTour
-  -DuoTourFirst 3 -DuoTourStep 14"` plus `--url noop://1..9`, and tests as a
-  separate `gh-sim test` (in `gh-sim all` the two recorders collide). Noop URLs only pace shots
-  (`simctl openurl` to a real scheme raises an alert on iOS 27). gh-sim
-  relaunches the app after unfolding, so the tour restarts per display.
-  `-DuoTour` also skips the notification permission alert. `DUOTOUR` lines in
-  app.log map shots to routes and log the measured width and fold. The tour
-  switches tabs unanimated, as a tap does (an animated switch grows the new tab
-  from a zero frame on video). The seed leaves today's practice to do and
-  stamps nothing after the 9:41 screenshot clock, so Today and History agree.
+- Captures: one inner and one outer shot per `gh-sim` run (no `--url`:
+  `simctl openurl` to a real scheme raises an alert on iOS 27, and fake
+  schemes like `noop://` are banned). The DEBUG tour walks `-DuoRoutes`
+  (folded) and `-DuoRoutesRegular` (split) once and holds the last route, so
+  each run picks its surfaces, e.g. `gh-sim launch --device 'iPhone Duo'
+  --scheme Posture --wait 12 --record-seconds 20 --args "-SCREENSHOT_SEED
+  -PostureProOverride -DuoTour -DuoTourFirst 3 -DuoTourStep 3 -DuoRoutes
+  today,history -DuoRoutesRegular today,progress,session"` (Progress beside a
+  session). gh-sim relaunches the app after unfolding, so the tour restarts
+  per display. `-DuoTour` also skips the notification permission alert.
+  `DUOTOUR` lines in app.log map shots to routes and log the measured width
+  and fold. The tour switches tabs unanimated, as a tap does (an animated
+  switch grows the new tab from a zero frame on video). The seed leaves
+  today's practice to do and stamps nothing after the 9:41 screenshot clock,
+  so Today and History agree.
