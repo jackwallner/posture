@@ -24,9 +24,10 @@ enum ReminderScheduler {
     @MainActor
     static func reschedule() async {
         #if DEBUG
-        // Don't fire the iOS permission alert during UI tests - it lives
-        // outside the app process and would stall the harness.
-        if LaunchArguments.contains("UITEST_FRESH") { return }
+        // Don't fire the iOS permission alert during UI tests or unattended
+        // screenshot runs - it lives outside the app process, would stall the
+        // harness and would sit over the captures.
+        if LaunchArguments.contains("UITEST_FRESH") || LaunchArguments.contains("DuoTour") { return }
         #endif
         let settings = GoalSettings.shared
         // Never fire the iOS notification prompt before setup is complete.

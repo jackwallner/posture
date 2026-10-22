@@ -79,6 +79,7 @@ enum ScreenshotSeed {
                 targetSeconds: duration, targetPercent: 70,
                 alignedPercent: pct, completed: true, passed: pct >= 70
             ))
+            seedSessionMinutes(context, start: startedAt, minutes: duration / 60, alignedPercent: pct)
         }
 
         // A recent posture walk (Pro), reads "tall" and covers real ground.
@@ -98,6 +99,7 @@ enum ScreenshotSeed {
                 distanceMeters: 1620, steps: 2140,
                 goalIsDistance: false, targetDistanceMeters: 0
             ))
+            seedSessionMinutes(context, start: walkStart, minutes: duration / 60, alignedPercent: 87)
         }
 
         // Per-minute history so Today's ring, the hour rhythm, and History's
@@ -145,6 +147,22 @@ enum ScreenshotSeed {
                     source: .airpods
                 ))
             }
+        }
+    }
+
+    /// A session writes one minute row per minute, so its detail screen draws
+    /// the minute-by-minute strip. Settles in after a slower first minute.
+    private static func seedSessionMinutes(_ context: ModelContext, start: Date, minutes: Int, alignedPercent: Int) {
+        let mean = Double(alignedPercent) / 100
+        for m in 0..<minutes {
+            let wobble = m == 0 ? -0.14 : Double((m * 5) % 7) / 50.0 - 0.04
+            let good = max(0.5, min(0.98, mean + wobble))
+            context.insert(PostureMinuteSample(
+                minuteStart: start.addingTimeInterval(Double(m) * 60),
+                goodSeconds: 60 * good, borderlineSeconds: 60 * (1 - good) * 0.7,
+                badSeconds: 60 * (1 - good) * 0.3,
+                source: .airpods
+            ))
         }
     }
 
