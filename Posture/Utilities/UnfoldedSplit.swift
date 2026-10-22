@@ -126,7 +126,15 @@ private struct UnfoldedBarClearance: ViewModifier {
     @State private var bottomInset: CGFloat = 0
 
     /// Height of the fade between the content and the bar.
-    static let fade: CGFloat = 28
+    static let fade: CGFloat = 44
+    /// Eased, so a row in the lower part of the fade is gone rather than a
+    /// faint sliver above the cut.
+    static var fadeStops: [Gradient.Stop] { [
+        .init(color: .black, location: 0),
+        .init(color: .black.opacity(0.45), location: 0.4),
+        .init(color: .black.opacity(0.08), location: 0.7),
+        .init(color: .clear, location: 0.85),
+    ] }
     /// Space between the fade and the bar's safe-area edge.
     static let gap: CGFloat = 8
 
@@ -137,7 +145,7 @@ private struct UnfoldedBarClearance: ViewModifier {
             .mask {
                 VStack(spacing: 0) {
                     Rectangle()
-                    LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                    LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
                         .frame(height: isSplit ? Self.fade : 0)
                     Color.clear
                         .frame(height: isSplit ? bottomInset + Self.gap : 0)
