@@ -14,8 +14,12 @@ struct HistoryView: View {
     @State private var showingTrendsPaywall = false
     @State private var selectedSession: PostureSession?
     @State private var subscriptions = SubscriptionService.shared
+    /// The unfolded iPhone Duo's History pane: a session opens inside the pane,
+    /// beside Today, instead of as a sheet across the fold.
+    private let opensSessionsInPane: Bool
 
-    init() {
+    init(opensSessionsInPane: Bool = false) {
+        self.opensSessionsInPane = opensSessionsInPane
         let cutoff = DateHelpers.daysAgo(14)
         _acknowledgments = Query(
             filter: #Predicate<AcknowledgmentRecord> { $0.timestamp >= cutoff },
@@ -169,10 +173,23 @@ struct HistoryView: View {
             .sheet(isPresented: $showingTrendsPaywall) {
                 PaywallView(paywallImpressionId: "posture_trends_gate")
             }
-            .sheet(item: $selectedSession) { session in
+            .sheet(item: opensSessionsInPane ? .constant(nil) : $selectedSession) { session in
                 SessionDetailView(session: session)
                     .presentationDetents([.large])
             }
+            .navigationDestination(item: opensSessionsInPane ? $selectedSession : .constant(nil)) { session in
+                // Its own close button pops back to History.
+                SessionDetailView(session: session)
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+            #if DEBUG
+            .onReceive(NotificationCenter.default.publisher(for: .postureDebugOpenLatestSession)) { _ in
+                selectedSession = sessionHistory.first
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .postureDebugCloseSession)) { _ in
+                selectedSession = nil
+            }
+            #endif
         }
     }
 
