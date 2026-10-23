@@ -54,3 +54,56 @@ final class UnfoldedSplitTests: XCTestCase {
         }
     }
 }
+
+/// Where a split pane's content stops above its floating tab bar.
+final class PaneCutTests: XCTestCase {
+    func testFoldedKeepsThePhoneLayout() {
+        XCTAssertEqual(TabBarClearance.make(isSplit: false, barInset: 81), TabBarClearance(hidden: 0, contentPadding: 0))
+    }
+
+    func testSplitHidesEverythingUnderTheBar() {
+        let clearance = TabBarClearance.make(isSplit: true, barInset: 81)
+        // Content is gone a gap above the bar's top edge, and the last row can
+        // scroll all the way up to that line, so it is never cut.
+        XCTAssertEqual(clearance.hidden, 81 + TabBarClearance.gap)
+        XCTAssertEqual(clearance.contentPadding, TabBarClearance.gap)
+    }
+
+    func testNegativeInsetNeverUncoversTheBar() {
+        XCTAssertEqual(TabBarClearance.make(isSplit: true, barInset: -4).hidden, TabBarClearance.gap)
+    }
+
+    // The line sits at 574 in each case.
+
+    func testRowsClearOfTheLineCutAtTheLine() {
+        let rows = [PaneCut.Row(minY: 100, maxY: 300, card: nil),
+                    PaneCut.Row(minY: 316, maxY: 574, card: nil),
+                    PaneCut.Row(minY: 590, maxY: 700, card: nil)]
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 574, card: nil))
+    }
+
+    func testASlicedCardIsHiddenWhole() {
+        // Today's badge strip under the practice card.
+        let rows = [PaneCut.Row(minY: 240, maxY: 520, card: nil),
+                    PaneCut.Row(minY: 540, maxY: 596, card: nil)]
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540, card: nil))
+    }
+
+    func testASlicedFormRowClosesItsSectionAboveTheSeparator() {
+        let rows = [PaneCut.Row(minY: 360, maxY: 494, card: .groupedList),
+                    PaneCut.Row(minY: 494, maxY: 630, card: .groupedList)]
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 493, card: .groupedList))
+    }
+
+    func testAHeaderGoesWithItsFirstRow() {
+        // The header's frame is stretched by its keep-with-next allowance.
+        let rows = [PaneCut.Row(minY: 540, maxY: 560 + 56, card: nil),
+                    PaneCut.Row(minY: 568, maxY: 620, card: nil)]
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540, card: nil))
+    }
+
+    func testATallRowIsSlicedRatherThanEmptyThePane() {
+        let rows = [PaneCut.Row(minY: 574 - PaneCut.maxLift - 1, maxY: 900, card: nil)]
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 574, card: nil))
+    }
+}

@@ -406,6 +406,7 @@ struct MainTabView: View {
             if let split {
                 HistoryView(opensSessionsInPane: true)
                     .phonePane(isSplit: true, sizeClass: .compact)
+                    .unfoldedBarClearance(isSplit: true)
                     .frame(width: split.secondaryWidth)
                     .frame(maxHeight: .infinity)
                     .padding(.leading, split.secondaryX)
@@ -495,7 +496,7 @@ struct MainTabView: View {
             if !subscriptions.isProSubscriber {
                 ProTabView()
                     .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
-                .unfoldedBarClearance(isSplit: split != nil)
+                    .unfoldedBarClearance(isSplit: split != nil)
                     .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
                     .tag(3)
             }

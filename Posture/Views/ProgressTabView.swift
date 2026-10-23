@@ -51,7 +51,8 @@ struct ProgressTabView: View {
                 // so a free user always sees the upgrade without scrolling.
                 if !isPro { proBanner }
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 18) {
+                    // Unfolded, the pane cut hides a card whole rather than slice it.
+                    PaneRowStack(spacing: 18) {
                         if trainsBothPostures { modePicker }
                         programHeader
                         ProgressPathView(

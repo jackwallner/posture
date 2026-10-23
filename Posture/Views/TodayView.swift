@@ -153,7 +153,8 @@ struct TodayView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                // Unfolded, the pane cut hides a card whole rather than slice it.
+                PaneRowStack(spacing: 20) {
                     headerGreeting
 
                     if isAirpodsUser {

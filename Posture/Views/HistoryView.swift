@@ -149,14 +149,16 @@ struct HistoryView: View {
                     emptyState
                 } else {
                     VStack(alignment: .leading, spacing: 18) {
-                        weekHeader
-                        practiceChart
+                        // Unfolded, the pane cut hides these (and each
+                        // session row) whole rather than slice them.
+                        weekHeader.paneRow()
+                        practiceChart.paneRow()
                         sessionList
-                        trendsSection
+                        trendsSection.paneRow()
 
                         if !acknowledgments.isEmpty {
                             Divider().background(Theme.paper3)
-                            journalHeader
+                            journalHeader.paneRow(keepWithNext: 44)
                             journalFeed
                         }
                     }
@@ -308,11 +310,13 @@ struct HistoryView: View {
                     .font(Theme.font(.footnote, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                     .padding(.bottom, 6)
+                    .paneRow(keepWithNext: 56)
                 ForEach(Array(sessionHistory.prefix(30))) { session in
                     Button { selectedSession = session } label: {
                         sessionRow(session)
                     }
                     .buttonStyle(.plain)
+                    .paneRow()
                     if session.id != sessionHistory.prefix(30).last?.id {
                         Divider().background(Theme.paper3)
                     }
@@ -604,6 +608,7 @@ struct HistoryView: View {
                         .padding(.top, 6)
                 }
                 .padding(.vertical, 12)
+                .paneRow()
                 if ack.id != acknowledgments.prefix(20).last?.id {
                     Divider().background(Theme.paper3)
                 }

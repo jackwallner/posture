@@ -31,7 +31,8 @@ enum DuoScreenshotTour {
     static var step: Double { value("-DuoTourStep").flatMap(Double.init) ?? 10 }
 
     private static func value(_ key: String) -> String? {
-        guard let i = arguments.firstIndex(of: key), i + 1 < arguments.count else { return nil }
+        // The last one wins, so a gh-sim `--screen` can override `--args`.
+        guard let i = arguments.lastIndex(of: key), i + 1 < arguments.count else { return nil }
         return arguments[i + 1]
     }
 }

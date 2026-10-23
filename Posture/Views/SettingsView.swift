@@ -74,6 +74,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Posture+")
                 }
+                .paneListRows()
 
                 // MARK: - Live readout (free, in-app)
 
@@ -84,6 +85,7 @@ struct SettingsView: View {
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
+                    .paneListRows()
                 }
 
                 // MARK: - Daily practice
@@ -110,6 +112,7 @@ struct SettingsView: View {
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
+                    .paneListRows()
                 }
 
                 // MARK: - Extra check-in nudges (secondary)
@@ -157,6 +160,7 @@ struct SettingsView: View {
                             }
                     }
                 }
+                .paneListRows()
 
                 // MARK: - Sensitivity
 
@@ -171,6 +175,7 @@ struct SettingsView: View {
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
                 }
+                .paneListRows()
 
                 // MARK: - Calibration
 
@@ -197,6 +202,7 @@ struct SettingsView: View {
                             .foregroundStyle(Theme.ink2)
                     }
                 }
+                .paneListRows()
 
                 // MARK: - Help
 
@@ -240,12 +246,14 @@ struct SettingsView: View {
                         Label("Privacy Policy", systemImage: "hand.raised")
                     }
                 }
+                .paneListRows()
 
                 // MARK: - About
 
                 Section("About") {
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–")
                 }
+                .paneListRows()
             }
             // Form controls (Toggle/Picker/Stepper/LabeledContent labels) render
             // in system SF by default, clashing with the Nunito captions. Set the
