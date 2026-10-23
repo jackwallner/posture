@@ -5,6 +5,27 @@ final class OnboardingUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor
+    func testStorageFailureOffersRetryWithoutStartingOnboarding() {
+        let app = XCUIApplication()
+        app.launchArguments += ["UITEST_STORAGE_FAILURE"]
+        app.launch()
+
+        let message = app.staticTexts["Your history is unavailable"]
+        XCTAssertTrue(message.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Posture couldn't open your saved data. Your files have been kept. Try again after unlocking your device or freeing up storage."].exists)
+        XCTAssertFalse(app.buttons["Continue"].exists)
+        app.buttons["Try again"].tap()
+        XCTAssertTrue(message.exists)
+        XCTAssertTrue(app.buttons["Try again"].exists)
+        XCTAssertEqual(app.state, .runningForeground)
+
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Storage unavailable"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     /// Regression: RootView read GoalSettings through the singleton with
     /// no SwiftUI observation, so flipping hasCompletedOnboarding never
     /// re-rendered — onboarding hung on the welcome screen. This drives

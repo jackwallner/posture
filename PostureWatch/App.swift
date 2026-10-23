@@ -5,8 +5,9 @@ import SwiftUI
 struct PostureWatchApp: App {
     var body: some Scene {
         WindowGroup {
-            WatchTodayView()
+            StorageContainerView {
+                WatchTodayView()
+            }
         }
-        .modelContainer(DataService.sharedModelContainer)
     }
 }
