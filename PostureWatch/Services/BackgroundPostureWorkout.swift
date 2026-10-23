@@ -136,7 +136,8 @@ final class BackgroundPostureWorkout: NSObject {
         totalSlouchEvents += 1
         WKInterfaceDevice.current().play(.notification)
         Task { @MainActor in
-            let context = ModelContext(DataService.sharedModelContainer)
+            guard case .success(let container) = DataService.containerResult else { return }
+            let context = ModelContext(container)
             context.insert(PosturePassiveSample(timestamp: now, severity: severity, source: .watch))
             try? context.save()
         }

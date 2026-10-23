@@ -55,23 +55,24 @@ struct PostureApp: App {
 
     var body: some Scene {
         WindowGroup {
-            #if DEBUG
-            if let mode = PaywallScreenshotMode.current {
-                PaywallScreenshotHarness(mode: mode)
-                    .environment(settings)
-                    .preferredColorScheme(.light)
-            } else {
+            StorageContainerView {
+                #if DEBUG
+                if let mode = PaywallScreenshotMode.current {
+                    PaywallScreenshotHarness(mode: mode)
+                        .environment(settings)
+                        .preferredColorScheme(.light)
+                } else {
+                    AirpodsRootView()
+                        .environment(settings)
+                        .preferredColorScheme(.light)
+                }
+                #else
                 AirpodsRootView()
                     .environment(settings)
                     .preferredColorScheme(.light)
+                #endif
             }
-            #else
-            AirpodsRootView()
-                .environment(settings)
-                .preferredColorScheme(.light)
-            #endif
         }
-        .modelContainer(DataService.sharedModelContainer)
     }
 }
 

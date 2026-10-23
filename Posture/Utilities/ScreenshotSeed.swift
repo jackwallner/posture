@@ -14,7 +14,7 @@ enum ScreenshotSeed {
     }
 
     static func seedIfNeeded() {
-        guard isActive else { return }
+        guard isActive, case .success = DataService.containerResult else { return }
         markSetupComplete()
         seedData()
     }

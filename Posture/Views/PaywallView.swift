@@ -132,7 +132,7 @@ struct PaywallView: View {
     /// crammed three dated rows in and clipped the last one ("Day 7"); the
     /// lifetime layout read better, so subscriptions use it too. The trial's
     /// dates still surface up front - in the headline/subtitle and the
-    /// reminder/billing line under the CTA - so nothing is lost.
+    /// billing line under the CTA - so nothing is lost.
     private var featureSection: some View {
         compactFeatureList
             .frame(minHeight: 158, alignment: .topLeading)
@@ -429,15 +429,13 @@ struct PaywallView: View {
         #endif
     }
 
-    /// Blinkist-style timeline transparency under the CTA: when the reminder
-    /// arrives and when billing starts. Lifts trial conversion, cuts complaints.
+    /// Trial payment timing under the CTA.
     private var trialReassuranceLine: String? {
         #if HAS_REVENUECAT
         guard let package = selectedPackage,
               subscriptions.isEligibleForIntroOffer(package),
               let days = trialDays else { return nil }
-        let reminderDay = max(1, days - 2)
-        return "No payment today · Reminder day \(reminderDay) · Billing day \(days)"
+        return "No payment today · Billing day \(days)"
         #else
         return nil
         #endif
