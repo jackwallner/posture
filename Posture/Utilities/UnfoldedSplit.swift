@@ -168,6 +168,10 @@ struct PaneCut: Equatable, Sendable {
     }
 
     static let maxLift: CGFloat = 220
+    /// How far above a hidden row the cut runs: a card's 1 pt stroke straddles
+    /// its top edge and a divider sits just above a row, and a cut at the edge
+    /// left either as a hairline.
+    static let margin: CGFloat = 2
 
     static func make(line: CGFloat, rows: some Sequence<Row>) -> PaneCut {
         let sliced = rows.filter { row in
@@ -176,8 +180,7 @@ struct PaneCut: Equatable, Sendable {
         guard let first = sliced.min(by: { $0.minY < $1.minY }) else {
             return PaneCut(y: line, card: nil)
         }
-        // A card row's separator sits on the row above, so cut a point higher.
-        return PaneCut(y: first.minY - (first.card == nil ? 0 : 1), card: first.card)
+        return PaneCut(y: first.minY - margin, card: first.card)
     }
 }
 

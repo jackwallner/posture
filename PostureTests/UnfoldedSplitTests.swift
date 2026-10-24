@@ -86,20 +86,20 @@ final class PaneCutTests: XCTestCase {
         // Today's badge strip under the practice card.
         let rows = [PaneCut.Row(minY: 240, maxY: 520, card: nil),
                     PaneCut.Row(minY: 540, maxY: 596, card: nil)]
-        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540, card: nil))
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540 - PaneCut.margin, card: nil))
     }
 
     func testASlicedFormRowClosesItsSectionAboveTheSeparator() {
         let rows = [PaneCut.Row(minY: 360, maxY: 494, card: .groupedList),
                     PaneCut.Row(minY: 494, maxY: 630, card: .groupedList)]
-        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 493, card: .groupedList))
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 494 - PaneCut.margin, card: .groupedList))
     }
 
     func testAHeaderGoesWithItsFirstRow() {
         // The header's frame is stretched by its keep-with-next allowance.
         let rows = [PaneCut.Row(minY: 540, maxY: 560 + 56, card: nil),
                     PaneCut.Row(minY: 568, maxY: 620, card: nil)]
-        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540, card: nil))
+        XCTAssertEqual(PaneCut.make(line: 574, rows: rows), PaneCut(y: 540 - PaneCut.margin, card: nil))
     }
 
     func testATallRowIsSlicedRatherThanEmptyThePane() {
