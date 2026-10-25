@@ -1,0 +1,17 @@
+{
+  "project": "Posture.xcodeproj",
+  "scheme": "PostureUITests",
+  "uitests_dir": "PostureUITests",
+  "journeys": [
+    "PostureUITests/ReleaseJourneysUITests"
+  ],
+  "personas": [
+    "newcomer",
+    "accessibility",
+    "reduce-motion",
+    "german"
+  ],
+  "persona_overrides": {},
+  "slot": null,
+  "bundle_id": "com.jackwallner.posture"
+}
