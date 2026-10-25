@@ -11,6 +11,6 @@ Betalversionen ger hela stegen upp till 15 minuter, hållningspromenader, histor
 
 Rörelse bearbetas på din enhet. Appen stöder hållningsmedvetenhet och övning, inte medicinsk rådgivning, diagnos eller behandling. Den lovar inte att korrigera sjukdomstillstånd eller lindra smärta.
 
-Månadsplanen kostar US$2.99 och årsplanen US$19.99. Båda förnyas automatiskt och erbjuder 7 dagars kostnadsfri provperiod om du är berättigad. Apple debiterar ditt Apple-konto när du bekräftar köpet eller efter en berättigad provperiod. Om du inte är berättigad debiteras du vid bekräftelsen. Förnyelseavgiften debiteras inom 24 timmar före den aktuella periodens slut. Hantera eller avsluta i Inställningar › Apple-konto › Abonnemang minst 24 timmar före periodens slut. Priserna varierar beroende på region och visas före köp.
+Båda förnyas automatiskt och erbjuder 7 dagars kostnadsfri provperiod om du är berättigad. Apple debiterar ditt Apple-konto när du bekräftar köpet eller efter en berättigad provperiod. Om du inte är berättigad debiteras du vid bekräftelsen. Förnyelseavgiften debiteras inom 24 timmar före den aktuella periodens slut. Hantera eller avsluta i Inställningar › Apple-konto › Abonnemang minst 24 timmar före periodens slut. Priserna varierar beroende på region och visas före köp.
 Integritetspolicy: https://jackwallner.github.io/posture/privacy-policy.html
 Användarvillkor (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
