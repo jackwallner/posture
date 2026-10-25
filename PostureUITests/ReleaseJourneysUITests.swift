@@ -21,8 +21,10 @@ final class ReleaseJourneysUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 20), "welcome never rendered")
         QA.checkpoint(app, "welcome")
 
-        for page in 1...4 where app.buttons["Continue"].exists {
-            app.buttons["Continue"].tap()
+        // Every teaching page carries its own Continue, so tap the one on screen.
+        for page in 1...4 {
+            guard let next = onScreenButton("Continue", in: app) else { break }
+            next.tap()
             QA.checkpoint(app, "teach-\(page)")
         }
         let baseline = app.buttons["Set up my baseline"]
@@ -41,6 +43,18 @@ final class ReleaseJourneysUITests: XCTestCase {
         }
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today never rendered")
         QA.checkpoint(app, "first-today", paywall: false)
+    }
+
+    private func onScreenButton(_ label: String, in app: XCUIApplication) -> XCUIElement? {
+        let matches = app.buttons.matching(NSPredicate(format: "label == %@", label))
+        let deadline = Date().addingTimeInterval(5)
+        repeat {
+            for index in 0..<matches.count where matches.element(boundBy: index).isHittable {
+                return matches.element(boundBy: index)
+            }
+            Thread.sleep(forTimeInterval: 0.3)
+        } while Date() < deadline
+        return nil
     }
 
     func test02EveryTabOnSeededData() {
