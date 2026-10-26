@@ -201,7 +201,7 @@ struct HistoryView: View {
         let f = DateFormatter()
         f.dateFormat = "MMM d"
         guard let first = weekDays.first, let last = weekDays.last else { return "" }
-        return "\(f.string(from: first))–\(f.string(from: last))"
+        return "\(f.string(from: first)) to \(f.string(from: last))"
     }
 
     private var weekHeadline: String {

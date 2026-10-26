@@ -108,13 +108,15 @@ private struct UnfoldedLeadingPane<Trailing: View>: ViewModifier {
             content
                 .environment(\.horizontalSizeClass, split == nil ? horizontalSizeClass : .compact)
                 .frame(maxWidth: split?.primaryWidth ?? .infinity, maxHeight: .infinity)
-            trailing
-                .environment(\.horizontalSizeClass, .compact)
-                .frame(width: split?.secondaryWidth ?? 0)
-                .frame(maxHeight: .infinity)
-                .padding(.leading, split?.secondaryX ?? 0)
-                .opacity(split == nil ? 0 : 1)
-                .accessibilityHidden(split == nil)
+            // Built only when split: at zero width its wrapping text grew
+            // taller than the screen and pushed the phone layout off it.
+            if let split {
+                trailing
+                    .environment(\.horizontalSizeClass, .compact)
+                    .frame(width: split.secondaryWidth)
+                    .frame(maxHeight: .infinity)
+                    .padding(.leading, split.secondaryX)
+            }
         }
         .measuresPaneGeometry($geometry)
     }
