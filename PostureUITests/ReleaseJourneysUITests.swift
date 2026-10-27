@@ -96,7 +96,7 @@ final class ReleaseJourneysUITests: XCTestCase {
     /// The no-AirPods core loop: self-report a check-in, see the receipt, and
     /// find it counted after a relaunch. The store may already hold check-ins
     /// from earlier journeys, so counts are asserted relative to each other.
-    func testCoreLoopCheckInCountsAndSurvivesRelaunch() {
+    func testCoreLoopCheckInCountsAndSurvivesRelaunch() throws {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: Self.bundle)
         QA.launch(app, environment: Self.probe, arguments: ["UITEST_FRESH", "-rcfunnelprobe"])
@@ -116,7 +116,7 @@ final class ReleaseJourneysUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today never rendered")
         QA.checkpoint(app, "today-before-check-in")
 
-        let first = checkIn("aligned", in: app)
+        let first = try checkIn("aligned", in: app)
         XCTAssertTrue(app.staticTexts["Aligned"].exists, "result did not name the quality that was logged")
         QA.checkpoint(app, "check-in-result-aligned")
         app.buttons["Done"].tap()
@@ -129,7 +129,7 @@ final class ReleaseJourneysUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today missing after relaunch")
         QA.checkpoint(app, "today-after-relaunch")
 
-        let second = checkIn("drifting", in: app)
+        let second = try checkIn("drifting", in: app)
         XCTAssertEqual(second, first + 1, "the check-in before the relaunch was lost")
         XCTAssertTrue(app.staticTexts["Drifting"].exists, "second result did not name the quality that was logged")
         QA.checkpoint(app, "second-check-in-result")
@@ -138,7 +138,7 @@ final class ReleaseJourneysUITests: XCTestCase {
 
     /// Opens the check-in from Today, taps the self-report chip and returns
     /// the "N check-ins today" count from the receipt (1 for "first").
-    private func checkIn(_ quality: String, in app: XCUIApplication, journey: String = #function) -> Int {
+    private func checkIn(_ quality: String, in app: XCUIApplication, journey: String = #function) throws -> Int {
         let open = app.buttons["Check in now"]
         for _ in 0..<6 where !open.isHittable {
             app.swipeUp()
@@ -154,7 +154,7 @@ final class ReleaseJourneysUITests: XCTestCase {
         let label = receipt.label
         if label.hasPrefix("your first check-in") { return 1 }
         let count = Int(label.prefix { $0.isNumber })
-        return XCTUnwrap(count, "unreadable receipt: \(label)")
+        return try XCTUnwrap(count, "unreadable receipt: \(label)")
     }
 
     private func launch(_ arguments: [String], environment: [String: String] = [:]) -> XCUIApplication {
