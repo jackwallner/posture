@@ -93,6 +93,70 @@ final class ReleaseJourneysUITests: XCTestCase {
         QA.checkpoint(app, "today-after-relaunch")
     }
 
+    /// The no-AirPods core loop: self-report a check-in, see the receipt, and
+    /// find it counted after a relaunch. The store may already hold check-ins
+    /// from earlier journeys, so counts are asserted relative to each other.
+    func testCoreLoopCheckInCountsAndSurvivesRelaunch() {
+        continueAfterFailure = false
+        let app = XCUIApplication(bundleIdentifier: Self.bundle)
+        QA.launch(app, environment: Self.probe, arguments: ["UITEST_FRESH", "-rcfunnelprobe"])
+        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 20), "welcome never rendered")
+        for _ in 1...4 {
+            guard let next = onScreenButton("Continue", in: app) else { break }
+            next.tap()
+        }
+        let baseline = app.buttons["Set up my baseline"]
+        XCTAssertTrue(baseline.waitForExistence(timeout: 6), "never reached the last teaching page")
+        baseline.tap()
+        let noAirPods = app.buttons["I don't have AirPods"]
+        XCTAssertTrue(noAirPods.waitForExistence(timeout: 25), "calibration never rendered")
+        noAirPods.tap()
+        let start = app.buttons["Get Started"]
+        if start.waitForExistence(timeout: 10) { start.tap() }
+        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today never rendered")
+        QA.checkpoint(app, "today-before-check-in")
+
+        let first = checkIn("aligned", in: app)
+        XCTAssertTrue(app.staticTexts["Aligned"].exists, "result did not name the quality that was logged")
+        QA.checkpoint(app, "check-in-result-aligned")
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
+        QA.checkpoint(app, "today-after-check-in")
+
+        // Keep the stored settings (no-AirPods mode), drop only the reset flag.
+        app.launchArguments.removeAll { $0 == "UITEST_FRESH" }
+        QA.relaunch(app)
+        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today missing after relaunch")
+        QA.checkpoint(app, "today-after-relaunch")
+
+        let second = checkIn("drifting", in: app)
+        XCTAssertEqual(second, first + 1, "the check-in before the relaunch was lost")
+        XCTAssertTrue(app.staticTexts["Drifting"].exists, "second result did not name the quality that was logged")
+        QA.checkpoint(app, "second-check-in-result")
+        app.buttons["Done"].tap()
+    }
+
+    /// Opens the check-in from Today, taps the self-report chip and returns
+    /// the "N check-ins today" count from the receipt (1 for "first").
+    private func checkIn(_ quality: String, in app: XCUIApplication, journey: String = #function) -> Int {
+        let open = app.buttons["Check in now"]
+        for _ in 0..<6 where !open.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(open.waitForExistence(timeout: 10), "no Check in now button on Today")
+        open.tap()
+        let chip = app.buttons["I'm sitting \(quality)"]
+        XCTAssertTrue(chip.waitForExistence(timeout: 10), "self-report chips never rendered")
+        QA.checkpoint(app, "check-in-choice-\(quality)", journey: journey)
+        chip.tap()
+        let receipt = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'check-in'")).firstMatch
+        XCTAssertTrue(receipt.waitForExistence(timeout: 10), "no receipt after logging a check-in")
+        let label = receipt.label
+        if label.hasPrefix("your first check-in") { return 1 }
+        let count = Int(label.prefix { $0.isNumber })
+        return XCTUnwrap(count, "unreadable receipt: \(label)")
+    }
+
     private func launch(_ arguments: [String], environment: [String: String] = [:]) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: Self.bundle)
         QA.launch(app, environment: environment, arguments: arguments)
