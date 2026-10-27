@@ -1,0 +1,18 @@
+# Desk Reset: Posture Practice
+
+> Desk Reset is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
+
+## App
+
+- [AirPods Posture App | Desk Reset: Posture Practice](https://jackwallner.com/ios/posture/index.html.md): Desk Reset is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
+
+## Guides
+
+- [Best Posture App for iPhone: 5 Compared (2026)](https://jackwallner.com/ios/posture/best-posture-app.html.md): Five iPhone posture apps compared: AirPods-based reminders, a wearable sensor and photo analysis. Price model, Watch, account and ratings as of October 2026.
+- [Desk Posture Checklist: How to Sit at Your Desk](https://jackwallner.com/ios/posture/desk-posture-checklist.html.md): A ten-point desk posture checklist from OSHA workstation guidance: head, elbows, wrists, feet, monitor distance and height, and how often to change position.
+
+## Optional
+
+- [Posture Privacy Policy](https://jackwallner.com/ios/posture/privacy-policy.html.md): Posture processes posture and motion features on your devices. It does not require an account.
+- [Posture, Support](https://jackwallner.com/ios/posture/support.html.md): Posture turns your AirPods into an always-on posture coach. Pop them in and Posture watches your head position in the background, giving you a gentle buzz...
+- [Posture Terms of Use](https://jackwallner.com/ios/posture/terms.html.md): By using Posture, you agree to these Terms of Use and Apple's Standard Licensed Application End User License Agreement.
