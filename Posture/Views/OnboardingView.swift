@@ -207,6 +207,8 @@ struct OnboardingView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     content()
                 }
+                // Titles wrap instead of truncating on narrower phones.
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 20)
                 .frame(maxWidth: .infinity, minHeight: geo.size.height, alignment: .center)

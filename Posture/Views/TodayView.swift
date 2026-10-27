@@ -34,7 +34,7 @@ struct TodayView: View {
     /// `.both`-focus users (they see the Standing|Sitting switch); single-focus
     /// users are pinned to their one mode via `activeMode`.
     @State private var selectedMode: PostureMode = .standing
-    @State private var nextReminderText = "–"
+    @State private var nextReminderText = "later today"
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
     @State private var subscriptions = SubscriptionService.shared
@@ -874,7 +874,7 @@ struct TodayView: View {
                         .stroke(Theme.ringSweep, style: .init(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.6), value: alignmentScore)
-                    Text(alignmentScore.map { "\($0)" } ?? "–")
+                    Text(alignmentScore.map { "\($0)" } ?? "0")
                         .font(Theme.font(size: 34, weight: .regular))
                         .foregroundStyle(Theme.ink)
                 }
@@ -1158,7 +1158,7 @@ struct TodayView: View {
             nextReminderText = next.map { formatReminderTime($0) } ?? "later today"
             remainingReminders = await ReminderScheduler.remainingCount()
         } else {
-            nextReminderText = "–"
+            nextReminderText = "later today"
             remainingReminders = 0
         }
     }
