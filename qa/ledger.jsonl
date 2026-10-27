@@ -4,3 +4,4 @@
 {"created": "2026-10-27T00:13:27+00:00", "id": "Q004", "match": "blank-launch|*|welcome|*", "reason": "cold launch on a simulator host that was at load 86 minutes earlier", "status": "accepted"}
 {"created": "2026-10-27T00:13:27+00:00", "id": "Q005", "match": "blank-launch|*|progress-before-interruption|*", "reason": "seeded relaunch on a busy simulator host", "status": "accepted"}
 {"created": "2026-10-27T00:13:27+00:00", "id": "Q006", "match": "motion-jump|*|progress-before-interruption|*", "reason": "the OS springboard launch zoom", "status": "accepted"}
+{"created": "2026-10-27T00:31:54+00:00", "id": "Q007", "match": "blank-launch|*|today|*", "reason": "seeded launch on a busy simulator host; the same launch drew promptly in the other personas", "status": "accepted"}
