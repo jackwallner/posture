@@ -121,7 +121,7 @@ struct MonitoringLogView: View {
     }
 
     private func lastReadingText(_ monitor: AirpodsBackgroundMonitor, now: Date) -> String {
-        guard let last = monitor.lastSampleAt else { return "–" }
+        guard let last = monitor.lastSampleAt else { return "never" }
         let ago = max(0, Int(now.timeIntervalSince(last)))
         if ago <= 2 { return "just now" }
         if ago < 60 { return "\(ago)s ago" }

@@ -1,0 +1,7 @@
+{"created": "2026-10-26T23:56:55+00:00", "id": "Q001", "match": "overlap|*|history|*", "reason": "session rows scrolling under the floating system tab bar, the standard iOS 26 behavior on a long list", "status": "accepted"}
+{"created": "2026-10-27T00:13:27+00:00", "id": "Q002", "match": "cta-jump|*|airpods-calibration|*", "reason": "the calibration step offers \"I don't have AirPods\" as its own choice, a different screen from the teaching pages", "status": "accepted"}
+{"created": "2026-10-27T00:13:27+00:00", "id": "Q003", "match": "still-loading|*|airpods-calibration|*", "reason": "the calibration step waits for AirPods motion by design, and the simulator has none", "status": "accepted"}
+{"created": "2026-10-27T00:13:27+00:00", "id": "Q004", "match": "blank-launch|*|welcome|*", "reason": "cold launch on a simulator host that was at load 86 minutes earlier", "status": "accepted"}
+{"created": "2026-10-27T00:13:27+00:00", "id": "Q005", "match": "blank-launch|*|progress-before-interruption|*", "reason": "seeded relaunch on a busy simulator host", "status": "accepted"}
+{"created": "2026-10-27T00:13:27+00:00", "id": "Q006", "match": "motion-jump|*|progress-before-interruption|*", "reason": "the OS springboard launch zoom", "status": "accepted"}
+{"created": "2026-10-27T00:31:54+00:00", "id": "Q007", "match": "blank-launch|*|today|*", "reason": "seeded launch on a busy simulator host; the same launch drew promptly in the other personas", "status": "accepted"}

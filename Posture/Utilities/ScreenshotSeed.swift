@@ -6,7 +6,9 @@ import SwiftData
 /// Pro surfaces) to drop straight into a fully-staged app for App Store
 /// screenshot capture: onboarding + calibration marked done, an AirPods
 /// baseline, a multi-day streak, a week of passed practice sessions, a walk,
-/// per-minute history, and a few hand check-ins. DEBUG-only; never ships.
+/// per-minute history, and a few hand check-ins. Today's practice is still to
+/// do, and nothing is stamped after `AppClock.now` (9:41 in screenshot runs),
+/// so Today, History and the streak tell one story. DEBUG-only; never ships.
 @MainActor
 enum ScreenshotSeed {
     static var isActive: Bool {
@@ -40,8 +42,9 @@ enum ScreenshotSeed {
         wipe(context)
 
         let cal = Calendar.current
-        let now = Date.now
+        let now = AppClock.now
         let today = cal.startOfDay(for: now)
+        guard let yesterday = cal.date(byAdding: .day, value: -1, to: today) else { return }
 
         // Calibration baseline (radians) - plausible AirPods head-level values.
         context.insert(Calibration(
@@ -54,18 +57,19 @@ enum ScreenshotSeed {
             standingSlouchDelta: 0.18, sittingSlouchDelta: 0.34
         ))
 
-        // Streak: a healthy run with freezes in the bank.
+        // Streak: a healthy run through yesterday, with freezes in the bank.
         context.insert(StreakState(
             currentStreak: 6, longestStreak: 14, freezesAvailable: 2,
-            lastActiveDay: today, dailyGoalSeconds: 60
+            lastActiveDay: yesterday, dailyGoalSeconds: 60
         ))
 
-        // A week of passed practice sessions (one per day), aligned-% climbing.
-        let aligned = [84, 88, 81, 90, 86, 92, 89]
-        for dayOffset in 0..<7 {
+        // The streak's six passed practice sessions (one a day, through
+        // yesterday), aligned-% climbing.
+        let aligned = [88, 81, 90, 86, 92, 89]
+        for dayOffset in 1...6 {
             guard let day = cal.date(byAdding: .day, value: -dayOffset, to: today) else { continue }
             let startedAt = cal.date(bySettingHour: 8, minute: 25, second: 0, of: day) ?? day
-            let pct = aligned[dayOffset]
+            let pct = aligned[dayOffset - 1]
             let duration = 300 // 5-minute hold
             let good = Int(Double(duration) * Double(pct) / 100.0)
             let borderline = (duration - good) * 2 / 3
@@ -79,10 +83,12 @@ enum ScreenshotSeed {
                 targetSeconds: duration, targetPercent: 70,
                 alignedPercent: pct, completed: true, passed: pct >= 70
             ))
+            seedSessionMinutes(context, start: startedAt, minutes: duration / 60, alignedPercent: pct)
         }
 
         // A recent posture walk (Pro), reads "tall" and covers real ground.
-        if let walkDay = cal.date(byAdding: .day, value: -1, to: today) {
+        // Before yesterday's practice, which stays the newest session.
+        if let walkDay = cal.date(byAdding: .day, value: -2, to: today) {
             let walkStart = cal.date(bySettingHour: 18, minute: 10, second: 0, of: walkDay) ?? walkDay
             let duration = 600
             let good = Int(Double(duration) * 0.87)
@@ -98,16 +104,18 @@ enum ScreenshotSeed {
                 distanceMeters: 1620, steps: 2140,
                 goalIsDistance: false, targetDistanceMeters: 0
             ))
+            seedSessionMinutes(context, start: walkStart, minutes: duration / 60, alignedPercent: 87)
         }
 
         // Per-minute history so Today's ring, the hour rhythm, and History's
         // day chart all look lived-in.
-        seedMinutes(context, cal: cal, today: today)
+        seedMinutes(context, cal: cal, today: today, now: now)
 
         // A couple of hand check-ins for the journal.
         for (dayOffset, hour) in [(0, 11), (0, 15), (1, 14)] {
             guard let day = cal.date(byAdding: .day, value: -dayOffset, to: today),
-                  let at = cal.date(bySettingHour: hour, minute: 5, second: 0, of: day) else { continue }
+                  let at = cal.date(bySettingHour: hour, minute: 5, second: 0, of: day),
+                  at <= now else { continue }
             context.insert(AcknowledgmentRecord(
                 timestamp: at, method: .manual, quality: .good, deviation: nil, scheduledAt: at
             ))
@@ -118,7 +126,7 @@ enum ScreenshotSeed {
 
     /// Spread believable good/borderline minutes across working hours for the
     /// last few days (today densest so the ring reads high).
-    private static func seedMinutes(_ context: ModelContext, cal: Calendar, today: Date) {
+    private static func seedMinutes(_ context: ModelContext, cal: Calendar, today: Date, now: Date) {
         // (dayOffset, startHour, minutes, goodBias)
         let blocks: [(Int, Int, Int, Double)] = [
             (0, 9, 35, 0.86), (0, 11, 28, 0.82), (0, 14, 40, 0.9), (0, 16, 22, 0.8),
@@ -132,7 +140,8 @@ enum ScreenshotSeed {
                   let blockStart = cal.date(bySettingHour: startHour, minute: 0, second: 0, of: day)
             else { continue }
             for m in 0..<minutes {
-                guard let minuteStart = cal.date(byAdding: .minute, value: m, to: blockStart) else { continue }
+                guard let minuteStart = cal.date(byAdding: .minute, value: m, to: blockStart),
+                      minuteStart.addingTimeInterval(60) <= now else { continue }
                 // Deterministic wobble so the timeline isn't flat.
                 let wobble = Double((m * 7) % 11) / 40.0 - 0.12
                 let good = max(0, min(1, goodBias + wobble))
@@ -145,6 +154,22 @@ enum ScreenshotSeed {
                     source: .airpods
                 ))
             }
+        }
+    }
+
+    /// A session writes one minute row per minute, so its detail screen draws
+    /// the minute-by-minute strip. Settles in after a slower first minute.
+    private static func seedSessionMinutes(_ context: ModelContext, start: Date, minutes: Int, alignedPercent: Int) {
+        let mean = Double(alignedPercent) / 100
+        for m in 0..<minutes {
+            let wobble = m == 0 ? -0.14 : Double((m * 5) % 7) / 50.0 - 0.04
+            let good = max(0.5, min(0.98, mean + wobble))
+            context.insert(PostureMinuteSample(
+                minuteStart: start.addingTimeInterval(Double(m) * 60),
+                goodSeconds: 60 * good, borderlineSeconds: 60 * (1 - good) * 0.7,
+                badSeconds: 60 * (1 - good) * 0.3,
+                source: .airpods
+            ))
         }
     }
 

@@ -298,8 +298,10 @@ struct RootView: View {
         Group {
             if !settings.hasCompletedOnboarding {
                 OnboardingView()
+                    .unfoldedLeadingPane { SetupFoldPanel() }
             } else if !settings.hasCalibrated {
                 CalibrationView()
+                    .unfoldedLeadingPane { SetupFoldPanel() }
             } else {
                 // Let new users feel the calibrated practice before asking them
                 // to subscribe. The first completed session is the proof moment;
@@ -339,39 +341,84 @@ struct RootView: View {
     }
 }
 
+/// The unfolded iPhone Duo's trailing pane during onboarding and calibration,
+/// which stay a phone-width column on the leading side of the fold.
+private struct SetupFoldPanel: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Image(systemName: "leaf.fill")
+                .font(.system(size: 28, weight: .semibold))
+                .foregroundStyle(Theme.sage)
+            Text("A few minutes a day.")
+                .font(Theme.display(30))
+                .foregroundStyle(Theme.ink)
+            Text("Your AirPods coach each short session, and your streak grows with every day you show up.")
+                .font(Theme.font(.body))
+                .foregroundStyle(Theme.ink2)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+}
+
 struct MainTabView: View {
     @Environment(GoalSettings.self) private var settings
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @StateObject private var reviewPromptCoordinator = ReviewPromptCoordinator.shared
     @State private var subscriptions = SubscriptionService.shared
     @State private var selectedTab = 0
     @State private var reviewPromptShownThisSession = false
+    /// The container's width and fold, measured so the unfolded iPhone Duo can
+    /// put Today and History on opposite sides of the fold.
+    @State private var paneGeometry = PaneGeometry()
     @Environment(\.requestReview) private var requestReview
 
     private var hasCompletedSetup: Bool {
         settings.hasCompletedOnboarding && settings.hasCalibrated
     }
 
+    /// Unfolded, History has its own pane beside Today, so it is never a tab.
+    private var split: UnfoldedSplit? {
+        UnfoldedSplit.make(
+            width: paneGeometry.width,
+            isRegularWidth: horizontalSizeClass == .regular,
+            fold: paneGeometry.fold
+        )
+    }
+
+    /// Each unfolded pane is phone-width, so its screen lays out as on a phone.
+    /// Applied to the tab contents, not the `TabView`, whose bar placement is
+    /// left to the system.
+    private var paneSizeClass: UserInterfaceSizeClass? {
+        split == nil ? horizontalSizeClass : .compact
+    }
+
     var body: some View {
-        TabView(selection: $selectedTab) {
-            TodayView()
-                .tabItem { Label("Today", systemImage: "leaf.fill").accessibilityLabel("Today") }
-                .tag(0)
-            HistoryView()
-                .tabItem { Label("History", systemImage: "chart.bar.fill").accessibilityLabel("History") }
-                .tag(1)
-            ProgressTabView()
-                .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis").accessibilityLabel("Progress") }
-                .tag(4)
-            // The upgrade pitch gets its own tab until the user subscribes.
-            if !subscriptions.isProSubscriber {
-                ProTabView()
-                    .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
-                    .tag(3)
+        // Opening or closing the Duo only moves these frames, so the tab view
+        // is never rebuilt and Today keeps its scroll position and sheets.
+        ZStack(alignment: .topLeading) {
+            // Behind the fold, which neither pane covers.
+            Theme.dawnWash.ignoresSafeArea()
+            tabs
+                .frame(maxWidth: split?.primaryWidth ?? .infinity, maxHeight: .infinity)
+            if let split {
+                HistoryView(opensSessionsInPane: true)
+                    .phonePane(isSplit: true, sizeClass: .compact)
+                    .unfoldedBarClearance(isSplit: true)
+                    .frame(width: split.secondaryWidth)
+                    .frame(maxHeight: .infinity)
+                    .padding(.leading, split.secondaryX)
             }
-            SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }
-                .tag(2)
         }
+        .measuresPaneGeometry($paneGeometry)
+        .onChange(of: split != nil) { _, isSplit in
+            if isSplit, selectedTab == 1 { selectedTab = 0 }
+        }
+        #if DEBUG
+        .task(id: split != nil) { await runDuoTour(isSplit: split != nil) }
+        #endif
         .tint(Theme.sage)
         .onReceive(NotificationCenter.default.publisher(for: .posturePositiveMomentForReview)) { _ in
             scheduleReviewPromptAfterPositiveMoment()
@@ -427,6 +474,71 @@ struct MainTabView: View {
             && !reviewPromptCoordinator.todayIsCovered
             && !reviewPromptCoordinator.rootIsCovered
     }
+
+    private var tabs: some View {
+        TabView(selection: $selectedTab) {
+            TodayView()
+                .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
+                .unfoldedBarClearance(isSplit: split != nil)
+                .tabItem { Label("Today", systemImage: "leaf.fill").accessibilityLabel("Today") }
+                .tag(0)
+            if split == nil {
+                HistoryView()
+                    .tabItem { Label("History", systemImage: "chart.bar.fill").accessibilityLabel("History") }
+                    .tag(1)
+            }
+            ProgressTabView()
+                .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
+                .unfoldedBarClearance(isSplit: split != nil)
+                .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis").accessibilityLabel("Progress") }
+                .tag(4)
+            // The upgrade pitch gets its own tab until the user subscribes.
+            if !subscriptions.isProSubscriber {
+                ProTabView()
+                    .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
+                    .unfoldedBarClearance(isSplit: split != nil)
+                    .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
+                    .tag(3)
+            }
+            SettingsView()
+                .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
+                .unfoldedBarClearance(isSplit: split != nil)
+                .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }
+                .tag(2)
+        }
+    }
+
+    #if DEBUG
+    /// See `DuoScreenshotTour`. Restarts when the panes split or join, so each
+    /// display gets the whole walk, and holds the last route for the capture.
+    private func runDuoTour(isSplit: Bool) async {
+        guard DuoScreenshotTour.isEnabled else { return }
+        try? await Task.sleep(for: .seconds(DuoScreenshotTour.firstDelay))
+        for (index, route) in DuoScreenshotTour.routes(split: isSplit).enumerated() {
+            if index > 0 { try? await Task.sleep(for: .seconds(DuoScreenshotTour.step)) }
+            guard !Task.isCancelled else { return }
+            NSLog("DUOTOUR %@ route=%@ width=%.1f fold=%@", isSplit ? "inner" : "outer", route,
+                  paneGeometry.width, String(describing: paneGeometry.fold))
+            // Unanimated, like a tab tap; an animated switch grows the new
+            // tab in from a zero frame, which no user ever sees.
+            openDuoRoute(route)
+        }
+    }
+
+    private func openDuoRoute(_ route: String) {
+        NotificationCenter.default.post(name: .postureDebugCloseSession, object: nil)
+        switch route {
+        case "history": selectedTab = split == nil ? 1 : 0
+        case "progress": selectedTab = 4
+        case "settings": selectedTab = 2
+        case "session":
+            // Split, the session opens in the History pane beside whichever tab is up.
+            if split == nil { selectedTab = 1 }
+            NotificationCenter.default.post(name: .postureDebugOpenLatestSession, object: nil)
+        default: selectedTab = 0
+        }
+    }
+    #endif
 }
 
 /// Lets Today and the app root report what they have on screen, so the

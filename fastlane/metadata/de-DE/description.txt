@@ -11,6 +11,6 @@ Das kostenpflichtige Upgrade bietet die gesamte Entwicklung bis zu 15 Minuten, H
 
 Bewegungsdaten werden auf deinem Gerät verarbeitet. Die App dient der Haltungswahrnehmung und Übung, nicht der medizinischen Beratung, Diagnose oder Behandlung. Sie verspricht weder die Korrektur einer Erkrankung noch Schmerzlinderung.
 
-Das Monatsabo kostet US$2.99, das Jahresabo US$19.99. Beide verlängern sich automatisch und enthalten bei Berechtigung eine 7-tägige kostenlose Probe. Apple belastet deinen Apple Account bei Bestätigung des Kaufs oder nach einer berechtigten Probe. Ohne Berechtigung erfolgt die Belastung bei Bestätigung. Die Verlängerung wird innerhalb der letzten 24 Stunden vor Periodenende berechnet. Verwalte oder kündige mindestens 24 Stunden vor Periodenende unter Einstellungen › Apple Account › Abonnements. Preise variieren je nach Region und werden vor dem Kauf angezeigt.
+Beide verlängern sich automatisch und enthalten bei Berechtigung eine 7-tägige kostenlose Probe. Apple belastet deinen Apple Account bei Bestätigung des Kaufs oder nach einer berechtigten Probe. Ohne Berechtigung erfolgt die Belastung bei Bestätigung. Die Verlängerung wird innerhalb der letzten 24 Stunden vor Periodenende berechnet. Verwalte oder kündige mindestens 24 Stunden vor Periodenende unter Einstellungen › Apple Account › Abonnements. Preise variieren je nach Region und werden vor dem Kauf angezeigt.
 Datenschutzerklärung: https://jackwallner.github.io/posture/privacy-policy.html
 Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

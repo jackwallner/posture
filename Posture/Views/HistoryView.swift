@@ -14,8 +14,12 @@ struct HistoryView: View {
     @State private var showingTrendsPaywall = false
     @State private var selectedSession: PostureSession?
     @State private var subscriptions = SubscriptionService.shared
+    /// The unfolded iPhone Duo's History pane: a session opens inside the pane,
+    /// beside Today, instead of as a sheet across the fold.
+    private let opensSessionsInPane: Bool
 
-    init() {
+    init(opensSessionsInPane: Bool = false) {
+        self.opensSessionsInPane = opensSessionsInPane
         let cutoff = DateHelpers.daysAgo(14)
         _acknowledgments = Query(
             filter: #Predicate<AcknowledgmentRecord> { $0.timestamp >= cutoff },
@@ -145,14 +149,16 @@ struct HistoryView: View {
                     emptyState
                 } else {
                     VStack(alignment: .leading, spacing: 18) {
-                        weekHeader
-                        practiceChart
+                        // Unfolded, the pane cut hides these (and each
+                        // session row) whole rather than slice them.
+                        weekHeader.paneRow()
+                        practiceChart.paneRow()
                         sessionList
-                        trendsSection
+                        trendsSection.paneRow()
 
                         if !acknowledgments.isEmpty {
                             Divider().background(Theme.paper3)
-                            journalHeader
+                            journalHeader.paneRow(keepWithNext: 44)
                             journalFeed
                         }
                     }
@@ -169,10 +175,23 @@ struct HistoryView: View {
             .sheet(isPresented: $showingTrendsPaywall) {
                 PaywallView(paywallImpressionId: "posture_trends_gate")
             }
-            .sheet(item: $selectedSession) { session in
+            .sheet(item: opensSessionsInPane ? .constant(nil) : $selectedSession) { session in
                 SessionDetailView(session: session)
                     .presentationDetents([.large])
             }
+            .navigationDestination(item: opensSessionsInPane ? $selectedSession : .constant(nil)) { session in
+                // Its own close button pops back to History.
+                SessionDetailView(session: session)
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+            #if DEBUG
+            .onReceive(NotificationCenter.default.publisher(for: .postureDebugOpenLatestSession)) { _ in
+                selectedSession = sessionHistory.first
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .postureDebugCloseSession)) { _ in
+                selectedSession = nil
+            }
+            #endif
         }
     }
 
@@ -182,7 +201,7 @@ struct HistoryView: View {
         let f = DateFormatter()
         f.dateFormat = "MMM d"
         guard let first = weekDays.first, let last = weekDays.last else { return "" }
-        return "\(f.string(from: first))–\(f.string(from: last))"
+        return "\(f.string(from: first)) to \(f.string(from: last))"
     }
 
     private var weekHeadline: String {
@@ -291,11 +310,13 @@ struct HistoryView: View {
                     .font(Theme.font(.footnote, weight: .semibold))
                     .foregroundStyle(Theme.ink3)
                     .padding(.bottom, 6)
+                    .paneRow(keepWithNext: 56)
                 ForEach(Array(sessionHistory.prefix(30))) { session in
                     Button { selectedSession = session } label: {
                         sessionRow(session)
                     }
                     .buttonStyle(.plain)
+                    .paneRow()
                     if session.id != sessionHistory.prefix(30).last?.id {
                         Divider().background(Theme.paper3)
                     }
@@ -587,6 +608,7 @@ struct HistoryView: View {
                         .padding(.top, 6)
                 }
                 .padding(.vertical, 12)
+                .paneRow()
                 if ack.id != acknowledgments.prefix(20).last?.id {
                     Divider().background(Theme.paper3)
                 }
@@ -863,7 +885,8 @@ struct SessionDetailView: View {
     private func legend(color: Color, label: String, seconds: Int) -> some View {
         HStack(spacing: 5) {
             Circle().fill(color).frame(width: 7, height: 7)
-            Text("\(label) \(seconds / 60)m")
+            // Under a minute reads in seconds, so a 32 s drift isn't "0m".
+            Text(seconds < 60 ? "\(label) \(seconds)s" : "\(label) \(seconds / 60)m")
                 .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink2)
         }

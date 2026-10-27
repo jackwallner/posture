@@ -31,6 +31,8 @@ Top-level layout:
 
 **Full service/view/model catalog with responsibilities and invariants: `posture-architecture` skill.** Load it before working on Posture internals.
 
+Area rules: `.claude/rules/iphone-duo.md` (unfolded iPhone Duo split, Today beside History, and its capture tour).
+
 ### Daylight design system
 
 Palette + type tokens in `Shared/Utilities/Theme.swift` (literal colors:
