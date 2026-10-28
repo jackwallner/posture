@@ -268,6 +268,7 @@ final class AirpodsBackgroundMonitor {
     /// stop, on AirPods disconnect, and whenever we lack a real baseline.
     /// Flushes the in-progress minute first so partial minutes persist.
     private func resetDetectionState() {
+        if inBadBout { SlouchNudge.clear() }
         persistFlush(minuteBucket.flush())
         smoothedPitch = nil
         firstBadAt = nil
@@ -300,13 +301,13 @@ final class AirpodsBackgroundMonitor {
     }
 
     /// Resume the background motion stream after a foreground read finishes.
-    /// No-op unless we actually suspended. Audio (if Pro/background) was never
-    /// torn down, so we only need to re-arm the motion updates.
+    /// No-op unless we actually suspended. Goes through `activateMotion()`
+    /// because a monitor armed or re-armed during the read skipped acquiring
+    /// the keep-alive; the keep-alive's refcount makes a repeat acquire free.
     func resumeAfterForegroundRead() {
         guard suspendedForForegroundRead else { return }
         suspendedForForegroundRead = false
-        guard isMonitoring else { return }
-        headphoneService.start()
+        activateMotion()
     }
 
     // MARK: - Sample handler

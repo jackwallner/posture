@@ -744,6 +744,7 @@ final class PracticeSessionController {
 
     /// Stop motion, hand the stream back, drop the keep-alive, flush minutes.
     private func teardown() {
+        SlouchNudge.clear()
         motion.stop()
         walkMetrics?.stop()
         persistFlush(minuteBucket.flush())

@@ -3,7 +3,7 @@ import CoreMotion
 import Foundation
 import Observation
 
-/// Wraps `CMHeadphoneMotionManager`. Only AirPods with head tracking (Pro, 3rd gen or later, Max) provide head motion.
+/// Wraps `CMHeadphoneMotionManager`. Only AirPods Pro / 3rd gen / 4 with ANC / Max provide head motion.
 /// iOS only delivers updates while the app is foreground (or while audio is playing with the
 /// right session category - we don't rely on that).
 @MainActor

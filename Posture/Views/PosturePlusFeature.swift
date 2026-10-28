@@ -20,7 +20,7 @@ enum PosturePlusFeature: Hashable {
     var title: String {
         switch self {
         case .alwaysOnWatch: "Always-on Watch"
-        case .airpodsBackground: "Quiet background"
+        case .airpodsBackground: "All-day monitoring"
         case .walkMode: "Walk mode"
         }
     }
@@ -28,7 +28,7 @@ enum PosturePlusFeature: Hashable {
     var detail: String {
         switch self {
         case .alwaysOnWatch: "Haptic nudges when you slouch, even with your phone away."
-        case .airpodsBackground: "Head motion tracked silently while AirPods are in."
+        case .airpodsBackground: "Buzzes you when you slouch, even with the phone locked."
         case .walkMode: "Distance, steps, and how tall you carry your head out there."
         }
     }

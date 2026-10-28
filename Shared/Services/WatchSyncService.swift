@@ -53,7 +53,7 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         // Replay whatever the counterpart last pushed while we were asleep.
         deliver(from: session.receivedApplicationContext)
         #if os(iOS)
-        Task { @MainActor in WatchSyncService.shared.pushState() }
+        Task { @MainActor in WatchSyncService.shared.pushStateIfProChanged() }
         #endif
     }
 
@@ -62,6 +62,19 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     }
 
     #if os(iOS)
+    /// The watch app was just installed or paired: it has no Pro status yet.
+    func sessionWatchStateDidChange(_ session: WCSession) {
+        Task { @MainActor in WatchSyncService.shared.pushStateIfProChanged() }
+    }
+
+    /// Activation-time catch-up. Only pushes when the watch's last-known Pro
+    /// status is stale, so it never overrides a toggle changed on the watch.
+    @MainActor private func pushStateIfProChanged() {
+        let sent = WCSession.default.applicationContext["isPro"] as? Bool
+        guard sent != SubscriptionService.shared.isProSubscriber else { return }
+        pushState()
+    }
+
     func sessionDidBecomeInactive(_ session: WCSession) {}
     func sessionDidDeactivate(_ session: WCSession) {
         // Re-activate so a swapped watch keeps syncing.

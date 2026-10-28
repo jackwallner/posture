@@ -178,7 +178,7 @@ struct WalkBaselineCaptureView: View {
                 .foregroundStyle(Theme.ink)
             Text(HeadphoneMotionService.isMotionAccessDenied
                  ? "Motion access is off. Turn it on in Settings to capture your walking posture."
-                 : "AirPods with head tracking (Pro, 3rd gen or later, or Max) are needed to read your head position.")
+                 : "Compatible AirPods (Pro, 3rd gen, 4 with ANC, or Max) are needed to read your head position.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)

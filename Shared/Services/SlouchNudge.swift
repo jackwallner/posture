@@ -25,9 +25,12 @@ enum SlouchNudge {
         UNUserNotificationCenter.current().add(request)
     }
 
-    /// Posture recovered: clear the banner so it doesn't linger.
+    /// Posture recovered or tracking ended: clear the banner so it doesn't
+    /// linger, including one still pending delivery.
     static func clear() {
-        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [identifier])
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [identifier])
+        center.removeDeliveredNotifications(withIdentifiers: [identifier])
     }
 }
 

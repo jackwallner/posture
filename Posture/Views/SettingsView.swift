@@ -62,7 +62,7 @@ struct SettingsView: View {
                     Toggle(isOn: airpodsBackgroundBinding) {
                         plusToggleLabel("All-day AirPods monitoring")
                     }
-                    Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when the app is closed. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
+                    Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
@@ -126,11 +126,11 @@ struct SettingsView: View {
                             }
                         }
 
-                    if (settings.reminderEnabled || settings.practiceReminderEnabled) && notificationsDenied {
+                    if (settings.reminderEnabled || settings.practiceReminderEnabled || settings.airpodsBackgroundEnabled) && notificationsDenied {
                         PostureBanner(
                             tone: .warn,
                             title: "Notifications are off.",
-                            message: "Reminders won't fire until you allow notifications.",
+                            message: "Reminders and background slouch alerts won't fire until you allow notifications.",
                             action: ("allow", { Task { await allowNotifications() } })
                         )
                         .listRowInsets(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
@@ -320,9 +320,16 @@ struct SettingsView: View {
             } message: {
                 Text("Open Posture on your Apple Watch once to start background tracking. Your phone has already sent the setting over.")
             }
-            .alert("Turn on quiet background?", isPresented: $showingAirpodsBackgroundConfirm) {
+            .alert("Turn on all-day monitoring?", isPresented: $showingAirpodsBackgroundConfirm) {
                 Button("Cancel", role: .cancel) { }
-                Button("Turn on") { settings.airpodsBackgroundEnabled = true }
+                Button("Turn on") {
+                    settings.airpodsBackgroundEnabled = true
+                    // Background slouch alerts arrive as notifications.
+                    Task {
+                        _ = await NotificationService.requestAuthorization()
+                        await refreshNotificationStatus()
+                    }
+                }
             } message: {
                 Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded. Always-on tracking uses extra battery.")
             }
