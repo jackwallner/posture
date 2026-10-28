@@ -6,7 +6,7 @@ Web page: https://jackwallner.com/ios/posture/best-posture-app.html
 
 ## Best posture app for iPhone (October 2026)
 
-By [Jack Wallner](https://jackwallner.com/). Last updated October 27, 2026.
+By [Jack Wallner](https://jackwallner.com/). Last updated October 28, 2026.
 
 A posture app is an iPhone app that tracks or checks your posture in one of three ways: it reads the motion sensors in your AirPods, pairs with a wearable sensor, or analyzes a photo. Best for a short daily AirPods-guided practice with a Watch app and no account: Desk Reset. Best for timed sessions with background slouch alerts: Posture Pal. Best for a plain headphone-based alert: PodPosture. Best for photo analysis and stretches: Align. Best if you already own the sensor: UPRIGHT.
 

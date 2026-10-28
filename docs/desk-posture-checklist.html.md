@@ -6,7 +6,7 @@ Web page: https://jackwallner.com/ios/posture/desk-posture-checklist.html
 
 ## Desk Posture Checklist: How to Sit at Your Desk
 
-By Jack Wallner. Last updated October 27, 2026.
+By Jack Wallner. Last updated October 28, 2026.
 
 A neutral posture is a comfortable working position in which your joints are naturally aligned. Sit with your head level and in line with your torso, shoulders relaxed, elbows close to your body and bent 90 to 120 degrees, wrists straight, back supported, knees about hip height and feet flat. Put the monitor straight ahead, 20 to 40 inches away, with the top of the screen at or slightly below eye level. OSHA also notes that no single posture is healthy for long, so change position often.
 
