@@ -126,7 +126,8 @@ struct SettingsView: View {
                             }
                         }
 
-                    if (settings.reminderEnabled || settings.practiceReminderEnabled || settings.airpodsBackgroundEnabled) && notificationsDenied {
+                    if (settings.reminderEnabled || settings.practiceReminderEnabled
+                        || (subscriptions.isProSubscriber && settings.airpodsBackgroundEnabled)) && notificationsDenied {
                         PostureBanner(
                             tone: .warn,
                             title: "Notifications are off.",
@@ -331,7 +332,7 @@ struct SettingsView: View {
                     }
                 }
             } message: {
-                Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded. Always-on tracking uses extra battery.")
+                Text("Posture will play a silent tone to keep the AirPods sensor awake. iOS shows an orange dot in the status bar to let you know audio is in use. No audio is recorded. All-day monitoring uses extra battery.")
             }
             .sheet(isPresented: $showingQuickRecalibrate, onDismiss: { refreshWalkBaseline() }) {
                 CalibrationView(mode: .quickRecalibrate)

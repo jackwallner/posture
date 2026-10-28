@@ -386,6 +386,7 @@ final class PracticeSessionController {
         guard phase == .running || phase == .waiting else { return }
         if !connected {
             persistFlush(minuteBucket.flush())
+            if inBadBout { SlouchNudge.clear() }
             firstBadAt = nil
             inBadBout = false
             smoothedPitch = nil
@@ -486,6 +487,7 @@ final class PracticeSessionController {
         if config.kind == .walk && !isWalkingNow {
             // Waiting at a light isn't a slouch - no buzz, and no carrying a
             // half-built bad bout into the next stretch of walking.
+            if inBadBout { SlouchNudge.clear() }
             firstBadAt = nil
             inBadBout = false
         } else {

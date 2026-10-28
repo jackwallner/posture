@@ -182,6 +182,9 @@ private struct AirpodsRootView: View {
             if !m.isMonitoring || !m.isBackground {
                 m.stop()
                 _ = m.start(background: true)
+                // Background slouch alerts arrive as notifications. Prompts
+                // only if the user was never asked.
+                Task { _ = await NotificationService.requestAuthorization() }
             }
             return
         }
