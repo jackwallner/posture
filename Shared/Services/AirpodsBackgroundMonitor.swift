@@ -243,8 +243,9 @@ final class AirpodsBackgroundMonitor {
         if isBackground {
             AudioKeepAlive.shared.acquire(Self.keepAliveToken)
             // Surface a keep-alive failure but still start motion: the error
-            // may be stale from an earlier interruption, and foreground
-            // readings work without the keep-alive either way.
+            // may be left over from an earlier interruption, and foreground
+            // readings work without the keep-alive either way. A failed
+            // acquire drops its hold, so the next connect or resume retries.
             if let error = AudioKeepAlive.shared.lastError { lastError = error }
         }
         headphoneService.start()
@@ -297,8 +298,8 @@ final class AirpodsBackgroundMonitor {
         guard isMonitoring, !suspendedForForegroundRead else { return }
         suspendedForForegroundRead = true
         headphoneService.stop()
-        // Start a fresh bout after the read; the read's own teardown clears
-        // the shared slouch banner, so a carried-over bout would never re-nudge.
+        // Start a fresh bout after the read (this also clears any slouch
+        // banner); a carried-over bout would never re-nudge.
         resetDetectionState()
     }
 

@@ -39,6 +39,9 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         try? session.updateApplicationContext([
             "alwaysOnEnabled": GoalSettings.shared.alwaysOnEnabled,
             "isPro": SubscriptionService.shared.isProSubscriber,
+            // Keeps each push distinct, so it's delivered even when the
+            // values match the last one (e.g. to a reinstalled watch app).
+            "sentAt": Date().timeIntervalSince1970,
         ])
         #endif
     }
@@ -53,6 +56,7 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         // Replay whatever the counterpart last pushed while we were asleep.
         deliver(from: session.receivedApplicationContext)
         #if os(iOS)
+        watchAppInstalled = session.isWatchAppInstalled
         Task { @MainActor in WatchSyncService.shared.pushStateIfStale() }
         #endif
     }
@@ -62,10 +66,15 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     }
 
     #if os(iOS)
-    /// The watch app was just installed or paired. A fresh install has no
-    /// Pro status and no toggle of its own to override, so always push.
+    /// Delegate callbacks arrive serially on WatchConnectivity's queue.
+    private var watchAppInstalled = false
+
+    /// Fires on complication and pairing changes too; only a fresh install
+    /// (no Pro status, no toggle of its own to override) gets a push.
     func sessionWatchStateDidChange(_ session: WCSession) {
-        guard session.isWatchAppInstalled else { return }
+        let installed = session.isWatchAppInstalled
+        defer { watchAppInstalled = installed }
+        guard installed, !watchAppInstalled else { return }
         Task { @MainActor in WatchSyncService.shared.pushState() }
     }
 
