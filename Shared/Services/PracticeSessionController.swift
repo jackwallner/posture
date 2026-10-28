@@ -142,6 +142,9 @@ final class PracticeSessionController {
     // In-session slouch nudge: tighter than the all-day monitor - the whole
     // point of practice is immediate feedback. Walks nudge slower and rarer.
     private var firstBadAt: Date?
+    /// Has the current bout been nudged? Set only once the nudge actually
+    /// fires, so a bout that starts inside the debounce window still gets
+    /// one when the window lapses.
     private var inBadBout = false
     private var lastHapticAt: Date = .distantPast
     private var slouchNudgeSeconds: TimeInterval = 15
@@ -594,21 +597,22 @@ final class PracticeSessionController {
     private func updateSlouchNudge(quality: PostureQuality, now: Date) {
         switch quality {
         case .good:
+            if inBadBout { SlouchNudge.clear() }
             firstBadAt = nil
             inBadBout = false
         case .borderline:
             break
         case .bad:
-            if let started = firstBadAt {
-                if !inBadBout, now.timeIntervalSince(started) >= slouchNudgeSeconds {
-                    inBadBout = true
-                    guard now.timeIntervalSince(lastHapticAt) >= hapticDebounceSeconds else { return }
-                    lastHapticAt = now
-                    AudioServicesPlaySystemSound(1520)
-                }
-            } else {
+            guard let started = firstBadAt else {
                 firstBadAt = now
+                return
             }
+            guard !inBadBout,
+                  now.timeIntervalSince(started) >= slouchNudgeSeconds,
+                  now.timeIntervalSince(lastHapticAt) >= hapticDebounceSeconds else { return }
+            inBadBout = true
+            lastHapticAt = now
+            SlouchNudge.fire(inBackground: isAppInBackground)
         }
     }
 

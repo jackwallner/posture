@@ -409,7 +409,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
-            Text("Posture reads alignment from the head-motion sensor in AirPods Pro (1st and 2nd gen), AirPods 3rd gen, AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again.")
+            Text("Posture reads alignment from the head-motion sensor in AirPods with head tracking: AirPods Pro, AirPods (3rd gen or later) and AirPods Max. One AirPod is enough. Connect a pair to this iPhone and try again.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)

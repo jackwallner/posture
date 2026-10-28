@@ -106,7 +106,7 @@ Yes. Desk Reset: Posture Practice reads the head-motion sensor in compatible Air
 
 ## Which AirPods work with Desk Reset?
 
-Desk Reset works with AirPods Pro (1st and 2nd generation), AirPods 3rd generation, AirPods 4 with ANC, and AirPods Max.
+Desk Reset works with AirPods that have head tracking: AirPods Pro, AirPods 3rd generation or later, and AirPods Max. One AirPod is enough.
 
 ## Can I use a posture reminder app without AirPods?
 

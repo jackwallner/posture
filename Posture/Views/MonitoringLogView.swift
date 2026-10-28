@@ -139,7 +139,7 @@ struct MonitoringLogView: View {
     // MARK: - How it works
 
     private var howItWorks: some View {
-        Text("While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for three seconds gets one log entry and a gentle buzz, at most once a minute.")
+        Text("While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for 25 seconds gets one log entry and a buzz on your iPhone, at most once a minute. With the app closed, the buzz also comes as a notification.")
             .font(Theme.font(.footnote))
             .foregroundStyle(Theme.ink2)
             .lineSpacing(2)

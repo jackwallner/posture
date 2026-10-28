@@ -2,8 +2,8 @@
 import Foundation
 import WatchConnectivity
 
-/// Bridges the `alwaysOnEnabled` preference between the iPhone and the
-/// Apple Watch. App Group `UserDefaults` are per-device - they do *not*
+/// Bridges the `alwaysOnEnabled` preference and Pro status between the
+/// iPhone and the Apple Watch. App Group `UserDefaults` are per-device - they do *not*
 /// sync across the phone/watch boundary - so without this the iOS toggle
 /// would never reach the watch.
 ///
@@ -27,13 +27,20 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         session.activate()
     }
 
-    /// iOS → watch. Safe to call any time; no-ops until the session is
-    /// activated, and the latest value is replayed on activation anyway.
-    func pushAlwaysOn(_ enabled: Bool) {
+    /// iOS → watch: the always-on toggle plus Pro status. The watch has no
+    /// RevenueCat session of its own, so without the Pro flag a paying user
+    /// stays locked out there. Safe to call any time; no-ops until the
+    /// session is activated, and activation pushes the latest state.
+    @MainActor func pushState() {
+        #if os(iOS)
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
         guard session.activationState == .activated else { return }
-        try? session.updateApplicationContext(["alwaysOnEnabled": enabled])
+        try? session.updateApplicationContext([
+            "alwaysOnEnabled": GoalSettings.shared.alwaysOnEnabled,
+            "isPro": SubscriptionService.shared.isProSubscriber,
+        ])
+        #endif
     }
 
     // MARK: - WCSessionDelegate
@@ -45,6 +52,9 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     ) {
         // Replay whatever the counterpart last pushed while we were asleep.
         deliver(from: session.receivedApplicationContext)
+        #if os(iOS)
+        Task { @MainActor in WatchSyncService.shared.pushState() }
+        #endif
     }
 
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
@@ -60,11 +70,15 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     #endif
 
     private func deliver(from context: [String: Any]) {
+        #if os(watchOS)
         guard let enabled = context["alwaysOnEnabled"] as? Bool else { return }
+        let isPro = context["isPro"] as? Bool
         Task { @MainActor in
+            if let isPro { SubscriptionService.shared.setLocalOverride(isPro: isPro) }
             GoalSettings.shared.alwaysOnEnabled = enabled
             WatchSyncService.shared.onAlwaysOnReceived?(enabled)
         }
+        #endif
     }
 }
 #endif

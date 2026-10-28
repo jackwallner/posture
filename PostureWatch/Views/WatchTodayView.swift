@@ -45,6 +45,7 @@ struct WatchTodayView: View {
             .containerBackground(Theme.dawnWash, for: .navigation)
         }
         .task {
+            subscriptions.loadCachedStatus()
             WatchSyncService.shared.activate()
             WatchSyncService.shared.onAlwaysOnReceived = { _ in
                 Task { await applyAlwaysOn() }

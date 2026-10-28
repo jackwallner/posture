@@ -154,6 +154,7 @@ private struct AirpodsRootView: View {
             .onChange(of: subscriptions.isProSubscriber) { _, _ in
                 monitor.stop()
                 reconcileMonitoring(monitor)
+                WatchSyncService.shared.pushState()
             }
             .onChange(of: scenePhase) { _, _ in
                 reconcileMonitoring(monitor)

@@ -60,9 +60,9 @@ struct SettingsView: View {
                         .foregroundStyle(Theme.ink2)
 
                     Toggle(isOn: airpodsBackgroundBinding) {
-                        plusToggleLabel("Quiet AirPods background")
+                        plusToggleLabel("All-day AirPods monitoring")
                     }
-                    Text("Tracks head motion silently while AirPods are in. iOS shows an orange dot. That's Posture playing a silent tone to keep the AirPods sensor awake. No audio is recorded. This uses extra battery.")
+                    Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when the app is closed. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
@@ -81,7 +81,7 @@ struct SettingsView: View {
                 if settings.hasAirpods == true {
                     Section("Live readout") {
                         Toggle("Show my posture while the app is open", isOn: $settings.inAppLiveEnabled)
-                        Text("With AirPods in, the top of Today shows your alignment live, so you can glance at how you're sitting. It's just a readout: these minutes don't count toward your day report or trends. Reading stops when you leave the app.")
+                        Text("With AirPods in, the top of Today shows your alignment live, and your iPhone buzzes after a long slouch. These minutes don't count toward your day report or trends. Reading stops when you leave the app.")
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
@@ -115,10 +115,10 @@ struct SettingsView: View {
                     .paneListRows()
                 }
 
-                // MARK: - Extra check-in nudges (secondary)
+                // MARK: - Check-in reminders (secondary)
 
-                Section("Extra check-in nudges") {
-                    Toggle("Nudge me throughout the day", isOn: $settings.reminderEnabled)
+                Section("Check-in reminders") {
+                    Toggle("Remind me throughout the day", isOn: $settings.reminderEnabled)
                         .onChange(of: settings.reminderEnabled) { _, _ in
                             Task {
                                 await ReminderScheduler.reschedule()
@@ -378,7 +378,7 @@ struct SettingsView: View {
             set: { enabled in
                 if subscriptions.isProSubscriber {
                     settings.alwaysOnEnabled = enabled
-                    WatchSyncService.shared.pushAlwaysOn(enabled)
+                    WatchSyncService.shared.pushState()
                     if enabled { showingWatchSyncInfo = true }
                 } else if enabled {
                     requestTrialOffer(for: .alwaysOnWatch)
@@ -476,7 +476,7 @@ struct SettingsView: View {
         switch feature {
         case .alwaysOnWatch:
             settings.alwaysOnEnabled = true
-            WatchSyncService.shared.pushAlwaysOn(true)
+            WatchSyncService.shared.pushState()
             showingWatchSyncInfo = true
         case .airpodsBackground:
             showingAirpodsBackgroundConfirm = true

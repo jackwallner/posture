@@ -92,9 +92,19 @@ final class AirpodsBackgroundMonitor {
     /// few seconds. Reset on `.good` or disconnect.
     private var inBadBout = false
 
+    /// Has the current bout's nudge actually been delivered? Separate from
+    /// `inBadBout` so a bout that starts inside the debounce window still
+    /// gets its nudge once the window lapses, instead of staying silent.
+    private var nudgedThisBout = false
+
     /// Haptic debounce so we don't buzz the user every few seconds.
     private var lastHapticAt: Date = .distantPast
     private let hapticDebounceSeconds: TimeInterval = 60
+
+    /// Tracked via lifecycle notifications - `UIApplication.shared` is
+    /// unavailable in the extension targets that also compile Shared/.
+    private var isAppInBackground = false
+    private var lifecycleObservers: [NSObjectProtocol] = []
 
     // MARK: - Minute aggregation
 
@@ -148,6 +158,19 @@ final class AirpodsBackgroundMonitor {
                 self.logEvent(.error(message))
             }
         }
+
+        let center = NotificationCenter.default
+        let toBackground = center.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil
+        ) { @Sendable [weak self] _ in
+            Task { @MainActor in self?.isAppInBackground = true }
+        }
+        let toForeground = center.addObserver(
+            forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil
+        ) { @Sendable [weak self] _ in
+            Task { @MainActor in self?.isAppInBackground = false }
+        }
+        lifecycleObservers = [toBackground, toForeground]
     }
 
     // Intentionally no deinit: the monitor is process-scoped via `.shared`
@@ -174,8 +197,10 @@ final class AirpodsBackgroundMonitor {
         // AirPods just became available. If start() previously returned
         // false because no head-tracking AirPods were connected, the user
         // is now in the "armed and waiting" state - activate motion now.
+        // Not while a foreground read owns the stream: re-seating a bud
+        // mid-session would otherwise start a second manager and starve it.
         isAvailable = headphoneService.isAvailable
-        if isMonitoring && !headphoneService.isRunning {
+        if isMonitoring && !suspendedForForegroundRead && !headphoneService.isRunning {
             activateMotion()
         }
     }
@@ -211,7 +236,7 @@ final class AirpodsBackgroundMonitor {
     /// keep-alive's own refcount. Called from `start()` and from
     /// `handleConnect(true)` when AirPods appear after a cold launch.
     private func activateMotion() {
-        guard isMonitoring else { return }
+        guard isMonitoring, !suspendedForForegroundRead else { return }
         isAvailable = headphoneService.isAvailable
         guard headphoneService.isAvailable else { return }
 
@@ -247,6 +272,7 @@ final class AirpodsBackgroundMonitor {
         smoothedPitch = nil
         firstBadAt = nil
         inBadBout = false
+        nudgedThisBout = false
     }
 
     // MARK: - Foreground read coordination
@@ -378,24 +404,32 @@ final class AirpodsBackgroundMonitor {
     private func updateSlouchNudge(instant: PostureQuality, now: Date) {
         switch instant {
         case .good:
-            if inBadBout { logEvent(.recovered) }
+            if inBadBout {
+                logEvent(.recovered)
+                SlouchNudge.clear()
+            }
             firstBadAt = nil
             inBadBout = false
+            nudgedThisBout = false
         case .borderline:
             break
         case .bad:
-            if let started = firstBadAt {
-                if !inBadBout, now.timeIntervalSince(started) >= slouchNudgeSeconds {
-                    recordSlouchEvent(severity: 1.0)
-                    triggerHaptic()
-                    // One record + buzz per bout. Re-arms when posture
-                    // returns to `.good`, not when the threshold lapses
-                    // again - otherwise a 30-min slouch writes hundreds
-                    // of rows.
-                    inBadBout = true
-                }
-            } else {
+            guard let started = firstBadAt else {
                 firstBadAt = now
+                return
+            }
+            guard now.timeIntervalSince(started) >= slouchNudgeSeconds else { return }
+            if !inBadBout {
+                // One record per bout. Re-arms when posture returns to
+                // `.good`, not when the threshold lapses again - otherwise
+                // a 30-min slouch writes hundreds of rows.
+                recordSlouchEvent(severity: 1.0)
+                inBadBout = true
+            }
+            if !nudgedThisBout, now.timeIntervalSince(lastHapticAt) >= hapticDebounceSeconds {
+                lastHapticAt = now
+                nudgedThisBout = true
+                SlouchNudge.fire(inBackground: isAppInBackground)
             }
         }
     }
@@ -427,15 +461,6 @@ final class AirpodsBackgroundMonitor {
         samplesToday += unpublishedSampleCount
         unpublishedSampleCount = 0
         lastSampleAt = now
-    }
-
-    // MARK: - Haptic
-
-    private func triggerHaptic() {
-        let now = Date.now
-        guard now.timeIntervalSince(lastHapticAt) >= hapticDebounceSeconds else { return }
-        lastHapticAt = now
-        AudioServicesPlaySystemSound(1520)
     }
 }
 

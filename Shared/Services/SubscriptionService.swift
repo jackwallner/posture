@@ -323,6 +323,12 @@ final class SubscriptionService: NSObject {
     }
     #endif
 
+    /// The watch has no RevenueCat session of its own: the phone pushes Pro
+    /// status over WatchConnectivity, and this replays the last value on launch.
+    func loadCachedStatus() {
+        isProSubscriber = sharedDefaults?.bool(forKey: "isProSubscriber") ?? false
+    }
+
     /// Convenience for debug - flips entitlement locally without RevenueCat. Useful when the
     /// SDK key isn't set yet or you're iterating on the paywall UX.
     func setLocalOverride(isPro: Bool) {
