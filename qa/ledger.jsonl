@@ -9,3 +9,5 @@
 {"created": "2026-10-29T19:01:16+00:00", "id": "Q009", "match": "motion-jump|test02EveryTabOnSeededData|today|", "reason": "the OS notification permission alert fading out over Today", "status": "accepted"}
 {"created": "2026-10-29T19:01:16+00:00", "id": "Q010", "match": "motion-jump|test04ReturnVisitWithInterruption|today-after-relaunch|", "reason": "the OS relaunch fade-in from black", "status": "accepted"}
 {"created": "2026-10-29T19:01:16+00:00", "id": "Q011", "match": "a11y-audit|test03PosturePlusPaywallTab|today-after-paywall|", "reason": "XCTest accessibility audit timed out on the busy Duo simulator (no element); the screen audits in the other personas", "status": "accepted"}
+{"created": "2026-10-29T20:55:52+00:00", "id": "Q012", "match": "motion-jump|test02EveryTabOnSeededData|history|", "reason": "OS notification permission alert fading over Today, not app motion", "status": "accepted"}
+{"created": "2026-10-29T20:55:52+00:00", "id": "Q013", "match": "motion-jump|test03PosturePlusPaywallTab|posture-plus-paywall|", "reason": "OS sheet dimming fading as the paywall dismisses, not app motion", "status": "accepted"}
