@@ -191,14 +191,11 @@ struct AcknowledgmentView: View {
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(resultColor)
-                HStack(alignment: .firstTextBaseline, spacing: 0) {
-                    Text(resultWord)
-                        .font(Theme.display(64))
-                        .foregroundStyle(Theme.ink)
-                    Text(".")
-                        .font(Theme.display(64))
-                        .foregroundStyle(resultColor)
-                }
+                // One Text so large sizes shrink the word whole, never break it.
+                Text("\(Text(resultWord).foregroundStyle(Theme.ink))\(Text(".").foregroundStyle(resultColor))")
+                    .font(Theme.display(64))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
                 Text(resultSubtitle)
                     .font(Theme.font(.body))
                     .foregroundStyle(Theme.ink2)
