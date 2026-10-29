@@ -8,6 +8,7 @@ struct TodayView: View {
     @Environment(\.modelContext) private var context
     @Environment(GoalSettings.self) private var settings
     @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query private var streaks: [StreakState]
     @Query(sort: \AcknowledgmentRecord.timestamp, order: .reverse) private var acknowledgments: [AcknowledgmentRecord]
 
@@ -267,7 +268,12 @@ struct TodayView: View {
     // MARK: - Header
 
     private var headerGreeting: some View {
-        HStack(alignment: .firstTextBaseline) {
+        // At accessibility sizes the streak drops under the title, so neither truncates.
+        let stacked = dynamicTypeSize.isAccessibilitySize
+        let layout = stacked
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
+        return layout {
             VStack(alignment: .leading, spacing: 2) {
                 Text(timeOfDayGreeting)
                     .font(Theme.font(.caption, weight: .semibold))
@@ -277,10 +283,10 @@ struct TodayView: View {
                     .font(Theme.font(size: 34, weight: .regular))
                     .foregroundStyle(Theme.ink)
             }
-            Spacer()
+            if !stacked { Spacer() }
             if currentStreak > 0 {
                 Button { showingStreakDetail = true } label: {
-                    VStack(alignment: .trailing, spacing: 3) {
+                    VStack(alignment: stacked ? .leading : .trailing, spacing: 3) {
                         HStack(spacing: 5) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 12, weight: .semibold))

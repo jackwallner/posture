@@ -30,9 +30,10 @@ enum Theme {
     static let ink       = Color(red: 0.184, green: 0.243, blue: 0.227) // #2F3E3A deep slate
     // Secondary/tertiary ink darkened (2026-07): the originals (#6B7B76 /
     // #9AA8A4) fell below readable contrast on the mint canvas - ink3 sat
-    // near 2.2:1. These hold ~5:1 and ~3.5:1 respectively.
+    // near 2.2:1. ink3 darkened again (2026-10) to hold 4.5:1 on every
+    // light surface for small text.
     static let ink2      = Color(red: 0.353, green: 0.420, blue: 0.396) // #5A6B65 secondary
-    static let ink3      = Color(red: 0.459, green: 0.514, blue: 0.494) // #75837E tertiary
+    static let ink3      = Color(red: 0.369, green: 0.424, blue: 0.404) // #5E6C67 tertiary
     static let sage      = Color(red: 0.561, green: 0.773, blue: 0.659) // #8FC5A8 calm green
     static let sageTint  = Color(red: 0.871, green: 0.945, blue: 0.910) // pale sage wash
     static let sand      = Color(red: 0.910, green: 0.784, blue: 0.588) // #E8C896 warm pastel
