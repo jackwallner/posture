@@ -62,7 +62,10 @@ final class ReleaseJourneysUITests: XCTestCase {
         let app = launch(["-SCREENSHOT_SEED", "-PostureProOverride"])
         QA.checkpoint(app, "today")
         for tab in ["History", "Progress", "Settings"] {
-            app.tabBars.buttons[tab].tap()
+            let button = app.tabBars.buttons[tab]
+            // Unfolded on the iPhone Duo, History is the pane beside Today, not a tab.
+            if tab == "History", !button.exists { continue }
+            button.tap()
             QA.checkpoint(app, tab.lowercased())
         }
     }
@@ -141,7 +144,7 @@ final class ReleaseJourneysUITests: XCTestCase {
     private func checkIn(_ quality: String, in app: XCUIApplication, journey: String = #function) throws -> Int {
         let open = app.buttons["Check in now"]
         for _ in 0..<6 where !open.isHittable {
-            app.swipeUp()
+            QA.swipe(app, .up)
         }
         XCTAssertTrue(open.waitForExistence(timeout: 10), "no Check in now button on Today")
         open.tap()
