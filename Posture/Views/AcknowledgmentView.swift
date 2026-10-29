@@ -57,6 +57,13 @@ struct AcknowledgmentView: View {
     // MARK: - Choice
 
     private var choiceView: some View {
+        fillingScroll {
+            choiceContent
+        }
+        .dawnBackground()
+    }
+
+    private var choiceContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(eyebrow(scheduledAt))
@@ -73,10 +80,12 @@ struct AcknowledgmentView: View {
                 .font(Theme.display(42))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text("Sit tall, then tell us how you're holding it. Your check-in keeps your streak alive.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 14)
 
             checkInMotivationCard
@@ -94,8 +103,6 @@ struct AcknowledgmentView: View {
             .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .dawnBackground()
     }
 
     private func selfReportChip(label: String, quality: PostureQuality, tint: Color, accent: Color) -> some View {
@@ -124,6 +131,7 @@ struct AcknowledgmentView: View {
                 Text("A tiny reset counts.")
                     .font(Theme.font(.subheadline, weight: .semibold))
                     .foregroundStyle(Theme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("One honest check-in protects today's streak and helps the pattern show up over time.")
                     .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink2)
@@ -165,60 +173,81 @@ struct AcknowledgmentView: View {
     private var doneView: some View {
         ZStack {
             tintForDone.ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 22) {
-                HStack {
-                    Spacer()
-                    closeButton
-                }
-                Spacer()
-                VStack(alignment: .leading, spacing: 14) {
-                    Text(doneEyebrow)
-                        .font(Theme.font(.caption, weight: .semibold))
-                        .tracking(0.8)
-                        .foregroundStyle(resultColor)
-                    HStack(alignment: .firstTextBaseline, spacing: 0) {
-                        Text(resultWord)
-                            .font(Theme.display(64))
-                            .foregroundStyle(Theme.ink)
-                        Text(".")
-                            .font(Theme.display(64))
-                            .foregroundStyle(resultColor)
-                    }
-                    Text(resultSubtitle)
-                        .font(Theme.font(.body))
-                        .foregroundStyle(Theme.ink2)
-                        .fixedSize(horizontal: false, vertical: true)
-                    // The receipt - what this check-in just added, so a
-                    // three-second ritual never feels like it vanished.
-                    if todayCheckInCount > 0 {
-                        Text(tallyLine)
-                            .font(Theme.font(.footnote, weight: .semibold))
-                            .foregroundStyle(Theme.ink3)
-                            .padding(.top, 2)
-                    }
-                }
-                HorizonMeter(quality: recordedQuality)
-                    .frame(height: 48)
-                    .padding(.vertical, 8)
-                if let tip = currentTip {
-                    TipLine(tip: tip)
-                }
-                Spacer()
-                Button { dismiss() } label: { Text("Done") }
-                    .buttonStyle(.daylight(.ghost))
+            fillingScroll {
+                doneContent
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 32)
         }
     }
 
+    private var doneContent: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            HStack {
+                Spacer()
+                closeButton
+            }
+            Spacer()
+            VStack(alignment: .leading, spacing: 14) {
+                Text(doneEyebrow)
+                    .font(Theme.font(.caption, weight: .semibold))
+                    .tracking(0.8)
+                    .foregroundStyle(resultColor)
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text(resultWord)
+                        .font(Theme.display(64))
+                        .foregroundStyle(Theme.ink)
+                    Text(".")
+                        .font(Theme.display(64))
+                        .foregroundStyle(resultColor)
+                }
+                Text(resultSubtitle)
+                    .font(Theme.font(.body))
+                    .foregroundStyle(Theme.ink2)
+                    .fixedSize(horizontal: false, vertical: true)
+                // The receipt - what this check-in just added, so a
+                // three-second ritual never feels like it vanished.
+                if todayCheckInCount > 0 {
+                    Text(tallyLine)
+                        .font(Theme.font(.footnote, weight: .semibold))
+                        .foregroundStyle(Theme.ink3)
+                        .padding(.top, 2)
+                }
+            }
+            HorizonMeter(quality: recordedQuality)
+                .frame(height: 48)
+                .padding(.vertical, 8)
+            if let tip = currentTip {
+                TipLine(tip: tip)
+            }
+            Spacer()
+            Button { dismiss() } label: { Text("Done") }
+                .buttonStyle(.daylight(.ghost))
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 32)
+    }
+
     // MARK: - Chrome
+
+    /// Fills the screen so the Spacers still push the actions down, and
+    /// scrolls once large text makes the content taller than the screen.
+    private func fillingScroll<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        let content = content()
+        return GeometryReader { proxy in
+            ScrollView {
+                content
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .topLeading)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+        }
+    }
 
     private var closeButton: some View {
         Button { dismiss() } label: {
             Image(systemName: "xmark")
                 .font(Theme.font(.body, weight: .medium))
                 .foregroundStyle(Theme.ink3)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Close")
@@ -236,12 +265,8 @@ struct AcknowledgmentView: View {
     }
 
     private var resultColor: Color {
-        switch recordedQuality {
-        case .good: return Theme.sage
-        case .borderline: return Theme.sand
-        case .bad: return Theme.clay
-        case nil: return Theme.ink3
-        }
+        guard let recordedQuality else { return Theme.ink3 }
+        return Theme.qualityTextColor(recordedQuality)
     }
 
     private var tintForDone: Color {

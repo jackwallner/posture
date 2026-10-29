@@ -889,7 +889,7 @@ struct TodayView: View {
                     // Dawn: the quality word is the ritual moment - serif italic.
                     Text(readoutLabel)
                         .font(Theme.display(20))
-                        .foregroundStyle(alignmentRingColor)
+                        .foregroundStyle(alignmentTextColor)
                     Text(readoutSubtitle)
                         .font(Theme.font(.footnote))
                         .foregroundStyle(Theme.ink2)
@@ -909,6 +909,15 @@ struct TodayView: View {
         case 70...: return Theme.sage
         case 40..<70: return Theme.sand
         default: return Theme.clay
+        }
+    }
+
+    private var alignmentTextColor: Color {
+        guard let s = alignmentScore else { return Theme.ink3 }
+        switch s {
+        case 70...: return Theme.goodText
+        case 40..<70: return Theme.borderlineText
+        default: return Theme.badText
         }
     }
 
@@ -1065,9 +1074,10 @@ struct TodayView: View {
                     Text(actionLabel + " →")
                         .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.goodText)
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .padding(.top, 4)
             }
         }
         .padding(18)
@@ -1126,6 +1136,8 @@ struct TodayView: View {
                     Text("Turn on →")
                         .font(Theme.font(.caption, weight: .semibold))
                         .foregroundStyle(Theme.goodText)
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }

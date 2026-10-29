@@ -58,15 +58,16 @@ enum Theme {
     // Text-grade quality colors. The pastel fills work as ring strokes and
     // chip washes but wash out as words on the light canvas ("Slouching" in
     // pastel coral read near 1.9:1). Any quality-colored TEXT uses these.
+    // 2026-10: darkened to hold 4.5:1 on every tint wash, not just white.
     // watchOS keeps the pastels - they sit on a black background there.
     #if os(watchOS)
     static let goodText       = sage
     static let borderlineText = sand
     static let badText        = clay
     #else
-    static let goodText       = Color(red: 0.263, green: 0.494, blue: 0.373) // deep sage
-    static let borderlineText = Color(red: 0.604, green: 0.427, blue: 0.141) // deep amber
-    static let badText        = Color(red: 0.716, green: 0.322, blue: 0.278) // deep coral
+    static let goodText       = Color(red: 0.216, green: 0.431, blue: 0.322) // deep sage
+    static let borderlineText = Color(red: 0.522, green: 0.369, blue: 0.118) // deep amber
+    static let badText        = Color(red: 0.639, green: 0.282, blue: 0.243) // deep coral
     #endif
 
     static func qualityTextColor(_ quality: PostureQuality) -> Color {
