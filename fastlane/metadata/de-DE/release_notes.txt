@@ -1,1 +1,1 @@
-Verbesserungen und Fehlerbehebungen im Hintergrund, damit Desk Reset reibungslos läuft. Danke, dass du dabei bist.
+Haltungs-Hinweise erreichen dich jetzt auch bei gesperrtem iPhone oder wenn die App im Hintergrund läuft, und erscheinen auf deiner Apple Watch. Außerdem Korrekturen für die Watch-Überwachung in Pro.

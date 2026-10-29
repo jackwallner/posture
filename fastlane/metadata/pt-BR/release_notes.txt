@@ -1,1 +1,1 @@
-Melhorias nos bastidores e correções de erros para o Desk Reset funcionar melhor. Obrigado por estar aqui.
+Os alertas de postura agora chegam com o celular bloqueado ou o app em segundo plano, e aparecem no seu Apple Watch. Além de correções no monitoramento pelo relógio no Pro.

@@ -1,1 +1,1 @@
-Peningkatan di balik layar dan perbaikan bug agar Desk Reset berjalan lancar. Terima kasih telah hadir.
+Pengingat postur kini sampai saat ponsel terkunci atau aplikasi berjalan di latar belakang, dan muncul di Apple Watch Anda. Ditambah perbaikan pemantauan jam di Pro.

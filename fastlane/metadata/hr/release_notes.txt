@@ -1,1 +1,1 @@
-Poboljšanja u pozadini i ispravci grešaka kako bi Desk Reset radio glatko. Hvala što ste tu.
+Podsjetnici na pogrbljenost sada stižu i kad je telefon zaključan ili je aplikacija u pozadini, a prikazuju se i na Apple Watchu. Uz to ispravci praćenja satom u Pro verziji.

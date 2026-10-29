@@ -1,1 +1,1 @@
-Desk Reset'ın sorunsuz çalışması için arka planda iyileştirmeler ve hata düzeltmeleri. Burada olduğun için teşekkürler.
+Kambur oturma uyarıları artık telefon kilitliyken veya uygulama arka plandayken de size ulaşıyor ve Apple Watch'unuzda görünüyor. Ayrıca Pro saat takibi için düzeltmeler.

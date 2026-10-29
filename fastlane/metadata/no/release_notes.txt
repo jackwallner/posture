@@ -1,1 +1,1 @@
-Forbedringer bak kulissene og feilrettinger så Desk Reset fungerer problemfritt. Takk for at du er her.
+Påminnelser om å rette ryggen når deg nå også når telefonen er låst eller appen kjører i bakgrunnen, og vises på Apple Watch. Pluss rettelser for klokkeovervåking i Pro.

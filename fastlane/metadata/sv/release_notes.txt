@@ -1,1 +1,1 @@
-Förbättringar bakom kulisserna och buggfixar så att Desk Reset fungerar smidigt. Tack för att du är här.
+Hållningspåminnelser når dig nu även när telefonen är låst eller appen körs i bakgrunden, och visas på din Apple Watch. Plus rättningar för klockövervakning i Pro.

@@ -1,1 +1,1 @@
-Vylepšení na pozadí a opravy chyb, aby Desk Reset běžel hladce. Děkujeme, že jste tu.
+Upozornění na hrbení teď dorazí i se zamčeným telefonem nebo s aplikací na pozadí a zobrazí se i na Apple Watch. Navíc opravy sledování hodinkami v Pro.

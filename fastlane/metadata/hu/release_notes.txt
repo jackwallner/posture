@@ -1,1 +1,1 @@
-Háttérbeli fejlesztések és hibajavítások, hogy a Desk Reset gördülékenyen működjön. Köszönjük, hogy itt vagy.
+A görnyedésre figyelmeztető jelzések most akkor is megérkeznek, ha a telefon zárolva van vagy az app a háttérben fut, és az Apple Watchon is megjelennek. Emellett javítások a Pro órás követéséhez.

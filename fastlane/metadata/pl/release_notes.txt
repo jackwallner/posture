@@ -1,1 +1,1 @@
-Ulepszenia w tle i poprawki błędów, aby Desk Reset działał płynnie. Dziękujemy, że jesteś.
+Przypomnienia o garbieniu się docierają teraz także przy zablokowanym telefonie lub aplikacji w tle i pojawiają się na Apple Watch. Do tego poprawki monitorowania zegarkiem w Pro.

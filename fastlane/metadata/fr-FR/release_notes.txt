@@ -1,1 +1,1 @@
-Améliorations en coulisses et corrections de bugs pour que Desk Reset reste fluide. Merci d'être là.
+Les rappels de posture vous parviennent désormais même téléphone verrouillé ou app en arrière-plan, et s'affichent sur votre Apple Watch. Plus des correctifs pour le suivi par la montre dans Pro.

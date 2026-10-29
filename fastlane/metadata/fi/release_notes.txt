@@ -1,1 +1,1 @@
-Taustaparannuksia ja virhekorjauksia, jotta Desk Reset toimii sujuvasti. Kiitos, että olet mukana.
+Ryhtimuistutukset tavoittavat sinut nyt myös puhelimen ollessa lukittuna tai sovelluksen taustalla, ja ne näkyvät Apple Watchissa. Lisäksi korjauksia Pro-kelloseurantaan.

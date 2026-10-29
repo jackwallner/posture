@@ -1,1 +1,1 @@
-Millores internes i correccions d'errors perquè Desk Reset funcioni bé. Gràcies per ser aquí.
+Els avisos de postura ara t'arriben amb el telèfon bloquejat o l'app en segon pla, i també apareixen a l'Apple Watch. A més, correccions per al seguiment amb el rellotge de Pro.
