@@ -34,6 +34,8 @@ final class AudioKeepAlive {
     private var audioEngine: AVAudioEngine?
     private var audioPlayer: AVAudioPlayerNode?
     private var audioObservers: [NSObjectProtocol] = []
+    /// A call or Siri holds the session; `.ended` resumes the engine.
+    private var isInterrupted = false
 
     private init() {
         observeAudioNotifications()
@@ -52,7 +54,7 @@ final class AudioKeepAlive {
         guard wasEmpty else {
             // Already held, but a failed rebuild or a route change can leave
             // the engine stopped: restart it rather than trust the hold.
-            if audioEngine?.isRunning != true { resumeSilentAudio() }
+            if !isInterrupted, audioEngine?.isRunning != true { resumeSilentAudio() }
             return
         }
         do {
@@ -132,13 +134,19 @@ final class AudioKeepAlive {
             let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
             Task { @MainActor in self?.handleInterruption(rawType: raw) }
         }
+        // On the main queue so the notice's engine is compared by reference
+        // while the notice still holds it (a freed engine's address can be
+        // reused by its replacement).
         let configChange = center.addObserver(
             forName: .AVAudioEngineConfigurationChange,
             object: nil,
-            queue: nil
-        ) { @Sendable [weak self] note in
-            let engine = note.object.map { ObjectIdentifier($0 as AnyObject) }
-            Task { @MainActor in self?.handleEngineConfigChange(engine: engine) }
+            queue: .main
+        ) { [weak self] note in
+            // Delivered on .main, so the engine never leaves the main thread.
+            nonisolated(unsafe) let engine = note.object as AnyObject?
+            MainActor.assumeIsolated {
+                self?.handleEngineConfigChange(from: engine)
+            }
         }
         // AirPods leaving or coming back. The config-change notice usually
         // covers this, but if the engine still ended up stopped, iOS suspends
@@ -170,8 +178,10 @@ final class AudioKeepAlive {
         switch type {
         case .began:
             // Engine has stopped. Nothing to do until .ended fires.
+            isInterrupted = true
             if isHeld { onEvent?(.interrupted) }
         case .ended:
+            isInterrupted = false
             guard isHeld else { return }
             resumeSilentAudio()
         @unknown default:
@@ -183,8 +193,8 @@ final class AudioKeepAlive {
     /// old player's connection and looping buffer stale, so rebuild it.
     /// Ignores notices from an engine already replaced, so a route change that
     /// rebuilt first doesn't get its fresh engine torn down again.
-    private func handleEngineConfigChange(engine: ObjectIdentifier?) {
-        guard isHeld, let current = audioEngine, engine == ObjectIdentifier(current) else { return }
+    private func handleEngineConfigChange(from engine: AnyObject?) {
+        guard isHeld, let current = audioEngine, engine === current else { return }
         resumeSilentAudio(rebuild: true)
     }
 
@@ -204,6 +214,7 @@ final class AudioKeepAlive {
                 try startSilentAudio()
             }
             lastError = nil
+            isInterrupted = false
             onEvent?(.resumed)
         } catch {
             lastError = "Could not resume audio: \(error.localizedDescription)"

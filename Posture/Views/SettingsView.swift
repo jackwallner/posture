@@ -279,16 +279,17 @@ struct SettingsView: View {
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
                 if isPro { applyPendingFeatureEnable() }
             }
-            .onChange(of: isSelectedTab ? IntentRouter.shared.settingsPrompt : nil, initial: true) { _, prompt in
-                guard let prompt else { return }
-                IntentRouter.shared.settingsPrompt = nil
-                // Let the tab switch settle before presenting over it.
-                Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(350))
-                    switch prompt {
-                    case .proGate: requestTrialOffer(for: .airpodsBackground)
-                    case .confirmAllDay: showingAirpodsBackgroundConfirm = true
-                    }
+            .task(id: isSelectedTab ? IntentRouter.shared.settingsPrompt : nil) {
+                guard isSelectedTab, let prompt = IntentRouter.shared.settingsPrompt else { return }
+                // Let the tab switch settle before presenting over it. Leaving
+                // the tab cancels this; a cover opened meanwhile drops it.
+                try? await Task.sleep(for: .milliseconds(350))
+                if IntentRouter.shared.settingsPrompt == prompt { IntentRouter.shared.settingsPrompt = nil }
+                let coordinator = ReviewPromptCoordinator.shared
+                guard !Task.isCancelled, !coordinator.rootIsCovered, !coordinator.todayIsCovered else { return }
+                switch prompt {
+                case .proGate: requestTrialOffer(for: .airpodsBackground)
+                case .confirmAllDay: showingAirpodsBackgroundConfirm = true
                 }
             }
             .sheet(isPresented: $showTrialOffer, onDismiss: {
