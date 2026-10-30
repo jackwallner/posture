@@ -185,10 +185,11 @@ final class AudioKeepAlive {
         resumeSilentAudio()
     }
 
-    /// While interrupted, `.ended` (or coming back to the app) restarts the
-    /// engine: reactivating mid-call would fail.
+    /// Tries even while interrupted: an `.ended` iOS dropped in the
+    /// background would otherwise leave the engine dead when the buds
+    /// return. Mid-call it just fails and `.ended` retries.
     private func handleRouteChange(rawReason: UInt?) {
-        guard isHeld, !isInterrupted, audioEngine?.isRunning != true,
+        guard isHeld, audioEngine?.isRunning != true,
               let raw = rawReason,
               let reason = AVAudioSession.RouteChangeReason(rawValue: raw),
               reason == .newDeviceAvailable || reason == .oldDeviceUnavailable else { return }
