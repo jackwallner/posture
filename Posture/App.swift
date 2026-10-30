@@ -178,16 +178,23 @@ private struct AirpodsRootView: View {
         guard settings.hasCompletedOnboarding, settings.hasCalibrated, settings.hasAirpods == true else { return }
         switch request {
         case .startPractice:
+            // Already in a check-in or practice: a second cover can't present
+            // and its flag would stick.
+            guard ackScheduledAt == nil, !showingPracticeFromReminder else { return }
             showingPracticeFromReminder = true
         case .startMonitoring:
+            // An explicit start overrides "Stop for now", including after the
+            // Settings confirmation below, which reconciles on its own.
+            monitor.userPaused = false
             switch IntentRouter.monitoringRoute(
                 isPro: subscriptions.isProSubscriber,
                 allDayEnabled: settings.airpodsBackgroundEnabled
             ) {
             case .start:
-                monitor.userPaused = false
                 reconcileMonitoring(monitor)
             case .settings(let prompt):
+                // Settings sits under any open cover and couldn't present.
+                guard ackScheduledAt == nil, !showingPracticeFromReminder else { return }
                 intents.settingsPrompt = prompt
             }
         }
@@ -535,7 +542,7 @@ struct MainTabView: View {
                     .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
                     .tag(3)
             }
-            SettingsView()
+            SettingsView(isSelectedTab: selectedTab == 2)
                 .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
                 .unfoldedBarClearance(isSplit: split != nil)
                 .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }

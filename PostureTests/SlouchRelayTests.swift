@@ -25,20 +25,28 @@ final class SlouchRelayTests: XCTestCase {
         XCTAssertEqual(d, .init(notification: false, watchMessage: false))
     }
 
-    func testDebounceAllowsOneNudgePerMinute() {
-        var gate = NudgeDebounce()
+    func testRelaysFollowThePhonesOwnSpacing() {
+        var gate = WristNudgeGate()
         let t0 = Date(timeIntervalSince1970: 1_000)
-        XCTAssertTrue(gate.allow(at: t0))
-        XCTAssertFalse(gate.allow(at: t0.addingTimeInterval(59)))
-        XCTAssertTrue(gate.allow(at: t0.addingTimeInterval(60)))
+        XCTAssertTrue(gate.allowRelay(at: t0))
+        XCTAssertTrue(gate.allowRelay(at: t0.addingTimeInterval(20)))
     }
 
-    func testNotedNudgeHoldsOffTheNext() {
-        var gate = NudgeDebounce()
+    func testWristNudgeHoldsOffARelay() {
+        var gate = WristNudgeGate()
         let t0 = Date(timeIntervalSince1970: 1_000)
-        gate.note(at: t0)
-        XCTAssertFalse(gate.allow(at: t0.addingTimeInterval(30)))
-        XCTAssertTrue(gate.allow(at: t0.addingTimeInterval(61)))
+        XCTAssertTrue(gate.allowWrist(at: t0))
+        XCTAssertFalse(gate.allowRelay(at: t0.addingTimeInterval(30)))
+        XCTAssertTrue(gate.allowRelay(at: t0.addingTimeInterval(60)))
+    }
+
+    func testRelayHoldsOffAWristNudge() {
+        var gate = WristNudgeGate()
+        let t0 = Date(timeIntervalSince1970: 1_000)
+        XCTAssertTrue(gate.allowRelay(at: t0))
+        XCTAssertFalse(gate.allowWrist(at: t0.addingTimeInterval(59)))
+        XCTAssertTrue(gate.allowWrist(at: t0.addingTimeInterval(60)))
+        XCTAssertFalse(gate.allowWrist(at: t0.addingTimeInterval(90)))
     }
 }
 

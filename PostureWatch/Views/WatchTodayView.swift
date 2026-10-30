@@ -46,8 +46,6 @@ struct WatchTodayView: View {
         }
         .task {
             subscriptions.loadCachedStatus()
-            WatchSyncService.shared.onSlouchNudge = { WatchSlouchHaptic.playRelayed(sentAt: $0) }
-            WatchSyncService.shared.activate()
             WatchSyncService.shared.onAlwaysOnReceived = { _ in
                 Task { await applyAlwaysOn() }
             }

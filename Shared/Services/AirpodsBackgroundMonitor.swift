@@ -293,9 +293,10 @@ final class AirpodsBackgroundMonitor {
     /// connected and streaming to us. Suspend our motion stream for the
     /// duration of the read so it has exclusive access. Keeps any silent-audio
     /// keep-alive held (no orange-dot churn); only the motion updates pause.
-    /// Idempotent.
+    /// Recorded even while stopped, so a start during the read (a Shortcuts
+    /// automation) waits for it to end. Idempotent.
     func suspendForForegroundRead() {
-        guard isMonitoring, !suspendedForForegroundRead else { return }
+        guard !suspendedForForegroundRead else { return }
         suspendedForForegroundRead = true
         headphoneService.stop()
         // Start a fresh bout after the read (this also clears any slouch

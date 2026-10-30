@@ -11,6 +11,9 @@ struct SettingsView: View {
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
     @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
+    /// A Shortcuts prompt waits until Settings is the visible tab: a sheet
+    /// or alert from an offscreen tab can fail to present.
+    var isSelectedTab = true
 
     @State private var subscriptions = SubscriptionService.shared
     @State private var showTrialOffer = false
@@ -276,12 +279,16 @@ struct SettingsView: View {
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
                 if isPro { applyPendingFeatureEnable() }
             }
-            .onChange(of: IntentRouter.shared.settingsPrompt, initial: true) { _, prompt in
+            .onChange(of: isSelectedTab ? IntentRouter.shared.settingsPrompt : nil, initial: true) { _, prompt in
                 guard let prompt else { return }
                 IntentRouter.shared.settingsPrompt = nil
-                switch prompt {
-                case .proGate: requestTrialOffer(for: .airpodsBackground)
-                case .confirmAllDay: showingAirpodsBackgroundConfirm = true
+                // Let the tab switch settle before presenting over it.
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(350))
+                    switch prompt {
+                    case .proGate: requestTrialOffer(for: .airpodsBackground)
+                    case .confirmAllDay: showingAirpodsBackgroundConfirm = true
+                    }
                 }
             }
             .sheet(isPresented: $showTrialOffer, onDismiss: {
