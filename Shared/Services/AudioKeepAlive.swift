@@ -2,6 +2,7 @@
 #if os(iOS)
 
 import AVFoundation
+import UIKit
 
 /// Plays a silent looping tone so iOS keeps delivering `CMHeadphoneMotionManager`
 /// updates while the app is backgrounded (requires `UIBackgroundModes: audio`;
@@ -62,6 +63,9 @@ final class AudioKeepAlive {
             if audioEngine?.isRunning != true {
                 try startSilentAudio()
             }
+            // A fresh start means any interruption is over, even one whose
+            // .ended never arrived.
+            isInterrupted = false
             lastError = nil
         } catch {
             lastError = "Audio setup failed: \(error.localizedDescription)"
@@ -79,6 +83,7 @@ final class AudioKeepAlive {
     func release(_ token: String) {
         holders.remove(token)
         guard holders.isEmpty else { return }
+        isInterrupted = false
         stopSilentAudio()
         stopAudioSession()
     }
@@ -159,11 +164,28 @@ final class AudioKeepAlive {
             let raw = note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt
             Task { @MainActor in self?.handleRouteChange(rawReason: raw) }
         }
-        audioObservers = [interruption, configChange, routeChange]
+        // iOS can drop an interruption's .ended. Coming back to the app is the
+        // fallback: the call is over, so restart a stopped engine.
+        let active = center.addObserver(
+            forName: UIApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: nil
+        ) { @Sendable [weak self] _ in
+            Task { @MainActor in self?.handleDidBecomeActive() }
+        }
+        audioObservers = [interruption, configChange, routeChange, active]
     }
 
+    private func handleDidBecomeActive() {
+        guard isInterrupted else { return }
+        isInterrupted = false
+        if isHeld, audioEngine?.isRunning != true { resumeSilentAudio() }
+    }
+
+    /// While interrupted, `.ended` (or coming back to the app) restarts the
+    /// engine: reactivating mid-call would fail.
     private func handleRouteChange(rawReason: UInt?) {
-        guard isHeld, audioEngine?.isRunning != true,
+        guard isHeld, !isInterrupted, audioEngine?.isRunning != true,
               let raw = rawReason,
               let reason = AVAudioSession.RouteChangeReason(rawValue: raw),
               reason == .newDeviceAvailable || reason == .oldDeviceUnavailable else { return }
@@ -194,7 +216,7 @@ final class AudioKeepAlive {
     /// Ignores notices from an engine already replaced, so a route change that
     /// rebuilt first doesn't get its fresh engine torn down again.
     private func handleEngineConfigChange(from engine: AnyObject?) {
-        guard isHeld, let current = audioEngine, engine === current else { return }
+        guard isHeld, !isInterrupted, let current = audioEngine, engine === current else { return }
         resumeSilentAudio(rebuild: true)
     }
 

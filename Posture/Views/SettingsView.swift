@@ -285,8 +285,7 @@ struct SettingsView: View {
                 // the tab cancels this; a cover opened meanwhile drops it.
                 try? await Task.sleep(for: .milliseconds(350))
                 if IntentRouter.shared.settingsPrompt == prompt { IntentRouter.shared.settingsPrompt = nil }
-                let coordinator = ReviewPromptCoordinator.shared
-                guard !Task.isCancelled, !coordinator.rootIsCovered, !coordinator.todayIsCovered else { return }
+                guard !Task.isCancelled, !UIApplication.shared.isPresentingOverRoot else { return }
                 switch prompt {
                 case .proGate: requestTrialOffer(for: .airpodsBackground)
                 case .confirmAllDay: showingAirpodsBackgroundConfirm = true
@@ -346,7 +345,14 @@ struct SettingsView: View {
                 Button("Turn on") {
                     // Turning it on means monitor now, even after "Stop for now".
                     airpodsMonitor?.userPaused = false
-                    settings.airpodsBackgroundEnabled = true
+                    if !settings.airpodsBackgroundEnabled {
+                        settings.airpodsBackgroundEnabled = true
+                    } else if let m = airpodsMonitor, !m.isMonitoring || !m.isBackground {
+                        // Already on (a lapsed subscriber renewing), so no
+                        // setting change will start it.
+                        m.stop()
+                        _ = m.start(background: true)
+                    }
                     // Background slouch alerts arrive as notifications.
                     Task {
                         _ = await NotificationService.requestAuthorization()

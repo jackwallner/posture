@@ -176,10 +176,10 @@ private struct AirpodsRootView: View {
     /// is done (or without AirPods) the app just opens.
     private func handle(_ request: IntentRouter.Request) {
         guard settings.hasCompletedOnboarding, settings.hasCalibrated, settings.hasAirpods == true else { return }
-        // A cover or sheet already up (here or on Today) would block a second
-        // presentation and leave its flag stuck.
+        // A cover, sheet or alert already up (on any tab) would block a
+        // second presentation and leave its flag stuck.
         let covered = ackScheduledAt != nil || showingPracticeFromReminder
-            || ReviewPromptCoordinator.shared.todayIsCovered
+            || UIApplication.shared.isPresentingOverRoot
         switch request {
         case .startPractice:
             guard !covered else { return }
@@ -582,6 +582,16 @@ struct MainTabView: View {
         }
     }
     #endif
+}
+
+extension UIApplication {
+    /// True while anything (any tab's sheet or cover, an alert) is presented
+    /// over the root view.
+    var isPresentingOverRoot: Bool {
+        connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first?.rootViewController?.presentedViewController != nil
+    }
 }
 
 /// Lets Today and the app root report what they have on screen, so the
