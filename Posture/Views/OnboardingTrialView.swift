@@ -62,12 +62,12 @@ struct OnboardingTrialView: View {
                         .lineSpacing(3)
 
                     VStack(spacing: 10) {
-                        benefitCard(icon: "chevron.up.2", title: "Keep the program growing",
-                                    body: "Unlock every level as practices gradually grow from 3 to 15 minutes.")
-                        benefitCard(icon: "figure.walk", title: "Add walk mode and trends",
-                                    body: "See distance, steps, weekly patterns, and your day hour by hour.")
-                        benefitCard(icon: "applewatch", title: "Get optional background nudges",
-                                    body: "Use AirPods or Apple Watch for gentle reminders beyond the daily practice.")
+                        benefitCard(icon: "chevron.up.2", title: String(localized: "Keep the program growing"),
+                                    body: String(localized: "Unlock every level as practices gradually grow from 3 to 15 minutes."))
+                        benefitCard(icon: "figure.walk", title: String(localized: "Add walk mode and trends"),
+                                    body: String(localized: "See distance, steps, weekly patterns, and your day hour by hour."))
+                        benefitCard(icon: "applewatch", title: String(localized: "Get optional background nudges"),
+                                    body: String(localized: "Use AirPods or Apple Watch for gentle reminders beyond the daily practice."))
                     }
                     .padding(.top, 8)
                 }
@@ -132,20 +132,17 @@ struct OnboardingTrialView: View {
     // MARK: - Copy
 
     private var headline: String {
-        "Keep building on today."
+        String(localized: "Keep building on today.")
     }
 
     private var subheadline: String {
-        "Your daily practice is free forever. Try the full program for 7 days to unlock every level, deeper trends, walk mode, and optional background nudges."
+        String(localized: "Your daily practice is free forever. Try the full program for 7 days to unlock every level, deeper trends, walk mode, and optional background nudges.")
     }
 
     /// Leads with the yearly free-trial offer when eligible so the primary reads
     /// as "start trial", matching the direct-purchase CTAs elsewhere.
     private var ctaTitle: String {
-        if let label = trialIntroLabel {
-            return "Start \(label)"
-        }
-        return "Start 7-day free trial"
+        String(localized: "Start \(trialIntroDays ?? 7)-day free trial")
     }
 
     /// Full Apple-3.1.2 auto-renew disclosure for the trial-led yearly plan,
@@ -154,11 +151,11 @@ struct OnboardingTrialView: View {
     private var trialDisclosure: String? {
         #if HAS_REVENUECAT
         guard let package = directTrialPackage else { return nil }
-        let renew = "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings › Apple ID › Subscriptions."
-        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
-            return "\(trial.capitalized), then \(package.posturePriceLabel). \(renew)"
+        let renew = String(localized: "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings › Apple ID › Subscriptions.")
+        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferTitle {
+            return String(localized: "\(trial), then \(package.posturePriceLabel). \(renew)")
         }
-        return "\(package.posturePriceLabel). \(renew)"
+        return String(localized: "\(package.posturePriceLabel). \(renew)")
         #else
         return nil
         #endif
@@ -172,11 +169,11 @@ struct OnboardingTrialView: View {
         return trialPackages.first { $0.posturePackageKind == .yearly } ?? trialPackages.first
     }
 
-    private var trialIntroLabel: String? {
-        directTrialPackage?.postureIntroOfferLabel
+    private var trialIntroDays: Int? {
+        directTrialPackage?.postureIntroOfferDays
     }
     #else
-    private var trialIntroLabel: String? { nil }
+    private var trialIntroDays: Int? { nil }
     #endif
 
     // MARK: - Actions
@@ -201,7 +198,7 @@ struct OnboardingTrialView: View {
                     errorMessage = nil
                 }
             } catch {
-                errorMessage = "Couldn't start your trial. Please try again."
+                errorMessage = String(localized: "Couldn't start your trial. Please try again.")
             }
         }
         #else
@@ -219,7 +216,7 @@ struct OnboardingTrialView: View {
             if subscriptions.isProSubscriber {
                 proceed()
             } else {
-                errorMessage = subscriptions.lastError ?? "No purchases found to restore."
+                errorMessage = subscriptions.lastError ?? String(localized: "No purchases found to restore.")
             }
         }
         #endif

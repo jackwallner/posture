@@ -58,8 +58,8 @@ struct LevelPipsView: View {
 struct LevelPipsLegend: View {
     var body: some View {
         HStack(spacing: 14) {
-            legendItem(filled: true, label: "session passed")
-            legendItem(filled: false, label: "still to go")
+            legendItem(filled: true, label: String(localized: "session passed"))
+            legendItem(filled: false, label: String(localized: "still to go"))
         }
         .font(Theme.font(.caption2))
         .foregroundStyle(Theme.ink2)
@@ -86,8 +86,14 @@ struct LevelPipsLegend: View {
 enum PracticeProgressCopy {
     static func levelUpCaption(done: Int, needed: Int, nextLevel: Int) -> String {
         let remaining = max(0, needed - done)
-        if remaining == 0 { return "Level \(nextLevel) unlocked" }
-        if remaining == 1 { return "Pass 1 more session to reach Level \(nextLevel)" }
-        return "Pass \(remaining) more sessions to reach Level \(nextLevel)"
+        if remaining == 0 { return String(localized: "Level \(nextLevel) unlocked") }
+        return String(localized: "Pass \(remaining) more sessions to reach Level \(nextLevel)")
+    }
+
+    /// The same caption as a full sentence, for body copy.
+    static func levelUpSentence(done: Int, needed: Int, nextLevel: Int) -> String {
+        let remaining = max(0, needed - done)
+        if remaining == 0 { return String(localized: "Level \(nextLevel) unlocked.") }
+        return String(localized: "Pass \(remaining) more sessions to reach Level \(nextLevel).")
     }
 }

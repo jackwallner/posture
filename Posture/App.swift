@@ -61,6 +61,11 @@ struct PostureApp: App {
                     PaywallScreenshotHarness(mode: mode)
                         .environment(settings)
                         .preferredColorScheme(.light)
+                } else if LaunchArguments.contains("OnboardingTrialSnapshot") {
+                    // Capture hook for the post-practice trial page.
+                    OnboardingTrialView()
+                        .environment(settings)
+                        .preferredColorScheme(.light)
                 } else {
                     AirpodsRootView()
                         .environment(settings)

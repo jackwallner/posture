@@ -92,13 +92,11 @@ struct PracticeLiveActivity: Widget {
         }
     }
 
-    private func kindWord(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
-        context.attributes.kind == "walk" ? "Walk" : "Practice"
-    }
-
     private func bottomLine(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
-        if context.state.paused { return "Paused. Your minutes are safe." }
-        return "\(kindWord(context)) · \(context.state.alignedPercent)% aligned"
+        if context.state.paused { return String(localized: "Paused. Your minutes are safe.") }
+        let percent = context.state.alignedPercent
+        if context.attributes.kind == "walk" { return String(localized: "Walk · \(percent)% aligned") }
+        return String(localized: "Practice · \(percent)% aligned")
     }
 
     /// The glyph itself carries the posture state, not just its color - the
@@ -139,11 +137,11 @@ struct PracticeLiveActivity: Widget {
     }
 
     private func qualityWord(_ context: ActivityViewContext<PracticeActivityAttributes>) -> String {
-        if context.state.paused { return "Paused" }
+        if context.state.paused { return String(localized: "Paused") }
         switch context.state.quality {
-        case "good": return context.attributes.kind == "walk" ? "Tall" : "Aligned"
-        case "borderline": return "Drifting"
-        default: return "Slouching"
+        case "good": return context.attributes.kind == "walk" ? String(localized: "Tall") : String(localized: "Aligned")
+        case "borderline": return String(localized: "Drifting")
+        default: return String(localized: "Slouching")
         }
     }
 }

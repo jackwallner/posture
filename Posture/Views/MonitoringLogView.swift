@@ -69,19 +69,19 @@ struct MonitoringLogView: View {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
                 VStack(alignment: .leading, spacing: 6) {
                     statRow(
-                        label: "readings today",
+                        label: String(localized: "readings today"),
                         value: monitor.samplesToday.formatted()
                     )
                     statRow(
-                        label: "last reading",
+                        label: String(localized: "last reading"),
                         value: lastReadingText(monitor, now: timeline.date)
                     )
                     statRow(
-                        label: "slouches logged today",
+                        label: String(localized: "slouches logged today"),
                         value: "\(todaySlouches.count)"
                     )
                     if monitor.isConnected {
-                        statRow(label: "right now", value: qualityWord(monitor.currentQuality))
+                        statRow(label: String(localized: "right now"), value: qualityWord(monitor.currentQuality))
                     }
                 }
             }
@@ -110,9 +110,9 @@ struct MonitoringLogView: View {
     }
 
     private func statusLine(_ monitor: AirpodsBackgroundMonitor) -> String {
-        if !monitor.isMonitoring { return "Monitoring is off" }
-        if monitor.isConnected { return "Listening through your AirPods" }
-        return "Armed, waiting for AirPods"
+        if !monitor.isMonitoring { return String(localized: "Monitoring is off") }
+        if monitor.isConnected { return String(localized: "Listening through your AirPods") }
+        return String(localized: "Armed, waiting for AirPods")
     }
 
     private func statusColor(_ monitor: AirpodsBackgroundMonitor) -> Color {
@@ -121,18 +121,18 @@ struct MonitoringLogView: View {
     }
 
     private func lastReadingText(_ monitor: AirpodsBackgroundMonitor, now: Date) -> String {
-        guard let last = monitor.lastSampleAt else { return "never" }
+        guard let last = monitor.lastSampleAt else { return String(localized: "never") }
         let ago = max(0, Int(now.timeIntervalSince(last)))
-        if ago <= 2 { return "just now" }
-        if ago < 60 { return "\(ago)s ago" }
-        return "\(ago / 60)m \(ago % 60)s ago"
+        if ago <= 2 { return String(localized: "just now") }
+        if ago < 60 { return String(localized: "\(ago)s ago") }
+        return String(localized: "\(ago / 60)m \(ago % 60)s ago")
     }
 
     private func qualityWord(_ quality: PostureQuality) -> String {
         switch quality {
-        case .good: return "Aligned"
-        case .borderline: return "Drifting"
-        case .bad: return "Slouching"
+        case .good: return String(localized: "Aligned")
+        case .borderline: return String(localized: "Drifting")
+        case .bad: return String(localized: "Slouching")
         }
     }
 
@@ -198,22 +198,20 @@ struct MonitoringLogView: View {
     private func describe(_ kind: MonitorEvent.Kind) -> (String, Color) {
         switch kind {
         case .armed(let background):
-            return (background ? "Monitoring armed, runs in the background"
-                               : "Monitoring armed, while the app is open", Theme.sage)
-        case .stopped: return ("monitoring stopped", Theme.ink3)
-        case .connected: return ("AirPods connected", Theme.sage)
-        case .disconnected: return ("AirPods disconnected", Theme.sand)
-        case .slouchLogged: return ("slouch logged · gentle nudge", Theme.clay)
-        case .recovered: return ("back to aligned", Theme.sage)
-        case .audioInterrupted: return ("Paused, another app took the audio session", Theme.sand)
-        case .audioResumed: return ("listening again", Theme.sage)
+            return (background ? String(localized: "Monitoring armed, runs in the background")
+                               : String(localized: "Monitoring armed, while the app is open"), Theme.sage)
+        case .stopped: return (String(localized: "monitoring stopped"), Theme.ink3)
+        case .connected: return (String(localized: "AirPods connected"), Theme.sage)
+        case .disconnected: return (String(localized: "AirPods disconnected"), Theme.sand)
+        case .slouchLogged: return (String(localized: "slouch logged · gentle nudge"), Theme.clay)
+        case .recovered: return (String(localized: "back to aligned"), Theme.sage)
+        case .audioInterrupted: return (String(localized: "Paused, another app took the audio session"), Theme.sand)
+        case .audioResumed: return (String(localized: "listening again"), Theme.sage)
         case .error(let message): return (message, Theme.clay)
         }
     }
 
     private func timeString(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm:ss a"
-        return formatter.string(from: date)
+        date.formatted(.dateTime.hour().minute().second())
     }
 }

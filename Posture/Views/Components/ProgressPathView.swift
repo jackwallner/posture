@@ -83,9 +83,9 @@ struct ProgramStageCompareView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            stageColumn(label: "NOW", level: currentLevel, emphasized: true)
+            stageColumn(label: String(localized: "NOW"), level: currentLevel, emphasized: true)
             Rectangle().fill(Theme.paper3).frame(width: 1)
-            stageColumn(label: "NEXT", level: nextLevel, emphasized: false)
+            stageColumn(label: String(localized: "NEXT"), level: nextLevel, emphasized: false)
         }
         .dawnCard(cornerRadius: 14)
     }

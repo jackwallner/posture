@@ -70,12 +70,8 @@ struct DayStrip: View {
     }
 
     private func hourLabel(_ hour: Int) -> String {
-        switch hour {
-        case 0: return "12a"
-        case 12: return "12p"
-        case let h where h < 12: return "\(h)a"
-        default: return "\(hour - 12)p"
-        }
+        let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) ?? Date()
+        return date.formatted(.dateTime.hour(.defaultDigits(amPM: .narrow)))
     }
 }
 

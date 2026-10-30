@@ -93,12 +93,10 @@ struct SessionSummaryView: View {
 
     private func levelProgressCaption(nextLevel: Int) -> String {
         if result.leveledUp {
-            let next = PracticeProgressCopy.levelUpCaption(
-                done: displayedPipFill,
-                needed: result.levelProgressNeeded,
-                nextLevel: nextLevel
-            )
-            return "Level \(result.newLevel) unlocked. Next: \(next.lowercased())"
+            let level = result.newLevel
+            let remaining = max(0, result.levelProgressNeeded - displayedPipFill)
+            if remaining == 0 { return String(localized: "Level \(level) unlocked. Next: level \(nextLevel) unlocked") }
+            return String(localized: "Level \(level) unlocked. Next: pass \(remaining) more sessions to reach Level \(nextLevel)")
         }
         return PracticeProgressCopy.levelUpCaption(
             done: displayedPipFill,
@@ -134,7 +132,7 @@ struct SessionSummaryView: View {
             .dawnCard()
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(isWalk ? minutesLabel : "\(targetLabel)%")
+                Text(isWalk ? minutesLabel : String(localized: "\(targetLabel)%"))
                     .font(Theme.font(size: 34, weight: .regular))
                     .foregroundStyle(Theme.ink)
                 Text(isWalk ? "held tall" : "target")
@@ -176,10 +174,10 @@ struct SessionSummaryView: View {
     }
 
     private var metric: Bool { Locale.current.measurementSystem == .metric }
-    private var distanceUnit: String { metric ? "kilometers" : "miles" }
+    private var distanceUnit: String { metric ? String(localized: "kilometers") : String(localized: "miles") }
     private var distanceValue: String {
         let d = metric ? result.distanceMeters / 1000 : result.distanceMeters / 1609.34
-        return String(format: d < 10 ? "%.2f" : "%.1f", d)
+        return d.formatted(.number.precision(.fractionLength(d < 10 ? 2 : 1)))
     }
 
     private var timelineStrip: some View {
@@ -209,20 +207,20 @@ struct SessionSummaryView: View {
             if isWalk {
             } else if result.leveledUp {
                 receiptLine(icon: "chevron.up.2", color: Theme.sage,
-                            text: "Level \(result.newLevel) unlocked. Tomorrow's hold grows a little.")
+                            text: String(localized: "Level \(result.newLevel) unlocked. Tomorrow's hold grows a little."))
             } else if result.passed, result.levelCapped {
                 receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
-                            text: "Target met. Level \(result.newLevel) is the last free level. Posture+ opens the rest of the ladder.")
+                            text: String(localized: "Target met. Level \(result.newLevel) is the last free level. Posture+ opens the rest of the ladder."))
             } else if result.passed {
                 receiptLine(icon: "checkmark.circle.fill", color: Theme.sage,
-                            text: "Target met. One pip toward Level \(result.level + 1).")
+                            text: String(localized: "Target met. One pip toward Level \(result.level + 1)."))
             } else if result.completed {
                 receiptLine(icon: "circle.dashed", color: Theme.ink3,
-                            text: "Finished, under target. Streak safe. The level waits for a taller day.")
+                            text: String(localized: "Finished, under target. Streak safe. The level waits for a taller day."))
             }
             ForEach(result.newAchievementTitles, id: \.self) { title in
                 receiptLine(icon: "rosette", color: Theme.lavender,
-                            text: "New badge: \(title)")
+                            text: String(localized: "New badge: \(title)"))
             }
         }
     }
@@ -239,32 +237,32 @@ struct SessionSummaryView: View {
     }
 
     private var headline: String {
-        if isWalk { return result.completed ? "Walked tall" : "Walk ended" }
-        if !result.completed { return "Ended early" }
-        if result.leveledUp { return "Level up" }
-        if result.passed { return "Target met" }
-        return "Done"
+        if isWalk { return result.completed ? String(localized: "Walked tall") : String(localized: "Walk ended") }
+        if !result.completed { return String(localized: "Ended early") }
+        if result.leveledUp { return String(localized: "Level up") }
+        if result.passed { return String(localized: "Target met") }
+        return String(localized: "Done")
     }
 
     private var subtitle: String {
         if isWalk {
             if !result.completed {
-                return "The minutes you walked still count in today's timeline."
+                return String(localized: "The minutes you walked still count in today's timeline.")
             }
-            return "You held tall for \(result.alignedPercent)% of the walk (after finding your stride)."
+            return String(localized: "You held tall for \(result.alignedPercent)% of the walk (after finding your stride).")
         }
         if !result.completed {
-            return "The minutes you held still count in today's timeline. Come back for the full practice."
+            return String(localized: "The minutes you held still count in today's timeline. Come back for the full practice.")
         }
         if result.passed {
-            return "You stayed aligned \(result.alignedPercent)% of the session, over the \(targetLabel)% bar."
+            return String(localized: "You stayed aligned \(result.alignedPercent)% of the session, over the \(targetLabel)% bar.")
         }
-        return "You finished the full practice. \(result.alignedPercent)% aligned today; the bar was \(targetLabel)%."
+        return String(localized: "You finished the full practice. \(result.alignedPercent)% aligned today; the bar was \(targetLabel)%.")
     }
 
     private var eyebrow: String {
-        if isWalk { return result.completed ? "walk complete" : "walk ended" }
-        return result.completed ? "practice complete" : "practice ended"
+        if isWalk { return result.completed ? String(localized: "walk complete") : String(localized: "walk ended") }
+        return result.completed ? String(localized: "practice complete") : String(localized: "practice ended")
     }
 
     private var accent: Color {
@@ -282,7 +280,7 @@ struct SessionSummaryView: View {
     private var minutesLabel: String {
         let total = result.goodSeconds + result.borderlineSeconds + result.badSeconds
         let minutes = max(1, Int((Double(total) / 60).rounded()))
-        return "\(minutes)m"
+        return PostureDayStats.wearLabel(seconds: Double(minutes * 60))
     }
 
     private var targetLabel: Int {

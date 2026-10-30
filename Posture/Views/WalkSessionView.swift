@@ -189,8 +189,8 @@ struct WalkSessionView: View {
 
     private var goalTypePicker: some View {
         HStack(spacing: 10) {
-            goalTab(title: "Time", isDistance: false)
-            goalTab(title: "Distance", isDistance: true)
+            goalTab(title: String(localized: "Time"), isDistance: false)
+            goalTab(title: String(localized: "Distance"), isDistance: true)
         }
     }
 
@@ -217,12 +217,12 @@ struct WalkSessionView: View {
         HStack(spacing: 10) {
             ForEach(minuteOptions, id: \.self) { minutes in
                 chip(
-                    label: "\(minutes) min",
+                    label: String(localized: "\(minutes) min"),
                     selected: !isCustomTime && targetMinutes == minutes
                 ) { targetMinutes = minutes }
             }
             chip(
-                label: isCustomTime ? "\(targetMinutes) min" : "Custom",
+                label: isCustomTime ? String(localized: "\(targetMinutes) min") : String(localized: "Custom"),
                 selected: isCustomTime
             ) {
                 customMinutes = isCustomTime ? targetMinutes : customMinutes
@@ -237,12 +237,12 @@ struct WalkSessionView: View {
         HStack(spacing: 10) {
             ForEach(distancePresets, id: \.self) { meters in
                 chip(
-                    label: "\(distanceLabel(meters)) \(distanceUnit)",
+                    label: distanceText(meters),
                     selected: !isCustomDistance && abs(targetMeters - meters) < 1
                 ) { targetMeters = meters }
             }
             chip(
-                label: isCustomDistance ? "\(distanceLabel(targetMeters)) \(distanceUnit)" : "Custom",
+                label: isCustomDistance ? distanceText(targetMeters) : String(localized: "Custom"),
                 selected: isCustomDistance
             ) { showingCustomDistance = true }
         }
@@ -334,14 +334,14 @@ struct WalkSessionView: View {
                 set: { targetMeters = displayToMeters($0) }
             )) {
                 ForEach(steps, id: \.self) { d in
-                    Text(String(format: "%.1f %@", d, distanceUnit)).tag(d)
+                    Text(distanceText(displayToMeters(d))).tag(d)
                 }
             }
             .pickerStyle(.wheel)
             Button {
                 showingCustomDistance = false
             } label: {
-                Text("Set \(distanceLabel(targetMeters)) \(distanceUnit)").frame(maxWidth: .infinity)
+                Text("Set \(distanceText(targetMeters))").frame(maxWidth: .infinity)
             }
             .buttonStyle(.daylight(.primary))
             .padding(.horizontal, 24)
@@ -398,7 +398,7 @@ struct WalkSessionView: View {
                     Text(centerUnit(controller))
                         .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.ink3)
-                    Text(stationary ? "keep walking" : (paused ? "paused" : qualityWord(quality)))
+                    Text(stationary ? String(localized: "keep walking") : (paused ? String(localized: "paused") : qualityWord(quality)))
                         .font(Theme.display(19))
                         .foregroundStyle(stationary ? Theme.badText
                                          : (paused ? Theme.ink3 : Theme.qualityTextColor(quality)))
@@ -440,14 +440,14 @@ struct WalkSessionView: View {
     /// goal, elapsed time for a distance goal), plus a GPS badge.
     private func metricsRow(_ controller: PracticeSessionController) -> some View {
         HStack(spacing: 28) {
-            metricStat(value: "\(controller.walkSteps)", label: "steps")
+            metricStat(value: "\(controller.walkSteps)", label: String(localized: "steps"))
             if goalIsDistance {
-                metricStat(value: timeLabel(Int(controller.elapsedSeconds)), label: "time")
+                metricStat(value: timeLabel(Int(controller.elapsedSeconds)), label: String(localized: "time"))
             } else {
                 metricStat(value: distanceLabel(controller.walkDistanceMeters), label: distanceUnit)
             }
             if controller.walkUsingGPS {
-                metricStat(value: "GPS", label: "on", tint: Theme.goodText)
+                metricStat(value: String(localized: "GPS"), label: String(localized: "on"), tint: Theme.goodText)
             }
         }
     }
@@ -473,8 +473,8 @@ struct WalkSessionView: View {
 
     private func centerUnit(_ controller: PracticeSessionController) -> String {
         goalIsDistance
-            ? "of \(distanceLabel(targetMeters)) \(distanceUnit)"
-            : "left"
+            ? String(localized: "of \(distanceText(targetMeters))")
+            : String(localized: "left")
     }
 
     // MARK: - Bits
@@ -514,23 +514,23 @@ struct WalkSessionView: View {
 
     private func statusLine(_ controller: PracticeSessionController, stationary: Bool) -> String {
         if stationary {
-            return "You've stopped moving. The clock keeps running, but standing still counts as rest - keep walking."
+            return String(localized: "You've stopped moving. The clock keeps running, but standing still counts as rest - keep walking.")
         }
         switch controller.phase {
         case .waiting:
-            return "Pop your AirPods in, the walk starts with your first reading."
+            return String(localized: "Pop your AirPods in, the walk starts with your first reading.")
         case .paused(.airpodsOut):
-            return "AirPods are out. The clock is paused until they're back in."
+            return String(localized: "AirPods are out. The clock is paused until they're back in.")
         case .paused(.user):
-            return "Paused."
+            return String(localized: "Paused.")
         case .running:
             if inWarmup(controller) {
-                return "Finding your stride and learning your walking posture."
+                return String(localized: "Finding your stride and learning your walking posture.")
             }
             switch controller.currentQuality {
-            case .good: return "Walking tall. Eyes on the horizon."
-            case .borderline: return "Drifting, lift your gaze off the pavement."
-            case .bad: return "Head's down. Chin level, eyes forward."
+            case .good: return String(localized: "Walking tall. Eyes on the horizon.")
+            case .borderline: return String(localized: "Drifting, lift your gaze off the pavement.")
+            case .bad: return String(localized: "Head's down. Chin level, eyes forward.")
             }
         default:
             return ""
@@ -547,9 +547,9 @@ struct WalkSessionView: View {
 
     private func qualityWord(_ q: PostureQuality) -> String {
         switch q {
-        case .good: return "Tall"
-        case .borderline: return "Drifting"
-        case .bad: return "Head down"
+        case .good: return String(localized: "Tall")
+        case .borderline: return String(localized: "Drifting")
+        case .bad: return String(localized: "Head down")
         }
     }
 
@@ -566,6 +566,16 @@ struct WalkSessionView: View {
     /// A distance in local units, 1 decimal (or 2 under 10 for short walks).
     private func distanceLabel(_ meters: Double) -> String {
         let d = metric ? meters / 1000 : meters / 1609.34
-        return String(format: d < 10 ? "%.2f" : "%.1f", d)
+        return d.formatted(.number.precision(.fractionLength(d < 10 ? 2 : 1)))
+    }
+
+    /// The distance with its unit, in the user's locale ("2.50 km", "1.20 mi").
+    private func distanceText(_ meters: Double) -> String {
+        let d = metric ? meters / 1000 : meters / 1609.34
+        let unit: UnitLength = metric ? .kilometers : .miles
+        return Measurement(value: d, unit: unit).formatted(
+            .measurement(width: .abbreviated, usage: .asProvided,
+                         numberFormatStyle: FloatingPointFormatStyle<Double>.number.precision(.fractionLength(d < 10 ? 2 : 1)))
+        )
     }
 }

@@ -5,48 +5,48 @@ enum NotificationService {
     /// Daylight voice - lowercase, observational, never imperative.
     /// ≤24 chars so the banner doesn't truncate.
     private static let reminderTitles: [String] = [
-        "a small check-in.",
-        "how are you sitting?",
-        "crown of the head, up.",
-        "shoulders, soft.",
-        "a posture pause.",
-        "feet flat?",
-        "how's the spine now?",
-        "a breath. and a sit-up.",
-        "jaw and tongue, soft.",
-        "ears over shoulders.",
-        "how upright?",
-        "a moment for the body.",
+        String(localized: "a small check-in."),
+        String(localized: "how are you sitting?"),
+        String(localized: "crown of the head, up."),
+        String(localized: "shoulders, soft."),
+        String(localized: "a posture pause."),
+        String(localized: "feet flat?"),
+        String(localized: "how's the spine now?"),
+        String(localized: "a breath. and a sit-up."),
+        String(localized: "jaw and tongue, soft."),
+        String(localized: "ears over shoulders."),
+        String(localized: "how upright?"),
+        String(localized: "a moment for the body."),
     ]
 
     /// Optional supporting line - a small tip, paired with a title. Kept gentle
     /// and observational to match the Daylight voice.
     private static let reminderBodies: [String] = [
-        "Lift the crown of your head a touch.",
-        "Let your shoulders drop away from your ears.",
-        "Stack your ears over your shoulders.",
-        "Unclench the jaw, soften the tongue.",
-        "A slow breath, and a small lift.",
-        "Feet flat, weight even.",
-        "Ease back from the screen an inch.",
-        "Long spine, easy neck.",
+        String(localized: "Lift the crown of your head a touch."),
+        String(localized: "Let your shoulders drop away from your ears."),
+        String(localized: "Stack your ears over your shoulders."),
+        String(localized: "Unclench the jaw, soften the tongue."),
+        String(localized: "A slow breath, and a small lift."),
+        String(localized: "Feet flat, weight even."),
+        String(localized: "Ease back from the screen an inch."),
+        String(localized: "Long spine, easy neck."),
     ]
 
     /// Daily-practice reminder copy - the one notification that matters.
     private static let practiceTitles: [String] = [
-        "a few minutes of tall.",
-        "today's practice is waiting.",
-        "time to hold the shape.",
-        "your posture practice.",
-        "a short hold, done well.",
-        "practice, then carry it.",
+        String(localized: "a few minutes of tall."),
+        String(localized: "today's practice is waiting."),
+        String(localized: "time to hold the shape."),
+        String(localized: "your posture practice."),
+        String(localized: "a short hold, done well."),
+        String(localized: "practice, then carry it."),
     ]
 
     private static let practiceBodies: [String] = [
-        "AirPods in, spine long. The streak takes care of itself.",
-        "A few minutes held tall today beats an hour of trying tomorrow.",
-        "Sit or stand tall with live coaching. That's the whole habit.",
-        "Crown up, shoulders soft, begin.",
+        String(localized: "AirPods in, spine long. The streak takes care of itself."),
+        String(localized: "A few minutes held tall today beats an hour of trying tomorrow."),
+        String(localized: "Sit or stand tall with live coaching. That's the whole habit."),
+        String(localized: "Crown up, shoulders soft, begin."),
     ]
 
     static let categoryIdentifier = "posture.reminder"

@@ -15,8 +15,8 @@ enum SlouchNudge {
         AudioServicesPlaySystemSound(1520)
         guard inBackground else { return }
         let content = UNMutableNotificationContent()
-        content.title = "slouch check."
-        content.body = "Lift the crown of your head a touch."
+        content.title = String(localized: "slouch check.")
+        content.body = String(localized: "Lift the crown of your head a touch.")
         content.sound = .default
         content.userInfo = ["type": "slouch"]
         // One identifier: each nudge replaces the last, so Notification

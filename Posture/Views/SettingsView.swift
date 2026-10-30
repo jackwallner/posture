@@ -53,14 +53,14 @@ struct SettingsView: View {
 
                 Section {
                     Toggle(isOn: alwaysOnBinding) {
-                        plusToggleLabel("Always-on Watch monitoring")
+                        plusToggleLabel(String(localized: "Always-on Watch monitoring"))
                     }
                     Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
                     Toggle(isOn: airpodsBackgroundBinding) {
-                        plusToggleLabel("All-day AirPods monitoring")
+                        plusToggleLabel(String(localized: "All-day AirPods monitoring"))
                     }
                     Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
                         .font(Theme.font(.caption))
@@ -130,9 +130,9 @@ struct SettingsView: View {
                         || (subscriptions.isProSubscriber && settings.airpodsBackgroundEnabled)) && notificationsDenied {
                         PostureBanner(
                             tone: .warn,
-                            title: "Notifications are off.",
-                            message: "Reminders and background slouch alerts won't fire until you allow notifications.",
-                            action: ("allow", { Task { await allowNotifications() } })
+                            title: String(localized: "Notifications are off."),
+                            message: String(localized: "Reminders and background slouch alerts won't fire until you allow notifications."),
+                            action: (String(localized: "allow"), { Task { await allowNotifications() } })
                         )
                         .listRowInsets(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
                         .listRowBackground(Color.clear)
@@ -148,13 +148,13 @@ struct SettingsView: View {
                             Task { await ReminderScheduler.reschedule() }
                         }
 
-                        Stepper("Start at \(settings.activeHoursStart):00",
+                        Stepper("Start at \(hourLabel(settings.activeHoursStart))",
                                 value: $settings.activeHoursStart, in: 6...settings.activeHoursEnd - 1)
                             .onChange(of: settings.activeHoursStart) { _, _ in
                                 Task { await ReminderScheduler.reschedule() }
                             }
 
-                        Stepper("End at \(settings.activeHoursEnd):00",
+                        Stepper("End at \(hourLabel(settings.activeHoursEnd))",
                                 value: $settings.activeHoursEnd, in: settings.activeHoursStart + 1...23)
                             .onChange(of: settings.activeHoursEnd) { _, _ in
                                 Task { await ReminderScheduler.reschedule() }
@@ -350,7 +350,7 @@ struct SettingsView: View {
                 CalibrationView(mode: posture == .standing ? .recalibrateStanding : .recalibrateSitting)
             }
             .sheet(isPresented: $showingWalkRecapture, onDismiss: { refreshWalkBaseline() }) {
-                WalkBaselineCaptureView(doneButtonTitle: "Done") { showingWalkRecapture = false }
+                WalkBaselineCaptureView(doneButtonTitle: String(localized: "Done")) { showingWalkRecapture = false }
             }
             .alert("Reset walking posture?", isPresented: $showingWalkBaselineReset) {
                 Button("Cancel", role: .cancel) { }
@@ -366,6 +366,12 @@ struct SettingsView: View {
 
     private func refreshWalkBaseline() {
         hasWalkBaseline = CalibrationService(context: context).current()?.airpodsWalkingPitch != nil
+    }
+
+    /// An on-the-hour time in the user's locale ("9:00 AM", "09:00").
+    private func hourLabel(_ hour: Int) -> String {
+        let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) ?? Date()
+        return date.formatted(date: .omitted, time: .shortened)
     }
 
     @ViewBuilder
@@ -423,8 +429,8 @@ struct SettingsView: View {
     }
 
     private var trialOfferIntroLabel: String? {
-        trialOfferPackage?.postureIntroOfferLabel
-            ?? subscriptions.products.compactMap(\.postureIntroOfferLabel).first
+        trialOfferPackage?.postureIntroOfferTitle
+            ?? subscriptions.products.compactMap(\.postureIntroOfferTitle).first
     }
 
     private var trialOfferPriceLabel: String? {
@@ -469,10 +475,10 @@ struct SettingsView: View {
                 case .purchased, .pending:
                     showTrialOffer = false
                 case .cancelled:
-                    trialPurchaseError = "Trial wasn't started. Tap again, or pick a different plan."
+                    trialPurchaseError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }
             } catch {
-                trialPurchaseError = "Couldn't start your trial. Please try again."
+                trialPurchaseError = String(localized: "Couldn't start your trial. Please try again.")
             }
         }
         #endif
@@ -555,9 +561,9 @@ private struct AirpodsStatusChip: View {
 
     private var label: String {
         switch state {
-        case .live: return "Live · AirPods linked"
-        case .armed: return "Ready · waiting for AirPods"
-        case .off: return "Monitoring off"
+        case .live: return String(localized: "Live · AirPods linked")
+        case .armed: return String(localized: "Ready · waiting for AirPods")
+        case .off: return String(localized: "Monitoring off")
         }
     }
     private var dotColor: Color {

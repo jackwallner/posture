@@ -128,16 +128,8 @@ enum PostureMode: String, Codable, CaseIterable, Sendable {
 
     var label: String {
         switch self {
-        case .standing: return "Standing"
-        case .sitting: return "Sitting"
-        }
-    }
-
-    /// Lowercased for inline copy ("standing tall").
-    var word: String {
-        switch self {
-        case .standing: return "standing"
-        case .sitting: return "sitting"
+        case .standing: return String(localized: "Standing")
+        case .sitting: return String(localized: "Sitting")
         }
     }
 

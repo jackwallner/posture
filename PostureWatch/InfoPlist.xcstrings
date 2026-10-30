@@ -1,0 +1,165 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSMotionUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture liest Handgelenksbewegungen, um zu erkennen, wann du zusammensackst, und dich sanft mit einem Vibrieren zu erinnern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture lee el movimiento de la muñeca para detectar cuándo te encorvas y avisarte con una vibración suave."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture lit les mouvements du poignet pour détecter quand tu t’avachis et te le rappeler par une légère vibration."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture legge i movimenti del polso per capire quando ti ingobbisci e avvisarti con una vibrazione leggera."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureは手首の動きを読み取って猫背を検知し、やさしい振動でお知らせします。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture leest polsbewegingen om te zien wanneer je onderuitzakt en je zacht te waarschuwen met een tril."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture odczytuje ruch nadgarstka, aby wykryć garbienie się i delikatnie przypomnieć wibracją."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Posture lê o movimento do pulso para detectar quando você se curva e avisar com uma vibração suave."
+          }
+        }
+      }
+    },
+    "NSHealthShareUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture startet eine Trainingssitzung auf deiner Apple Watch, damit es die Haltung deines Handgelenks im Hintergrund messen kann. Die Handgelenksbewegung wird auf dem Gerät über Bewegungssensoren gelesen; es werden keine Health-Daten gelesen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture inicia una sesión de entrenamiento en tu Apple Watch para registrar la posición de tu muñeca en segundo plano. El movimiento de la muñeca se lee en el dispositivo con los sensores de movimiento; no se leen datos de Salud."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture démarre une séance d’entraînement sur ton Apple Watch pour suivre la position de ton poignet en arrière-plan. Le mouvement du poignet est lu sur l’appareil grâce aux capteurs de mouvement ; aucune donnée Santé n’est lue."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture avvia una sessione di allenamento su Apple Watch per monitorare la posizione del polso in background. Il movimento del polso viene letto sul dispositivo tramite i sensori di movimento; non vengono letti dati di Salute."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureはバックグラウンドで手首の位置を計測するため、Apple Watchでワークアウトセッションを開始します。手首の動きはデバイス上のモーションセンサーで読み取り、ヘルスケアのデータは読み取りません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture start een trainingssessie op je Apple Watch zodat het de stand van je pols op de achtergrond kan volgen. Je polsbeweging wordt op het apparaat via bewegingssensoren gelezen; er worden geen Gezondheid-gegevens gelezen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture rozpoczyna sesję treningową na Apple Watch, aby śledzić położenie nadgarstka w tle. Ruch nadgarstka jest odczytywany na urządzeniu przez czujniki ruchu; dane Zdrowia nie są odczytywane."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Posture inicia uma sessão de exercício no seu Apple Watch para acompanhar a posição do pulso em segundo plano. O movimento do pulso é lido no aparelho pelos sensores de movimento; nenhum dado do app Saúde é lido."
+          }
+        }
+      }
+    },
+    "NSHealthUpdateUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture speichert eine kurze Haltungs-Trainingseinheit in Apple Health, damit watchOS die Hintergrundsitzung und die Bewegungsdaten aktiv hält, während es dich erinnert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture guarda un entrenamiento breve de registro de postura en Salud de Apple para que watchOS mantenga activa la sesión en segundo plano y los datos de movimiento mientras te avisa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture enregistre une courte séance de suivi de posture dans Apple Santé pour que watchOS garde la session en arrière-plan et les mesures de mouvement actives pendant les rappels."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture salva un breve allenamento di monitoraggio della postura in Apple Salute così watchOS mantiene attivi la sessione in background e i dati di movimento mentre ti avvisa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "watchOSがバックグラウンドセッションとモーションの更新を維持できるよう、Postureは短い姿勢計測ワークアウトをAppleのヘルスケアに保存します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture bewaart een korte houdingstraining in Apple Gezondheid zodat watchOS de achtergrondsessie en bewegingsgegevens actief houdt terwijl het je waarschuwt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture zapisuje krótki trening monitorowania postawy w Apple Zdrowie, aby watchOS utrzymywał sesję w tle i odczyty ruchu podczas przypomnień."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Posture salva um exercício curto de monitoramento de postura no Saúde da Apple para que o watchOS mantenha a sessão em segundo plano e os dados de movimento ativos enquanto avisa você."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

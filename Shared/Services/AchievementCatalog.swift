@@ -58,7 +58,7 @@ enum AchievementCatalog {
         func streakBadge(_ days: Int, icon: String, subtitle: String) -> Achievement {
             Achievement(
                 id: "streak_\(days)",
-                title: "\(days)-day streak",
+                title: String(localized: "\(days)-day streak"),
                 subtitle: subtitle,
                 systemImage: icon,
                 isEarned: bestStreak >= days,
@@ -69,61 +69,61 @@ enum AchievementCatalog {
         return [
             Achievement(
                 id: "first_practice",
-                title: "First practice",
-                subtitle: "Finished your first daily practice.",
+                title: String(localized: "First practice"),
+                subtitle: String(localized: "Finished your first daily practice."),
                 systemImage: "figure.stand",
                 isEarned: !completedPractices.isEmpty,
                 earnedAt: completedPractices.first?.startedAt
             ),
             Achievement(
                 id: "first_pass",
-                title: "First pass",
-                subtitle: "Met a session's aligned target.",
+                title: String(localized: "First pass"),
+                subtitle: String(localized: "Met a session's aligned target."),
                 systemImage: "checkmark.seal",
                 isEarned: !passedPractices.isEmpty,
                 earnedAt: passedPractices.first?.startedAt
             ),
             Achievement(
                 id: "level_5",
-                title: "Level 5",
-                subtitle: "Seven minutes held tall.",
+                title: String(localized: "Level 5"),
+                subtitle: String(localized: "Seven minutes held tall."),
                 systemImage: "chevron.up.2",
                 isEarned: level >= 5,
                 earnedAt: level >= 5 ? levelEarnedAt(5) : nil
             ),
             Achievement(
                 id: "level_10",
-                title: "Level 10",
-                subtitle: "Twelve minutes, high bar.",
+                title: String(localized: "Level 10"),
+                subtitle: String(localized: "Twelve minutes, high bar."),
                 systemImage: "chevron.up.2",
                 isEarned: level >= 10,
                 earnedAt: level >= 10 ? levelEarnedAt(10) : nil
             ),
-            streakBadge(7, icon: "flame", subtitle: "A full week of practice."),
-            streakBadge(14, icon: "flame", subtitle: "Two weeks straight."),
-            streakBadge(30, icon: "flame.fill", subtitle: "A whole month of practice."),
-            streakBadge(60, icon: "flame.fill", subtitle: "Two months, still standing tall."),
-            streakBadge(100, icon: "flame.circle", subtitle: "One hundred days."),
+            streakBadge(7, icon: "flame", subtitle: String(localized: "A full week of practice.")),
+            streakBadge(14, icon: "flame", subtitle: String(localized: "Two weeks straight.")),
+            streakBadge(30, icon: "flame.fill", subtitle: String(localized: "A whole month of practice.")),
+            streakBadge(60, icon: "flame.fill", subtitle: String(localized: "Two months, still standing tall.")),
+            streakBadge(100, icon: "flame.circle", subtitle: String(localized: "One hundred days.")),
             Achievement(
                 id: "first_walk",
-                title: "First walk",
-                subtitle: "Took your posture outside.",
+                title: String(localized: "First walk"),
+                subtitle: String(localized: "Took your posture outside."),
                 systemImage: "figure.walk",
                 isEarned: !walks.isEmpty,
                 earnedAt: walks.first?.startedAt
             ),
             Achievement(
                 id: "walk_10",
-                title: "Ten walks",
-                subtitle: "Ten walks, head high.",
+                title: String(localized: "Ten walks"),
+                subtitle: String(localized: "Ten walks, head high."),
                 systemImage: "figure.walk.motion",
                 isEarned: walks.count >= 10,
                 earnedAt: walks.count >= 10 ? walks[9].startedAt : nil
             ),
             Achievement(
                 id: "freeze_saved",
-                title: "Safety net",
-                subtitle: "Earned a streak save.",
+                title: String(localized: "Safety net"),
+                subtitle: String(localized: "Earned a streak save."),
                 systemImage: "snowflake",
                 isEarned: (streak?.freezesAvailable ?? 0) > 0 || bestStreak >= 7,
                 earnedAt: (streak?.freezesAvailable ?? 0) > 0 || bestStreak >= 7 ? streakDate : nil

@@ -91,7 +91,7 @@ struct PaywallView: View {
             Text("Couldn't load plans")
                 .font(Theme.font(.headline))
                 .foregroundStyle(Theme.ink2)
-            Text(subscriptions.lastError ?? "Check your connection and try again.")
+            Text(subscriptions.lastError ?? String(localized: "Check your connection and try again."))
                 .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.ink3)
                 .multilineTextAlignment(.center)
@@ -158,19 +158,12 @@ struct PaywallView: View {
     @ViewBuilder
     private var headlineView: some View {
         #if HAS_REVENUECAT
-        if let trial = trialHeadlineLabel {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Start your \(trial)")
-                    .font(Theme.display(24))
-                    .foregroundStyle(Theme.ink)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-                Text("of Posture+")
-                    .font(Theme.display(24))
-                    .foregroundStyle(Theme.ink)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.9)
-            }
+        if let days = trialHeadlineDays {
+            Text("Start your \(days)-day free trial\nof Posture+")
+                .font(Theme.display(24))
+                .foregroundStyle(Theme.ink)
+                .lineLimit(3)
+                .minimumScaleFactor(0.85)
         } else {
             Text("Posture that grows with you.")
                 .font(Theme.display(26))
@@ -194,19 +187,19 @@ struct PaywallView: View {
         if let package = selectedPackage,
            package.posturePackageKind != .lifetime,
            subscriptions.isEligibleForIntroOffer(package) {
-            return "Then \(package.posturePriceLabel), cancel anytime."
+            return String(localized: "Then \(package.posturePriceLabel), cancel anytime.")
         }
         #endif
-        return "Unlock every Posture+ feature."
+        return String(localized: "Unlock every Posture+ feature.")
     }
 
-    /// Intro-offer phrase for the headline's first line (e.g. "7-day free trial").
-    private var trialHeadlineLabel: String? {
+    /// Intro-offer length for the trial headline (e.g. 7 for "7-day free trial").
+    private var trialHeadlineDays: Int? {
         #if HAS_REVENUECAT
         guard let package = selectedPackage ?? subscriptions.products.first(where: { $0.posturePackageKind == .yearly }),
               package.posturePackageKind != .lifetime,
               subscriptions.isEligibleForIntroOffer(package) else { return nil }
-        return package.postureIntroOfferLabel
+        return package.postureIntroOfferDays
         #else
         return nil
         #endif
@@ -214,11 +207,11 @@ struct PaywallView: View {
 
     private var trustStrip: some View {
         HStack(spacing: 14) {
-            trustItem(icon: "iphone.gen3.radiowaves.left.and.right", label: "On-device")
+            trustItem(icon: "iphone.gen3.radiowaves.left.and.right", label: String(localized: "On-device"))
             Divider().frame(height: 14).background(Theme.paper3)
-            trustItem(icon: "lock.shield", label: "Private by default")
+            trustItem(icon: "lock.shield", label: String(localized: "Private by default"))
             Divider().frame(height: 14).background(Theme.paper3)
-            trustItem(icon: "moon.stars", label: "No ads, ever")
+            trustItem(icon: "moon.stars", label: String(localized: "No ads, ever"))
         }
         .frame(maxWidth: .infinity)
     }
@@ -236,9 +229,9 @@ struct PaywallView: View {
 
     private var compactFeatureList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            compactBenefit(icon: "chevron.up.2", title: "Every practice level, from 3 to 15 minutes")
-            compactBenefit(icon: "chart.xyaxis.line", title: "Weekly trends, walk mode, and hour-by-hour patterns")
-            compactBenefit(icon: "airpods.gen3", title: "Optional AirPods and Watch nudges beyond practice")
+            compactBenefit(icon: "chevron.up.2", title: String(localized: "Every practice level, from 3 to 15 minutes"))
+            compactBenefit(icon: "chart.xyaxis.line", title: String(localized: "Weekly trends, walk mode, and hour-by-hour patterns"))
+            compactBenefit(icon: "airpods.gen3", title: String(localized: "Optional AirPods and Watch nudges beyond practice"))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -400,15 +393,16 @@ struct PaywallView: View {
 
     private var ctaTitle: String {
         #if HAS_REVENUECAT
-        guard let package = selectedPackage else { return "Continue" }
-        if package.posturePackageKind == .lifetime { return "Unlock Lifetime" }
+        guard let package = selectedPackage else { return String(localized: "Continue") }
+        if package.posturePackageKind == .lifetime { return String(localized: "Unlock Lifetime") }
         // Name the trial length in the button - answers "what am I agreeing to?"
-        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
-            return "Start My \(trial.capitalized)"
+        if subscriptions.isEligibleForIntroOffer(package) {
+            if let days = package.postureIntroOfferDays { return String(localized: "Start My \(days)-Day Free Trial") }
+            if package.postureIntroOfferTitle != nil { return String(localized: "Start My Free Trial") }
         }
-        return "Start Posture+"
+        return String(localized: "Start Posture+")
         #else
-        return "Continue"
+        return String(localized: "Continue")
         #endif
     }
 
@@ -417,13 +411,13 @@ struct PaywallView: View {
         guard let package = selectedPackage else { return nil }
         let price = package.posturePriceLabel
         if package.posturePackageKind == .lifetime {
-            return "\(price). One-time purchase. Lifetime access, no subscription."
+            return String(localized: "\(price). One-time purchase. Lifetime access, no subscription.")
         }
-        let renew = "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings."
-        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferLabel {
-            return "\(trial.capitalized), then \(price). \(renew)"
+        let renew = String(localized: "Auto-renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Settings.")
+        if subscriptions.isEligibleForIntroOffer(package), let trial = package.postureIntroOfferTitle {
+            return String(localized: "\(trial), then \(price). \(renew)")
         }
-        return "\(price). \(renew)"
+        return String(localized: "\(price). \(renew)")
         #else
         return nil
         #endif
@@ -435,7 +429,7 @@ struct PaywallView: View {
         guard let package = selectedPackage,
               subscriptions.isEligibleForIntroOffer(package),
               let days = trialDays else { return nil }
-        return "No payment today · Billing day \(days)"
+        return String(localized: "No payment today · Billing day \(days)")
         #else
         return nil
         #endif
@@ -508,12 +502,12 @@ struct PaywallView: View {
                 case .pending:
                     // Ask to Buy / deferred - without this the sheet just
                     // sits there as if the tap did nothing.
-                    restoreMessage = "Purchase is pending approval. Posture+ unlocks as soon as it's approved."
+                    restoreMessage = String(localized: "Purchase is pending approval. Posture+ unlocks as soon as it's approved.")
                 case .cancelled:
                     errorMessage = nil
                 }
             } catch {
-                errorMessage = "Purchase didn't complete. Please try again."
+                errorMessage = String(localized: "Purchase didn't complete. Please try again.")
             }
         }
     }
@@ -526,7 +520,7 @@ struct PaywallView: View {
             defer { isRestoring = false }
             await subscriptions.restorePurchases()
             if !subscriptions.isProSubscriber {
-                restoreMessage = subscriptions.lastError ?? "No purchases found to restore."
+                restoreMessage = subscriptions.lastError ?? String(localized: "No purchases found to restore.")
             }
         }
     }
@@ -615,11 +609,11 @@ private struct PosturePlanCard: View {
     }
 
     private var secondaryLine: String? {
-        if showsTrialBadge, let trial = package.postureIntroOfferLabel {
-            return trial.capitalized
+        if showsTrialBadge, let trial = package.postureIntroOfferTitle {
+            return trial
         }
         if package.posturePackageKind == .lifetime {
-            return "Pay once · never renews"
+            return String(localized: "Pay once · never renews")
         }
         return nil
     }
@@ -638,7 +632,7 @@ private struct PosturePlanCard: View {
         let perWeek = price / weeks
         let formatter = package.storeProduct.priceFormatter ?? defaultPriceFormatter
         guard let formatted = formatter.string(from: perWeek as NSDecimalNumber) else { return nil }
-        return "\(formatted) / week"
+        return String(localized: "\(formatted) / week")
     }
 
     private var defaultPriceFormatter: NumberFormatter {

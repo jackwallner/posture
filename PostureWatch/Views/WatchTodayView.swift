@@ -19,7 +19,7 @@ struct WatchTodayView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
                             .foregroundStyle(currentStreak > 0 ? Theme.streakFlame : Theme.textTertiary)
-                        Text("\(currentStreak) day\(currentStreak == 1 ? "" : "s")")
+                        Text("\(currentStreak) days")
                             .font(.headline)
                     }
 

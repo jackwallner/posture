@@ -29,7 +29,7 @@ struct OnboardingView: View {
             // legal-footer slot (invisible placeholder here) so its geometry is
             // byte-identical to the trial page's "Start … free trial" button.
             OnboardingBottomBar(
-                primaryTitle: page < lastPage ? "Continue" : "Set up my baseline",
+                primaryTitle: page < lastPage ? String(localized: "Continue") : String(localized: "Set up my baseline"),
                 primaryAction: {
                     if page < lastPage {
                         withAnimation { page += 1 }
@@ -62,9 +62,9 @@ struct OnboardingView: View {
                 .lineSpacing(3)
 
             VStack(spacing: 10) {
-                pillarCard(index: "1", title: "Learn the shape", body: "First, what tall actually feels like, standing and sitting.", accent: Theme.lavender)
-                pillarCard(index: "2", title: "Calibrate once", body: "Your AirPods record your aligned posture in a few steady seconds.", accent: Theme.sage)
-                pillarCard(index: "3", title: "Practice daily", body: "One short session a day, starting at three minutes. Streaks and levels keep it growing.", accent: Theme.sand)
+                pillarCard(index: "1", title: String(localized: "Learn the shape"), body: String(localized: "First, what tall actually feels like, standing and sitting."), accent: Theme.lavender)
+                pillarCard(index: "2", title: String(localized: "Calibrate once"), body: String(localized: "Your AirPods record your aligned posture in a few steady seconds."), accent: Theme.sage)
+                pillarCard(index: "3", title: String(localized: "Practice daily"), body: String(localized: "One short session a day, starting at three minutes. Streaks and levels keep it growing."), accent: Theme.sand)
             }
             .padding(.top, 8)
         }
@@ -82,9 +82,9 @@ struct OnboardingView: View {
                 .lineSpacing(3)
 
             VStack(spacing: 10) {
-                focusCard(.sitting, icon: "chair", title: "Sitting posture", body: "Desk slouch, laptop hunch, couch collapse.")
-                focusCard(.standing, icon: "figure.stand", title: "Standing posture", body: "Forward head, rounded shoulders on your feet.")
-                focusCard(.both, icon: "arrow.up.and.down.circle", title: "Both", body: "The full picture, sitting and standing.")
+                focusCard(.sitting, icon: "chair", title: String(localized: "Sitting posture"), body: String(localized: "Desk slouch, laptop hunch, couch collapse."))
+                focusCard(.standing, icon: "figure.stand", title: String(localized: "Standing posture"), body: String(localized: "Forward head, rounded shoulders on your feet."))
+                focusCard(.both, icon: "arrow.up.and.down.circle", title: String(localized: "Both"), body: String(localized: "The full picture, sitting and standing."))
             }
             .padding(.top, 8)
         }
@@ -143,9 +143,9 @@ struct OnboardingView: View {
                 .lineSpacing(3)
 
             VStack(spacing: 10) {
-                cueCard(icon: "arrow.up", title: "Lengthen up", body: "Imagine a thread lifting the crown of your head toward the ceiling.")
-                cueCard(icon: "ear", title: "Ears over shoulders", body: "Let your head float back over your spine, not out in front of it.")
-                cueCard(icon: "figure.stand", title: "Shoulders over hips", body: "Roll your shoulders down and back. Chest open, chin level.")
+                cueCard(icon: "arrow.up", title: String(localized: "Lengthen up"), body: String(localized: "Imagine a thread lifting the crown of your head toward the ceiling."))
+                cueCard(icon: "ear", title: String(localized: "Ears over shoulders"), body: String(localized: "Let your head float back over your spine, not out in front of it."))
+                cueCard(icon: "figure.stand", title: String(localized: "Shoulders over hips"), body: String(localized: "Roll your shoulders down and back. Chest open, chin level."))
             }
             .padding(.top, 8)
         }
@@ -165,9 +165,9 @@ struct OnboardingView: View {
                 .lineSpacing(3)
 
             VStack(spacing: 10) {
-                cueCard(icon: "figure.walk", title: "Weight balanced", body: "Feet hip-width apart, weight even across both feet. Soft knees.")
-                cueCard(icon: "arrow.up.and.down", title: "Stack up", body: "Hips over ankles, shoulders over hips, ears over shoulders.")
-                cueCard(icon: "wind", title: "Breathe and settle", body: "Drop your shoulders on an exhale. This relaxed-tall is your baseline.")
+                cueCard(icon: "figure.walk", title: String(localized: "Weight balanced"), body: String(localized: "Feet hip-width apart, weight even across both feet. Soft knees."))
+                cueCard(icon: "arrow.up.and.down", title: String(localized: "Stack up"), body: String(localized: "Hips over ankles, shoulders over hips, ears over shoulders."))
+                cueCard(icon: "wind", title: String(localized: "Breathe and settle"), body: String(localized: "Drop your shoulders on an exhale. This relaxed-tall is your baseline."))
             }
             .padding(.top, 8)
         }
@@ -187,9 +187,9 @@ struct OnboardingView: View {
                 .lineSpacing(3)
 
             VStack(spacing: 10) {
-                cueCard(icon: "chair", title: "Hips to the back", body: "Sit back so your hips fill the seat and your back has support.")
-                cueCard(icon: "shoeprints.fill", title: "Feet flat", body: "Both feet on the floor, knees roughly level with your hips.")
-                cueCard(icon: "arrow.up", title: "Grow tall", body: "Lengthen up through the crown, ears over shoulders, chin level.")
+                cueCard(icon: "chair", title: String(localized: "Hips to the back"), body: String(localized: "Sit back so your hips fill the seat and your back has support."))
+                cueCard(icon: "shoeprints.fill", title: String(localized: "Feet flat"), body: String(localized: "Both feet on the floor, knees roughly level with your hips."))
+                cueCard(icon: "arrow.up", title: String(localized: "Grow tall"), body: String(localized: "Lengthen up through the crown, ears over shoulders, chin level."))
             }
             .padding(.top, 8)
         }

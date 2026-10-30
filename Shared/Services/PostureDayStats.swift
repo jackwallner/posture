@@ -73,12 +73,15 @@ struct PostureDayStats: Sendable {
         var dominantGood: Bool { goodSeconds >= borderlineSeconds && goodSeconds >= badSeconds }
     }
 
-    /// Short human wear-time: "4h 20m", "38m", "0m" when nothing yet.
+    /// Short human wear-time in the user's locale: "4h 20m", "38m", "0m"
+    /// when nothing yet.
     static func wearLabel(seconds: Double) -> String {
-        let mins = Int(seconds / 60)
-        guard mins > 0 else { return "0m" }
-        if mins < 60 { return "\(mins)m" }
-        return "\(mins / 60)h \(mins % 60)m"
+        let mins = max(0, Int(seconds / 60))
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .abbreviated
+        formatter.allowedUnits = mins < 60 ? [.minute] : [.hour, .minute]
+        formatter.zeroFormattingBehavior = mins == 0 ? .pad : .dropAll
+        return formatter.string(from: TimeInterval(mins * 60)) ?? "\(mins)m"
     }
 }
 

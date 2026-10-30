@@ -34,7 +34,7 @@ struct PostureBanner: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if let action {
                     Button(action: action.perform) {
-                        Text("\(action.label) →")
+                        Text(verbatim: "\(action.label) →")
                             .font(Theme.font(.caption, weight: .semibold))
                             .foregroundStyle(Theme.goodText)
                     }

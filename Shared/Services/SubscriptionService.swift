@@ -51,9 +51,9 @@ extension Package {
 
     var postureDisplayName: String {
         switch posturePackageKind {
-        case .lifetime: return "Lifetime"
-        case .yearly: return "Yearly"
-        case .monthly: return "Monthly"
+        case .lifetime: return String(localized: "Lifetime")
+        case .yearly: return String(localized: "Yearly")
+        case .monthly: return String(localized: "Monthly")
         case .other: return storeProduct.localizedTitle
         }
     }
@@ -62,18 +62,48 @@ extension Package {
         guard let period = storeProduct.subscriptionPeriod else {
             return storeProduct.localizedPriceString
         }
-        let unit: String
+        let price = storeProduct.localizedPriceString
+        let n = period.value
+        switch (period.unit, n == 1) {
+        case (.day, true): return String(localized: "\(price) / day")
+        case (.day, false): return String(localized: "\(price) / \(n) days")
+        case (.week, true): return String(localized: "\(price) / week")
+        case (.week, false): return String(localized: "\(price) / \(n) weeks")
+        case (.month, true): return String(localized: "\(price) / month")
+        case (.month, false): return String(localized: "\(price) / \(n) months")
+        case (.year, true): return String(localized: "\(price) / year")
+        case (.year, false): return String(localized: "\(price) / \(n) years")
+        default: return price
+        }
+    }
+
+    /// Free-trial length in days for day/week trials, nil for none or for
+    /// month/year trials. CTA copy names the days through plural keys.
+    var postureIntroOfferDays: Int? {
+        guard let intro = storeProduct.introductoryDiscount, intro.paymentMode == .freeTrial else {
+            return nil
+        }
+        let period = intro.subscriptionPeriod
         switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: unit = ""
+        case .day: return period.value
+        case .week: return period.value * 7
+        default: return nil
         }
-        if period.value == 1 {
-            return "\(storeProduct.localizedPriceString) / \(unit)"
+    }
+
+    /// The trial label in title case for headlines and plan cards
+    /// ("7-Day Free Trial").
+    var postureIntroOfferTitle: String? {
+        if let days = postureIntroOfferDays { return String(localized: "\(days)-Day Free Trial") }
+        guard let intro = storeProduct.introductoryDiscount, intro.paymentMode == .freeTrial else {
+            return nil
         }
-        return "\(storeProduct.localizedPriceString) / \(period.value) \(unit)"
+        let n = intro.subscriptionPeriod.value
+        switch intro.subscriptionPeriod.unit {
+        case .month: return String(localized: "\(n)-Month Free Trial")
+        case .year: return String(localized: "\(n)-Year Free Trial")
+        default: return nil
+        }
     }
 
     var postureIntroOfferLabel: String? {
@@ -81,18 +111,14 @@ extension Package {
             return nil
         }
         let period = intro.subscriptionPeriod
-        let unit: String
+        let n = period.value
         switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: unit = ""
+        case .day: return String(localized: "\(n)-day free trial")
+        case .week: return String(localized: "\(n * 7)-day free trial")
+        case .month: return String(localized: "\(n)-month free trial")
+        case .year: return String(localized: "\(n)-year free trial")
+        @unknown default: return String(localized: "\(n)-day free trial")
         }
-        if period.unit == .week {
-            return "\(period.value * 7)-day free trial"
-        }
-        return "\(period.value)-\(unit.dropLast(period.value == 1 ? 0 : 1)) free trial"
     }
 }
 
@@ -209,7 +235,7 @@ final class SubscriptionService: NSObject {
             lastError = nil
             await refreshIntroEligibility()
         } catch {
-            lastError = "Couldn't load subscription options. Check your connection and try again."
+            lastError = String(localized: "Couldn't load subscription options. Check your connection and try again.")
         }
     }
 
@@ -301,9 +327,9 @@ final class SubscriptionService: NSObject {
         do {
             let info = try await Purchases.shared.restorePurchases()
             applyProStatus(from: info)
-            lastError = isProSubscriber ? nil : "No active Posture+ purchase found for this Apple ID."
+            lastError = isProSubscriber ? nil : String(localized: "No active Posture+ purchase found for this Apple ID.")
         } catch {
-            lastError = "Couldn't restore purchases. Try again."
+            lastError = String(localized: "Couldn't restore purchases. Try again.")
         }
     }
 

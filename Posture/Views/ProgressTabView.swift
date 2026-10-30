@@ -203,9 +203,9 @@ struct ProgressTabView: View {
     private var howItWorksAccordion: some View {
         DisclosureGroup(isExpanded: $showHowItWorks) {
             VStack(alignment: .leading, spacing: 8) {
-                explainerLine(icon: "flame", text: "Finish the minutes and your streak day is safe, whatever the score.")
-                explainerLine(icon: "checkmark.circle", text: "Score at or above the day's aligned-% target and the session is a pass. A pip fills in.")
-                explainerLine(icon: "chevron.up.2", text: "Fill all the pips and you level up: one more minute, a slightly higher target.")
+                explainerLine(icon: "flame", text: String(localized: "Finish the minutes and your streak day is safe, whatever the score."))
+                explainerLine(icon: "checkmark.circle", text: String(localized: "Score at or above the day's aligned-% target and the session is a pass. A pip fills in."))
+                explainerLine(icon: "chevron.up.2", text: String(localized: "Fill all the pips and you level up: one more minute, a slightly higher target."))
             }
             .padding(.top, 8)
         } label: {

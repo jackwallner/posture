@@ -64,7 +64,7 @@ struct StreakDetailView: View {
                 Image(systemName: "flame.fill")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Theme.streakFlame)
-                Text(currentStreak == 1 ? "1 day" : "\(currentStreak) days")
+                Text("\(currentStreak) days")
                     .font(Theme.display(34))
                     .foregroundStyle(Theme.ink)
             }
@@ -78,8 +78,11 @@ struct StreakDetailView: View {
 
     private var statRow: some View {
         HStack(spacing: 12) {
-            statCard(value: "\(streak?.longestStreak ?? 0)", label: "longest streak")
-            statCard(value: "\(savesAvailable)", label: savesAvailable == 1 ? "save ready" : "saves ready")
+            statCard(value: "\(streak?.longestStreak ?? 0)", label: String(localized: "longest streak"))
+            statCard(
+                value: "\(savesAvailable)",
+                label: savesAvailable == 1 ? String(localized: "save ready") : String(localized: "saves ready")
+            )
         }
     }
 

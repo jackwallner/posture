@@ -71,31 +71,45 @@ struct LevelLadderView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(mode.map { "\($0.label) · Level \(effectiveLevel)" } ?? "Level \(effectiveLevel)")
+            Text(headerEyebrow)
                 .font(Theme.font(.caption, weight: .semibold))
                 .tracking(0.8)
                 .foregroundStyle(Theme.goodText)
-            Text(mode == nil
-                 ? "Your practice grows with you."
-                 : "Your \(mode!.word) practice grows with you.")
+            Text(headerTitle)
                 .font(Theme.display(26))
                 .foregroundStyle(Theme.ink)
             let progress = PracticeProgression.progressInLevel(passedSessions: passedCount)
             Text(isPro || trueLevel < PracticeProgression.freeLevelCap
-                 ? PracticeProgressCopy.levelUpCaption(
+                 ? PracticeProgressCopy.levelUpSentence(
                      done: progress.done, needed: progress.needed, nextLevel: trueLevel + 1
-                   ) + "."
-                 : "You've reached the top of the free ladder.")
+                   )
+                 : String(localized: "You've reached the top of the free ladder."))
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
         }
     }
 
+    private var headerEyebrow: String {
+        switch mode {
+        case .standing: return String(localized: "Standing · Level \(effectiveLevel)")
+        case .sitting: return String(localized: "Sitting · Level \(effectiveLevel)")
+        case nil: return String(localized: "Level \(effectiveLevel)")
+        }
+    }
+
+    private var headerTitle: String {
+        switch mode {
+        case .standing: return String(localized: "Your standing practice grows with you.")
+        case .sitting: return String(localized: "Your sitting practice grows with you.")
+        case nil: return String(localized: "Your practice grows with you.")
+        }
+    }
+
     private var howItWorks: some View {
         VStack(alignment: .leading, spacing: 8) {
-            explainerLine(icon: "flame", text: "Finish the minutes and your streak day is safe, whatever the score.")
-            explainerLine(icon: "checkmark.circle", text: "Score at or above the day's aligned-% target and the session is a pass.")
-            explainerLine(icon: "chevron.up.2", text: "Passes add up to levels: one more minute, a slightly higher target each time.")
+            explainerLine(icon: "flame", text: String(localized: "Finish the minutes and your streak day is safe, whatever the score."))
+            explainerLine(icon: "checkmark.circle", text: String(localized: "Score at or above the day's aligned-% target and the session is a pass."))
+            explainerLine(icon: "chevron.up.2", text: String(localized: "Passes add up to levels: one more minute, a slightly higher target each time."))
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -151,7 +165,7 @@ struct LevelLadderView: View {
                 }
             }
             VStack(alignment: .leading, spacing: 1) {
-                Text("\(minutes) \(minutes == 1 ? "minute" : "minutes") held tall")
+                Text("\(minutes) minutes held tall")
                     .font(Theme.font(.subheadline).weight(isCurrent ? .semibold : .regular))
                     .foregroundStyle(locked ? Theme.ink3 : Theme.ink)
                 Text("\(target)% aligned to pass · \(PracticeProgression.threshold(forLevel: level)) total passes")

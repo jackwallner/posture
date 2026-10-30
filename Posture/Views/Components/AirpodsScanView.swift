@@ -312,8 +312,7 @@ struct AirpodsScanView: View {
     // MARK: - Copy
 
     private var eyebrow: String {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE · h:mm a"
-        return f.string(from: scheduledAt)
+        let weekday = scheduledAt.formatted(.dateTime.weekday(.wide))
+        return "\(weekday) · \(scheduledAt.formatted(date: .omitted, time: .shortened))"
     }
 }

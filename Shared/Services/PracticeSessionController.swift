@@ -296,7 +296,7 @@ final class PracticeSessionController {
     func start(config: Config) {
         guard phase == .idle || phase == .finished else { return }
         guard calibrationService.current()?.airpodsPitch != nil else {
-            lastError = "Calibrate with AirPods before a session."
+            lastError = String(localized: "Calibrate with AirPods before a session.")
             return
         }
         self.config = config
@@ -840,11 +840,11 @@ final class PracticeSessionController {
     private func postCompletionNotification(kind: PostureSessionKind, alignedPercent: Int, passed: Bool) {
         let content = UNMutableNotificationContent()
         if kind == .walk {
-            content.title = "walk done."
+            content.title = String(localized: "walk done.")
         } else {
-            content.title = passed ? "practice done. target met." : "practice done."
+            content.title = passed ? String(localized: "practice done. target met.") : String(localized: "practice done.")
         }
-        content.body = "\(alignedPercent)% aligned today. Your streak is safe."
+        content.body = String(localized: "\(alignedPercent)% aligned today. Your streak is safe.")
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: "posture.practice.finished",

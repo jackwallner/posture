@@ -81,13 +81,11 @@ struct AchievementsView: View {
         .dawnCard(cornerRadius: 16)
         .opacity(badge.isEarned ? 1 : 0.75)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(badge.title). \(badge.subtitle). \(badge.isEarned ? "Earned" : "Not earned yet")")
+        .accessibilityLabel(badge.isEarned ? "\(badge.title). \(badge.subtitle). Earned" : "\(badge.title). \(badge.subtitle). Not earned yet")
     }
 
     private func earnedLabel(_ badge: Achievement) -> String {
         guard let date = badge.earnedAt else { return badge.subtitle }
-        let f = DateFormatter()
-        f.dateFormat = "MMM d"
-        return f.string(from: date)
+        return date.formatted(.dateTime.month(.abbreviated).day())
     }
 }

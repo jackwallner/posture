@@ -92,7 +92,7 @@ struct PostureWatchWidgetView: View {
     private var corner: some View {
         Image(systemName: "flame.fill")
             .font(.title3)
-            .widgetLabel("\(entry.streak) day\(entry.streak == 1 ? "" : "s")")
+            .widgetLabel("\(entry.streak) days")
     }
 
     @ViewBuilder

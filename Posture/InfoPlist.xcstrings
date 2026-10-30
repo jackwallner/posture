@@ -1,0 +1,112 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSMotionUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture liest Kopfbewegungen von unterstützten AirPods, um zu erkennen, wann du zusammensackst, und bei Spaziergängen Schritte und Strecke."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture lee el movimiento de la cabeza de los AirPods compatibles para detectar cuándo te encorvas, y los pasos y la distancia durante las caminatas."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture lit les mouvements de la tête via les AirPods compatibles pour détecter quand tu t’avachis, ainsi que les pas et la distance pendant les marches."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture legge i movimenti della testa dagli AirPods compatibili per capire quando ti ingobbisci, e passi e distanza durante le camminate."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureは対応するAirPodsから頭の動きを読み取って猫背を検知し、ウォーク中は歩数と距離を記録します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture leest hoofdbewegingen van ondersteunde AirPods om te zien wanneer je onderuitzakt, en stappen en afstand tijdens wandelingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture odczytuje ruch głowy z obsługiwanych AirPods, aby wykryć garbienie się, a podczas spacerów kroki i dystans."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Posture lê o movimento da cabeça pelos AirPods compatíveis para detectar quando você se curva, e os passos e a distância durante as caminhadas."
+          }
+        }
+      }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture nutzt deinen Standort während eines Spaziergangs, um Strecke und Tempo genau zu messen. Ist er aus, wird eine Schätzung aus den Schritten genutzt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture usa tu ubicación durante una caminata para medir con precisión la distancia y el ritmo. Si la desactivas, se usa una estimación por pasos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture utilise ta position pendant une marche pour mesurer précisément la distance et l’allure. Si tu la désactives, une estimation basée sur les pas est utilisée."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture usa la tua posizione durante una camminata per misurare con precisione distanza e ritmo. Se la disattivi, viene usata una stima basata sui passi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureはウォーク中に位置情報を使って距離とペースを正確に計測します。オフにすると歩数からの推定を使います。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture gebruikt je locatie tijdens een wandeling om afstand en tempo nauwkeurig te meten. Zet je het uit, dan wordt een schatting op basis van stappen gebruikt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture używa twojej lokalizacji podczas spaceru, aby dokładnie mierzyć dystans i tempo. Po jej wyłączeniu używany jest szacunek na podstawie kroków."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Posture usa sua localização durante uma caminhada para medir distância e ritmo com precisão. Se desativada, é usada uma estimativa por passos."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

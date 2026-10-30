@@ -38,11 +38,11 @@ struct PassiveTimelineView: View {
             hourStrip(stats)
 
             HStack {
-                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(Self.axisLabel(0)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12p").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(Self.axisLabel(12)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(Self.axisLabel(0)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
             }
 
             if stats.wearSeconds > 0 {
@@ -54,6 +54,12 @@ struct PassiveTimelineView: View {
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .dawnCard(cornerRadius: 14)
+    }
+
+    /// Compact hour tick in the user's locale ("12a", "0").
+    private static func axisLabel(_ hour: Int) -> String {
+        let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) ?? Date()
+        return date.formatted(.dateTime.hour(.defaultDigits(amPM: .narrow)))
     }
 
     private func hourStrip(_ stats: PostureDayStats) -> some View {
@@ -78,28 +84,30 @@ struct PassiveTimelineView: View {
 
     private func headline(_ stats: PostureDayStats) -> String {
         guard let percent = stats.alignedPercent else {
-            return "Your day fills in as you wear your AirPods."
+            return String(localized: "Your day fills in as you wear your AirPods.")
         }
         switch percent {
-        case 80...: return "\(percent)% aligned. Strong day."
-        case 55..<80: return "\(percent)% aligned so far."
-        default: return "\(percent)% aligned. Rough stretch."
+        case 80...: return String(localized: "\(percent)% aligned. Strong day.")
+        case 55..<80: return String(localized: "\(percent)% aligned so far.")
+        default: return String(localized: "\(percent)% aligned. Rough stretch.")
         }
     }
 
     private func detailLine(_ stats: PostureDayStats) -> String {
-        var parts = ["\(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) monitored"]
+        let wear = PostureDayStats.wearLabel(seconds: stats.wearSeconds)
+        var parts = [String(localized: "\(wear) monitored")]
         if stats.longestAlignedMinutes >= 5 {
-            parts.append("best stretch \(stats.longestAlignedMinutes)m")
+            let stretch = PostureDayStats.wearLabel(seconds: Double(stats.longestAlignedMinutes * 60))
+            parts.append(String(localized: "best stretch \(stretch)"))
         }
         if !slouches.isEmpty {
-            parts.append("\(slouches.count) slouch\(slouches.count == 1 ? "" : "es") caught")
+            parts.append(String(localized: "\(slouches.count) slouches caught"))
         }
         return parts.joined(separator: " · ")
     }
 
     private func hourStripAccessibility(_ stats: PostureDayStats) -> String {
-        guard let percent = stats.alignedPercent else { return "No monitoring yet today" }
-        return "Hour by hour posture chart. \(percent) percent aligned today."
+        guard let percent = stats.alignedPercent else { return String(localized: "No monitoring yet today") }
+        return String(localized: "Hour by hour posture chart. \(percent) percent aligned today.")
     }
 }
