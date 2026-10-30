@@ -134,7 +134,7 @@ final class BackgroundPostureWorkout: NSObject {
         if let last = lastSlouchAt, now.timeIntervalSince(last) < nudgeCooldownSeconds { return }
         lastSlouchAt = now
         totalSlouchEvents += 1
-        WKInterfaceDevice.current().play(.notification)
+        WatchSlouchHaptic.play(at: now)
         Task { @MainActor in
             guard case .success(let container) = DataService.containerResult else { return }
             let context = ModelContext(container)
