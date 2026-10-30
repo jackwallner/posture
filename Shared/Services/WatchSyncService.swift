@@ -18,6 +18,10 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     /// counterpart device. The watch app sets this to react.
     @MainActor var onAlwaysOnReceived: ((Bool) -> Void)?
 
+    /// Called on the main actor when the iPhone relays a slouch nudge, with
+    /// the time it was sent. The watch app sets this to tap the wrist.
+    @MainActor var onSlouchNudge: ((Date) -> Void)?
+
     private override init() { super.init() }
 
     func activate() {
@@ -46,7 +50,36 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         #endif
     }
 
+    #if os(iOS)
+    /// The watch app is running now (foreground, or an always-on workout).
+    /// A nudge is only worth sending then: a queued one would land late.
+    @MainActor var isWatchReachable: Bool {
+        guard WCSession.isSupported() else { return false }
+        let session = WCSession.default
+        return session.activationState == .activated && session.isReachable
+    }
+
+    /// iOS → watch: tap the wrist for a slouch. See `SlouchNudge.delivery`.
+    @MainActor func sendSlouchNudge() {
+        guard isWatchReachable else { return }
+        WCSession.default.sendMessage(
+            ["type": "slouch", "sentAt": Date().timeIntervalSince1970],
+            replyHandler: nil,
+            errorHandler: nil
+        )
+    }
+    #endif
+
     // MARK: - WCSessionDelegate
+
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        #if os(watchOS)
+        guard message["type"] as? String == "slouch",
+              let sentAt = message["sentAt"] as? TimeInterval else { return }
+        let date = Date(timeIntervalSince1970: sentAt)
+        Task { @MainActor in WatchSyncService.shared.onSlouchNudge?(date) }
+        #endif
+    }
 
     func session(
         _ session: WCSession,

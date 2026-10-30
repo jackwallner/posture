@@ -24,6 +24,7 @@ struct PostureApp: App {
         // `onReceive`.
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         WatchSyncService.shared.activate()
+        PhoneLockState.shared.start(locked: !UIApplication.shared.isProtectedDataAvailable)
         ReviewPromptTracker.recordAppLaunch()
         ConversionDiagnostics.recordAppOpen()
         #if DEBUG && HAS_REVENUECAT
@@ -92,6 +93,7 @@ private struct AirpodsRootView: View {
     @State private var ackScheduledAt: Date?
     @State private var ackNotificationIndex: Int?
     @State private var showingPracticeFromReminder = false
+    private let intents = IntentRouter.shared
 
     var body: some View {
         RootView()
@@ -118,6 +120,11 @@ private struct AirpodsRootView: View {
             }
             .fullScreenCover(isPresented: $showingPracticeFromReminder) {
                 PracticeSessionView(mode: settings.postureFocus.defaultMode)
+            }
+            .onChange(of: intents.pending, initial: true) { _, request in
+                guard let request else { return }
+                intents.pending = nil
+                handle(request)
             }
             .onChange(of: ackScheduledAt != nil || showingPracticeFromReminder, initial: true) { _, covered in
                 ReviewPromptCoordinator.shared.rootIsCovered = covered
@@ -163,6 +170,27 @@ private struct AirpodsRootView: View {
                 Task { await ReminderScheduler.reschedule() }
                 reconcileMonitoring(monitor)
             }
+    }
+
+    /// A Shortcuts automation asked for monitoring or practice. Before setup
+    /// is done (or without AirPods) the app just opens.
+    private func handle(_ request: IntentRouter.Request) {
+        guard settings.hasCompletedOnboarding, settings.hasCalibrated, settings.hasAirpods == true else { return }
+        switch request {
+        case .startPractice:
+            showingPracticeFromReminder = true
+        case .startMonitoring:
+            switch IntentRouter.monitoringRoute(
+                isPro: subscriptions.isProSubscriber,
+                allDayEnabled: settings.airpodsBackgroundEnabled
+            ) {
+            case .start:
+                monitor.userPaused = false
+                reconcileMonitoring(monitor)
+            case .settings(let prompt):
+                intents.settingsPrompt = prompt
+            }
+        }
     }
 
     /// One place decides whether the shared monitor should be running and in
@@ -440,6 +468,9 @@ struct MainTabView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .postureSelectProgressTab)) { _ in
             selectedTab = 4
+        }
+        .onChange(of: IntentRouter.shared.settingsPrompt != nil, initial: true) { _, pending in
+            if pending { selectedTab = 2 }
         }
         .onChange(of: selectedTab) { oldTab, tab in
             // A check-in from History leaves its moment pending; coming back to

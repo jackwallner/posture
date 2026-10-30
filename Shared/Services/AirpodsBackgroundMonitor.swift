@@ -194,15 +194,15 @@ final class AirpodsBackgroundMonitor {
             resetDetectionState()
             return
         }
-        // AirPods just became available. If start() previously returned
-        // false because no head-tracking AirPods were connected, the user
-        // is now in the "armed and waiting" state - activate motion now.
-        // Not while a foreground read owns the stream: re-seating a bud
-        // mid-session would otherwise start a second manager and starve it.
+        // AirPods just became available, either for the first time since
+        // start() ("armed and waiting") or after a disconnect mid-run (case,
+        // ear-out, device switch). Re-arm on every connect: the motion stream
+        // and the keep-alive both no-op when already live, and a reconnect
+        // can find either one stopped. Not while a foreground read owns the
+        // stream: re-seating a bud mid-session would otherwise start a second
+        // manager and starve it.
         isAvailable = headphoneService.isAvailable
-        if isMonitoring && !suspendedForForegroundRead && !headphoneService.isRunning {
-            activateMotion()
-        }
+        activateMotion()
     }
 
     // MARK: - Start / Stop

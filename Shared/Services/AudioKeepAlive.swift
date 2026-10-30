@@ -134,7 +134,26 @@ final class AudioKeepAlive {
         ) { @Sendable [weak self] _ in
             Task { @MainActor in self?.handleEngineConfigChange() }
         }
-        audioObservers = [interruption, configChange]
+        // AirPods leaving or coming back. The config-change notice usually
+        // covers this, but if the engine still ended up stopped, iOS suspends
+        // the app moments later and nothing resumes when the buds return.
+        let routeChange = center.addObserver(
+            forName: AVAudioSession.routeChangeNotification,
+            object: nil,
+            queue: nil
+        ) { @Sendable [weak self] note in
+            let raw = note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt
+            Task { @MainActor in self?.handleRouteChange(rawReason: raw) }
+        }
+        audioObservers = [interruption, configChange, routeChange]
+    }
+
+    private func handleRouteChange(rawReason: UInt?) {
+        guard isHeld, audioEngine?.isRunning != true,
+              let raw = rawReason,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: raw),
+              reason == .newDeviceAvailable || reason == .oldDeviceUnavailable else { return }
+        resumeSilentAudio(rebuild: true)
     }
 
     private func handleInterruption(rawType: UInt?) {
@@ -154,18 +173,23 @@ final class AudioKeepAlive {
         }
     }
 
+    /// A new output route can change the hardware format, which leaves the
+    /// old player's connection and looping buffer stale, so rebuild it.
     private func handleEngineConfigChange() {
         guard isHeld else { return }
-        resumeSilentAudio()
+        resumeSilentAudio(rebuild: true)
     }
 
-    private func resumeSilentAudio() {
+    private func resumeSilentAudio(rebuild: Bool = false) {
         do {
             try AVAudioSession.sharedInstance().setActive(
                 true,
                 options: .notifyOthersOnDeactivation
             )
-            if let engine = audioEngine, !engine.isRunning {
+            if rebuild {
+                stopSilentAudio()
+                try startSilentAudio()
+            } else if let engine = audioEngine, !engine.isRunning {
                 try engine.start()
                 audioPlayer?.play()
             } else if audioEngine == nil {

@@ -208,6 +208,10 @@ struct SettingsView: View {
                 // MARK: - Help
 
                 Section("Help") {
+                    Link(destination: URL(string: "shortcuts://")!) {
+                        Label("Automate in Shortcuts", systemImage: "square.2.layers.3d")
+                    }
+
                     Button {
                         // Reset the one-shot, then let Today open a session -
                         // the coach marks run on the next live hold.
@@ -271,6 +275,14 @@ struct SettingsView: View {
             }
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
                 if isPro { applyPendingFeatureEnable() }
+            }
+            .onChange(of: IntentRouter.shared.settingsPrompt, initial: true) { _, prompt in
+                guard let prompt else { return }
+                IntentRouter.shared.settingsPrompt = nil
+                switch prompt {
+                case .proGate: requestTrialOffer(for: .airpodsBackground)
+                case .confirmAllDay: showingAirpodsBackgroundConfirm = true
+                }
             }
             .sheet(isPresented: $showTrialOffer, onDismiss: {
                 trialPurchaseInFlight = false
