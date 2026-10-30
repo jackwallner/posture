@@ -185,18 +185,17 @@ private struct AirpodsRootView: View {
             guard !covered else { return }
             showingPracticeFromReminder = true
         case .startMonitoring:
-            let route = IntentRouter.monitoringRoute(
+            switch IntentRouter.monitoringRoute(
                 isPro: subscriptions.isProSubscriber,
                 allDayEnabled: settings.airpodsBackgroundEnabled
-            )
-            if case .settings = route, covered { return }
-            // An explicit start overrides "Stop for now", including after the
-            // Settings confirmation below, which reconciles on its own.
-            monitor.userPaused = false
-            switch route {
+            ) {
             case .start:
+                // An explicit start overrides "Stop for now". The Settings
+                // confirmation clears it too, only once the user says yes.
+                monitor.userPaused = false
                 reconcileMonitoring(monitor)
             case .settings(let prompt):
+                guard !covered else { return }
                 intents.settingsPrompt = prompt
             }
         }

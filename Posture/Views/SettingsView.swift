@@ -344,6 +344,8 @@ struct SettingsView: View {
             .alert("Turn on all-day monitoring?", isPresented: $showingAirpodsBackgroundConfirm) {
                 Button("Cancel", role: .cancel) { }
                 Button("Turn on") {
+                    // Turning it on means monitor now, even after "Stop for now".
+                    airpodsMonitor?.userPaused = false
                     settings.airpodsBackgroundEnabled = true
                     // Background slouch alerts arrive as notifications.
                     Task {
