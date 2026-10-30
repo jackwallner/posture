@@ -1,3 +1,5 @@
+Posture Check is a posture practice app that uses compatible AirPods to give live alignment cues during short sitting or standing sessions. Free practice starts at three minutes, and Levels 1 and 2 are free.
+
 A desk day can pass before you notice how you're sitting. Take a short pause to pay attention to your posture and build a practice you can return to.
 
 START SMALL
@@ -12,5 +14,5 @@ The paid upgrade opens the full progression up to 15 minutes, posture walks, his
 Motion is processed on your device. This app supports posture awareness and practice only. It is not medical advice, diagnosis or treatment, and it does not promise to correct a condition or relieve pain.
 
 Both subscriptions renew automatically, and each offers a 7-day free trial when eligible. Apple charges your Apple Account when you confirm the purchase or after an eligible trial. If you are not eligible, Apple charges at confirmation. The renewal charge is made within 24 hours before the current period ends. Manage or cancel in Settings › Apple Account › Subscriptions at least 24 hours before the period ends. Prices vary by region and are shown before purchase.
-Privacy Policy: https://jackwallner.github.io/posture/privacy-policy.html
+Privacy Policy: https://jackwallner.com/ios/posture/privacy-policy.html
 Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

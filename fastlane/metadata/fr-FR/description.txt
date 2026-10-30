@@ -12,5 +12,5 @@ L'option payante ouvre toute la progression jusqu'à 15 minutes, les marches pos
 Les mouvements sont traités sur votre appareil. L'app aide à prendre conscience de sa posture et à s'exercer. Elle ne fournit ni conseil médical, ni diagnostic, ni traitement, et ne promet pas de corriger une pathologie ou de soulager la douleur.
 
 Tous deux se renouvellent automatiquement et proposent un essai gratuit de 7 jours si vous êtes éligible. Apple facture votre compte Apple lors de la confirmation de l’achat ou après un essai éligible. Si vous n’êtes pas éligible, le débit est effectué à la confirmation. Le renouvellement est facturé dans les 24 heures précédant la fin de la période en cours. Gérez ou annulez dans Réglages › Compte Apple › Abonnements, au moins 24 heures avant la fin. Les prix varient selon la région et sont affichés avant l’achat.
-Politique de confidentialité: https://jackwallner.github.io/posture/privacy-policy.html
+Politique de confidentialité: https://jackwallner.com/ios/posture/privacy-policy.html
 Conditions d’utilisation (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

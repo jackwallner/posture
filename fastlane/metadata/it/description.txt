@@ -12,5 +12,5 @@ L'upgrade a pagamento offre la progressione completa fino a 15 minuti, camminate
 Il movimento viene elaborato sul dispositivo. L'app serve alla consapevolezza posturale e alla pratica, non a consigli medici, diagnosi o trattamenti. Non promette di correggere patologie o alleviare il dolore.
 
 Entrambi si rinnovano automaticamente e includono una prova gratuita di 7 giorni se idoneo. Apple addebita il tuo Account Apple alla conferma dell’acquisto o dopo una prova idonea. Se non sei idoneo, l’addebito avviene alla conferma. Il rinnovo viene addebitato entro le 24 ore precedenti la fine del periodo corrente. Gestisci o annulla in Impostazioni › Account Apple › Abbonamenti almeno 24 ore prima della fine. I prezzi variano in base alla regione e sono mostrati prima dell’acquisto.
-Informativa sulla privacy: https://jackwallner.github.io/posture/privacy-policy.html
+Informativa sulla privacy: https://jackwallner.com/ios/posture/privacy-policy.html
 Termini di utilizzo (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

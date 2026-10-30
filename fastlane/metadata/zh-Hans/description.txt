@@ -12,5 +12,5 @@
 动作数据在设备上处理。本应用仅用于姿势觉察和练习，不提供医疗建议、诊断或治疗，也不承诺矫正疾病或缓解疼痛。
 
 两种方案都会自动续订，符合条件时各提供 7 天免费试用。Apple 会在你确认购买时或符合条件的试用结束后向你的 Apple 账户收费。不符合条件时会在确认购买时收费。续订费用会在当前周期结束前 24 小时内收取。请在周期结束至少 24 小时前，前往设置 › Apple 账户 › 订阅进行管理或取消。价格因地区而异，购买前会显示。
-隐私政策: https://jackwallner.github.io/posture/privacy-policy.html
+隐私政策: https://jackwallner.com/ios/posture/privacy-policy.html
 使用条款 (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

@@ -12,5 +12,5 @@ Betalingsversionen giver hele forløbet op til 15 minutter, holdningsgåture, hi
 Bevægelse behandles på din enhed. Appen støtter kropsholdningsbevidsthed og øvelse, ikke lægelig rådgivning, diagnose eller behandling. Den lover ikke at rette en lidelse eller lindre smerter.
 
 Begge fornyes automatisk og har en gratis prøveperiode på 7 dage, hvis du er berettiget. Apple opkræver din Apple-konto ved bekræftelse af købet eller efter en berettiget prøveperiode. Hvis du ikke er berettiget, opkræves du ved bekræftelse. Fornyelsesbeløbet opkræves inden for de sidste 24 timer før periodens udløb. Administrer eller opsig i Indstillinger › Apple-konto › Abonnementer mindst 24 timer før periodens udløb. Priser varierer efter område og vises før køb.
-Privatlivspolitik: https://jackwallner.github.io/posture/privacy-policy.html
+Privatlivspolitik: https://jackwallner.com/ios/posture/privacy-policy.html
 Brugsbetingelser (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
