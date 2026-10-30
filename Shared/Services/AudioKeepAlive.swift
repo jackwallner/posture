@@ -137,7 +137,9 @@ final class AudioKeepAlive {
             // Pull the raw type out here - `userInfo` is `[AnyHashable: Any]?`
             // which isn't Sendable, so we can't ferry it across the actor hop.
             let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
-            Task { @MainActor in self?.handleInterruption(rawType: raw) }
+            let reason = note.userInfo?[AVAudioSessionInterruptionReasonKey] as? UInt
+            let wasSuspended = reason == AVAudioSession.InterruptionReason.appWasSuspended.rawValue
+            Task { @MainActor in self?.handleInterruption(rawType: raw, wasSuspended: wasSuspended) }
         }
         // On the main queue so the notice's engine is compared by reference
         // while the notice still holds it (a freed engine's address can be
@@ -176,10 +178,11 @@ final class AudioKeepAlive {
         audioObservers = [interruption, configChange, routeChange, active]
     }
 
+    /// The flag clears only if the restart works: opened mid-call, it fails
+    /// and `.ended` (or the next return to the app) tries again.
     private func handleDidBecomeActive() {
-        guard isInterrupted else { return }
-        isInterrupted = false
-        if isHeld, audioEngine?.isRunning != true { resumeSilentAudio() }
+        guard isInterrupted, isHeld, audioEngine?.isRunning != true else { return }
+        resumeSilentAudio()
     }
 
     /// While interrupted, `.ended` (or coming back to the app) restarts the
@@ -189,18 +192,19 @@ final class AudioKeepAlive {
               let raw = rawReason,
               let reason = AVAudioSession.RouteChangeReason(rawValue: raw),
               reason == .newDeviceAvailable || reason == .oldDeviceUnavailable else { return }
-        resumeSilentAudio(rebuild: true)
+        resumeSilentAudio()
     }
 
-    private func handleInterruption(rawType: UInt?) {
+    private func handleInterruption(rawType: UInt?, wasSuspended: Bool) {
         guard
             let raw = rawType,
             let type = AVAudioSession.InterruptionType(rawValue: raw)
         else { return }
         switch type {
         case .began:
-            // Engine has stopped. Nothing to do until .ended fires.
-            isInterrupted = true
+            // Engine has stopped. Nothing to do until .ended fires. A .began
+            // for an app that was suspended has no .ended, so it doesn't count.
+            if !wasSuspended { isInterrupted = true }
             if isHeld { onEvent?(.interrupted) }
         case .ended:
             isInterrupted = false
@@ -217,24 +221,20 @@ final class AudioKeepAlive {
     /// rebuilt first doesn't get its fresh engine torn down again.
     private func handleEngineConfigChange(from engine: AnyObject?) {
         guard isHeld, !isInterrupted, let current = audioEngine, engine === current else { return }
-        resumeSilentAudio(rebuild: true)
+        resumeSilentAudio()
     }
 
-    private func resumeSilentAudio(rebuild: Bool = false) {
+    /// Always rebuilds: the route may have changed while the engine was down
+    /// (recovery skips config changes during an interruption), which leaves
+    /// the old player's format stale. A silent engine is cheap to rebuild.
+    private func resumeSilentAudio() {
         do {
             try AVAudioSession.sharedInstance().setActive(
                 true,
                 options: .notifyOthersOnDeactivation
             )
-            if rebuild {
-                stopSilentAudio()
-                try startSilentAudio()
-            } else if let engine = audioEngine, !engine.isRunning {
-                try engine.start()
-                audioPlayer?.play()
-            } else if audioEngine == nil {
-                try startSilentAudio()
-            }
+            stopSilentAudio()
+            try startSilentAudio()
             lastError = nil
             isInterrupted = false
             onEvent?(.resumed)

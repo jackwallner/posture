@@ -347,7 +347,7 @@ struct SettingsView: View {
                     airpodsMonitor?.userPaused = false
                     if !settings.airpodsBackgroundEnabled {
                         settings.airpodsBackgroundEnabled = true
-                    } else if let m = airpodsMonitor, !m.isMonitoring || !m.isBackground {
+                    } else if settings.hasAirpods == true, let m = airpodsMonitor, !m.isMonitoring || !m.isBackground {
                         // Already on (a lapsed subscriber renewing), so no
                         // setting change will start it.
                         m.stop()
