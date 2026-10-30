@@ -1,6 +1,7 @@
 #if os(iOS)
 
 import AudioToolbox
+import LocalAuthentication
 import UIKit
 import UserNotifications
 
@@ -34,7 +35,7 @@ enum SlouchNudge {
         AudioServicesPlaySystemSound(1520)
         let delivery = delivery(
             inBackground: inBackground,
-            phoneLocked: PhoneLockState.shared.isLocked,
+            phoneLocked: PhoneLockState.shared.isLocked(inBackground: inBackground),
             watchReachable: WatchSyncService.shared.isWatchReachable
         )
         if delivery.watchMessage { WatchSyncService.shared.sendSlouchNudge() }
@@ -67,25 +68,37 @@ enum SlouchNudge {
 final class PhoneLockState {
     static let shared = PhoneLockState()
 
-    private(set) var isLocked = false
+    private var protectedDataGone = false
     private var observers: [NSObjectProtocol] = []
 
     private init() {}
 
+    /// Without a passcode, protected data never drops, so a backgrounded
+    /// phone counts as locked: the mirror alone then reaches the wrist,
+    /// never the mirror plus a relay.
+    func isLocked(inBackground: Bool) -> Bool {
+        if protectedDataGone { return true }
+        return inBackground && !Self.hasPasscode()
+    }
+
+    private static func hasPasscode() -> Bool {
+        LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
+    }
+
     func start(locked: Bool) {
         guard observers.isEmpty else { return }
-        isLocked = locked
+        protectedDataGone = locked
         let center = NotificationCenter.default
         observers = [
             center.addObserver(
                 forName: UIApplication.protectedDataWillBecomeUnavailableNotification, object: nil, queue: nil
             ) { @Sendable _ in
-                Task { @MainActor in PhoneLockState.shared.isLocked = true }
+                Task { @MainActor in PhoneLockState.shared.protectedDataGone = true }
             },
             center.addObserver(
                 forName: UIApplication.protectedDataDidBecomeAvailableNotification, object: nil, queue: nil
             ) { @Sendable _ in
-                Task { @MainActor in PhoneLockState.shared.isLocked = false }
+                Task { @MainActor in PhoneLockState.shared.protectedDataGone = false }
             },
         ]
     }

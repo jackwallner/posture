@@ -50,9 +50,7 @@ struct WatchTodayView: View {
         }
         .task {
             subscriptions.loadCachedStatus()
-            WatchSyncService.shared.onSlouchNudge = { WatchSlouchHaptic.playRelayed(sentAt: $0) }
             WatchSyncService.shared.onTodayReceived = { today = $0 }
-            WatchSyncService.shared.activate()
             // A background launch may have saved a newer one before this view existed.
             today = TodaySnapshot.stored() ?? today
             WatchSyncService.shared.onAlwaysOnReceived = { _ in

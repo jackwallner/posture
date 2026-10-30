@@ -49,7 +49,12 @@ final class AudioKeepAlive {
     func acquire(_ token: String) {
         let wasEmpty = holders.isEmpty
         holders.insert(token)
-        guard wasEmpty else { return }
+        guard wasEmpty else {
+            // Already held, but a failed rebuild or a route change can leave
+            // the engine stopped: restart it rather than trust the hold.
+            if audioEngine?.isRunning != true { resumeSilentAudio() }
+            return
+        }
         do {
             try startAudioSession()
             if audioEngine?.isRunning != true {
@@ -131,8 +136,9 @@ final class AudioKeepAlive {
             forName: .AVAudioEngineConfigurationChange,
             object: nil,
             queue: nil
-        ) { @Sendable [weak self] _ in
-            Task { @MainActor in self?.handleEngineConfigChange() }
+        ) { @Sendable [weak self] note in
+            let engine = note.object.map { ObjectIdentifier($0 as AnyObject) }
+            Task { @MainActor in self?.handleEngineConfigChange(engine: engine) }
         }
         // AirPods leaving or coming back. The config-change notice usually
         // covers this, but if the engine still ended up stopped, iOS suspends
@@ -175,8 +181,10 @@ final class AudioKeepAlive {
 
     /// A new output route can change the hardware format, which leaves the
     /// old player's connection and looping buffer stale, so rebuild it.
-    private func handleEngineConfigChange() {
-        guard isHeld else { return }
+    /// Ignores notices from an engine already replaced, so a route change that
+    /// rebuilt first doesn't get its fresh engine torn down again.
+    private func handleEngineConfigChange(engine: ObjectIdentifier?) {
+        guard isHeld, let current = audioEngine, engine == ObjectIdentifier(current) else { return }
         resumeSilentAudio(rebuild: true)
     }
 

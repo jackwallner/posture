@@ -154,7 +154,6 @@ final class HeadphoneMotionService {
         guard debugMotionTask == nil else { return }
         isConnected = true
         isRunning = true
-        onConnect?(true)
 
         debugMotionTask = Task { @MainActor [weak self] in
             var phase = 0.0
@@ -171,6 +170,9 @@ final class HeadphoneMotionService {
                 try? await Task.sleep(nanoseconds: 40_000_000)
             }
         }
+        // After the task is set: the connect callback can call start() again,
+        // and the guard above must already see a running stub.
+        onConnect?(true)
     }
     #endif
 }
