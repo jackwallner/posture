@@ -176,25 +176,27 @@ private struct AirpodsRootView: View {
     /// is done (or without AirPods) the app just opens.
     private func handle(_ request: IntentRouter.Request) {
         guard settings.hasCompletedOnboarding, settings.hasCalibrated, settings.hasAirpods == true else { return }
+        // A cover or sheet already up (here or on Today) would block a second
+        // presentation and leave its flag stuck.
+        let covered = ackScheduledAt != nil || showingPracticeFromReminder
+            || ReviewPromptCoordinator.shared.todayIsCovered
         switch request {
         case .startPractice:
-            // Already in a check-in or practice: a second cover can't present
-            // and its flag would stick.
-            guard ackScheduledAt == nil, !showingPracticeFromReminder else { return }
+            guard !covered else { return }
             showingPracticeFromReminder = true
         case .startMonitoring:
+            let route = IntentRouter.monitoringRoute(
+                isPro: subscriptions.isProSubscriber,
+                allDayEnabled: settings.airpodsBackgroundEnabled
+            )
+            if case .settings = route, covered { return }
             // An explicit start overrides "Stop for now", including after the
             // Settings confirmation below, which reconciles on its own.
             monitor.userPaused = false
-            switch IntentRouter.monitoringRoute(
-                isPro: subscriptions.isProSubscriber,
-                allDayEnabled: settings.airpodsBackgroundEnabled
-            ) {
+            switch route {
             case .start:
                 reconcileMonitoring(monitor)
             case .settings(let prompt):
-                // Settings sits under any open cover and couldn't present.
-                guard ackScheduledAt == nil, !showingPracticeFromReminder else { return }
                 intents.settingsPrompt = prompt
             }
         }
