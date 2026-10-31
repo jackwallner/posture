@@ -522,9 +522,7 @@ struct HistoryView: View {
     private var hourRhythm: some View {
         let byHour = weekHourAlignment
         if byHour.count >= 3 {
-            let sorted = byHour.sorted { $0.value > $1.value }
-            let strong = sorted.prefix(3).map(\.key).sorted()
-            let slouchy = sorted.suffix(3).map(\.key).sorted()
+            let (strong, slouchy) = PostureDayStats.hourRhythm(byHour)
             VStack(alignment: .leading, spacing: 8) {
                 rhythmLine(icon: "sun.max", color: Theme.sage,
                            label: "Strong hours", hours: strong)
