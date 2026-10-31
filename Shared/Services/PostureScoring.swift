@@ -207,11 +207,18 @@ enum PostureScoring {
         /// Smoothing for the rep stream (matches the practice EMA).
         static let smoothingAlpha: Double = 0.15
 
-        /// The aligned baseline a session's warm-up reps are measured from.
+        /// The aligned baseline a session's warm-up reps are measured from: the
+        /// rest pose of the posture being trained. Standing and sitting rest
+        /// poses sit a few degrees apart, and a rep only counts when the head
+        /// returns to within ~2.3 degrees of the baseline, so seated tucks
+        /// measured from the standing pose never register.
         static func repBaseline(
             standing: Double?, sitting: Double?, combined: Double, mode: PostureMode?
         ) -> Double {
-            standing ?? combined
+            switch mode {
+            case .sitting: return sitting ?? combined
+            case .standing, .none: return standing ?? combined
+            }
         }
     }
 }
