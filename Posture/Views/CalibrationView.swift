@@ -838,7 +838,7 @@ extension CalibrationView.Mode {
     /// The last screen's button closes the sheet (a recalibrate) instead of
     /// flipping `hasCalibrated`, which only first-run setup does: the root view
     /// reacts to that flag by swapping to the tabs.
-    var dismissesWhenDone: Bool { self == .quickRecalibrate }
+    var dismissesWhenDone: Bool { self != .onboarding }
 }
 
 // MARK: - Confidence bar
