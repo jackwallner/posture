@@ -8,6 +8,11 @@ struct ProgressPathView: View {
     var onLockedTap: (() -> Void)? = nil
 
     private var visibleLevels: [Int] {
+        Self.visibleLevels(currentLevel: currentLevel, maxLevel: maxLevel, windowRadius: windowRadius)
+    }
+
+    /// The rungs shown around `currentLevel`.
+    nonisolated static func visibleLevels(currentLevel: Int, maxLevel: Int, windowRadius: Int) -> [Int] {
         let low = max(1, currentLevel - windowRadius)
         let high = min(maxLevel, currentLevel + windowRadius)
         return Array(low...high)

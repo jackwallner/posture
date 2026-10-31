@@ -206,6 +206,13 @@ enum PostureScoring {
         static let defaultRepsTarget: Int = 5
         /// Smoothing for the rep stream (matches the practice EMA).
         static let smoothingAlpha: Double = 0.15
+
+        /// The aligned baseline a session's warm-up reps are measured from.
+        static func repBaseline(
+            standing: Double?, sitting: Double?, combined: Double, mode: PostureMode?
+        ) -> Double {
+            standing ?? combined
+        }
     }
 }
 
