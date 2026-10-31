@@ -509,9 +509,9 @@ final class PracticeSessionController {
         }
     }
 
-    /// Chin-tuck warm-up: count retract-and-return cycles against the
-    /// standing baseline. No session time or scoring accrues here - the
-    /// clock starts with the hold.
+    /// Chin-tuck warm-up: count retract-and-return cycles against the rest
+    /// pose of the posture being trained. No session time or scoring accrues
+    /// here - the clock starts with the hold.
     private func ingestRep(pitch: Double, at now: Date) {
         guard let calibration = calibrationService.current(),
               let combined = calibration.airpodsPitch else { return }
