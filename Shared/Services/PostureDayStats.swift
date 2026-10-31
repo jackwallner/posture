@@ -63,9 +63,14 @@ struct PostureDayStats: Sendable {
 
     /// The week's strongest and slouchiest hours for the History rhythm card.
     /// `byHour` maps an hour of the day to its alignment fraction (0…1).
+    /// Both lists come from one ordering and each takes at most three hours and
+    /// never more than half of them, so a thin week cannot list an hour as both
+    /// strong and slouchy. Equal hours order by the clock, so the split is the
+    /// same on every launch.
     static func hourRhythm(_ byHour: [Int: Double]) -> (strong: [Int], slouchy: [Int]) {
-        let sorted = byHour.sorted { $0.value > $1.value }
-        return (sorted.prefix(3).map(\.key).sorted(), sorted.suffix(3).map(\.key).sorted())
+        let ordered = byHour.sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }
+        let side = min(3, ordered.count / 2)
+        return (ordered.prefix(side).map(\.key).sorted(), ordered.suffix(side).map(\.key).sorted())
     }
 
     /// The slice of `PostureMinuteSample` the math needs, so tests don't have
