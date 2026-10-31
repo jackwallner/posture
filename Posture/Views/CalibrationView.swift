@@ -243,7 +243,7 @@ struct CalibrationView: View {
                     .buttonStyle(.daylight(.ghost))
             }
 
-            if mode == .quickRecalibrate {
+            if mode.dismissesWhenDone {
                 Button { dismiss() } label: { Text("Cancel") }
                     .buttonStyle(.daylight(.ghost))
             }
@@ -509,9 +509,9 @@ struct CalibrationView: View {
             Spacer()
 
             Button {
-                if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
+                if mode.dismissesWhenDone { dismiss() } else { settings.hasCalibrated = true }
             } label: {
-                Text(mode == .quickRecalibrate ? "Done" : "Let's go")
+                Text(mode.dismissesWhenDone ? "Done" : "Let's go")
             }
             .buttonStyle(.daylight(.primary))
             .padding(.bottom, 28)
@@ -617,7 +617,7 @@ struct CalibrationView: View {
         CalibrationService(context: context).save(cal)
         settings.hasAirpods = false
         settings.calibrationDeferred = true
-        if mode == .quickRecalibrate { dismiss() } else { settings.hasCalibrated = true }
+        if mode.dismissesWhenDone { dismiss() } else { settings.hasCalibrated = true }
     }
 
     private func openSettings() {
@@ -832,6 +832,13 @@ struct CalibrationView: View {
         guard let a, let b else { return nil }
         return (a, b)
     }
+}
+
+extension CalibrationView.Mode {
+    /// The last screen's button closes the sheet (a recalibrate) instead of
+    /// flipping `hasCalibrated`, which only first-run setup does: the root view
+    /// reacts to that flag by swapping to the tabs.
+    var dismissesWhenDone: Bool { self == .quickRecalibrate }
 }
 
 // MARK: - Confidence bar
