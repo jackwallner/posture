@@ -514,7 +514,13 @@ final class PracticeSessionController {
     /// clock starts with the hold.
     private func ingestRep(pitch: Double, at now: Date) {
         guard let calibration = calibrationService.current(),
-              let baseline = calibration.airpodsStandingPitch ?? calibration.airpodsPitch else { return }
+              let combined = calibration.airpodsPitch else { return }
+        let baseline = PostureScoring.ChinTuck.repBaseline(
+            standing: calibration.airpodsStandingPitch,
+            sitting: calibration.airpodsSittingPitch,
+            combined: combined,
+            mode: config?.postureMode
+        )
         let counted = repDetector.ingest(
             t: now.timeIntervalSinceReferenceDate, pitch: pitch, baseline: baseline
         )
