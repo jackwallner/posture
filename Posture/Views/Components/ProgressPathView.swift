@@ -11,12 +11,20 @@ struct ProgressPathView: View {
         Self.visibleLevels(currentLevel: currentLevel, maxLevel: maxLevel, windowRadius: windowRadius)
     }
 
-    /// The rungs shown around `currentLevel`.
+    /// The rungs shown around `currentLevel`. The ladder has no top (a level
+    /// every 12 passes past level 10) but only rungs 1...`maxLevel` are drawn,
+    /// so a level past that is windowed at the top rung instead of building a
+    /// range that ends before it starts.
     nonisolated static func visibleLevels(currentLevel: Int, maxLevel: Int, windowRadius: Int) -> [Int] {
-        let low = max(1, currentLevel - windowRadius)
-        let high = min(maxLevel, currentLevel + windowRadius)
+        guard maxLevel >= 1 else { return [] }
+        let center = min(max(currentLevel, 1), maxLevel)
+        let low = max(1, center - windowRadius)
+        let high = min(maxLevel, center + windowRadius)
         return Array(low...high)
     }
+
+    /// The rung to scroll to: the user's level, or the top rung past it.
+    private var scrollTarget: Int { min(currentLevel, maxLevel) }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -32,10 +40,10 @@ struct ProgressPathView: View {
                 .padding(.horizontal, 4)
                 .padding(.vertical, 8)
             }
-            .onAppear { proxy.scrollTo(currentLevel, anchor: .center) }
-            .onChange(of: currentLevel) { _, level in
+            .onAppear { proxy.scrollTo(scrollTarget, anchor: .center) }
+            .onChange(of: currentLevel) { _, _ in
                 withAnimation(.easeInOut(duration: 0.25)) {
-                    proxy.scrollTo(level, anchor: .center)
+                    proxy.scrollTo(scrollTarget, anchor: .center)
                 }
             }
         }
