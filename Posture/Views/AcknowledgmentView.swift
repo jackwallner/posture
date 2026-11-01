@@ -196,6 +196,7 @@ struct AcknowledgmentView: View {
                     .font(Theme.display(64))
                     .lineLimit(1)
                     .minimumScaleFactor(0.4)
+                    .accessibilityLabel(resultWord)
                 Text(resultSubtitle)
                     .font(Theme.font(.body))
                     .foregroundStyle(Theme.ink2)

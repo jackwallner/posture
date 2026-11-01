@@ -120,7 +120,7 @@ final class ReleaseJourneysUITests: XCTestCase {
         QA.checkpoint(app, "today-before-check-in")
 
         let first = try checkIn("aligned", in: app)
-        XCTAssertTrue(app.staticTexts["Aligned"].exists, "result did not name the quality that was logged")
+        XCTAssertTrue(app.staticTexts["Aligned"].waitForExistence(timeout: 5), "result did not name the quality that was logged")
         QA.checkpoint(app, "check-in-result-aligned")
         app.buttons["Done"].tap()
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
@@ -134,7 +134,7 @@ final class ReleaseJourneysUITests: XCTestCase {
 
         let second = try checkIn("drifting", in: app)
         XCTAssertEqual(second, first + 1, "the check-in before the relaunch was lost")
-        XCTAssertTrue(app.staticTexts["Drifting"].exists, "second result did not name the quality that was logged")
+        XCTAssertTrue(app.staticTexts["Drifting"].waitForExistence(timeout: 5), "second result did not name the quality that was logged")
         QA.checkpoint(app, "second-check-in-result")
         app.buttons["Done"].tap()
     }
