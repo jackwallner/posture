@@ -10,10 +10,10 @@ paths:
 
 # Posture: localization (added 2026-11-04)
 
-Every user-facing string in the app, widgets and Watch routes through the
-catalog, which holds `en` only for now. Separate runs add the other languages,
-then list them in `CFBundleLocalizations` in each Info.plist and in `LANGS` in
-`check.py`.
+The app, widgets and Watch ship in English plus de, es, it, ja, nl and ru (added
+2026-11-04, picked from each market's revenue, customers and impressions). A new
+language also goes in `CFBundleLocalizations` in each Info.plist, in `LANGS` in
+`check.py` and in `LocalizationTests.languages`.
 
 ## Setup
 - One catalog, `Shared/Localizable.xcstrings` (source `en`, every key

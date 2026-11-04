@@ -4,10 +4,46 @@
     "NSLocationWhenInUseUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture verwendet deinen Standort während eines Spaziergangs, um Strecke und Tempo genau zu messen. Wenn du den Zugriff deaktivierst, wird eine Schätzung anhand deiner Schritte verwendet."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posture uses your location during a walk to measure distance and pace accurately. Turning it off falls back to a step-based estimate."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture usa tu ubicación durante una caminata para medir la distancia y el ritmo con precisión. Si desactivas el acceso, se usará una estimación basada en los pasos."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture usa la tua posizione durante una camminata per misurare con precisione distanza e passo. Se disattivi la posizione, usa una stima basata sui passi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureは、ウォーキング中の距離とペースを正確に測定するために位置情報を使用します。位置情報をオフにすると、歩数に基づく推定値が使われます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture gebruikt je locatie tijdens een wandeling om afstand en tempo nauwkeurig te meten. Als je dit uitschakelt, wordt een schatting op basis van stappen gebruikt."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture использует твою геопозицию во время прогулки, чтобы точно измерять расстояние и темп. Если отключить доступ, приложение будет оценивать их по количеству шагов."
           }
         }
       }
@@ -15,10 +51,46 @@
     "NSMotionUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture liest Kopfbewegungsdaten von unterstützten AirPods, um zu erkennen, wenn du zusammensackst, sowie Schritt- und Streckendaten während Spaziergängen."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Posture reads head-motion data from supported AirPods to detect when you slouch, and step and distance data during walks."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture lee los datos de movimiento de la cabeza de los AirPods compatibles para detectar cuándo te encorvas, y los datos de pasos y distancia durante las caminatas."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture legge i dati sui movimenti della testa dagli AirPods supportati per rilevare quando ti incurvi e i dati su passi e distanza durante le camminate."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Postureは、対応するAirPodsから頭の動きのデータを読み取り、姿勢が崩れたことを検出します。また、ウォーキング中の歩数と距離のデータを読み取ります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture leest hoofdbewegingsgegevens van ondersteunde AirPods om te detecteren wanneer je inzakt, en gegevens over stappen en afstand tijdens wandelingen."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture считывает данные о движениях головы с поддерживаемых AirPods, чтобы определять, когда ты сутулишься, а также данные о шагах и расстоянии во время прогулок."
           }
         }
       }

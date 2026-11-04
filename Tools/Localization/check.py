@@ -27,7 +27,7 @@ import sys
 
 ROOT = os.getcwd()
 DIRS = ['Posture', 'Shared', 'PostureWatch', 'PostureWidget', 'PostureWatchWidget']
-LANGS = []
+LANGS = ['de', 'es', 'it', 'ja', 'nl', 'ru']
 UI_FUNCS = {'Text', 'Button', 'Label', 'Section', 'Toggle', 'TextField', 'navigationTitle', 'accessibilityLabel',
             'alert', 'DatePicker', 'Stepper', 'Link', 'configurationDisplayName', 'description',
             'confirmationDialog', 'Picker', 'LocalizedStringKey', 'accessibilityHint', 'SecureField',

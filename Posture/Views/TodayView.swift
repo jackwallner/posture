@@ -1060,6 +1060,7 @@ struct TodayView: View {
         guard let last = monitor.lastSampleAt else { return String(localized: "Waiting for the first reading…") }
         let ago = max(0, Int(now.timeIntervalSince(last)))
         let agoText = ago <= 2 ? String(localized: "just now") : String(localized: "\(DisplayFormat.seconds(ago)) ago")
+        if monitor.samplesToday == 1 { return String(localized: "1 reading today · last \(agoText)") }
         return String(localized: "\(monitor.samplesToday.formatted()) readings today · last \(agoText)")
     }
 

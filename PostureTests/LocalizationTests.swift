@@ -17,6 +17,36 @@ final class LocalizationTests: XCTestCase {
         return try XCTUnwrap(nil as Bundle?, "en.lproj/Localizable.strings is missing")
     }
 
+    static let languages = ["de", "es", "it", "ja", "nl", "ru"]
+
+    private func bundle(_ language: String) throws -> Bundle {
+        for host in [Bundle.main] + Bundle.allBundles {
+            if let path = host.path(forResource: language, ofType: "lproj"), let bundle = Bundle(path: path) {
+                return bundle
+            }
+        }
+        return try XCTUnwrap(nil as Bundle?, "\(language).lproj is missing")
+    }
+
+    func testEveryLanguageTranslatesThePlurals() throws {
+        for language in Self.languages {
+            let host = try bundle(language)
+            let locale = Locale(identifier: language)
+            let one = String(localized: "\(1) minutes", bundle: host, locale: locale)
+            let many = String(localized: "\(5) minutes", bundle: host, locale: locale)
+            XCTAssertFalse(one.contains("#@"), language)
+            XCTAssertNotEqual(one, "1 minute", language)
+            XCTAssertTrue(many.contains("5"), language)
+        }
+    }
+
+    func testRussianPicksPluralCategories() throws {
+        let russian = try bundle("ru")
+        let locale = Locale(identifier: "ru")
+        let forms = [1, 3, 5].map { String(localized: "\($0) minutes", bundle: russian, locale: locale) }
+        XCTAssertEqual(Set(forms.map { $0.dropFirst(2) }).count, 3, "\(forms)")
+    }
+
     func testPluralsKeepEnglishWording() throws {
         let en = try bundle()
         XCTAssertEqual(String(localized: "\(1) minutes", bundle: en), "1 minute")
