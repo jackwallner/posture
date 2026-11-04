@@ -57,8 +57,8 @@ final class AudioKeepAlive {
             }
             lastError = nil
         } catch {
-            lastError = "Audio setup failed: \(error.localizedDescription)"
-            onEvent?(.error(lastError ?? "audio error"))
+            lastError = String(localized: "Audio setup failed: \(error.localizedDescription)")
+            onEvent?(.error(lastError ?? String(localized: "audio error")))
             // Don't keep the hold: a held token makes every later acquire a
             // no-op, so the keep-alive would never be retried.
             holders.remove(token)
@@ -198,8 +198,8 @@ final class AudioKeepAlive {
             lastError = nil
             onEvent?(.resumed)
         } catch {
-            lastError = "Could not resume audio: \(error.localizedDescription)"
-            onEvent?(.error(lastError ?? "audio error"))
+            lastError = String(localized: "Could not resume audio: \(error.localizedDescription)")
+            onEvent?(.error(lastError ?? String(localized: "audio error")))
         }
     }
 

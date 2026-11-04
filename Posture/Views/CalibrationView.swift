@@ -148,42 +148,42 @@ struct CalibrationView: View {
         let index = (steps.firstIndex(of: step) ?? 0) + 1
         let name: String
         switch step {
-        case .standing: name = "Standing tall"
-        case .standingSlouch: name = "Standing slouch"
-        case .sitting: name = "Sitting tall"
-        case .sittingSlouch: name = "Sitting slouch"
+        case .standing: name = String(localized: "Standing tall")
+        case .standingSlouch: name = String(localized: "Standing slouch")
+        case .sitting: name = String(localized: "Sitting tall")
+        case .sittingSlouch: name = String(localized: "Sitting slouch")
         }
-        return "\(index) of \(steps.count) · \(name)"
+        return String(localized: "\(index) of \(steps.count) · \(name)")
     }
 
     private func prepTitle(_ step: PoseStep) -> String {
         switch step {
-        case .standing: return "Stand up tall."
-        case .standingSlouch: return "Now slouch, standing."
-        case .sitting: return "Now sit down tall."
-        case .sittingSlouch: return "Last one: slouch in the chair."
+        case .standing: return String(localized: "Stand up tall.")
+        case .standingSlouch: return String(localized: "Now slouch, standing.")
+        case .sitting: return String(localized: "Now sit down tall.")
+        case .sittingSlouch: return String(localized: "Last one: slouch in the chair.")
         }
     }
 
     private func prepInstruction(_ step: PoseStep) -> String {
         switch step {
         case .standing:
-            return "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below."
+            return String(localized: "Stand with your feet hip-width apart. Stack your ears over your shoulders, shoulders over hips, and lengthen up through the crown of your head, chin level. When you're standing tall and steady, tap below.")
         case .standingSlouch:
-            return "Stay on your feet and let it all go: shoulders rolled forward, chest sunk, head drifting ahead of your spine. This is the standing slump we'll coach you out of. When you're in it, tap below."
+            return String(localized: "Stay on your feet and let it all go: shoulders rolled forward, chest sunk, head drifting ahead of your spine. This is the standing slump we'll coach you out of. When you're in it, tap below.")
         case .sitting:
-            return "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below."
+            return String(localized: "Sit back so your hips fill the seat, both feet flat on the floor. Same long spine, ears over shoulders, chin level. When you're sitting tall and steady, tap below.")
         case .sittingSlouch:
-            return "Settle into the slump you usually catch yourself in at a desk: rounded back, chin toward your chest. When you're in your natural slouch, tap below."
+            return String(localized: "Settle into the slump you usually catch yourself in at a desk: rounded back, chin toward your chest. When you're in your natural slouch, tap below.")
         }
     }
 
     private func prepConfirmLabel(_ step: PoseStep) -> String {
         switch step {
-        case .standing: return "I'm standing tall"
-        case .standingSlouch: return "I'm slouched"
-        case .sitting: return "I'm sitting tall"
-        case .sittingSlouch: return "I'm slouched"
+        case .standing: return String(localized: "I'm standing tall")
+        case .standingSlouch: return String(localized: "I'm slouched")
+        case .sitting: return String(localized: "I'm sitting tall")
+        case .sittingSlouch: return String(localized: "I'm slouched")
         }
     }
 
@@ -374,21 +374,26 @@ struct CalibrationView: View {
     }
 
     private func reviewSummary(_ step: PoseStep, capture: PoseCapture?, steady: Bool) -> String {
-        guard let capture else { return "We couldn't read that pose. Try a redo." }
+        guard let capture else { return String(localized: "We couldn't read that pose. Try a redo.") }
         if step.isSlouch {
             let upright = captures[step == .standingSlouch ? .standing : .sitting]?.pitch
             if let upright {
                 let degrees = Int((abs(capture.pitch - upright) * 180 / .pi).rounded())
                 if degrees < 2 {
-                    return "That slouch reads almost identical to your tall pose. If you were holding back, redo it and really let go."
+                    return String(localized: "That slouch reads almost identical to your tall pose. If you were holding back, redo it and really let go.")
                 }
-                return "Your \(step == .standingSlouch ? "standing" : "sitting") slouch drops your head about \(degrees)° from tall. That distance becomes your personal range."
+                return step == .standingSlouch
+                    ? String(localized: "Your standing slouch drops your head about \(degrees)° from tall. That distance becomes your personal range.")
+                    : String(localized: "Your sitting slouch drops your head about \(degrees)° from tall. That distance becomes your personal range.")
             }
-            return "Slouch captured. That distance becomes your personal range."
+            return String(localized: "Slouch captured. That distance becomes your personal range.")
         }
-        return steady
-            ? "A clean, steady read of your \(step == .standing ? "standing" : "sitting") posture. This is the baseline you'll be coached back to."
-            : "You can keep it, but a stiller hold gives more honest coaching. Re-settle and redo if you can."
+        guard steady else {
+            return String(localized: "You can keep it, but a stiller hold gives more honest coaching. Re-settle and redo if you can.")
+        }
+        return step == .standing
+            ? String(localized: "A clean, steady read of your standing posture. This is the baseline you'll be coached back to.")
+            : String(localized: "A clean, steady read of your sitting posture. This is the baseline you'll be coached back to.")
     }
 
     private var unsupportedStep: some View {
@@ -522,20 +527,32 @@ struct CalibrationView: View {
     private var doneSubtitle: String {
         let hasStanding = captures[.standing] != nil
         let hasSitting = captures[.sitting] != nil
-        let poses: String
-        if hasStanding && hasSitting { poses = "your tall posture standing and sitting" }
-        else if hasStanding { poses = "your tall standing posture" }
-        else { poses = "your tall sitting posture" }
+        func forPoses(both: String, standing: String, sitting: String) -> String {
+            if hasStanding && hasSitting { return both }
+            return hasStanding ? standing : sitting
+        }
 
         let hasBothSlouches = captures[.standingSlouch] != nil && captures[.sittingSlouch] != nil
         let hasAnySlouch = captures[.standingSlouch] != nil || captures[.sittingSlouch] != nil
         if hasBothSlouches {
-            return "We've learned \(poses), and your slouch in each. Every reading is scored against your own range for that posture."
+            return forPoses(
+                both: String(localized: "We've learned your tall posture standing and sitting, and your slouch in each. Every reading is scored against your own range for that posture."),
+                standing: String(localized: "We've learned your tall standing posture, and your slouch in each. Every reading is scored against your own range for that posture."),
+                sitting: String(localized: "We've learned your tall sitting posture, and your slouch in each. Every reading is scored against your own range for that posture.")
+            )
         }
         if hasAnySlouch {
-            return "We've learned \(poses), and your slouch. Every reading is scored against your own range."
+            return forPoses(
+                both: String(localized: "We've learned your tall posture standing and sitting, and your slouch. Every reading is scored against your own range."),
+                standing: String(localized: "We've learned your tall standing posture, and your slouch. Every reading is scored against your own range."),
+                sitting: String(localized: "We've learned your tall sitting posture, and your slouch. Every reading is scored against your own range.")
+            )
         }
-        return "We've learned \(poses). Readings are scored against the standard range until you capture your slouch."
+        return forPoses(
+            both: String(localized: "We've learned your tall posture standing and sitting. Readings are scored against the standard range until you capture your slouch."),
+            standing: String(localized: "We've learned your tall standing posture. Readings are scored against the standard range until you capture your slouch."),
+            sitting: String(localized: "We've learned your tall sitting posture. Readings are scored against the standard range until you capture your slouch.")
+        )
     }
 
     // MARK: - State machine
@@ -850,9 +867,9 @@ private struct ConfidenceBar: View {
 
     private var label: String {
         switch confidence {
-        case 0.8...: return "Strong baseline"
-        case 0.5..<0.8: return "Good baseline"
-        default: return "Baseline saved"
+        case 0.8...: return String(localized: "Strong baseline")
+        case 0.5..<0.8: return String(localized: "Good baseline")
+        default: return String(localized: "Baseline saved")
         }
     }
 

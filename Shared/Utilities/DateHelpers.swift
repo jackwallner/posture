@@ -29,7 +29,7 @@ enum DateHelpers {
 
     private static let dayOfWeekFormatter: DateFormatter = {
         let f = DateFormatter()
-        f.dateFormat = "EEE"
+        f.setLocalizedDateFormatFromTemplate("EEE")
         return f
     }()
 

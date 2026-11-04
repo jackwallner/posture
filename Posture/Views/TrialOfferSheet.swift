@@ -4,7 +4,7 @@ import SwiftUI
 /// Vitals trial sheet: drifting glow, sparkle field, headline shimmer, hero pulse.
 struct TrialOfferSheet: View {
     let focus: PosturePlusFeature?
-    let offerLabel: String?
+    let offerHeadline: String?
     let priceLabel: String?
     let directPurchase: Bool
     let isPurchasing: Bool
@@ -19,20 +19,20 @@ struct TrialOfferSheet: View {
 
     private var headline: String {
         if let focus { return focus.intentHeadline }
-        if let offerLabel { return "\(offerLabel.capitalized), on us." }
-        return "Try Posture+ free."
+        if let offerHeadline { return offerHeadline }
+        return String(localized: "Try Posture+ free.")
     }
 
     private var subheadline: String {
         if let focus {
-            if offerLabel != nil {
-                return "\(focus.intentSubheadline) Free for 7 days. Cancel anytime."
+            if offerHeadline != nil {
+                return String(localized: "\(focus.intentSubheadline) Free for 7 days. Cancel anytime.")
             }
             return focus.intentSubheadline
         }
-        return offerLabel != nil
-            ? "The full ladder, walks, trends, and all-day monitoring. No charge until your trial ends."
-            : "The full ladder, walks, trends, and all-day monitoring."
+        return offerHeadline != nil
+            ? String(localized: "The full ladder, walks, trends, and all-day monitoring. No charge until your trial ends.")
+            : String(localized: "The full ladder, walks, trends, and all-day monitoring.")
     }
 
     private var bulletFeatures: [PosturePlusFeature] {

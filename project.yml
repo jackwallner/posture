@@ -5,7 +5,10 @@ options:
     iOS: "17.0"
     watchOS: "10.0"
   xcodeVersion: "16.0"
-  minimumXcodeGenVersion: "2.38"
+  # 2.39 reads Shared/Localizable.xcstrings and adds every language in it to
+  # the project's knownRegions.
+  minimumXcodeGenVersion: "2.39.0"
+  developmentLanguage: en
 
 settings:
   base:

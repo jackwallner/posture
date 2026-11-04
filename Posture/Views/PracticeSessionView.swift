@@ -95,19 +95,21 @@ struct PracticeSessionView: View {
 
             Spacer()
 
-            Text("\(mode.label) practice.")
+            Text(mode == .standing ? "Standing practice." : "Sitting practice.")
                 .font(Theme.display(40))
                 .foregroundStyle(Theme.ink)
 
-            Text("A quick chin-tuck warm-up, then \(minutesLabel(config.targetSeconds)) \(focusPhrase) with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
+            Text(mode == .standing
+                 ? "A quick chin-tuck warm-up, then \(config.targetSeconds / 60) minutes standing tall with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift."
+                 : "A quick chin-tuck warm-up, then \(config.targetSeconds / 60) minutes sitting tall with your AirPods in. The ring shows your alignment live, and a nudge catches you if you drift.")
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink2)
                 .lineSpacing(3)
                 .padding(.top, 14)
 
             HStack(spacing: 12) {
-                statPill(value: minutesLabel(config.targetSeconds), label: "duration")
-                statPill(value: "\(config.targetPercent)%", label: "aligned to pass")
+                statPill(value: minutesLabel(config.targetSeconds), label: String(localized: "duration"))
+                statPill(value: String(localized: "\(config.targetPercent)%"), label: String(localized: "aligned to pass"))
             }
             .padding(.top, 24)
 
@@ -269,7 +271,7 @@ struct PracticeSessionView: View {
             }
             #if DEBUG
             Button { controller.debugCountRep() } label: {
-                Text("Done with this rep (debug)")
+                Text(verbatim: "Done with this rep (debug)")
                     .font(Theme.font(.footnote))
                     .foregroundStyle(Theme.ink3)
             }
@@ -408,7 +410,7 @@ struct PracticeSessionView: View {
                     .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText(countsDown: true))
                     .animation(.easeOut(duration: 0.2), value: controller.remainingSeconds)
-                Text(paused ? "paused" : qualityWord(quality))
+                Text(paused ? String(localized: "paused") : qualityWord(quality))
                     .font(Theme.display(19))
                     .foregroundStyle(paused ? Theme.ink3 : Theme.qualityTextColor(quality))
                 if controller.elapsedSeconds > 10 {
@@ -442,8 +444,8 @@ struct PracticeSessionView: View {
                     // The waiting state stays fully readable (the old 35%-
                     // opacity treatment was near-invisible on the tint).
                     Text(step == .slouch && !coachSlouchFelt
-                         ? "Waiting for the slouch…"
-                         : coachAction(step) + " →")
+                         ? String(localized: "Waiting for the slouch…")
+                         : String(localized: "\(coachAction(step)) →"))
                         .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(step == .slouch && !coachSlouchFelt ? Theme.ink2 : Theme.goodText)
                 }
@@ -467,30 +469,30 @@ struct PracticeSessionView: View {
 
     private func coachTitle(_ step: CoachStep) -> String {
         switch step {
-        case .ring: return "This ring is your alignment."
-        case .slouch: return coachSlouchFelt ? "Felt it?" : "Now slouch. On purpose."
-        case .hold: return "That's the whole practice."
+        case .ring: return String(localized: "This ring is your alignment.")
+        case .slouch: return coachSlouchFelt ? String(localized: "Felt it?") : String(localized: "Now slouch. On purpose.")
+        case .hold: return String(localized: "That's the whole practice.")
         }
     }
 
     private func coachBody(_ step: CoachStep, controller: PracticeSessionController) -> String {
         switch step {
         case .ring:
-            return "Green means aligned, amber means drifting, coral means slouching. Your AirPods read it about 25 times a second."
+            return String(localized: "Green means aligned, amber means drifting, coral means slouching. Your AirPods read it about 25 times a second.")
         case .slouch:
             return coachSlouchFelt
-                ? "Sit back up and watch it turn green. During practice, a slouch held for ~15 seconds earns a gentle buzz."
-                : "Really let go, chin toward your chest, shoulders forward. Watch the ring flip."
+                ? String(localized: "Sit back up and watch it turn green. During practice, a slouch held for ~15 seconds earns a gentle buzz.")
+                : String(localized: "Really let go, chin toward your chest, shoulders forward. Watch the ring flip.")
         case .hold:
-            return "Hold it tall for \(timeLabel(controller.remainingSeconds)) more. Finish and today's streak day is yours; hit the target % and you level up."
+            return String(localized: "Hold it tall for \(timeLabel(controller.remainingSeconds)) more. Finish and today's streak day is yours; hit the target % and you level up.")
         }
     }
 
     private func coachAction(_ step: CoachStep) -> String {
         switch step {
-        case .ring: return "Got it"
-        case .slouch: return "Sitting tall again"
-        case .hold: return "Let's go"
+        case .ring: return String(localized: "Got it")
+        case .slouch: return String(localized: "Sitting tall again")
+        case .hold: return String(localized: "Let's go")
         }
     }
 
@@ -565,16 +567,16 @@ struct PracticeSessionView: View {
     private func statusLine(_ controller: PracticeSessionController) -> String {
         switch controller.phase {
         case .waiting:
-            return "Pop your AirPods in to begin, the clock starts with your first reading."
+            return String(localized: "Pop your AirPods in to begin, the clock starts with your first reading.")
         case .paused(.airpodsOut):
-            return "AirPods are out. The clock is paused until they're back in."
+            return String(localized: "AirPods are out. The clock is paused until they're back in.")
         case .paused(.user):
-            return "Paused. Your minutes are safe."
+            return String(localized: "Paused. Your minutes are safe.")
         case .running:
             switch controller.currentQuality {
-            case .good: return "Tall and easy. Keep breathing."
-            case .borderline: return "Drifting a little, lift the crown of your head."
-            case .bad: return "Curled forward. Ears back over shoulders."
+            case .good: return String(localized: "Tall and easy. Keep breathing.")
+            case .borderline: return String(localized: "Drifting a little, lift the crown of your head.")
+            case .bad: return String(localized: "Curled forward. Ears back over shoulders.")
             }
         default:
             return ""
@@ -596,26 +598,17 @@ struct PracticeSessionView: View {
 
     private func qualityWord(_ q: PostureQuality) -> String {
         switch q {
-        case .good: return "Aligned"
-        case .borderline: return "Drifting"
-        case .bad: return "Slouching"
+        case .good: return String(localized: "Aligned")
+        case .borderline: return String(localized: "Drifting")
+        case .bad: return String(localized: "Slouching")
         }
     }
 
     private func timeLabel(_ seconds: Int) -> String {
-        String(format: "%d:%02d", seconds / 60, seconds % 60)
+        DisplayFormat.clock(seconds)
     }
 
     private func minutesLabel(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        return minutes == 1 ? "1 minute" : "\(minutes) minutes"
-    }
-
-    /// Coaching copy names the posture this session is training.
-    private var focusPhrase: String {
-        switch mode {
-        case .standing: return "standing tall"
-        case .sitting: return "sitting tall"
-        }
+        String(localized: "\(seconds / 60) minutes")
     }
 }

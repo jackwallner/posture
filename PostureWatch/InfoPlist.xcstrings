@@ -1,0 +1,39 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSHealthShareUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture starts a workout session on your Apple Watch so it can monitor your wrist position in the background. Your wrist motion is read on-device via motion sensors; no Health data is read."
+          }
+        }
+      }
+    },
+    "NSHealthUpdateUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture saves a short posture-monitoring workout to your Apple Health so watchOS keeps the background session and motion updates alive while it nudges you."
+          }
+        }
+      }
+    },
+    "NSMotionUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture reads wrist motion to detect when you slouch and gently nudge you with a haptic."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

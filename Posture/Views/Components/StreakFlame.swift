@@ -11,7 +11,7 @@ struct StreakFlame: View {
             Text("\(streak)")
                 .font(.title2.bold())
                 .foregroundStyle(Theme.textPrimary)
-            Text(streak == 1 ? "day" : "days")
+            Text(PluralLabel.days(streak))
                 .font(Theme.font(.subheadline))
                 .foregroundStyle(Theme.textSecondary)
         }

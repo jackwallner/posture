@@ -497,8 +497,8 @@ enum MonitorError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .bufferCreationFailed: return "Could not create silent audio buffer"
-        case .formatCreationFailed: return "Could not create silent audio format"
+        case .bufferCreationFailed: return String(localized: "Could not create silent audio buffer")
+        case .formatCreationFailed: return String(localized: "Could not create silent audio format")
         }
     }
 }

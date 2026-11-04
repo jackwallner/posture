@@ -35,7 +35,7 @@ struct TodayView: View {
     /// `.both`-focus users (they see the Standing|Sitting switch); single-focus
     /// users are pinned to their one mode via `activeMode`.
     @State private var selectedMode: PostureMode = .standing
-    @State private var nextReminderText = "later today"
+    @State private var nextReminderText = String(localized: "later today")
     @State private var remainingReminders = 0
     @State private var currentTip = PostureTipService.randomTip()
     @State private var subscriptions = SubscriptionService.shared
@@ -197,7 +197,7 @@ struct TodayView: View {
             }) {
                 TrialOfferSheet(
                     focus: .walkMode,
-                    offerLabel: walkTrialIntroLabel,
+                    offerHeadline: walkTrialHeadline,
                     priceLabel: walkTrialPriceLabel,
                     directPurchase: walkTrialIsDirect,
                     isPurchasing: walkTrialInFlight,
@@ -302,7 +302,7 @@ struct TodayView: View {
                             HStack(spacing: 3) {
                                 Image(systemName: "snowflake")
                                     .font(.system(size: 9, weight: .semibold))
-                                Text("\(freezesAvailable) \(freezesAvailable == 1 ? "save" : "saves") ready")
+                                Text("\(freezesAvailable) saves ready")
                                     .font(Theme.font(.caption2, weight: .semibold))
                             }
                             .foregroundStyle(Theme.ink3)
@@ -319,10 +319,10 @@ struct TodayView: View {
     private var timeOfDayGreeting: String {
         let hour = Calendar.current.component(.hour, from: AppClock.now)
         switch hour {
-        case 5..<12: return "Good morning"
-        case 12..<17: return "Good afternoon"
-        case 17..<22: return "Good evening"
-        default: return "Hello, night owl"
+        case 5..<12: return String(localized: "Good morning")
+        case 12..<17: return String(localized: "Good afternoon")
+        case 17..<22: return String(localized: "Good evening")
+        default: return String(localized: "Hello, night owl")
         }
     }
 
@@ -363,9 +363,9 @@ struct TodayView: View {
         // loop: the streak now comes from the daily practice.
         if settings.hasSeenTrainingTour && !settings.hasSeenPivotExplainer {
             softBanner(
-                title: "Your streak has a new home.",
-                body: "Posture is now built around one short daily practice: a few minutes held tall, with live coaching. Finishing it keeps your streak. All-day monitoring still lives in Settings if you want it.",
-                actionLabel: "Got it",
+                title: String(localized: "Your streak has a new home."),
+                body: String(localized: "Posture is now built around one short daily practice: a few minutes held tall, with live coaching. Finishing it keeps your streak. All-day monitoring still lives in Settings if you want it."),
+                actionLabel: String(localized: "Got it"),
                 action: { settings.hasSeenPivotExplainer = true }
             )
         }
@@ -374,9 +374,9 @@ struct TodayView: View {
 
         if needsRecalibration {
             softBanner(
-                title: "Time for a quick recalibrate.",
-                body: "AirPods sit a little differently over time, and posture shifts too. A quick reset keeps readings honest.",
-                actionLabel: "Recalibrate",
+                title: String(localized: "Time for a quick recalibrate."),
+                body: String(localized: "AirPods sit a little differently over time, and posture shifts too. A quick reset keeps readings honest."),
+                actionLabel: String(localized: "Recalibrate"),
                 action: { showingRecalibrate = true }
             )
         }
@@ -436,14 +436,16 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 12) {
             if trainsBothPostures { modePicker }
             HStack {
-                Text(trainsBothPostures ? "\(activeMode.label) practice" : "Today's practice")
+                Text(trainsBothPostures
+                     ? (activeMode == .standing ? "Standing practice" : "Sitting practice")
+                     : "Today's practice")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.goodText)
                 Spacer()
                 levelBadge
             }
-            Text("\(practiceMinutesLabel), held tall.")
+            Text(practiceMinutesLine)
                 .font(Theme.display(24))
                 .foregroundStyle(Theme.ink)
             Text("Pop your AirPods in and hold your best posture with live coaching. Finish it and today's streak day is yours.")
@@ -467,7 +469,9 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 12) {
             if trainsBothPostures { modePicker }
             HStack {
-                Text(trainsBothPostures ? "\(activeMode.label) complete" : "Practice complete")
+                Text(trainsBothPostures
+                     ? (activeMode == .standing ? "Standing complete" : "Sitting complete")
+                     : "Practice complete")
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.goodText)
@@ -568,9 +572,9 @@ struct TodayView: View {
 
     private var walkTrialIsDirect: Bool { walkDirectTrialPackage != nil }
 
-    private var walkTrialIntroLabel: String? {
-        walkTrialPackage?.postureIntroOfferLabel
-            ?? subscriptions.products.compactMap(\.postureIntroOfferLabel).first
+    private var walkTrialHeadline: String? {
+        walkTrialPackage?.postureTrialOnUsHeadline
+            ?? subscriptions.products.compactMap(\.postureTrialOnUsHeadline).first
     }
 
     private var walkTrialPriceLabel: String? {
@@ -592,15 +596,15 @@ struct TodayView: View {
                 case .purchased, .pending:
                     showingWalkTrialOffer = false
                 case .cancelled:
-                    walkTrialError = "Trial wasn't started. Tap again, or pick a different plan."
+                    walkTrialError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }
             } catch {
-                walkTrialError = "Couldn't start your trial. Please try again."
+                walkTrialError = String(localized: "Couldn't start your trial. Please try again.")
             }
         }
     }
     #else
-    private var walkTrialIntroLabel: String? { nil }
+    private var walkTrialHeadline: String? { nil }
     private var walkTrialPriceLabel: String? { nil }
     private var walkTrialIsDirect: Bool { false }
     private func startWalkTrialPurchase() {}
@@ -682,9 +686,11 @@ struct TodayView: View {
         )
     }
 
-    private var practiceMinutesLabel: String {
+    private var practiceMinutesLine: String {
         let minutes = PracticeProgression.sessionSeconds(forLevel: practiceLevel) / 60
-        return minutes == 1 ? "One minute" : "\(minutes) minutes"
+        return minutes == 1
+            ? String(localized: "One minute, held tall.")
+            : String(localized: "\(minutes) minutes, held tall.")
     }
 
     // MARK: - No-AirPods (manual) content - the compliance exception
@@ -704,16 +710,16 @@ struct TodayView: View {
 
         if settings.calibrationDeferred {
             softBanner(
-                title: "Get AirPods for the full experience.",
-                body: "With AirPods, Posture coaches a short daily practice and can watch your posture live. Without them, log how you're sitting to keep your streak.",
-                actionLabel: "Set up AirPods",
+                title: String(localized: "Get AirPods for the full experience."),
+                body: String(localized: "With AirPods, Posture coaches a short daily practice and can watch your posture live. Without them, log how you're sitting to keep your streak."),
+                actionLabel: String(localized: "Set up AirPods"),
                 action: { showingRecalibrate = true }
             )
         } else if todayAcks.isEmpty {
             softBanner(
-                title: "A new habit, gently.",
-                body: "Check in a couple of times today. The pattern shows up in about a week.",
-                actionLabel: "Do your first check-in",
+                title: String(localized: "A new habit, gently."),
+                body: String(localized: "Check in a couple of times today. The pattern shows up in about a week."),
+                actionLabel: String(localized: "Do your first check-in"),
                 action: { showingAck = true }
             )
         }
@@ -851,16 +857,16 @@ struct TodayView: View {
 
     private func liveWord(_ q: PostureQuality) -> String {
         switch q {
-        case .good: return "Aligned"
-        case .borderline: return "Drifting"
-        case .bad: return "Slouching"
+        case .good: return String(localized: "Aligned")
+        case .borderline: return String(localized: "Drifting")
+        case .bad: return String(localized: "Slouching")
         }
     }
 
     private var liveSubtitle: String {
         let stats = dayStats
-        guard let percent = stats.alignedPercent else { return "Monitoring your posture live." }
-        return "\(percent)% aligned · \(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) today"
+        guard let percent = stats.alignedPercent else { return String(localized: "Monitoring your posture live.") }
+        return String(localized: "\(percent)% aligned · \(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) today")
     }
 
     // MARK: - Check-in alignment card (fallback - discrete check-ins)
@@ -1051,10 +1057,10 @@ struct TodayView: View {
     }
 
     private func monitorActivityLine(monitor: AirpodsBackgroundMonitor, now: Date) -> String {
-        guard let last = monitor.lastSampleAt else { return "Waiting for the first reading…" }
+        guard let last = monitor.lastSampleAt else { return String(localized: "Waiting for the first reading…") }
         let ago = max(0, Int(now.timeIntervalSince(last)))
-        let agoText = ago <= 2 ? "just now" : "\(ago)s ago"
-        return "\(monitor.samplesToday.formatted()) readings today · last \(agoText)"
+        let agoText = ago <= 2 ? String(localized: "just now") : String(localized: "\(DisplayFormat.seconds(ago)) ago")
+        return String(localized: "\(monitor.samplesToday.formatted()) readings today · last \(agoText)")
     }
 
     // MARK: - Soft banner
@@ -1071,7 +1077,7 @@ struct TodayView: View {
                 .fixedSize(horizontal: false, vertical: true)
             if let actionLabel, let action {
                 Button(action: action) {
-                    Text(actionLabel + " →")
+                    Text("\(actionLabel) →")
                         .font(Theme.font(.footnote, weight: .semibold))
                         .foregroundStyle(Theme.goodText)
                         .frame(minHeight: 44)
@@ -1099,21 +1105,21 @@ struct TodayView: View {
 
     private var readoutLabel: String {
         guard let s = alignmentScore else {
-            return todayAcks.isEmpty ? "No check-ins yet" : "Checked in"
+            return todayAcks.isEmpty ? String(localized: "No check-ins yet") : String(localized: "Checked in")
         }
         switch s {
-        case 70...: return "Aligned"
-        case 40..<70: return "Drifting"
-        default: return "Slouching"
+        case 70...: return String(localized: "Aligned")
+        case 40..<70: return String(localized: "Drifting")
+        default: return String(localized: "Slouching")
         }
     }
 
     private var readoutSubtitle: String {
         if scoredAcks.isEmpty {
-            return todayAcks.isEmpty ? "Your first check-in starts the pattern." : "Manual check-ins only"
+            return todayAcks.isEmpty ? String(localized: "Your first check-in starts the pattern.") : String(localized: "Manual check-ins only")
         }
         let onTrack = scoredAcks.filter { $0.quality == .good }.count
-        return "\(onTrack) of \(scoredAcks.count) check-ins on track"
+        return String(localized: "\(onTrack) of \(scoredAcks.count) check-ins on track")
     }
 
     // MARK: - Meta row
@@ -1164,27 +1170,24 @@ struct TodayView: View {
 
     private var checkInHoursLabel: String {
         switch visibleCheckInHourCount {
-        case 0: return todayAcks.isEmpty ? "0 today" : "\(todayAcks.count) today"
-        case 1: return "1 check-in hour"
-        default: return "\(visibleCheckInHourCount) check-in hours"
+        case 0: return String(localized: "\(todayAcks.count) today")
+        default: return String(localized: "\(visibleCheckInHourCount) check-in hours")
         }
     }
 
     private func refreshReminderStatus() async {
         if settings.reminderEnabled {
             let next = await ReminderScheduler.nextReminderDate()
-            nextReminderText = next.map { formatReminderTime($0) } ?? "later today"
+            nextReminderText = next.map { formatReminderTime($0) } ?? String(localized: "later today")
             remainingReminders = await ReminderScheduler.remainingCount()
         } else {
-            nextReminderText = "later today"
+            nextReminderText = String(localized: "later today")
             remainingReminders = 0
         }
     }
 
     private func formatReminderTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        let time = formatter.string(from: date)
-        return Calendar.current.isDate(date, inSameDayAs: AppClock.now) ? time : "tomorrow at \(time)"
+        let time = DisplayFormat.time(date)
+        return Calendar.current.isDate(date, inSameDayAs: AppClock.now) ? time : String(localized: "tomorrow at \(time)")
     }
 }

@@ -1,0 +1,28 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSLocationWhenInUseUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture uses your location during a walk to measure distance and pace accurately. Turning it off falls back to a step-based estimate."
+          }
+        }
+      }
+    },
+    "NSMotionUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture reads head-motion data from supported AirPods to detect when you slouch, and step and distance data during walks."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

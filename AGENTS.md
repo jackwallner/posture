@@ -31,7 +31,7 @@ Top-level layout:
 
 **Full service/view/model catalog with responsibilities and invariants: `posture-architecture` skill.** Load it before working on Posture internals.
 
-Area rules: `.claude/rules/iphone-duo.md` (unfolded iPhone Duo split, Today beside History, and its capture tour).
+Area rules: `.claude/rules/iphone-duo.md` (unfolded iPhone Duo split, Today beside History, and its capture tour), `.claude/rules/localization.md` (string catalog, `Tools/Localization/check.py`, adding copy).
 
 ### Daylight design system
 

@@ -19,7 +19,7 @@ enum HistoryNarrative {
 
         // Group scored acks by day.
         let byDay = Dictionary(grouping: scored) { cal.startOfDay(for: $0.timestamp) }
-        guard byDay.count >= 4 else { return "We need a few more days." }
+        guard byDay.count >= 4 else { return String(localized: "We need a few more days.") }
 
         func mean(_ list: [AcknowledgmentRecord]) -> Double {
             let s = list.compactMap { $0.quality.map(score) }
@@ -27,23 +27,23 @@ enum HistoryNarrative {
         }
 
         let ranked = byDay.sorted { mean($0.value) > mean($1.value) }
-        guard let best = ranked.first else { return "We need a few more days." }
+        guard let best = ranked.first else { return String(localized: "We need a few more days.") }
 
-        let wf = DateFormatter()
-        wf.dateFormat = "EEEE"
-        let bestDay = wf.string(from: best.key)
+        let bestDay = DisplayFormat.weekday(best.key)
 
         // Which half of the day did the best day's check-ins cluster in?
         let morningCount = best.value.filter { cal.component(.hour, from: $0.timestamp) < 13 }.count
-        let half = morningCount >= best.value.count - morningCount ? "morning" : "afternoon"
-
-        var sentence = "Your best stretch was \(bestDay) \(half)."
+        var sentence = morningCount >= best.value.count - morningCount
+            ? String(localized: "Your best stretch was \(bestDay) morning.")
+            : String(localized: "Your best stretch was \(bestDay) afternoon.")
 
         if let worst = ranked.last, worst.key != best.key, mean(worst.value) < Double(score(.borderline)) {
-            let worstDay = wf.string(from: worst.key)
+            let worstDay = DisplayFormat.weekday(worst.key)
             let wMorning = worst.value.filter { cal.component(.hour, from: $0.timestamp) < 13 }.count
-            let wHalf = wMorning >= worst.value.count - wMorning ? "morning" : "afternoon"
-            sentence += " \(worstDay) \(wHalf) slipped."
+            let slipped = wMorning >= worst.value.count - wMorning
+                ? String(localized: "\(worstDay) morning slipped.")
+                : String(localized: "\(worstDay) afternoon slipped.")
+            sentence = String(localized: "\(sentence) \(slipped)")
         }
         return sentence
     }

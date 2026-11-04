@@ -96,13 +96,21 @@ struct AcknowledgmentView: View {
             // No AirPods, so self-report is the check-in. AirPods owners never
             // see this screen; their check-in is an objective scan.
             HStack(spacing: 10) {
-                selfReportChip(label: "Aligned", quality: .good, tint: Theme.sageTint, accent: Theme.sage)
-                selfReportChip(label: "Drifting", quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
-                selfReportChip(label: "Slouching", quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+                selfReportChip(label: String(localized: "Aligned"), quality: .good, tint: Theme.sageTint, accent: Theme.sage)
+                selfReportChip(label: String(localized: "Drifting"), quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
+                selfReportChip(label: String(localized: "Slouching"), quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
             }
             .padding(.bottom, 24)
         }
         .padding(.horizontal, 24)
+    }
+
+    private func selfReportAccessibility(_ quality: PostureQuality) -> String {
+        switch quality {
+        case .good: return String(localized: "I'm sitting aligned")
+        case .borderline: return String(localized: "I'm sitting drifting")
+        case .bad: return String(localized: "I'm sitting slouching")
+        }
     }
 
     private func selfReportChip(label: String, quality: PostureQuality, tint: Color, accent: Color) -> some View {
@@ -117,7 +125,7 @@ struct AcknowledgmentView: View {
                 .background(tint, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("I'm sitting \(label.lowercased())")
+        .accessibilityLabel(selfReportAccessibility(quality))
     }
 
     private var checkInMotivationCard: some View {
@@ -255,10 +263,10 @@ struct AcknowledgmentView: View {
 
     private var resultWord: String {
         switch recordedQuality {
-        case .good: return "Aligned"
-        case .borderline: return "Drifting"
-        case .bad: return "Slouching"
-        case nil: return "Noted"
+        case .good: return String(localized: "Aligned")
+        case .borderline: return String(localized: "Drifting")
+        case .bad: return String(localized: "Slouching")
+        case nil: return String(localized: "Noted")
         }
     }
 
@@ -279,40 +287,34 @@ struct AcknowledgmentView: View {
     private var resultSubtitle: String {
         switch recordedQuality {
         case .good:
-            return "Crown over hips. Shoulders soft. You're holding the shape well."
+            return String(localized: "Crown over hips. Shoulders soft. You're holding the shape well.")
         case .borderline:
-            return "Head's a little forward. A small reset is all this needs."
+            return String(localized: "Head's a little forward. A small reset is all this needs.")
         case .bad:
-            return "Curled forward. Take a slow breath, lift the crown of your head."
+            return String(localized: "Curled forward. Take a slow breath, lift the crown of your head.")
         case nil:
-            return "Logged for your streak. Next time, tell us how you're sitting or scan to add a score."
+            return String(localized: "Logged for your streak. Next time, tell us how you're sitting or scan to add a score.")
         }
     }
 
     private var tallyLine: String {
         let count = todayCheckInCount == 1
-            ? "your first check-in today"
-            : "\(todayCheckInCount) check-ins today"
+            ? String(localized: "your first check-in today")
+            : String(localized: "\(todayCheckInCount) check-ins today")
         guard streakAfterRecord > 0 else { return count }
-        return "\(count) · day \(streakAfterRecord) of your streak"
+        return String(localized: "\(count) · day \(streakAfterRecord) of your streak")
     }
 
     private var doneEyebrow: String {
-        guard recordedQuality != nil else { return "Noted" }
-        let verb = recordedMethod == .airpods ? "scanned" : "logged"
-        return "\(timeString(scheduledAt)) · \(verb)"
+        guard recordedQuality != nil else { return String(localized: "Noted") }
+        let time = DisplayFormat.time(scheduledAt)
+        return recordedMethod == .airpods
+            ? String(localized: "\(time) · scanned")
+            : String(localized: "\(time) · logged")
     }
 
     private func eyebrow(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE · h:mm a"
-        return f.string(from: date)
-    }
-
-    private func timeString(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm a"
-        return f.string(from: date)
+        DisplayFormat.weekdayAndTime(date)
     }
 
     // MARK: - Recording

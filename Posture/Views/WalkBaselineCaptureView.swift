@@ -20,7 +20,7 @@ struct WalkBaselineCaptureView: View {
 
     /// Label for the done-screen button. The walk flow starts the real walk
     /// ("Start my walk"); the Settings recalibrate path just closes ("Done").
-    var doneButtonTitle: String = "Start my walk"
+    var doneButtonTitle: String = String(localized: "Start my walk")
 
     /// Called when the user taps the done-screen button; the walk flow then
     /// starts the real walk, the recalibrate flow simply dismisses.

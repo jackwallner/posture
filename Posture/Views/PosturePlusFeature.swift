@@ -19,33 +19,33 @@ enum PosturePlusFeature: Hashable {
 
     var title: String {
         switch self {
-        case .alwaysOnWatch: "Always-on Watch"
-        case .airpodsBackground: "All-day monitoring"
-        case .walkMode: "Walk mode"
+        case .alwaysOnWatch: String(localized: "Always-on Watch")
+        case .airpodsBackground: String(localized: "All-day monitoring")
+        case .walkMode: String(localized: "Walk mode")
         }
     }
 
     var detail: String {
         switch self {
-        case .alwaysOnWatch: "Haptic nudges when you slouch, even with your phone away."
-        case .airpodsBackground: "Buzzes you when you slouch, even with the phone locked."
-        case .walkMode: "Distance, steps, and how tall you carry your head out there."
+        case .alwaysOnWatch: String(localized: "Haptic nudges when you slouch, even with your phone away.")
+        case .airpodsBackground: String(localized: "Buzzes you when you slouch, even with the phone locked.")
+        case .walkMode: String(localized: "Distance, steps, and how tall you carry your head out there.")
         }
     }
 
     var intentHeadline: String {
         switch self {
-        case .alwaysOnWatch: "Nudges on your wrist"
-        case .airpodsBackground: "All-day AirPods tracking"
-        case .walkMode: "Take it for a walk"
+        case .alwaysOnWatch: String(localized: "Nudges on your wrist")
+        case .airpodsBackground: String(localized: "All-day AirPods tracking")
+        case .walkMode: String(localized: "Take it for a walk")
         }
     }
 
     var intentSubheadline: String {
         switch self {
-        case .alwaysOnWatch: "Your Apple Watch quietly tracks posture and taps you when you drift."
-        case .airpodsBackground: "Posture reads head motion in the background and scores your day."
-        case .walkMode: "Score how tall you carry yourself on a walk, with live steps and distance."
+        case .alwaysOnWatch: String(localized: "Your Apple Watch quietly tracks posture and taps you when you drift.")
+        case .airpodsBackground: String(localized: "Posture reads head motion in the background and scores your day.")
+        case .walkMode: String(localized: "Score how tall you carry yourself on a walk, with live steps and distance.")
         }
     }
 

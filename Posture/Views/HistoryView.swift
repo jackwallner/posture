@@ -127,7 +127,7 @@ struct HistoryView: View {
         let prevStart = cal.date(byAdding: .day, value: -7, to: weekStart) ?? weekStart
         guard let lastWeek = alignedPercent(from: prevStart, to: weekStart) else { return nil }
         let delta = thisWeek - lastWeek
-        return delta >= 0 ? "+\(delta) vs last week" : "\(delta) vs last week"
+        return delta >= 0 ? String(localized: "+\(delta) vs last week") : String(localized: "\(delta) vs last week")
     }
 
     private var weekWearSeconds: Double {
@@ -198,20 +198,18 @@ struct HistoryView: View {
     // MARK: - Header
 
     private var weekRangeLabel: String {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d"
         guard let first = weekDays.first, let last = weekDays.last else { return "" }
-        return "\(f.string(from: first)) to \(f.string(from: last))"
+        return String(localized: "\(DisplayFormat.monthDay(first)) to \(DisplayFormat.monthDay(last))")
     }
 
     private var weekHeadline: String {
         if weekSessionCount == 0 {
             return hasMonitoredData || !acknowledgments.isEmpty
-                ? "This week is waiting for a practice."
-                : "Your first week is filling in."
+                ? String(localized: "This week is waiting for a practice.")
+                : String(localized: "Your first week is filling in.")
         }
-        if weekPracticeMinutes >= 30 { return "A strong week of practice." }
-        return "Here's your week of practice."
+        if weekPracticeMinutes >= 30 { return String(localized: "A strong week of practice.") }
+        return String(localized: "Here's your week of practice.")
     }
 
     private var weekHeader: some View {
@@ -225,7 +223,7 @@ struct HistoryView: View {
                 .foregroundStyle(Theme.ink)
                 .fixedSize(horizontal: false, vertical: true)
             if weekSessionCount > 0 {
-                Text("\(weekPracticeMinutes) practice \(weekPracticeMinutes == 1 ? "minute" : "minutes") across \(weekSessionCount) \(weekSessionCount == 1 ? "session" : "sessions") this week")
+                Text("\(weekPracticeMinutes) practice minutes across \(weekSessionCount) sessions this week")
                     .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink2)
             }
@@ -240,8 +238,6 @@ struct HistoryView: View {
     private var practiceChart: some View {
         let days = practiceWeek
         let maxMinutes = max(days.map(\.minutes).max() ?? 0, 1)
-        let wf = DateFormatter()
-        wf.dateFormat = "EEEEE"
 
         return VStack(alignment: .leading, spacing: 10) {
             Text("Minutes practiced")
@@ -252,7 +248,7 @@ struct HistoryView: View {
                 ForEach(Array(days.enumerated()), id: \.offset) { _, entry in
                     VStack(spacing: 6) {
                         practiceColumn(entry, maxMinutes: maxMinutes)
-                        Text(wf.string(from: entry.day))
+                        Text(DisplayFormat.narrowWeekday(entry.day))
                             .font(Theme.font(.caption2, weight: .semibold))
                             .foregroundStyle(cal.isDateInToday(entry.day) ? Theme.ink : Theme.ink3)
                     }
@@ -277,7 +273,7 @@ struct HistoryView: View {
         }()
         return VStack(spacing: 4) {
             if entry.minutes > 0 {
-                Text("\(entry.minutes)m")
+                Text(DisplayFormat.minutes(entry.minutes))
                     .font(Theme.font(.caption2, weight: .semibold).monospacedDigit())
                     .foregroundStyle(Theme.ink2)
             }
@@ -292,12 +288,10 @@ struct HistoryView: View {
     private var practiceChartAccessibility: String {
         let described = practiceWeek.compactMap { entry -> String? in
             guard entry.minutes > 0 else { return nil }
-            let f = DateFormatter()
-            f.dateFormat = "EEEE"
-            return "\(f.string(from: entry.day)) \(entry.minutes) minutes"
+            return String(localized: "\(DisplayFormat.weekday(entry.day)) \(entry.minutes) minutes")
         }
-        guard !described.isEmpty else { return "No practice yet this week" }
-        return "Practice minutes chart. " + described.joined(separator: ", ")
+        guard !described.isEmpty else { return String(localized: "No practice yet this week") }
+        return String(localized: "Practice minutes chart. \(described.joined(separator: ", "))")
     }
 
     // MARK: - Session receipts
@@ -354,20 +348,17 @@ struct HistoryView: View {
 
     private func sessionTitle(_ session: PostureSession) -> String {
         let minutes = max(1, session.durationSeconds / 60)
-        let kind = session.kind == .walk ? "walk" : "practice"
-        return "\(minutes)-minute \(kind)"
+        return session.kind == .walk
+            ? String(localized: "\(minutes)-minute walk")
+            : String(localized: "\(minutes)-minute practice")
     }
 
     private func sessionSubtitle(_ session: PostureSession) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "EEE, MMM d · h:mm a"
-        var line = f.string(from: session.startedAt)
-        if session.kind == .practice {
-            if session.passed { line += " · passed" }
-            else if session.completed { line += " · completed" }
-            else { line += " · ended early" }
-        }
-        return line
+        let line = String(localized: "\(DisplayFormat.shortWeekdayMonthDay(session.startedAt)) · \(DisplayFormat.time(session.startedAt))")
+        guard session.kind == .practice else { return line }
+        if session.passed { return String(localized: "\(line) · passed") }
+        if session.completed { return String(localized: "\(line) · completed") }
+        return String(localized: "\(line) · ended early")
     }
 
     // MARK: - Trends (Posture+)
@@ -404,7 +395,7 @@ struct HistoryView: View {
                 }
                 monitoringChart
                 if weekWearSeconds > 0 {
-                    Text("\(PostureDayStats.wearLabel(seconds: weekWearSeconds)) monitored across \(monitoredDaysThisWeek) \(monitoredDaysThisWeek == 1 ? "day" : "days")")
+                    Text("\(PostureDayStats.wearLabel(seconds: weekWearSeconds)) monitored across \(monitoredDaysThisWeek) days")
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
                 }
@@ -461,14 +452,12 @@ struct HistoryView: View {
     private var monitoringChart: some View {
         let stats = weekDayStats
         let maxWear = max(stats.map(\.stats.wearSeconds).max() ?? 0, 1)
-        let wf = DateFormatter()
-        wf.dateFormat = "EEEEE"
 
         return HStack(alignment: .bottom, spacing: 10) {
             ForEach(Array(stats.enumerated()), id: \.offset) { _, entry in
                 VStack(spacing: 6) {
                     monitoringColumn(entry.stats, maxWear: maxWear)
-                    Text(wf.string(from: entry.day))
+                    Text(DisplayFormat.narrowWeekday(entry.day))
                         .font(Theme.font(.caption2, weight: .semibold))
                         .foregroundStyle(cal.isDateInToday(entry.day) ? Theme.ink : Theme.ink3)
                 }
@@ -509,12 +498,10 @@ struct HistoryView: View {
     private var monitoringChartAccessibility: String {
         let described = weekDayStats.compactMap { entry -> String? in
             guard let percent = entry.stats.alignedPercent else { return nil }
-            let f = DateFormatter()
-            f.dateFormat = "EEEE"
-            return "\(f.string(from: entry.day)) \(percent) percent aligned"
+            return String(localized: "\(DisplayFormat.weekday(entry.day)) \(percent) percent aligned")
         }
-        guard !described.isEmpty else { return "No monitored days yet this week" }
-        return "Monitoring chart. " + described.joined(separator: ", ")
+        guard !described.isEmpty else { return String(localized: "No monitored days yet this week") }
+        return String(localized: "Monitoring chart. \(described.joined(separator: ", "))")
     }
 
     /// Strong hours vs slouch hours across the week's monitored minutes.
@@ -525,9 +512,9 @@ struct HistoryView: View {
             let (strong, slouchy) = PostureDayStats.hourRhythm(byHour)
             VStack(alignment: .leading, spacing: 8) {
                 rhythmLine(icon: "sun.max", color: Theme.sage,
-                           label: "Strong hours", hours: strong)
+                           label: String(localized: "Strong hours"), hours: strong)
                 rhythmLine(icon: "cloud", color: Theme.clay,
-                           label: "Slouchy hours", hours: slouchy)
+                           label: String(localized: "Slouchy hours"), hours: slouchy)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -552,8 +539,7 @@ struct HistoryView: View {
     }
 
     private func hourLabel(_ hour: Int) -> String {
-        let h12 = hour % 12 == 0 ? 12 : hour % 12
-        return "\(h12)\(hour < 12 ? "am" : "pm")"
+        DisplayFormat.hour(hour)
     }
 
     /// Wear-weighted alignment fraction per hour across the whole week.
@@ -645,24 +631,22 @@ struct HistoryView: View {
     private func rowLabel(_ ack: AcknowledgmentRecord) -> String {
         let method: String
         switch ack.method {
-        case .camera: method = "scan"
-        case .airpods: method = "AirPods scan"
-        case .manual: method = "logged"
+        case .camera: method = String(localized: "scan")
+        case .airpods: method = String(localized: "AirPods scan")
+        case .manual: method = String(localized: "logged")
         }
-        guard let q = ack.quality else { return "Noted · \(method)" }
+        guard let q = ack.quality else { return String(localized: "Noted · \(method)") }
         let word: String
         switch q {
-        case .good: word = "Aligned"
-        case .borderline: word = "Drifting"
-        case .bad: word = "Slouching"
+        case .good: word = String(localized: "Aligned")
+        case .borderline: word = String(localized: "Drifting")
+        case .bad: word = String(localized: "Slouching")
         }
-        return "\(word) · \(method)"
+        return String(localized: "\(word) · \(method)")
     }
 
     private func timeString(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm a"
-        return f.string(from: date)
+        DisplayFormat.time(date)
     }
 }
 
@@ -686,8 +670,7 @@ struct SessionDetailView: View {
 
     private var metric: Bool { Locale.current.measurementSystem == .metric }
     private var distanceValue: String {
-        let d = metric ? session.distanceMeters / 1000 : session.distanceMeters / 1609.34
-        return String(format: d < 10 ? "%.2f" : "%.1f", d)
+        DisplayFormat.distanceValue(meters: session.distanceMeters, metric: metric)
     }
 
     /// Load the minute rows overlapping this session's clock. Sessions write
@@ -729,18 +712,18 @@ struct SessionDetailView: View {
             }
 
             HStack(spacing: 12) {
-                statCard(value: "\(session.alignedPercent)%", label: "aligned",
+                statCard(value: String(localized: "\(session.alignedPercent)%"), label: String(localized: "aligned"),
                          color: session.passed ? Theme.sage : Theme.ink)
-                statCard(value: minutesLabel, label: "duration", color: Theme.ink)
+                statCard(value: minutesLabel, label: String(localized: "duration"), color: Theme.ink)
                 if session.kind == .practice, session.targetPercent > 0 {
-                    statCard(value: "\(session.targetPercent)%", label: "target", color: Theme.ink)
+                    statCard(value: String(localized: "\(session.targetPercent)%"), label: String(localized: "target"), color: Theme.ink)
                 }
             }
 
             if isWalk, session.steps > 0 || session.distanceMeters > 0 {
                 HStack(spacing: 12) {
-                    statCard(value: distanceValue, label: metric ? "km walked" : "mi walked", color: Theme.ink)
-                    statCard(value: "\(session.steps)", label: "steps", color: Theme.ink)
+                    statCard(value: distanceValue, label: metric ? String(localized: "km walked") : String(localized: "mi walked"), color: Theme.ink)
+                    statCard(value: "\(session.steps)", label: String(localized: "steps"), color: Theme.ink)
                 }
             }
 
@@ -763,9 +746,9 @@ struct SessionDetailView: View {
                 .frame(height: 14)
                 .clipShape(RoundedRectangle(cornerRadius: 7))
                 HStack(spacing: 14) {
-                    legend(color: Theme.sage, label: "aligned", seconds: session.goodSeconds)
-                    legend(color: Theme.sand, label: "drifting", seconds: session.borderlineSeconds)
-                    legend(color: Theme.clay, label: "slouching", seconds: session.badSeconds)
+                    legend(color: Theme.sage, label: String(localized: "aligned"), seconds: session.goodSeconds)
+                    legend(color: Theme.sand, label: String(localized: "drifting"), seconds: session.borderlineSeconds)
+                    legend(color: Theme.clay, label: String(localized: "slouching"), seconds: session.badSeconds)
                 }
             }
             .padding(16)
@@ -826,35 +809,31 @@ struct SessionDetailView: View {
     private var headline: String {
         let minutes = max(1, session.durationSeconds / 60)
         return session.kind == .walk
-            ? "\(minutes)-minute walk"
-            : "\(minutes)-minute practice"
+            ? String(localized: "\(minutes)-minute walk")
+            : String(localized: "\(minutes)-minute practice")
     }
 
     private var dateLine: String {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE, MMM d · h:mm a"
-        return f.string(from: session.startedAt)
+        String(localized: "\(DisplayFormat.weekdayMonthDay(session.startedAt)) · \(DisplayFormat.time(session.startedAt))")
     }
 
     private var minutesLabel: String {
-        let m = session.durationSeconds / 60
-        let s = session.durationSeconds % 60
-        return m > 0 ? "\(m)m \(s)s" : "\(s)s"
+        DisplayFormat.minutesSeconds(session.durationSeconds)
     }
 
     private var verdictLine: String {
         if session.kind == .walk {
             return session.completed
-                ? "Walk finished. It counted toward that day's streak."
-                : "Walk ended early. The minutes still count in the day's timeline."
+                ? String(localized: "Walk finished. It counted toward that day's streak.")
+                : String(localized: "Walk ended early. The minutes still count in the day's timeline.")
         }
         if session.passed {
-            return "Target met. This pass counted toward your level."
+            return String(localized: "Target met. This pass counted toward your level.")
         }
         if session.completed {
-            return "Completed under the \(session.targetPercent)% target. The streak day was credited."
+            return String(localized: "Completed under the \(session.targetPercent)% target. The streak day was credited.")
         }
-        return "Ended early, so no streak credit. The minutes still count."
+        return String(localized: "Ended early, so no streak credit. The minutes still count.")
     }
 
     private func statCard(value: String, label: String, color: Color) -> some View {
@@ -884,7 +863,7 @@ struct SessionDetailView: View {
         HStack(spacing: 5) {
             Circle().fill(color).frame(width: 7, height: 7)
             // Under a minute reads in seconds, so a 32 s drift isn't "0m".
-            Text(seconds < 60 ? "\(label) \(seconds)s" : "\(label) \(seconds / 60)m")
+            Text("\(label) \(seconds < 60 ? DisplayFormat.seconds(seconds) : DisplayFormat.minutes(seconds / 60))")
                 .font(Theme.font(.caption2))
                 .foregroundStyle(Theme.ink2)
         }

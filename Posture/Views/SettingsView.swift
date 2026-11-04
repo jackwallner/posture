@@ -53,14 +53,14 @@ struct SettingsView: View {
 
                 Section {
                     Toggle(isOn: alwaysOnBinding) {
-                        plusToggleLabel("Always-on Watch monitoring")
+                        plusToggleLabel(String(localized: "Always-on Watch monitoring"))
                     }
                     Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
                     Toggle(isOn: airpodsBackgroundBinding) {
-                        plusToggleLabel("All-day AirPods monitoring")
+                        plusToggleLabel(String(localized: "All-day AirPods monitoring"))
                     }
                     Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
                         .font(Theme.font(.caption))
@@ -130,9 +130,9 @@ struct SettingsView: View {
                         || (subscriptions.isProSubscriber && settings.airpodsBackgroundEnabled)) && notificationsDenied {
                         PostureBanner(
                             tone: .warn,
-                            title: "Notifications are off.",
-                            message: "Reminders and background slouch alerts won't fire until you allow notifications.",
-                            action: ("allow", { Task { await allowNotifications() } })
+                            title: String(localized: "Notifications are off."),
+                            message: String(localized: "Reminders and background slouch alerts won't fire until you allow notifications."),
+                            action: (String(localized: "allow"), { Task { await allowNotifications() } })
                         )
                         .listRowInsets(EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8))
                         .listRowBackground(Color.clear)
@@ -299,7 +299,7 @@ struct SettingsView: View {
             }) {
                 TrialOfferSheet(
                     focus: trialOfferFocus,
-                    offerLabel: trialOfferIntroLabel,
+                    offerHeadline: trialOfferHeadline,
                     priceLabel: trialOfferPriceLabel,
                     directPurchase: trialOfferIsDirect,
                     isPurchasing: trialPurchaseInFlight,
@@ -362,7 +362,7 @@ struct SettingsView: View {
                 CalibrationView(mode: posture == .standing ? .recalibrateStanding : .recalibrateSitting)
             }
             .sheet(isPresented: $showingWalkRecapture, onDismiss: { refreshWalkBaseline() }) {
-                WalkBaselineCaptureView(doneButtonTitle: "Done") { showingWalkRecapture = false }
+                WalkBaselineCaptureView(doneButtonTitle: String(localized: "Done")) { showingWalkRecapture = false }
             }
             .alert("Reset walking posture?", isPresented: $showingWalkBaselineReset) {
                 Button("Cancel", role: .cancel) { }
@@ -434,9 +434,9 @@ struct SettingsView: View {
         directTrialPackage != nil
     }
 
-    private var trialOfferIntroLabel: String? {
-        trialOfferPackage?.postureIntroOfferLabel
-            ?? subscriptions.products.compactMap(\.postureIntroOfferLabel).first
+    private var trialOfferHeadline: String? {
+        trialOfferPackage?.postureTrialOnUsHeadline
+            ?? subscriptions.products.compactMap(\.postureTrialOnUsHeadline).first
     }
 
     private var trialOfferPriceLabel: String? {
@@ -444,7 +444,7 @@ struct SettingsView: View {
     }
     #else
     private var trialOfferIsDirect: Bool { false }
-    private var trialOfferIntroLabel: String? { nil }
+    private var trialOfferHeadline: String? { nil }
     private var trialOfferPriceLabel: String? { nil }
     #endif
 
@@ -481,10 +481,10 @@ struct SettingsView: View {
                 case .purchased, .pending:
                     showTrialOffer = false
                 case .cancelled:
-                    trialPurchaseError = "Trial wasn't started. Tap again, or pick a different plan."
+                    trialPurchaseError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }
             } catch {
-                trialPurchaseError = "Couldn't start your trial. Please try again."
+                trialPurchaseError = String(localized: "Couldn't start your trial. Please try again.")
             }
         }
         #endif
@@ -567,9 +567,9 @@ private struct AirpodsStatusChip: View {
 
     private var label: String {
         switch state {
-        case .live: return "Live · AirPods linked"
-        case .armed: return "Ready · waiting for AirPods"
-        case .off: return "Monitoring off"
+        case .live: return String(localized: "Live · AirPods linked")
+        case .armed: return String(localized: "Ready · waiting for AirPods")
+        case .off: return String(localized: "Monitoring off")
         }
     }
     private var dotColor: Color {

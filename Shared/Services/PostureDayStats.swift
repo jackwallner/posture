@@ -87,10 +87,7 @@ struct PostureDayStats: Sendable {
 
     /// Short human wear-time: "4h 20m", "38m", "0m" when nothing yet.
     static func wearLabel(seconds: Double) -> String {
-        let mins = Int(seconds / 60)
-        guard mins > 0 else { return "0m" }
-        if mins < 60 { return "\(mins)m" }
-        return "\(mins / 60)h \(mins % 60)m"
+        DisplayFormat.hoursMinutes(Int(seconds / 60) * 60)
     }
 }
 

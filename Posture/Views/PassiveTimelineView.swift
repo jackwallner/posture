@@ -38,11 +38,11 @@ struct PassiveTimelineView: View {
             hourStrip(stats)
 
             HStack {
-                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(DisplayFormat.hour(0, narrow: true)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12p").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(DisplayFormat.hour(12, narrow: true)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
                 Spacer()
-                Text("12a").font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
+                Text(DisplayFormat.hour(0, narrow: true)).font(Theme.font(.caption2)).foregroundStyle(Theme.ink3)
             }
 
             if stats.wearSeconds > 0 {
@@ -78,28 +78,28 @@ struct PassiveTimelineView: View {
 
     private func headline(_ stats: PostureDayStats) -> String {
         guard let percent = stats.alignedPercent else {
-            return "Your day fills in as you wear your AirPods."
+            return String(localized: "Your day fills in as you wear your AirPods.")
         }
         switch percent {
-        case 80...: return "\(percent)% aligned. Strong day."
-        case 55..<80: return "\(percent)% aligned so far."
-        default: return "\(percent)% aligned. Rough stretch."
+        case 80...: return String(localized: "\(percent)% aligned. Strong day.")
+        case 55..<80: return String(localized: "\(percent)% aligned so far.")
+        default: return String(localized: "\(percent)% aligned. Rough stretch.")
         }
     }
 
     private func detailLine(_ stats: PostureDayStats) -> String {
-        var parts = ["\(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) monitored"]
+        var parts = [String(localized: "\(PostureDayStats.wearLabel(seconds: stats.wearSeconds)) monitored")]
         if stats.longestAlignedMinutes >= 5 {
-            parts.append("best stretch \(stats.longestAlignedMinutes)m")
+            parts.append(String(localized: "best stretch \(DisplayFormat.minutes(stats.longestAlignedMinutes))"))
         }
         if !slouches.isEmpty {
-            parts.append("\(slouches.count) slouch\(slouches.count == 1 ? "" : "es") caught")
+            parts.append(String(localized: "\(slouches.count) slouches caught"))
         }
         return parts.joined(separator: " · ")
     }
 
     private func hourStripAccessibility(_ stats: PostureDayStats) -> String {
-        guard let percent = stats.alignedPercent else { return "No monitoring yet today" }
-        return "Hour by hour posture chart. \(percent) percent aligned today."
+        guard let percent = stats.alignedPercent else { return String(localized: "No monitoring yet today") }
+        return String(localized: "Hour by hour posture chart. \(percent) percent aligned today.")
     }
 }

@@ -7,10 +7,10 @@ struct PostureHabitsView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     headerSection
-                    categorySection(title: "Desk Ergonomics", icon: "desktopcomputer", category: .ergonomics)
-                    categorySection(title: "Daily Habits", icon: "arrow.triangle.2.circlepath", category: .habit)
-                    categorySection(title: "Stretches", icon: "figure.cooldown", category: .stretch)
-                    categorySection(title: "Awareness", icon: "brain", category: .awareness)
+                    categorySection(title: String(localized: "Desk Ergonomics"), icon: "desktopcomputer", category: .ergonomics)
+                    categorySection(title: String(localized: "Daily Habits"), icon: "arrow.triangle.2.circlepath", category: .habit)
+                    categorySection(title: String(localized: "Stretches"), icon: "figure.cooldown", category: .stretch)
+                    categorySection(title: String(localized: "Awareness"), icon: "brain", category: .awareness)
                 }
                 .padding(.vertical)
             }

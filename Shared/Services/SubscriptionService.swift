@@ -51,9 +51,9 @@ extension Package {
 
     var postureDisplayName: String {
         switch posturePackageKind {
-        case .lifetime: return "Lifetime"
-        case .yearly: return "Yearly"
-        case .monthly: return "Monthly"
+        case .lifetime: return String(localized: "Lifetime")
+        case .yearly: return String(localized: "Yearly")
+        case .monthly: return String(localized: "Monthly")
         case .other: return storeProduct.localizedTitle
         }
     }
@@ -62,37 +62,90 @@ extension Package {
         guard let period = storeProduct.subscriptionPeriod else {
             return storeProduct.localizedPriceString
         }
-        let unit: String
+        let price = storeProduct.localizedPriceString
+        let n = period.value
         switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: unit = ""
+        case .day: return n == 1 ? String(localized: "\(price) / day") : String(localized: "\(price) / \(n) days")
+        case .week: return n == 1 ? String(localized: "\(price) / week") : String(localized: "\(price) / \(n) weeks")
+        case .month: return n == 1 ? String(localized: "\(price) / month") : String(localized: "\(price) / \(n) months")
+        case .year: return n == 1 ? String(localized: "\(price) / year") : String(localized: "\(price) / \(n) years")
+        @unknown default: return price
         }
-        if period.value == 1 {
-            return "\(storeProduct.localizedPriceString) / \(unit)"
-        }
-        return "\(storeProduct.localizedPriceString) / \(period.value) \(unit)"
     }
 
-    var postureIntroOfferLabel: String? {
+    /// Picks the whole-sentence variant for the free-trial length. A trial
+    /// counted in weeks reads in days, so it shares the day keys.
+    private func postureTrialCopy(
+        day: (Int) -> String,
+        month: (Int) -> String,
+        year: (Int) -> String
+    ) -> String? {
         guard let intro = storeProduct.introductoryDiscount, intro.paymentMode == .freeTrial else {
             return nil
         }
         let period = intro.subscriptionPeriod
-        let unit: String
         switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: unit = ""
+        case .day: return day(period.value)
+        case .week: return day(period.value * 7)
+        case .month: return month(period.value)
+        case .year: return year(period.value)
+        @unknown default: return nil
         }
-        if period.unit == .week {
-            return "\(period.value * 7)-day free trial"
-        }
-        return "\(period.value)-\(unit.dropLast(period.value == 1 ? 0 : 1)) free trial"
+    }
+
+    /// "7-Day Free Trial"
+    var postureIntroOfferTitle: String? {
+        postureTrialCopy(
+            day: { String(localized: "\($0)-Day Free Trial") },
+            month: { String(localized: "\($0)-Month Free Trial") },
+            year: { String(localized: "\($0)-Year Free Trial") }
+        )
+    }
+
+    /// "Start 7-day free trial"
+    var postureStartTrialLabel: String? {
+        postureTrialCopy(
+            day: { String(localized: "Start \($0)-day free trial") },
+            month: { String(localized: "Start \($0)-month free trial") },
+            year: { String(localized: "Start \($0)-year free trial") }
+        )
+    }
+
+    /// "Start your 7-day free trial"
+    var postureStartYourTrialLabel: String? {
+        postureTrialCopy(
+            day: { String(localized: "Start your \($0)-day free trial") },
+            month: { String(localized: "Start your \($0)-month free trial") },
+            year: { String(localized: "Start your \($0)-year free trial") }
+        )
+    }
+
+    /// "Start My 7-Day Free Trial"
+    var postureStartMyTrialTitle: String? {
+        postureTrialCopy(
+            day: { String(localized: "Start My \($0)-Day Free Trial") },
+            month: { String(localized: "Start My \($0)-Month Free Trial") },
+            year: { String(localized: "Start My \($0)-Year Free Trial") }
+        )
+    }
+
+    /// "7-Day Free Trial, on us."
+    var postureTrialOnUsHeadline: String? {
+        postureTrialCopy(
+            day: { String(localized: "\($0)-Day Free Trial, on us.") },
+            month: { String(localized: "\($0)-Month Free Trial, on us.") },
+            year: { String(localized: "\($0)-Year Free Trial, on us.") }
+        )
+    }
+
+    /// "7-Day Free Trial, then $39.99 / year." followed by the renewal terms.
+    func postureTrialDisclosure(terms: String) -> String? {
+        let price = posturePriceLabel
+        return postureTrialCopy(
+            day: { String(localized: "\($0)-Day Free Trial, then \(price). \(terms)") },
+            month: { String(localized: "\($0)-Month Free Trial, then \(price). \(terms)") },
+            year: { String(localized: "\($0)-Year Free Trial, then \(price). \(terms)") }
+        )
     }
 }
 
@@ -209,7 +262,7 @@ final class SubscriptionService: NSObject {
             lastError = nil
             await refreshIntroEligibility()
         } catch {
-            lastError = "Couldn't load subscription options. Check your connection and try again."
+            lastError = String(localized: "Couldn't load subscription options. Check your connection and try again.")
         }
     }
 
@@ -226,7 +279,7 @@ final class SubscriptionService: NSObject {
     }
 
     func isEligibleForIntroOffer(_ package: Package) -> Bool {
-        guard package.postureIntroOfferLabel != nil else { return false }
+        guard package.postureIntroOfferTitle != nil else { return false }
         // Default to NOT eligible until RevenueCat confirms eligibility, so we
         // never promise "Start Free Trial" (and the trial-then-price disclosure)
         // to a user who already used the trial and would be charged immediately.
@@ -301,9 +354,9 @@ final class SubscriptionService: NSObject {
         do {
             let info = try await Purchases.shared.restorePurchases()
             applyProStatus(from: info)
-            lastError = isProSubscriber ? nil : "No active Posture+ purchase found for this Apple ID."
+            lastError = isProSubscriber ? nil : String(localized: "No active Posture+ purchase found for this Apple ID.")
         } catch {
-            lastError = "Couldn't restore purchases. Try again."
+            lastError = String(localized: "Couldn't restore purchases. Try again.")
         }
     }
 

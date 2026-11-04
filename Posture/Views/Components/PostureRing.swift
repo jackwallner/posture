@@ -35,9 +35,9 @@ struct PostureRing: View {
 
     private var qualityLabel: String {
         switch score {
-        case 80...: return "Good"
-        case 50..<80: return "Fair"
-        default: return "Needs improvement"
+        case 80...: return String(localized: "Good")
+        case 50..<80: return String(localized: "Fair")
+        default: return String(localized: "Needs improvement")
         }
     }
 }
