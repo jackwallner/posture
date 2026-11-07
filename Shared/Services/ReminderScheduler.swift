@@ -16,41 +16,13 @@ extension Notification.Name {
     static let postureSelectProgressTab = Notification.Name("com.jackwallner.posture.selectProgressTab")
 }
 
-/// Runs async operations one after another, in the order they were asked
-/// for. Each waits for the previous one to finish, even across suspensions.
-@MainActor
-final class SerialTaskQueue {
-    private var tail: Task<Void, Never>?
-
-    func run(_ operation: @escaping @MainActor () async -> Void) async {
-        let previous = tail
-        let task = Task { @MainActor in
-            await previous?.value
-            await operation()
-        }
-        tail = task
-        await task.value
-    }
-}
-
 /// Orchestrates posture reminder scheduling. Handles setting changes,
 /// app foreground events, and provides status for the UI.
 enum ReminderScheduler {
-    /// Every rewrite of the pending queue runs here. A pass suspends on each
-    /// add, so two overlapping passes (quick stepper taps, a toggle turned
-    /// off mid-pass) would otherwise interleave and leave stale slots. Each
-    /// pass reads the settings when it starts, so the last one wins.
-    @MainActor private static let passes = SerialTaskQueue()
-
     /// Reschedule reminders based on current settings. Call this whenever
     /// settings change or the app comes to foreground.
     @MainActor
     static func reschedule() async {
-        await passes.run { await rescheduleNow() }
-    }
-
-    @MainActor
-    private static func rescheduleNow() async {
         #if DEBUG
         // Don't fire the iOS permission alert during UI tests or unattended
         // screenshot runs - it lives outside the app process, would stall the
@@ -135,8 +107,7 @@ enum ReminderScheduler {
     }
 
     /// Cancel all scheduled posture reminders.
-    @MainActor
     static func cancelAll() async {
-        await passes.run { await NotificationService.cancelAllReminders() }
+        await NotificationService.cancelAllReminders()
     }
 }

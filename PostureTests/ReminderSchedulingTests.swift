@@ -111,37 +111,4 @@ final class ReminderSchedulingTests: XCTestCase {
         XCTAssertEqual(NotificationService.checkInSlots(intervalMinutes: 60, activeHoursStart: 9, activeHoursEnd: 17).count, 8)
         XCTAssertTrue(NotificationService.checkInSlots(intervalMinutes: 15, activeHoursStart: 12, activeHoursEnd: 12).isEmpty)
     }
-
-    // MARK: - B5 overlapping reschedules never interleave
-
-    @MainActor
-    private final class PassLog {
-        var entries: [String] = []
-    }
-
-    @MainActor
-    func testOverlappingReschedulePassesRunOneAfterAnother() async {
-        let queue = SerialTaskQueue()
-        let log = PassLog()
-        // A pass that suspends between its writes, like one awaiting each add.
-        func pass(_ name: String) -> @MainActor () async -> Void {
-            {
-                log.entries.append("\(name) remove")
-                for i in 0..<3 {
-                    try? await Task.sleep(nanoseconds: 5_000_000)
-                    log.entries.append("\(name) add \(i)")
-                }
-            }
-        }
-        let first = Task { @MainActor in await queue.run(pass("A")) }
-        // The second request lands while the first pass is mid-way.
-        while log.entries.isEmpty { await Task.yield() }
-        let second = Task { @MainActor in await queue.run(pass("B")) }
-        await first.value
-        await second.value
-        XCTAssertEqual(log.entries, [
-            "A remove", "A add 0", "A add 1", "A add 2",
-            "B remove", "B add 0", "B add 1", "B add 2",
-        ])
-    }
 }
