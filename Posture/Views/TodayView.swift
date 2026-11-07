@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UserNotifications
 #if HAS_REVENUECAT
 import RevenueCat
 #endif
@@ -37,6 +38,7 @@ struct TodayView: View {
     @State private var selectedMode: PostureMode = .standing
     @State private var nextReminderText = String(localized: "later today")
     @State private var remainingReminders = 0
+    @State private var notificationStatus: UNAuthorizationStatus = .authorized
     @State private var currentTip = PostureTipService.randomTip()
     @State private var subscriptions = SubscriptionService.shared
     @Query(sort: \Calibration.capturedAt, order: .reverse) private var calibrations: [Calibration]
@@ -1127,7 +1129,7 @@ struct TodayView: View {
 
     @ViewBuilder
     private var metaRow: some View {
-        if settings.reminderEnabled {
+        if settings.reminderEnabled && NotificationService.remindersCanFire(notificationStatus) {
             Text("Next reminder \(nextReminderText) · \(remainingReminders) more today")
                 .font(Theme.font(.caption))
                 .foregroundStyle(Theme.ink3)
@@ -1137,6 +1139,10 @@ struct TodayView: View {
                     .font(Theme.font(.caption))
                     .foregroundStyle(Theme.ink3)
                 Button {
+                    if notificationStatus == .denied, let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                        return
+                    }
                     settings.reminderEnabled = true
                     Task { await ReminderScheduler.reschedule() }
                 } label: {
@@ -1177,6 +1183,7 @@ struct TodayView: View {
     }
 
     private func refreshReminderStatus() async {
+        notificationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
         if settings.reminderEnabled {
             let next = await ReminderScheduler.nextReminderDate()
             nextReminderText = next.map { formatReminderTime($0) } ?? String(localized: "later today")

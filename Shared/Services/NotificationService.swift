@@ -62,6 +62,11 @@ enum NotificationService {
     /// Check-in ids ever scheduled (the cap was 60), all cleared on reschedule.
     private static let slotIdentifierCeiling = 60
 
+    /// Reminders can only be pending once the user allowed notifications.
+    static func remindersCanFire(_ status: UNAuthorizationStatus) -> Bool {
+        status != .denied && status != .notDetermined
+    }
+
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
         do {

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UserNotifications
 import XCTest
 @testable import Posture
 
@@ -79,5 +80,14 @@ final class ReminderSchedulingTests: XCTestCase {
         context.insert(row(date(3, hour: 8), kind: .practice, completed: true))
         try context.save()
         XCTAssertTrue(TodaySnapshot.practiceCompleted(in: context, at: date(3, hour: 9)))
+    }
+
+    // MARK: - B9 Today claims a next reminder only when one can fire
+
+    func testTodayDoesNotPromiseRemindersWhenNotificationsAreDenied() {
+        XCTAssertFalse(NotificationService.remindersCanFire(.denied))
+        XCTAssertFalse(NotificationService.remindersCanFire(.notDetermined))
+        XCTAssertTrue(NotificationService.remindersCanFire(.authorized))
+        XCTAssertTrue(NotificationService.remindersCanFire(.provisional))
     }
 }
