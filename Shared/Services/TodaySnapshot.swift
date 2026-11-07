@@ -61,6 +61,15 @@ struct TodaySnapshot: Codable, Equatable, Sendable {
         return (sessionScores + ackScores).max()
     }
 
+    /// A practice was completed today (the practice reminder skips today).
+    static func practiceCompleted(in context: ModelContext, at date: Date = .now) -> Bool {
+        let start = Calendar.current.startOfDay(for: date)
+        let sessions = (try? context.fetch(FetchDescriptor<PostureSession>(
+            predicate: #Predicate { $0.startedAt >= start && $0.completed }
+        ))) ?? []
+        return sessions.contains { $0.kind == .practice }
+    }
+
     static func qualityScore(_ quality: PostureQuality) -> Int {
         switch quality {
         case .good: return 85

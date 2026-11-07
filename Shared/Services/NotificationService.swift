@@ -51,11 +51,16 @@ enum NotificationService {
 
     static let categoryIdentifier = "posture.reminder"
     static let practiceCategoryIdentifier = "posture.practice"
+    /// The single daily trigger used before the practice reminder was split
+    /// by weekday. Still removed so an upgrade never leaves it behind.
     static let practiceReminderIdentifier = "posture.practice.daily"
 
-    /// Max pending reminder slots. iOS allows 64 pending requests; we
-    /// schedule repeating daily triggers so the day's slots persist.
-    private static let maxSlots = 60
+    /// Max pending check-in slots. iOS allows 64 pending requests, and the
+    /// practice reminder holds 7 (one per weekday); we schedule repeating
+    /// daily triggers so the day's slots persist.
+    private static let maxSlots = 57
+    /// Check-in ids ever scheduled (the cap was 60), all cleared on reschedule.
+    private static let slotIdentifierCeiling = 60
 
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -82,35 +87,70 @@ enum NotificationService {
         UNUserNotificationCenter.current().setNotificationCategories([checkIn, practice])
     }
 
-    /// Schedule the single repeating daily-practice reminder. The copy
-    /// rotates by day-of-year (rescheduled on every foreground).
-    static func schedulePracticeReminder(hour: Int, minute: Int) async {
+    struct PracticeTrigger: Equatable {
+        let identifier: String
+        let dateComponents: DateComponents
+        let repeats: Bool
+    }
+
+    /// One repeating trigger per weekday, so a day whose practice is already
+    /// done can be skipped while the rest keep firing even if the app is not
+    /// reopened (audit P1-2). The skipped weekday gets a one-shot a week out;
+    /// the next reschedule turns it back into a repeating one.
+    static func practiceTriggers(
+        hour: Int,
+        minute: Int,
+        practiceDoneToday: Bool,
+        now: Date = Date(),
+        calendar: Calendar = .current
+    ) -> [PracticeTrigger] {
+        let todayWeekday = calendar.component(.weekday, from: now)
+        return (1...7).map { weekday in
+            let identifier = "\(practiceReminderIdentifier).\(weekday)"
+            if practiceDoneToday, weekday == todayWeekday,
+               let nextWeek = calendar.date(byAdding: .day, value: 7, to: now) {
+                var fire = calendar.dateComponents([.year, .month, .day], from: nextWeek)
+                fire.hour = hour
+                fire.minute = minute
+                return PracticeTrigger(identifier: identifier, dateComponents: fire, repeats: false)
+            }
+            var fire = DateComponents()
+            fire.weekday = weekday
+            fire.hour = hour
+            fire.minute = minute
+            return PracticeTrigger(identifier: identifier, dateComponents: fire, repeats: true)
+        }
+    }
+
+    /// Schedule the daily-practice reminder, skipping today when today's
+    /// practice is done. The copy rotates by day-of-year (rescheduled on
+    /// every foreground and after every practice).
+    static func schedulePracticeReminder(hour: Int, minute: Int, practiceDoneToday: Bool = false) async {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [practiceReminderIdentifier])
+        center.removePendingNotificationRequests(withIdentifiers: practiceReminderIdentifiers())
 
         let dayOffset = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
-        let content = UNMutableNotificationContent()
-        content.title = practiceTitles[dayOffset % practiceTitles.count]
-        content.body = practiceBodies[dayOffset % practiceBodies.count]
-        content.sound = .default
-        content.categoryIdentifier = practiceCategoryIdentifier
-        content.userInfo = ["type": "practice-reminder"]
-
-        var fire = DateComponents()
-        fire.hour = hour
-        fire.minute = minute
-        let trigger = UNCalendarNotificationTrigger(dateMatching: fire, repeats: true)
-        let request = UNNotificationRequest(
-            identifier: practiceReminderIdentifier,
-            content: content,
-            trigger: trigger
-        )
-        try? await center.add(request)
+        let triggers = practiceTriggers(hour: hour, minute: minute, practiceDoneToday: practiceDoneToday)
+        for (index, item) in triggers.enumerated() {
+            let content = UNMutableNotificationContent()
+            content.title = practiceTitles[(dayOffset + index) % practiceTitles.count]
+            content.body = practiceBodies[(dayOffset + index) % practiceBodies.count]
+            content.sound = .default
+            content.categoryIdentifier = practiceCategoryIdentifier
+            content.userInfo = ["type": "practice-reminder"]
+            let trigger = UNCalendarNotificationTrigger(dateMatching: item.dateComponents, repeats: item.repeats)
+            let request = UNNotificationRequest(identifier: item.identifier, content: content, trigger: trigger)
+            try? await center.add(request)
+        }
     }
 
     static func cancelPracticeReminder() {
         UNUserNotificationCenter.current()
-            .removePendingNotificationRequests(withIdentifiers: [practiceReminderIdentifier])
+            .removePendingNotificationRequests(withIdentifiers: practiceReminderIdentifiers())
+    }
+
+    private static func practiceReminderIdentifiers() -> [String] {
+        [practiceReminderIdentifier] + (1...7).map { "\(practiceReminderIdentifier).\($0)" }
     }
 
     /// Schedule **repeating daily** posture reminders across the active
@@ -184,10 +224,10 @@ enum NotificationService {
     // MARK: - Helpers
 
     private static func pendingReminderIdentifiers() -> [String] {
-        (0..<maxSlots).map { "posture.reminder.\($0)" }
+        (0..<slotIdentifierCeiling).map { "posture.reminder.\($0)" }
     }
 
     private static func deliveredReminderIdentifiers() -> [String] {
-        (0..<maxSlots).map { "posture.reminder.\($0)" }
+        (0..<slotIdentifierCeiling).map { "posture.reminder.\($0)" }
     }
 }
