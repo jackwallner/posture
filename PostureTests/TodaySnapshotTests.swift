@@ -32,6 +32,50 @@ final class TodaySnapshotTests: XCTestCase {
         return row
     }
 
+    /// Drives the real controller through one full, aligned practice with
+    /// synthetic samples, exactly as the app finishes one.
+    private func completePractice(in context: ModelContext) throws -> PracticeSessionController {
+        context.insert(Calibration(
+            basePitch: 0, baseYaw: 0, baseRoll: 0, slouchPitchDelta: .pi / 6,
+            airpodsPitch: 0, airpodsStandingPitch: 0, airpodsSittingPitch: 0
+        ))
+        try context.save()
+        let controller = PracticeSessionController(context: context)
+        controller.start(config: .init(
+            kind: .practice, targetSeconds: 60, targetPercent: 50, level: 1,
+            repsTarget: 0, countsForLevel: true, goalIsDistance: false,
+            targetDistanceMeters: 0, useGPS: false, postureMode: .standing, isPro: false
+        ))
+        let t0 = Date()
+        for i in 0...70 where controller.phase != .finished {
+            controller.ingest(pitch: 0, at: t0.addingTimeInterval(Double(i)))
+        }
+        XCTAssertEqual(controller.result?.completed, true, "PRECONDITION: session completed")
+        return controller
+    }
+
+    // MARK: - B2 iPhone widget shows a practice score
+
+    func testCompletedPracticeGivesTheWidgetATodayScore() throws {
+        let context = try makeContext()
+        let controller = try completePractice(in: context)
+        let aligned = try XCTUnwrap(controller.result?.alignedPercent)
+        XCTAssertEqual(TodaySnapshot.todayScore(in: context), aligned)
+    }
+
+    func testWidgetScoreIsTheBestOfTodayAndIgnoresPartialsAndYesterday() throws {
+        let context = try makeContext()
+        XCTAssertNil(TodaySnapshot.todayScore(in: context, at: day(5)))
+        context.insert(practice(at: day(4, hour: 9), aligned: 99))
+        context.insert(practice(at: day(5, hour: 8), aligned: 95, completed: false))
+        context.insert(AcknowledgmentRecord(timestamp: day(5, hour: 9), method: .manual, quality: .borderline, scheduledAt: day(5, hour: 9)))
+        try context.save()
+        XCTAssertEqual(TodaySnapshot.todayScore(in: context, at: day(5)), 55)
+        context.insert(practice(at: day(5, hour: 10), aligned: 72))
+        try context.save()
+        XCTAssertEqual(TodaySnapshot.todayScore(in: context, at: day(5)), 72)
+    }
+
     // MARK: - B3 watch reads the phone's streak and score
 
     func testWatchGetsThePhoneStreakAndTodayScore() throws {
