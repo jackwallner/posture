@@ -47,6 +47,8 @@
 		<string>Nunito-SemiBold.ttf</string>
 		<string>Nunito-Bold.ttf</string>
 	</array>
+	<key>UIPrefersShowingLanguageSettings</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

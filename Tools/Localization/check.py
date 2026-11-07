@@ -58,7 +58,7 @@ ALLOWED = {'IlloStanding', 'IlloSitting', 'IlloStandingSlouch', 'IlloSlouch', 'I
            'monthly', 'yearly', 'unknown', 'true', 'false', 'walk', 'default', 'session', 'monitor',
            'today,progress,session,settings', 'today,history,progress,settings', 'Posture', 'PostureWidget',
            'PostureWatchWidget', 'applewatch', 'figure', 'history', 'progress', 'settings', 'quick', 'full',
-           'skipped', 'CFBundleShortVersionString', 'funnel-probe-posture', 'posture_pro_tab', 'posture_sheet', 'posture_settings_sheet'}
+           'skipped', 'CFBundleShortVersionString', 'funnel-probe-posture', 'posture_pro_tab', 'posture_sheet', 'posture_settings_sheet', 'en'}
 SYMBOL_OR_ID = re.compile(r'^[A-Za-z0-9_-]+([._][A-Za-z0-9_-]+)+$')
 URLISH = re.compile(r'^[a-z]+://|^mailto:')
 

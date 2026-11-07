@@ -8,6 +8,15 @@ import RevenueCat
 struct SettingsView: View {
     private static let feedbackMailURL = URL(string: "mailto:jackwallner+q@gmail.com?subject=Posture%20feedback")!
 
+    /// The language the app is running in, named in that language, as iOS
+    /// Settings names it ("Deutsch", "Español").
+    private static var currentLanguageName: String {
+        let code = Bundle.main.preferredLocalizations.first ?? "en"
+        let locale = Locale(identifier: code)
+        guard let name = locale.localizedString(forLanguageCode: code) else { return code }
+        return name.prefix(1).uppercased(with: locale) + name.dropFirst()
+    }
+
     @Environment(GoalSettings.self) private var settings
     @Environment(\.modelContext) private var context
     @Environment(AirpodsBackgroundMonitor.self) private var airpodsMonitor: AirpodsBackgroundMonitor?
@@ -250,6 +259,29 @@ struct SettingsView: View {
                     Link(destination: PaywallLinks.privacyPolicy) {
                         Label("Privacy Policy", systemImage: "hand.raised")
                     }
+
+                    // iOS keeps the per-app language picker in the app's page in
+                    // Settings. This row only points there.
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        LabeledContent {
+                            HStack(spacing: 6) {
+                                Text(Self.currentLanguageName).foregroundStyle(Theme.ink2)
+                                // Leaves the app, so the outward arrow rather than a chevron.
+                                Image(systemName: "arrow.up.forward")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(Theme.ink2)
+                                    .accessibilityHidden(true)
+                            }
+                        } label: {
+                            Label("Language", systemImage: "globe")
+                        }
+                    }
+                    .foregroundStyle(Theme.ink)
+                    .accessibilityHint("Opens iOS Settings")
                 }
                 .paneListRows()
 
