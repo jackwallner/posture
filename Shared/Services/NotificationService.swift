@@ -172,16 +172,12 @@ enum NotificationService {
         center.removePendingNotificationRequests(withIdentifiers: pendingReminderIdentifiers())
         center.removeDeliveredNotifications(withIdentifiers: deliveredReminderIdentifiers())
 
-        guard intervalMinutes > 0, activeHoursEnd > activeHoursStart else { return }
-
-        // Build (hour, minute) slots across the active window.
-        var slots: [(hour: Int, minute: Int)] = []
-        var minutes = activeHoursStart * 60
-        let endMinutes = activeHoursEnd * 60
-        while minutes < endMinutes && slots.count < maxSlots {
-            slots.append((minutes / 60, minutes % 60))
-            minutes += intervalMinutes
-        }
+        let slots = checkInSlots(
+            intervalMinutes: intervalMinutes,
+            activeHoursStart: activeHoursStart,
+            activeHoursEnd: activeHoursEnd
+        )
+        guard !slots.isEmpty else { return }
 
         // Offset the rotation by the day of the year so the same phrase doesn't
         // land at the same time every day (reschedule runs on foreground/day
@@ -219,6 +215,24 @@ enum NotificationService {
             try? await center.add(request)
         }
         AnalyticsService.remindersScheduled(count: slots.count)
+    }
+
+    struct Slot: Equatable {
+        let hour: Int
+        let minute: Int
+    }
+
+    /// Check-in times across the active window. When the chosen interval
+    /// needs more slots than iOS can hold, they are spaced evenly over the
+    /// whole window instead, so the end the user picked is never cut off.
+    static func checkInSlots(intervalMinutes: Int, activeHoursStart: Int, activeHoursEnd: Int) -> [Slot] {
+        guard intervalMinutes > 0, activeHoursEnd > activeHoursStart else { return [] }
+        let start = activeHoursStart * 60
+        let end = activeHoursEnd * 60
+        let window = end - start
+        let fittingInterval = (window + maxSlots - 1) / maxSlots
+        let step = max(intervalMinutes, fittingInterval)
+        return stride(from: start, to: end, by: step).map { Slot(hour: $0 / 60, minute: $0 % 60) }
     }
 
     static func cancelAllReminders() async {
