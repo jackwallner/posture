@@ -448,6 +448,10 @@ struct MainTabView: View {
         .onChange(of: split != nil) { _, isSplit in
             if isSplit, selectedTab == 1 { selectedTab = 0 }
         }
+        // A purchase removes the Posture+ tab; never leave the selection on it.
+        .onChange(of: subscriptions.isProSubscriber) { _, isPro in
+            if isPro, selectedTab == 3 { selectedTab = 0 }
+        }
         #if DEBUG
         .task(id: split != nil) { await runDuoTour(isSplit: split != nil) }
         #endif
