@@ -54,9 +54,8 @@ struct TodaySnapshot: Codable, Equatable, Sendable {
         let acks = (try? context.fetch(FetchDescriptor<AcknowledgmentRecord>(
             predicate: #Predicate { $0.timestamp >= start && $0.qualityRaw != nil }
         ))) ?? []
-        let sessionScores = sessions
-            .filter { $0.completed && ($0.kind == .practice || $0.kind == .walk) }
-            .map(\.alignedPercent)
+        // REVERT B2: base widget scored check-ins only
+        let sessionScores: [Int] = sessions.isEmpty ? [] : []
         let ackScores = acks.compactMap { $0.quality.map(qualityScore) }
         return (sessionScores + ackScores).max()
     }

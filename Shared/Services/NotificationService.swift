@@ -109,22 +109,11 @@ enum NotificationService {
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> [PracticeTrigger] {
-        let todayWeekday = calendar.component(.weekday, from: now)
-        return (1...7).map { weekday in
-            let identifier = "\(practiceReminderIdentifier).\(weekday)"
-            if practiceDoneToday, weekday == todayWeekday,
-               let nextWeek = calendar.date(byAdding: .day, value: 7, to: now) {
-                var fire = calendar.dateComponents([.year, .month, .day], from: nextWeek)
-                fire.hour = hour
-                fire.minute = minute
-                return PracticeTrigger(identifier: identifier, dateComponents: fire, repeats: false)
-            }
-            var fire = DateComponents()
-            fire.weekday = weekday
-            fire.hour = hour
-            fire.minute = minute
-            return PracticeTrigger(identifier: identifier, dateComponents: fire, repeats: true)
-        }
+        // REVERT B1: base scheduled one daily repeating trigger, done or not
+        var fire = DateComponents()
+        fire.hour = hour
+        fire.minute = minute
+        return [PracticeTrigger(identifier: practiceReminderIdentifier, dateComponents: fire, repeats: true)]
     }
 
     /// Schedule the daily-practice reminder, skipping today when today's

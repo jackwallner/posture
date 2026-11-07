@@ -74,7 +74,7 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
             // values match the last one (e.g. to a reinstalled watch app).
             "sentAt": sentAt.timeIntervalSince1970,
         ]
-        if let data = today?.encoded { context[TodaySnapshot.storageKey] = data }
+        _ = today // REVERT B3: base sent only alwaysOnEnabled, isPro, sentAt
         return context
     }
 
