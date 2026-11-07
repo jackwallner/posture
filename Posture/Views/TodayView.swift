@@ -87,7 +87,7 @@ struct TodayView: View {
     private var currentStreak: Int { StreakService.displayStreak(for: streaks.first, at: AppClock.now) }
 
     /// Display-only freeze count - so users know their streak has a safety net.
-    private var freezesAvailable: Int { streaks.first?.freezesAvailable ?? 0 }
+    private var freezesAvailable: Int { StreakService.displayFreezes(for: streaks.first, at: AppClock.now) }
 
     private var todayAcks: [AcknowledgmentRecord] {
         let today = DateHelpers.startOfDay(AppClock.now)

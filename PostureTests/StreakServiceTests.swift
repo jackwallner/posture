@@ -86,7 +86,8 @@ final class StreakServiceTests: XCTestCase {
     }
 
     func testDisplayStreakZeroesALapsedRun() {
-        let s = StreakState(currentStreak: 5, freezesAvailable: 0)
+        // No save left and the weekly refill not due until 5/17.
+        let s = StreakState(currentStreak: 5, freezesAvailable: 0, lastFreezeRefill: day(2026, 5, 10))
         s.lastActiveDay = day(2026, 5, 11)
         // Missed a full day with no freeze to cover it — the run is dead.
         XCTAssertEqual(StreakService.displayStreak(for: s, at: day(2026, 5, 13)), 0)

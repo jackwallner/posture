@@ -72,17 +72,31 @@ final class StreakService {
 
     /// Weekly freeze refill - resets to 2 available freezes every 7 days.
     nonisolated static func refillFreezesIfNeeded(_ state: StreakState, at date: Date) {
-        let maxFreezes = 2
-        guard state.freezesAvailable < maxFreezes else { return }
-        guard let lastRefill = state.lastFreezeRefill else {
-            state.lastFreezeRefill = date
-            state.freezesAvailable = maxFreezes
-            return
-        }
-        let daysSince = DateHelpers.daysBetween(DateHelpers.startOfDay(lastRefill), DateHelpers.startOfDay(date))
-        guard daysSince >= 7 else { return }
+        let refilled = freezesAfterRefill(
+            freezesAvailable: state.freezesAvailable, lastFreezeRefill: state.lastFreezeRefill, at: date
+        )
+        guard refilled != state.freezesAvailable else { return }
         state.lastFreezeRefill = date
-        state.freezesAvailable = maxFreezes
+        state.freezesAvailable = refilled
+    }
+
+    /// Saves to *display*: what the next check-in will have, so the count
+    /// matches the streak `displayStreak` keeps alive.
+    nonisolated static func displayFreezes(for state: StreakState?, at date: Date = .now) -> Int {
+        guard let state else { return 0 }
+        return freezesAfterRefill(
+            freezesAvailable: state.freezesAvailable, lastFreezeRefill: state.lastFreezeRefill, at: date
+        )
+    }
+
+    /// The saves a record at `date` will have, counting a weekly refill that
+    /// is due. Shared by the record path and the display so they agree.
+    nonisolated static func freezesAfterRefill(freezesAvailable: Int, lastFreezeRefill: Date?, at date: Date) -> Int {
+        let maxFreezes = 2
+        guard freezesAvailable < maxFreezes else { return freezesAvailable }
+        guard let lastRefill = lastFreezeRefill else { return maxFreezes }
+        let daysSince = DateHelpers.daysBetween(DateHelpers.startOfDay(lastRefill), DateHelpers.startOfDay(date))
+        return daysSince >= 7 ? maxFreezes : freezesAvailable
     }
 
     /// Bonus freeze at streak milestones: 7, 14, 30, 60, 100 days.
@@ -129,7 +143,8 @@ final class StreakService {
     /// The streak to *display*. `currentStreak` is only updated when a
     /// check-in is recorded, so after a lapse it keeps showing the old run
     /// until the next check-in resets it. A streak that can no longer be
-    /// continued (missed more days than a freeze can cover) reads as 0.
+    /// continued (missed more days than a freeze can cover, counting a
+    /// weekly refill the next check-in would get) reads as 0.
     nonisolated static func displayStreak(for state: StreakState?, at date: Date = .now) -> Int {
         guard let state else { return 0 }
         return displayStreak(
@@ -155,7 +170,9 @@ final class StreakService {
         switch gap {
         case ...1:
             return currentStreak
-        case 2 where freezesAvailable > 0:
+        case 2 where freezesAfterRefill(
+            freezesAvailable: freezesAvailable, lastFreezeRefill: lastFreezeRefill, at: date
+        ) > 0:
             return currentStreak
         default:
             return 0
