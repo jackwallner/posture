@@ -6,6 +6,7 @@ Developer notes and historical audits for this repository. The published site re
 
 - [audit823.md](audits/audit823.md): Posture Coach audit823
 - [ios27Posture.md](audits/ios27Posture.md): iOS 27 compatibility audit: Posture
+- [state-machines-2026-11-06.md](audits/state-machines-2026-11-06.md): state machine audit, 10 bugs (3 proved by test, 7 code path), with [repro suite](audits/state-machines-2026-11-06-repro.swift)
 
 ## Marketing
 
