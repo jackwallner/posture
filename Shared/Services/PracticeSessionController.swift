@@ -751,6 +751,10 @@ final class PracticeSessionController {
         if completed {
             WatchSyncService.shared.todayDidChange()
         }
+        if completed, config.kind == .practice {
+            // Skip today's practice reminder now that it's done.
+            Task { await ReminderScheduler.reschedule() }
+        }
     }
 
     /// Stop motion, hand the stream back, drop the keep-alive, flush minutes.

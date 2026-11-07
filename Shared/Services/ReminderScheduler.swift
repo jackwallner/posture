@@ -58,7 +58,8 @@ enum ReminderScheduler {
         if practiceWanted {
             await NotificationService.schedulePracticeReminder(
                 hour: settings.practiceReminderHour,
-                minute: settings.practiceReminderMinute
+                minute: settings.practiceReminderMinute,
+                practiceDoneToday: practiceDoneToday()
             )
         }
         if settings.reminderEnabled {
@@ -68,6 +69,12 @@ enum ReminderScheduler {
                 activeHoursEnd: settings.activeHoursEnd
             )
         }
+    }
+
+    @MainActor
+    private static func practiceDoneToday() -> Bool {
+        guard case .success(let container) = DataService.containerResult else { return false }
+        return TodaySnapshot.practiceCompleted(in: container.mainContext)
     }
 
     /// The date of the next scheduled posture reminder, or nil if none.
