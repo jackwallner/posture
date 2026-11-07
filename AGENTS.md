@@ -48,7 +48,7 @@ look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 - `StreakService.applySession(to:at:)` and `dailyGoalSeconds(forStreak:)` are `nonisolated static` so unit tests can call them sync.
 - HealthKit lives on the watch target only. The iOS target intentionally has no HealthKit entitlement (audit P1-11). Don't re-add it without a reason.
 - The iOS app declares only `UIBackgroundModes = ["audio"]`. Audio supports AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77), so don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
-- Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)` so reminders survive app kill (audit P1-2). Slot cap is 60 (P1-4).
+- Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)` so reminders survive app kill (audit P1-2). Check-in slot cap is 57, plus 7 weekday practice triggers, inside iOS's 64 pending (P1-4).
 
 ## App-specific review
 
