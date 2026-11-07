@@ -13,9 +13,20 @@ enum DataService {
     @MainActor
     final class RecoveryState {
         fileprivate(set) var attempted = false
+        /// Runs after a fresh store replaced the backed-up one.
+        let onRecovered: @MainActor () -> Void
+
+        init(onRecovered: @escaping @MainActor () -> Void = {}) {
+            self.onRecovered = onRecovered
+        }
     }
 
-    private static let launchRecovery = RecoveryState()
+    /// The fresh store has no `Calibration` row, so setup must not claim one
+    /// (the user would land on Today and hit "Calibrate with AirPods before a
+    /// session." on Begin). Routing back to calibration rebuilds it.
+    private static let launchRecovery = RecoveryState(onRecovered: {
+        GoalSettings.shared.hasCalibrated = false
+    })
     private static let logger = Logger(subsystem: "com.jackwallner.posture", category: "DataService")
 
     private(set) static var containerResult = Result { try openContainer(at: containerURL) }
@@ -102,7 +113,9 @@ enum DataService {
         logger.error("Persistent store needs recovery: \(String(describing: error), privacy: .public)")
         let backup = try backUpStore(at: url)
         logger.error("Preserved persistent store at \(backup.path, privacy: .public), opening a fresh store")
-        return try makeContainer(schema, url)
+        let container = try makeContainer(schema, url)
+        recovery.onRecovered()
+        return container
     }
 
     private static func backUpStore(at url: URL) throws -> URL {
