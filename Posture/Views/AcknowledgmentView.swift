@@ -335,6 +335,7 @@ struct AcknowledgmentView: View {
         let streakBefore = streakService.currentState().currentStreak
         let state = streakService.recordAcknowledgment(at: now)
         streakAfterRecord = state.currentStreak
+        WatchSyncService.shared.todayDidChange()
 
         let todayStart = DateHelpers.startOfDay(now)
         let todayDescriptor = FetchDescriptor<AcknowledgmentRecord>(

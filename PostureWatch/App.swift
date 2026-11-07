@@ -9,5 +9,10 @@ struct PostureWatchApp: App {
                 WatchTodayView()
             }
         }
+        // The phone's streak and score arrive while the app is closed; take
+        // them then so the complication is current without opening the app.
+        .backgroundTask(.watchConnectivity) {
+            await WatchSyncService.shared.waitForPendingContent()
+        }
     }
 }

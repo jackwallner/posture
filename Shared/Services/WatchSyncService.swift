@@ -1,6 +1,10 @@
 #if canImport(WatchConnectivity)
 import Foundation
+import SwiftData
 import WatchConnectivity
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 
 /// Bridges the `alwaysOnEnabled` preference and Pro status between the
 /// iPhone and the Apple Watch. App Group `UserDefaults` are per-device - they do *not*
@@ -22,6 +26,10 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     /// the time it was sent. The watch app sets this to tap the wrist.
     @MainActor var onSlouchNudge: ((Date) -> Void)?
 
+    /// Called on the main actor when the iPhone sends a fresh streak and
+    /// today's score. The watch app sets this to redraw.
+    @MainActor var onTodayReceived: ((TodaySnapshot) -> Void)?
+
     private override init() { super.init() }
 
     func activate() {
@@ -31,24 +39,68 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         session.activate()
     }
 
-    /// iOS → watch: the always-on toggle plus Pro status. The watch has no
-    /// RevenueCat session of its own, so without the Pro flag a paying user
-    /// stays locked out there. Safe to call any time; no-ops until the
-    /// session is activated, and activation pushes the latest state.
+    /// iOS → watch: the always-on toggle, Pro status, and the streak with
+    /// today's score. The watch has no RevenueCat session of its own, so
+    /// without the Pro flag a paying user stays locked out there, and no
+    /// store the phone writes, so without the snapshot it shows 0. Safe to
+    /// call any time; no-ops until the session is activated, and activation
+    /// pushes the latest state.
     @MainActor func pushState() {
         #if os(iOS)
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
         guard session.activationState == .activated else { return }
-        try? session.updateApplicationContext([
-            "alwaysOnEnabled": GoalSettings.shared.alwaysOnEnabled,
-            "isPro": SubscriptionService.shared.isProSubscriber,
-            // Keeps each push distinct, so it's delivered even when the
-            // values match the last one (e.g. to a reinstalled watch app).
-            "sentAt": Date().timeIntervalSince1970,
-        ])
+        try? session.updateApplicationContext(Self.applicationContext(
+            alwaysOnEnabled: GoalSettings.shared.alwaysOnEnabled,
+            isPro: SubscriptionService.shared.isProSubscriber,
+            today: currentTodaySnapshot()
+        ))
         #endif
     }
+
+    /// The application context the phone sends.
+    static func applicationContext(
+        alwaysOnEnabled: Bool,
+        isPro: Bool,
+        today: TodaySnapshot?,
+        sentAt: Date = Date()
+    ) -> [String: Any] {
+        var context: [String: Any] = [
+            "alwaysOnEnabled": alwaysOnEnabled,
+            "isPro": isPro,
+            // Keeps each push distinct, so it's delivered even when the
+            // values match the last one (e.g. to a reinstalled watch app).
+            "sentAt": sentAt.timeIntervalSince1970,
+        ]
+        if let data = today?.encoded { context[TodaySnapshot.storageKey] = data }
+        return context
+    }
+
+    #if os(iOS)
+    @MainActor private func currentTodaySnapshot() -> TodaySnapshot? {
+        guard case .success(let container) = DataService.containerResult else { return nil }
+        return TodaySnapshot.make(from: container.mainContext)
+    }
+
+    /// A practice, walk or check-in changed the streak or today's score:
+    /// refresh the watch.
+    @MainActor func todayDidChange() {
+        pushState()
+    }
+    #endif
+
+    #if os(watchOS)
+    /// Keeps a background launch alive until WatchConnectivity has handed
+    /// over what the phone sent (about 10 seconds at most).
+    func waitForPendingContent() async {
+        guard WCSession.isSupported() else { return }
+        activate()
+        let session = WCSession.default
+        for _ in 0..<50 where session.activationState != .activated || session.hasContentPending {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+        }
+    }
+    #endif
 
     #if os(iOS)
     /// The watch app is running now (foreground, or an always-on workout).
@@ -117,7 +169,8 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     @MainActor private func pushStateIfStale() {
         let sent = WCSession.default.applicationContext
         guard sent["isPro"] as? Bool != SubscriptionService.shared.isProSubscriber
-            || sent["alwaysOnEnabled"] as? Bool != GoalSettings.shared.alwaysOnEnabled else { return }
+            || sent["alwaysOnEnabled"] as? Bool != GoalSettings.shared.alwaysOnEnabled
+            || TodaySnapshot.decode(sent[TodaySnapshot.storageKey]) != currentTodaySnapshot() else { return }
         pushState()
     }
 
@@ -130,14 +183,29 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
 
     private func deliver(from context: [String: Any]) {
         #if os(watchOS)
+        if let today = TodaySnapshot.decode(context[TodaySnapshot.storageKey]) {
+            today.store()
+            WidgetCenter.shared.reloadAllTimelines()
+            Task { @MainActor in WatchSyncService.shared.onTodayReceived?(today) }
+        }
         guard let enabled = context["alwaysOnEnabled"] as? Bool else { return }
         let isPro = context["isPro"] as? Bool
+        // The phone now pushes after every practice and check-in, so apply
+        // its always-on value only when it changed there. Otherwise a
+        // toggle flipped on the watch would be undone by the next practice.
+        let defaults = UserDefaults(suiteName: postureAppGroupID)
+        let phoneChanged = defaults?.object(forKey: Self.lastPhoneAlwaysOnKey) as? Bool != enabled
+        defaults?.set(enabled, forKey: Self.lastPhoneAlwaysOnKey)
         Task { @MainActor in
             if let isPro { SubscriptionService.shared.setLocalOverride(isPro: isPro) }
-            GoalSettings.shared.alwaysOnEnabled = enabled
-            WatchSyncService.shared.onAlwaysOnReceived?(enabled)
+            if phoneChanged { GoalSettings.shared.alwaysOnEnabled = enabled }
+            WatchSyncService.shared.onAlwaysOnReceived?(GoalSettings.shared.alwaysOnEnabled)
         }
         #endif
     }
+
+    #if os(watchOS)
+    private static let lastPhoneAlwaysOnKey = "lastPhoneAlwaysOnEnabled"
+    #endif
 }
 #endif

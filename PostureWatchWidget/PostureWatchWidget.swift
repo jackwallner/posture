@@ -24,6 +24,11 @@ struct PostureWatchProvider: TimelineProvider {
     }
 
     static func load() -> PostureWatchWidgetEntry {
+        // The phone's numbers, saved by the watch app when they arrive. The
+        // watch store below is never written by the phone.
+        if let today = TodaySnapshot.stored() {
+            return PostureWatchWidgetEntry(date: .now, streak: today.streak(), todayScore: today.score())
+        }
         // Must mirror DataService's schema exactly — this extension opens the
         // same App Group store, and a schema mismatch after the app migrates
         // it makes the container fail (blank widget).
