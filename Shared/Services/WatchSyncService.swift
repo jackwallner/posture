@@ -83,8 +83,9 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     }
 
     /// A practice, walk or check-in changed the streak or today's score:
-    /// refresh the watch.
+    /// refresh the iPhone widget and the watch.
     @MainActor func todayDidChange() {
+        WidgetCenter.shared.reloadAllTimelines()
         pushState()
     }
     #endif

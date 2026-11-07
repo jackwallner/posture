@@ -40,15 +40,8 @@ struct PostureWidgetProvider: TimelineProvider {
             for: (try? context.fetch(FetchDescriptor<StreakState>()))?.first
         )
 
-        // Today's best camera check-in (PostureSession is no longer written).
-        let startOfDay = Calendar.current.startOfDay(for: .now)
-        let ackPredicate = #Predicate<AcknowledgmentRecord> { ack in
-            ack.timestamp >= startOfDay && ack.qualityRaw != nil
-        }
-        let todayAcks = (try? context.fetch(FetchDescriptor<AcknowledgmentRecord>(predicate: ackPredicate))) ?? []
-        let todayScore: Int? = todayAcks
-            .compactMap { $0.quality.map(Self.qualityScore) }
-            .max()
+        // Today's best practice, walk or check-in.
+        let todayScore = TodaySnapshot.todayScore(in: context)
 
         let cal = (try? context.fetch(FetchDescriptor<Calibration>()))?.first
         let hasCalibrated = cal != nil
@@ -56,13 +49,6 @@ struct PostureWidgetProvider: TimelineProvider {
         return PostureWidgetEntry(date: .now, streak: streak, todayScore: todayScore, hasCalibrated: hasCalibrated)
     }
 
-    static func qualityScore(_ q: PostureQuality) -> Int {
-        switch q {
-        case .good: return 85
-        case .borderline: return 55
-        case .bad: return 25
-        }
-    }
 }
 
 struct PostureLockScreenWidgetView: View {
