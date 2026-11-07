@@ -50,6 +50,8 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
         guard WCSession.isSupported() else { return }
         let session = WCSession.default
         guard session.activationState == .activated else { return }
+        // Nothing to deliver to (the push would throw), so skip the store read.
+        guard session.isPaired, session.isWatchAppInstalled else { return }
         try? session.updateApplicationContext(Self.applicationContext(
             alwaysOnEnabled: GoalSettings.shared.alwaysOnEnabled,
             isPro: SubscriptionService.shared.isProSubscriber,
@@ -168,7 +170,9 @@ final class WatchSyncService: NSObject, WCSessionDelegate, @unchecked Sendable {
     /// since the last send (e.g. a toggle flipped before activation), so a
     /// toggle changed on the watch is left alone otherwise.
     @MainActor private func pushStateIfStale() {
-        let sent = WCSession.default.applicationContext
+        let session = WCSession.default
+        guard session.isPaired, session.isWatchAppInstalled else { return }
+        let sent = session.applicationContext
         guard sent["isPro"] as? Bool != SubscriptionService.shared.isProSubscriber
             || sent["alwaysOnEnabled"] as? Bool != GoalSettings.shared.alwaysOnEnabled
             || TodaySnapshot.decode(sent[TodaySnapshot.storageKey]) != currentTodaySnapshot() else { return }

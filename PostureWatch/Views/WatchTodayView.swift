@@ -84,7 +84,7 @@ struct WatchTodayView: View {
     /// Today's best score: the phone's when it sent one, else the watch's
     /// own check-ins or sessions.
     private var bestTodayScore: Int {
-        if let score = today?.score() { return score }
+        if let score = self.today?.score() { return score }
         let today = Calendar.current.startOfDay(for: .now)
 
         // Check scored AcknowledgmentRecords (camera or airpods) for today
