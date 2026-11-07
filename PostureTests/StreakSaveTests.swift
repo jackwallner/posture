@@ -85,8 +85,9 @@ final class StreakSaveTests: XCTestCase {
         let state = service.currentState()
         XCTAssertEqual(StreakService.displayFreezes(for: state, at: day(10)), 0, "refill not due yet")
         XCTAssertEqual(StreakService.displayFreezes(for: state, at: day(11)), 2, "weekly refill due")
-        XCTAssertEqual(service.recordSessionCompleted(at: day(11)).freezesAvailable, 1,
-                       "the refill landed, then one save covered day 10")
+        // Refilled to 2, one save covers day 10, and day 11 is the 7-day milestone (+1).
+        XCTAssertEqual(service.recordSessionCompleted(at: day(11)).freezesAvailable, 2,
+                       "the refill landed, one save covered day 10, the milestone added one")
     }
 
     func testStreakStillReadsZeroWhenNoSaveCanCoverTheGap() {
