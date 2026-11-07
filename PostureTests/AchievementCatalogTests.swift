@@ -80,10 +80,14 @@ final class AchievementCatalogTests: XCTestCase {
         XCTAssertTrue(earned.contains("walk_10"))
     }
 
-    func testFreezeSavedFromAvailableFreeze() {
-        let streak = StreakState(currentStreak: 2, longestStreak: 2, freezesAvailable: 1, lastActiveDay: .now)
-        let earned = AchievementCatalog.earnedIDs(streak: streak, sessions: [])
-        XCTAssertTrue(earned.contains("freeze_saved"))
+    func testFreezeSavedNeedsTheSevenDayMilestoneSave() {
+        let starting = StreakState(currentStreak: 2, longestStreak: 2, freezesAvailable: 2, lastActiveDay: .now)
+        XCTAssertFalse(AchievementCatalog.earnedIDs(streak: starting, sessions: []).contains("freeze_saved"))
+        let earned = StreakState(currentStreak: 7, longestStreak: 7, freezesAvailable: 3, lastActiveDay: .now)
+        XCTAssertTrue(AchievementCatalog.earnedIDs(streak: earned, sessions: []).contains("freeze_saved"))
+        let spent = StreakState(currentStreak: 2, longestStreak: 9, freezesAvailable: 0, lastActiveDay: .now)
+        XCTAssertTrue(AchievementCatalog.earnedIDs(streak: spent, sessions: []).contains("freeze_saved"),
+                      "an earned badge stays earned when the saves run out")
     }
 
     func testEarnedAtUsesEarliestQualifyingSession() {
