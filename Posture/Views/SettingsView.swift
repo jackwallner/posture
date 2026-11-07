@@ -305,6 +305,10 @@ struct SettingsView: View {
                 await refreshNotificationStatus()
                 refreshWalkBaseline()
             }
+            // "allow" sends the user to iOS Settings; re-read when they come back.
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                Task { await refreshNotificationStatus() }
+            }
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
                 if isPro { applyPendingFeatureEnable() }
             }
