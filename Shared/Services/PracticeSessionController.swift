@@ -748,6 +748,9 @@ final class PracticeSessionController {
         if completed, isAppInBackground {
             postCompletionNotification(kind: config.kind, alignedPercent: alignedPercent, passed: passed)
         }
+        if completed {
+            WatchSyncService.shared.todayDidChange()
+        }
     }
 
     /// Stop motion, hand the stream back, drop the keep-alive, flush minutes.

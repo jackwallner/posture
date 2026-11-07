@@ -131,13 +131,32 @@ final class StreakService {
     /// until the next check-in resets it. A streak that can no longer be
     /// continued (missed more days than a freeze can cover) reads as 0.
     nonisolated static func displayStreak(for state: StreakState?, at date: Date = .now) -> Int {
-        guard let state, let last = state.lastActiveDay else { return 0 }
+        guard let state else { return 0 }
+        return displayStreak(
+            currentStreak: state.currentStreak,
+            lastActiveDay: state.lastActiveDay,
+            freezesAvailable: state.freezesAvailable,
+            lastFreezeRefill: state.lastFreezeRefill,
+            at: date
+        )
+    }
+
+    /// Same as `displayStreak(for:at:)`, from plain values (the watch gets
+    /// them from the phone, see `TodaySnapshot`).
+    nonisolated static func displayStreak(
+        currentStreak: Int,
+        lastActiveDay: Date?,
+        freezesAvailable: Int,
+        lastFreezeRefill: Date?,
+        at date: Date = .now
+    ) -> Int {
+        guard let last = lastActiveDay else { return 0 }
         let gap = DateHelpers.daysBetween(DateHelpers.startOfDay(last), DateHelpers.startOfDay(date))
         switch gap {
         case ...1:
-            return state.currentStreak
-        case 2 where state.freezesAvailable > 0:
-            return state.currentStreak
+            return currentStreak
+        case 2 where freezesAvailable > 0:
+            return currentStreak
         default:
             return 0
         }

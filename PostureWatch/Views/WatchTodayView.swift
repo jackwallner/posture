@@ -7,10 +7,15 @@ struct WatchTodayView: View {
     @State private var settings = GoalSettings.shared
     @State private var subscriptions = SubscriptionService.shared
     @State private var background = BackgroundPostureWorkout.shared
+    /// The phone's streak and today's score. The watch's own store is never
+    /// written by the phone, so this is the source of both numbers.
+    @State private var today = TodaySnapshot.stored()
 
     /// Display-only - never insert a StreakState during body evaluation
     /// (audit P1-10). Creation is owned by StreakService on the phone.
-    private var currentStreak: Int { StreakService.displayStreak(for: streaks.first) }
+    private var currentStreak: Int {
+        today?.streak() ?? StreakService.displayStreak(for: streaks.first)
+    }
 
     var body: some View {
         NavigationStack {
@@ -23,8 +28,7 @@ struct WatchTodayView: View {
                             .font(.headline)
                     }
 
-                    // Posture ring showing today's best check-in quality
-                    // (watch reads from shared App Group SwiftData)
+                    // Posture ring showing today's best score, sent by the phone
                     PostureRingCompact(score: bestTodayScore)
 
                     Text(bestTodayScore > 0 ? "Today: \(bestTodayScore)" : "Check in on your iPhone")
@@ -47,7 +51,10 @@ struct WatchTodayView: View {
         .task {
             subscriptions.loadCachedStatus()
             WatchSyncService.shared.onSlouchNudge = { WatchSlouchHaptic.playRelayed(sentAt: $0) }
+            WatchSyncService.shared.onTodayReceived = { today = $0 }
             WatchSyncService.shared.activate()
+            // A background launch may have saved a newer one before this view existed.
+            today = TodaySnapshot.stored() ?? today
             WatchSyncService.shared.onAlwaysOnReceived = { _ in
                 Task { await applyAlwaysOn() }
             }
@@ -74,8 +81,10 @@ struct WatchTodayView: View {
         }
     }
 
-    /// Best quality score from today's camera acknowledgments or sessions.
+    /// Today's best score: the phone's when it sent one, else the watch's
+    /// own check-ins or sessions.
     private var bestTodayScore: Int {
+        if let score = today?.score() { return score }
         let today = Calendar.current.startOfDay(for: .now)
 
         // Check scored AcknowledgmentRecords (camera or airpods) for today
