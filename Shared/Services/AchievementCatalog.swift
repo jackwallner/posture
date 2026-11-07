@@ -125,8 +125,10 @@ enum AchievementCatalog {
                 title: String(localized: "Safety net"),
                 subtitle: String(localized: "Earned a streak save."),
                 systemImage: "snowflake",
-                isEarned: (streak?.freezesAvailable ?? 0) > 0 || bestStreak >= 7,
-                earnedAt: (streak?.freezesAvailable ?? 0) > 0 || bestStreak >= 7 ? streakDate : nil
+                // The first earned save is the 7-day milestone bonus. The
+                // starting allotment and weekly refills are given, not earned.
+                isEarned: bestStreak >= 7,
+                earnedAt: bestStreak >= 7 ? streakDate : nil
             ),
         ]
     }
