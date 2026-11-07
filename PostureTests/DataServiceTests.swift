@@ -20,6 +20,26 @@ final class DataServiceTests: XCTestCase {
         try assertWorking(container)
     }
 
+    /// State machine audit P4: a recovered store has no calibration, so setup
+    /// must stop claiming one.
+    func testRecoveryTellsSetupTheFreshStoreHasNoCalibration() throws {
+        let directory = try makeDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("Posture.store")
+        try Data("damaged".utf8).write(to: url)
+        let recovered = Counter()
+        _ = try DataService.openContainer(at: url, recovery: .init(onRecovered: { recovered.value += 1 }))
+        XCTAssertEqual(recovered.value, 1, "a corrupt store was replaced, so setup must be told")
+
+        let reopened = Counter()
+        _ = try DataService.openContainer(at: url, recovery: .init(onRecovered: { reopened.value += 1 }))
+        XCTAssertEqual(reopened.value, 0, "a healthy store keeps the user's setup")
+    }
+
+    private final class Counter {
+        var value = 0
+    }
+
     func testTransientErrorsPreserveAllFilesAndReportFailure() throws {
         let errors = [
             CocoaError(.fileReadNoPermission) as NSError,
