@@ -90,4 +90,25 @@ final class ReminderSchedulingTests: XCTestCase {
         XCTAssertTrue(NotificationService.remindersCanFire(.authorized))
         XCTAssertTrue(NotificationService.remindersCanFire(.provisional))
     }
+
+    // MARK: - B7 a wide window is never cut short
+
+    func testWideFifteenMinuteWindowRemindsUntilTheEndHour() {
+        // Settings allows Start 6 and End 23 at every 15 minutes (68 slots).
+        let slots = NotificationService.checkInSlots(intervalMinutes: 15, activeHoursStart: 6, activeHoursEnd: 23)
+        let last = slots.map { $0.hour * 60 + $0.minute }.max() ?? 0
+        XCTAssertLessThanOrEqual(slots.count, 57, "with the 7 practice reminders, iOS holds 64")
+        XCTAssertGreaterThanOrEqual(last, 22 * 60 + 30, "last reminder at \(last / 60):\(last % 60), End is 23:00")
+        XCTAssertLessThan(last, 23 * 60)
+        XCTAssertEqual(slots.first, .init(hour: 6, minute: 0))
+    }
+
+    func testWindowsThatFitKeepTheChosenInterval() {
+        let slots = NotificationService.checkInSlots(intervalMinutes: 15, activeHoursStart: 9, activeHoursEnd: 20)
+        XCTAssertEqual(slots.count, 44)
+        XCTAssertEqual(slots.last, .init(hour: 19, minute: 45))
+        XCTAssertEqual(NotificationService.checkInSlots(intervalMinutes: 30, activeHoursStart: 6, activeHoursEnd: 23).count, 34)
+        XCTAssertEqual(NotificationService.checkInSlots(intervalMinutes: 60, activeHoursStart: 9, activeHoursEnd: 17).count, 8)
+        XCTAssertTrue(NotificationService.checkInSlots(intervalMinutes: 15, activeHoursStart: 12, activeHoursEnd: 12).isEmpty)
+    }
 }
