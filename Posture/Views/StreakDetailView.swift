@@ -13,7 +13,7 @@ struct StreakDetailView: View {
 
     private var streak: StreakState? { streaks.first }
     private var currentStreak: Int { StreakService.displayStreak(for: streak) }
-    private var savesAvailable: Int { streak?.freezesAvailable ?? 0 }
+    private var savesAvailable: Int { StreakService.displayFreezes(for: streak) }
 
     /// Day-starts (last 35 days) that earned streak credit: a completed
     /// session or a check-in.
