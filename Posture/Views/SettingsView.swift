@@ -471,8 +471,9 @@ struct SettingsView: View {
     }
 
     private var trialOfferHeadline: String? {
+        // Only the trial-eligible package the sheet was opened with. Another
+        // product's intro offer would promise a trial this user can't get.
         trialOfferPackage?.postureTrialOnUsHeadline
-            ?? subscriptions.products.compactMap(\.postureTrialOnUsHeadline).first
     }
 
     private var trialOfferPriceLabel: String? {

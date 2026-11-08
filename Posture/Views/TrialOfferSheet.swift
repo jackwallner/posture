@@ -17,22 +17,32 @@ struct TrialOfferSheet: View {
     @State private var animateGlow = false
     @State private var shimmerPhase: CGFloat = -1
 
-    private var headline: String {
+    /// Trial copy only when a trial-eligible package backs the sheet
+    /// (`directPurchase`). Otherwise it is a plain upgrade pitch whose Start
+    /// opens the full paywall, so it must not promise a free trial the store
+    /// will not give.
+    var offersTrial: Bool { directPurchase && offerHeadline != nil }
+
+    var headline: String {
         if let focus { return focus.intentHeadline }
-        if let offerHeadline { return offerHeadline }
-        return String(localized: "Try Posture+ free.")
+        guard offersTrial else { return String(localized: "Posture that grows with you.") }
+        return offerHeadline ?? String(localized: "Try Posture+ free.")
     }
 
-    private var subheadline: String {
+    var subheadline: String {
         if let focus {
-            if offerHeadline != nil {
+            if offersTrial {
                 return String(localized: "\(focus.intentSubheadline) Free for 7 days. Cancel anytime.")
             }
             return focus.intentSubheadline
         }
-        return offerHeadline != nil
+        return offersTrial
             ? String(localized: "The full ladder, walks, trends, and all-day monitoring. No charge until your trial ends.")
             : String(localized: "The full ladder, walks, trends, and all-day monitoring.")
+    }
+
+    var ctaTitle: String {
+        offersTrial ? String(localized: "Start My Free Trial") : String(localized: "Start Posture+")
     }
 
     private var bulletFeatures: [PosturePlusFeature] {
@@ -177,7 +187,7 @@ struct TrialOfferSheet: View {
                     Button(action: onStartTrial) {
                         ZStack {
                             HStack(spacing: 8) {
-                                Text("Start My Free Trial")
+                                Text(ctaTitle)
                                     .font(Theme.font(.headline, weight: .bold))
                                 Image(systemName: "arrow.right")
                                     .font(.system(size: 15, weight: .bold))

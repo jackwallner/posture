@@ -577,8 +577,9 @@ struct TodayView: View {
     private var walkTrialIsDirect: Bool { walkDirectTrialPackage != nil }
 
     private var walkTrialHeadline: String? {
+        // Only the trial-eligible package the sheet was opened with. Another
+        // product's intro offer would promise a trial this user can't get.
         walkTrialPackage?.postureTrialOnUsHeadline
-            ?? subscriptions.products.compactMap(\.postureTrialOnUsHeadline).first
     }
 
     private var walkTrialPriceLabel: String? {
