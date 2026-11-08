@@ -45,9 +45,11 @@ final class HeadphoneMotionService {
     private let delegateBox: HeadphoneDelegateBox
     #if DEBUG
     private var debugMotionTask: Task<Void, Never>?
+    /// Unit tests turn the stub on without the launch argument.
+    var forcesDebugMotionStub = false
 
     private var usesDebugMotionStub: Bool {
-        LaunchArguments.contains("SimulateAirpodsConnected")
+        forcesDebugMotionStub || LaunchArguments.contains("SimulateAirpodsConnected")
     }
     #endif
     private let queue: OperationQueue = {
@@ -154,7 +156,6 @@ final class HeadphoneMotionService {
         guard debugMotionTask == nil else { return }
         isConnected = true
         isRunning = true
-        onConnect?(true)
 
         debugMotionTask = Task { @MainActor [weak self] in
             var phase = 0.0
@@ -171,6 +172,9 @@ final class HeadphoneMotionService {
                 try? await Task.sleep(nanoseconds: 40_000_000)
             }
         }
+        // After the task is stored: the monitor re-arms on every connect by
+        // calling start() again, which must hit the guard above, not recurse.
+        onConnect?(true)
     }
     #endif
 }
