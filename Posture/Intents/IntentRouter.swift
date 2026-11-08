@@ -25,6 +25,16 @@ final class IntentRouter {
     enum MonitoringRoute: Equatable {
         case start
         case settings(SettingsPrompt)
+
+        /// The person asked to start monitoring, so a manual Stop from Today
+        /// no longer applies once they can actually run it. Without this,
+        /// confirming all-day from the intent left a paused monitor stopped.
+        var unpausesMonitor: Bool {
+            switch self {
+            case .start, .settings(.confirmAllDay): return true
+            case .settings(.proGate): return false
+            }
+        }
     }
 
     /// Set by an intent's `perform()`; cleared by the root view.

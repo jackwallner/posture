@@ -64,6 +64,12 @@ final class PostureIntentTests: XCTestCase {
         XCTAssertEqual(IntentRouter.monitoringRoute(isPro: true, allDayEnabled: true), .start)
     }
 
+    func testStartRequestClearsAManualStopUnlessGated() {
+        XCTAssertTrue(IntentRouter.MonitoringRoute.start.unpausesMonitor)
+        XCTAssertTrue(IntentRouter.MonitoringRoute.settings(.confirmAllDay).unpausesMonitor)
+        XCTAssertFalse(IntentRouter.MonitoringRoute.settings(.proGate).unpausesMonitor)
+    }
+
     func testIntentsQueueTheirRequest() async throws {
         _ = try await StartMonitoringIntent().perform()
         XCTAssertEqual(IntentRouter.shared.pending, .startMonitoring)

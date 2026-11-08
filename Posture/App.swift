@@ -180,12 +180,13 @@ private struct AirpodsRootView: View {
         case .startPractice:
             showingPracticeFromReminder = true
         case .startMonitoring:
-            switch IntentRouter.monitoringRoute(
+            let route = IntentRouter.monitoringRoute(
                 isPro: subscriptions.isProSubscriber,
                 allDayEnabled: settings.airpodsBackgroundEnabled
-            ) {
+            )
+            if route.unpausesMonitor { monitor.userPaused = false }
+            switch route {
             case .start:
-                monitor.userPaused = false
                 reconcileMonitoring(monitor)
             case .settings(let prompt):
                 intents.settingsPrompt = prompt
