@@ -342,14 +342,20 @@ struct PaywallView: View {
                 Text(isRestoring ? "Restoring…" : "Restore Purchases")
                     .font(Theme.font(.caption2, weight: .semibold))
                     .foregroundStyle(Theme.ink2)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .disabled(isRestoring || isPurchasing)
 
             HStack(spacing: 4) {
                 Link("Terms of Use", destination: PaywallLinks.standardEULA)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
                 Text("·")
                 Link("Privacy Policy", destination: PaywallLinks.privacyPolicy)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
             }
             .font(Theme.font(.caption2, weight: .semibold))
             .foregroundStyle(Theme.ink3)
@@ -567,14 +573,14 @@ private struct PosturePlanCard: View {
                         if let savings = savingsPercent {
                             Text("SAVE \(savings)%")
                                 .font(Theme.font(size: 9, weight: .bold))
-                                .foregroundStyle(Theme.paper)
+                                .foregroundStyle(Theme.ink)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Theme.sage, in: Capsule())
                         } else if isBestValue {
                             Text("BEST VALUE")
                                 .font(Theme.font(size: 9, weight: .bold))
-                                .foregroundStyle(Theme.paper)
+                                .foregroundStyle(Theme.ink)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Theme.sage, in: Capsule())

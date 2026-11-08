@@ -194,6 +194,8 @@ struct ProgressTabView: View {
                 .font(Theme.font(.footnote, weight: .semibold))
                 .foregroundStyle(Theme.ink2)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
             }
             LevelPipsLegend()
         }

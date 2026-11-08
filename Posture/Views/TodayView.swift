@@ -642,7 +642,8 @@ struct TodayView: View {
                         .font(Theme.font(.caption, weight: .semibold))
                 }
                 .foregroundStyle(Theme.ink3)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
                 .padding(.top, 4)
             }
             .buttonStyle(.plain)
