@@ -18,20 +18,20 @@ final class ReleaseJourneysUITests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: Self.bundle)
         QA.launch(app, environment: Self.probe, arguments: ["UITEST_FRESH", "-rcfunnelprobe"])
-        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 20), "welcome never rendered")
+        XCTAssertTrue(button("Continue", "Weiter", in: app).waitForExistence(timeout: 20), "welcome never rendered")
         QA.checkpoint(app, "welcome")
 
         // Every teaching page carries its own Continue, so tap the one on screen.
         for page in 1...4 {
-            guard let next = onScreenButton("Continue", in: app) else { break }
+            guard let next = onScreenButton(["Continue", "Weiter"], in: app) else { break }
             next.tap()
             QA.checkpoint(app, "teach-\(page)")
         }
-        let baseline = app.buttons["Set up my baseline"]
+        let baseline = button("Set up my baseline", "Ausgangswert einrichten", in: app)
         XCTAssertTrue(baseline.waitForExistence(timeout: 6), "never reached the last teaching page")
         baseline.tap()
 
-        let noAirPods = app.buttons["I don't have AirPods"]
+        let noAirPods = button("I don't have AirPods", "Ich habe keine AirPods", in: app)
         XCTAssertTrue(noAirPods.waitForExistence(timeout: 25), "calibration never rendered")
         QA.checkpoint(app, "airpods-calibration")
 
@@ -41,12 +41,12 @@ final class ReleaseJourneysUITests: XCTestCase {
             QA.checkpoint(app, "onboarding-trial", paywall: true)
             start.tap()
         }
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today never rendered")
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 30), "Today never rendered")
         QA.checkpoint(app, "first-today", paywall: false)
     }
 
-    private func onScreenButton(_ label: String, in app: XCUIApplication) -> XCUIElement? {
-        let matches = app.buttons.matching(NSPredicate(format: "label == %@", label))
+    private func onScreenButton(_ labels: [String], in app: XCUIApplication) -> XCUIElement? {
+        let matches = app.buttons.matching(NSPredicate(format: "label IN %@", labels))
         let deadline = Date().addingTimeInterval(5)
         repeat {
             for index in 0..<matches.count where matches.element(boundBy: index).isHittable {
@@ -57,42 +57,55 @@ final class ReleaseJourneysUITests: XCTestCase {
         return nil
     }
 
+    // English or German label, per the persona's language.
+    private func button(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
+    }
+
+    private func tab(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
+        app.tabBars.buttons.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
+    }
+
+    private func text(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
+        app.staticTexts.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
+    }
+
     func test02EveryTabOnSeededData() {
         continueAfterFailure = false
         let app = launch(["-SCREENSHOT_SEED", "-PostureProOverride"])
         QA.checkpoint(app, "today")
-        for tab in ["History", "Progress", "Settings"] {
-            let button = app.tabBars.buttons[tab]
+        for (name, german) in [("History", "Verlauf"), ("Progress", "Fortschritt"), ("Settings", "Einstellungen")] {
+            let button = tab(name, german, in: app)
             // Unfolded on the iPhone Duo, History is the pane beside Today, not a tab.
-            if tab == "History", !button.exists { continue }
+            if name == "History", !button.exists { continue }
             button.tap()
-            QA.checkpoint(app, tab.lowercased())
+            QA.checkpoint(app, name.lowercased())
         }
     }
 
     func test03PosturePlusPaywallTab() {
         continueAfterFailure = false
         let app = launch(["-SCREENSHOT_SEED", "-rcfunnelprobe"], environment: Self.probe)
-        let plus = app.tabBars.buttons["Posture+"]
+        let plus = tab("Posture+", "Posture+", in: app)
         XCTAssertTrue(plus.waitForExistence(timeout: 15), "Posture+ tab missing for a free user")
         plus.tap()
         QA.checkpoint(app, "posture-plus-paywall", paywall: true)
 
-        app.tabBars.buttons["Today"].tap()
+        tab("Today", "Heute", in: app).tap()
         QA.checkpoint(app, "today-after-paywall", paywall: false)
     }
 
     func test04ReturnVisitWithInterruption() {
         continueAfterFailure = false
         let app = launch(["-SCREENSHOT_SEED", "-PostureProOverride"])
-        app.tabBars.buttons["Progress"].tap()
+        tab("Progress", "Fortschritt", in: app).tap()
         QA.checkpoint(app, "progress-before-interruption")
 
         QA.interrupt(app)
         QA.checkpoint(app, "progress-after-interruption")
 
         QA.relaunch(app)
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 25))
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 25))
         QA.checkpoint(app, "today-after-relaunch")
     }
 
@@ -103,59 +116,59 @@ final class ReleaseJourneysUITests: XCTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: Self.bundle)
         QA.launch(app, environment: Self.probe, arguments: ["UITEST_FRESH", "-rcfunnelprobe"])
-        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 20), "welcome never rendered")
+        XCTAssertTrue(button("Continue", "Weiter", in: app).waitForExistence(timeout: 20), "welcome never rendered")
         for _ in 1...4 {
-            guard let next = onScreenButton("Continue", in: app) else { break }
+            guard let next = onScreenButton(["Continue", "Weiter"], in: app) else { break }
             next.tap()
         }
-        let baseline = app.buttons["Set up my baseline"]
+        let baseline = button("Set up my baseline", "Ausgangswert einrichten", in: app)
         XCTAssertTrue(baseline.waitForExistence(timeout: 6), "never reached the last teaching page")
         baseline.tap()
-        let noAirPods = app.buttons["I don't have AirPods"]
+        let noAirPods = button("I don't have AirPods", "Ich habe keine AirPods", in: app)
         XCTAssertTrue(noAirPods.waitForExistence(timeout: 25), "calibration never rendered")
         noAirPods.tap()
         let start = app.buttons["Get Started"]
         if start.waitForExistence(timeout: 10) { start.tap() }
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today never rendered")
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 30), "Today never rendered")
         QA.checkpoint(app, "today-before-check-in")
 
-        let first = try checkIn("aligned", in: app)
-        XCTAssertTrue(app.staticTexts["Aligned"].waitForExistence(timeout: 5), "result did not name the quality that was logged")
+        let first = try checkIn("aligned", "aufrecht", in: app)
+        XCTAssertTrue(text("Aligned", "Aufrecht", in: app).waitForExistence(timeout: 5), "result did not name the quality that was logged")
         QA.checkpoint(app, "check-in-result-aligned")
-        app.buttons["Done"].tap()
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
+        button("Done", "Fertig", in: app).tap()
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 10))
         QA.checkpoint(app, "today-after-check-in")
 
         // Keep the stored settings (no-AirPods mode), drop only the reset flag.
         app.launchArguments.removeAll { $0 == "UITEST_FRESH" }
         QA.relaunch(app)
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 30), "Today missing after relaunch")
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 30), "Today missing after relaunch")
         QA.checkpoint(app, "today-after-relaunch")
 
-        let second = try checkIn("drifting", in: app)
+        let second = try checkIn("drifting", "leicht gebeugt", in: app)
         XCTAssertEqual(second, first + 1, "the check-in before the relaunch was lost")
-        XCTAssertTrue(app.staticTexts["Drifting"].waitForExistence(timeout: 5), "second result did not name the quality that was logged")
+        XCTAssertTrue(text("Drifting", "Leicht gebeugt", in: app).waitForExistence(timeout: 5), "second result did not name the quality that was logged")
         QA.checkpoint(app, "second-check-in-result")
-        app.buttons["Done"].tap()
+        button("Done", "Fertig", in: app).tap()
     }
 
     /// Opens the check-in from Today, taps the self-report chip and returns
     /// the "N check-ins today" count from the receipt (1 for "first").
-    private func checkIn(_ quality: String, in app: XCUIApplication, journey: String = #function) throws -> Int {
-        let open = app.buttons["Check in now"]
+    private func checkIn(_ quality: String, _ german: String, in app: XCUIApplication, journey: String = #function) throws -> Int {
+        let open = button("Check in now", "Check-in erfassen", in: app)
         for _ in 0..<6 where !open.isHittable {
             QA.swipe(app, .up)
         }
         XCTAssertTrue(open.waitForExistence(timeout: 10), "no Check in now button on Today")
         open.tap()
-        let chip = app.buttons["I'm sitting \(quality)"]
+        let chip = button("I'm sitting \(quality)", "Ich sitze \(german)", in: app)
         XCTAssertTrue(chip.waitForExistence(timeout: 10), "self-report chips never rendered")
         QA.checkpoint(app, "check-in-choice-\(quality)", journey: journey)
         chip.tap()
-        let receipt = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'check-in'")).firstMatch
+        let receipt = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'check-in' OR label CONTAINS 'Check-in'")).firstMatch
         XCTAssertTrue(receipt.waitForExistence(timeout: 10), "no receipt after logging a check-in")
         let label = receipt.label
-        if label.hasPrefix("your first check-in") { return 1 }
+        if label.hasPrefix("your first check-in") || label.hasPrefix("Dein erster Check-in") { return 1 }
         let count = Int(label.prefix { $0.isNumber })
         return try XCTUnwrap(count, "unreadable receipt: \(label)")
     }
@@ -163,7 +176,7 @@ final class ReleaseJourneysUITests: XCTestCase {
     private func launch(_ arguments: [String], environment: [String: String] = [:]) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: Self.bundle)
         QA.launch(app, environment: environment, arguments: arguments)
-        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 25), "seeded Today never rendered")
+        XCTAssertTrue(tab("Today", "Heute", in: app).waitForExistence(timeout: 25), "seeded Today never rendered")
         return app
     }
 }

@@ -424,6 +424,8 @@ struct TodayView: View {
                     .padding(.vertical, 8)
                     .foregroundStyle(selected ? Theme.ink : Theme.ink2)
                     .background(selected ? Theme.sage : Color.clear, in: Capsule())
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
