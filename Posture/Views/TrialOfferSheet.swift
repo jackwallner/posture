@@ -17,22 +17,43 @@ struct TrialOfferSheet: View {
     @State private var animateGlow = false
     @State private var shimmerPhase: CGFloat = -1
 
+    /// Trial copy only when "Start" buys an intro-eligible package. A user
+    /// who already used the trial gets the plain pitch, and "Start" opens the
+    /// full paywall with the real price.
+    private var offersTrial: Bool {
+        Self.offersTrial(directPurchase: directPurchase, offerHeadline: offerHeadline)
+    }
+
+    static func offersTrial(directPurchase: Bool, offerHeadline: String?) -> Bool {
+        directPurchase && offerHeadline != nil
+    }
+
     private var headline: String {
         if let focus { return focus.intentHeadline }
-        if let offerHeadline { return offerHeadline }
+        if offersTrial, let offerHeadline { return offerHeadline }
         return String(localized: "Try Posture+ free.")
     }
 
     private var subheadline: String {
+        Self.subheadline(focus: focus, offersTrial: offersTrial)
+    }
+
+    static func subheadline(focus: PosturePlusFeature?, offersTrial: Bool) -> String {
         if let focus {
-            if offerHeadline != nil {
+            if offersTrial {
                 return String(localized: "\(focus.intentSubheadline) Free for 7 days. Cancel anytime.")
             }
             return focus.intentSubheadline
         }
-        return offerHeadline != nil
-            ? String(localized: "The full ladder, walks, trends, and all-day monitoring. No charge until your trial ends.")
-            : String(localized: "The full ladder, walks, trends, and all-day monitoring.")
+        if offersTrial {
+            return String(localized: "The full ladder, walks, trends, and all-day monitoring. No charge until your trial ends.")
+        }
+        return String(localized: "The full ladder, walks, trends, and all-day monitoring.")
+    }
+
+    static func ctaTitle(offersTrial: Bool) -> String {
+        if offersTrial { return String(localized: "Start My Free Trial") }
+        return String(localized: "Start Posture+")
     }
 
     private var bulletFeatures: [PosturePlusFeature] {
@@ -177,7 +198,7 @@ struct TrialOfferSheet: View {
                     Button(action: onStartTrial) {
                         ZStack {
                             HStack(spacing: 8) {
-                                Text("Start My Free Trial")
+                                Text(Self.ctaTitle(offersTrial: offersTrial))
                                     .font(Theme.font(.headline, weight: .bold))
                                 Image(systemName: "arrow.right")
                                     .font(.system(size: 15, weight: .bold))

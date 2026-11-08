@@ -471,8 +471,9 @@ struct SettingsView: View {
     }
 
     private var trialOfferHeadline: String? {
-        trialOfferPackage?.postureTrialOnUsHeadline
-            ?? subscriptions.products.compactMap(\.postureTrialOnUsHeadline).first
+        // Only a package the user can start a trial on; any product's intro
+        // offer would promise a trial to someone who already used it.
+        (trialOfferPackage ?? directTrialPackage)?.postureTrialOnUsHeadline
     }
 
     private var trialOfferPriceLabel: String? {
