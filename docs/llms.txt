@@ -1,10 +1,10 @@
-# Desk Reset: Posture Practice
+# Posture Check: Neck & Back
 
-> Desk Reset is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
+> Posture Check is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
 
 ## App
 
-- [AirPods Posture App | Desk Reset: Posture Practice](https://jackwallner.com/ios/posture/index.html.md): Desk Reset is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
+- [AirPods Posture App | Posture Check: Neck & Back](https://jackwallner.com/ios/posture/index.html.md): Posture Check is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
 
 ## Guides
 

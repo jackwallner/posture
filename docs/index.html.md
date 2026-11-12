@@ -1,18 +1,18 @@
-# AirPods Posture App | Desk Reset: Posture Practice
+# AirPods Posture App | Posture Check: Neck & Back
 
-> Desk Reset is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
+> Posture Check is an AirPods posture app for iPhone. Take a three-minute guided posture break with live cues from compatible AirPods, plus Apple Watch nudges.
 
 Web page: https://jackwallner.com/ios/posture/
 
 ## An AirPods posture app to sit up straight
 
-Desk Reset is an AirPods posture app for iPhone that guides a three-minute posture practice with live cues from compatible AirPods. Take a short pause to pay attention to how you are sitting.
+Posture Check is an AirPods posture app for iPhone that guides a three-minute posture practice with live cues from compatible AirPods. Take a short pause to pay attention to how you are sitting.
 
 3-minute practice · iPhone · Compatible AirPods · Apple Watch
 
-[Download on the App Store](https://apps.apple.com/us/app/desk-reset-posture-practice/id6768514450?pt=128748779&ct=jw-posture-home&mt=8)
+[Download on the App Store](https://apps.apple.com/us/app/posture-check-neck-back/id6768514450?pt=128748779&ct=jw-posture-home&mt=8)
 
-## How does Desk Reset work?
+## How does Posture Check work?
 
 Start with a guided three-minute session. Live AirPods coaching is optional, and manual check-ins work without compatible AirPods.
 
@@ -26,7 +26,7 @@ Build a daily posture streak, with freeze protection for off days.
 
 ### Personal baseline
 
-Stand tall, sit tall, then slouch on purpose. Desk Reset learns your personal range and scores each guided practice against it.
+Stand tall, sit tall, then slouch on purpose. Posture Check learns your personal range and scores each guided practice against it.
 
 ### Daily posture report
 
@@ -48,11 +48,11 @@ See your posture score update in real time. Rings fill as you hold good posture.
 
 Review past sessions, see your posture trends, and watch your average score improve over time.
 
-## Is Desk Reset private?
+## Is Posture Check private?
 
-Yes. Desk Reset processes posture data on-device. AirPods head-motion data stays on your phone and is not sent to a server. No accounts, ads, or posture analytics. Purchase status is validated through Apple StoreKit and RevenueCat.
+Yes. Posture Check processes posture data on-device. AirPods head-motion data stays on your phone and is not sent to a server. No accounts, ads, or posture analytics. Purchase status is validated through Apple StoreKit and RevenueCat.
 
-Desk Reset supports posture awareness and practice. It is not medical advice and does not diagnose, treat, cure, or prevent any condition.
+Posture Check supports posture awareness and practice. It is not medical advice and does not diagnose, treat, cure, or prevent any condition.
 
 [Privacy Policy →](https://jackwallner.com/ios/posture/privacy-policy.html)
 
@@ -62,7 +62,7 @@ How it's built.
 
 ### The Pitch
 
-Desk Reset makes it easier to pause and notice how you are sitting. Start with a short guided practice, use compatible AirPods for live cues, and return to a routine that fits your day.
+Posture Check makes it easier to pause and notice how you are sitting. Start with a short guided practice, use compatible AirPods for live cues, and return to a routine that fits your day.
 
 ### Posture+
 
@@ -102,21 +102,21 @@ Quick answers about the AirPods posture app.
 
 ## Is there an AirPods posture app for iPhone?
 
-Yes. Desk Reset: Posture Practice reads the head-motion sensor in compatible AirPods and gives you live alignment cues during a guided three-minute posture practice. Optional all-day monitoring is available with Posture+.
+Yes. Posture Check: Neck & Back reads the head-motion sensor in compatible AirPods and gives you live alignment cues during a guided three-minute posture practice. Optional all-day monitoring is available with Posture+.
 
-## Which AirPods work with Desk Reset?
+## Which AirPods work with Posture Check?
 
-Desk Reset works with AirPods Pro (any generation), AirPods 3rd generation, AirPods 4 with ANC, and AirPods Max.
+Posture Check works with AirPods Pro (any generation), AirPods 3rd generation, AirPods 4 with ANC, and AirPods Max.
 
 ## Can I use a posture reminder app without AirPods?
 
 Yes. You can use manual check-ins to keep the awareness habit going, but they do not measure your alignment. Live motion feedback needs compatible AirPods.
 
-## Is Desk Reset free?
+## Is Posture Check free?
 
 It is free to start. The three-minute guided practice is free, with a daily streak, and the optional Posture+ upgrade adds longer practices, posture walks, history and trends, and optional all-day monitoring.
 
-## Does Desk Reset work on Apple Watch?
+## Does Posture Check work on Apple Watch?
 
 Yes. The companion Apple Watch app adds optional background coaching and complications, so posture practice can stay on your wrist. These Apple Watch nudges are part of Posture+.
 
@@ -126,10 +126,10 @@ Calibrate once by standing tall, sitting tall, then slouching on purpose so the 
 
 ## Is my posture data private, and is this medical advice?
 
-Your AirPods head-motion data is processed on your device and is not sent to a server, and there are no accounts. Desk Reset supports posture awareness and practice only, and it does not diagnose, treat, cure or prevent any condition.
+Your AirPods head-motion data is processed on your device and is not sent to a server, and there are no accounts. Posture Check supports posture awareness and practice only, and it does not diagnose, treat, cure or prevent any condition.
 
 ## Start a posture practice
 
 Three-minute guided practices are free to start. No account required.
 
-[Download on the App Store](https://apps.apple.com/us/app/desk-reset-posture-practice/id6768514450?pt=128748779&ct=jw-posture-home&mt=8)
+[Download on the App Store](https://apps.apple.com/us/app/posture-check-neck-back/id6768514450?pt=128748779&ct=jw-posture-home&mt=8)
