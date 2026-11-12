@@ -6,11 +6,11 @@ Web page: https://jackwallner.com/ios/posture/best-posture-app.html
 
 ## Best posture app for iPhone (November 2026)
 
-By [Jack Wallner](https://jackwallner.com/). Last updated November 11, 2026.
+By [Jack Wallner](https://jackwallner.com/). Last updated November 12, 2026.
 
 A posture app is an iPhone app that tracks or checks your posture in one of three ways: it reads the motion sensors in your AirPods, pairs with a wearable sensor, or analyzes a photo. Best for a short daily AirPods-guided practice with a Watch app and no account: Posture Check. Best for timed sessions with background slouch alerts: Posture Pal. Best for a plain headphone-based alert: PodPosture. Best for photo analysis and stretches: Align. Best if you already own the sensor: UPRIGHT.
 
-**How we compared.** I read each App Store listing and pulled its rating, update date and supported devices from Apple's public lookup on November 11, 2026 (US storefront). I also opened Posture Pal, PodPosture, Align and UPRIGHT to see what a new user gets before paying. Those apps run on a Mac, which has no AirPods motion sensor, so I could see sign-up, permissions and paywalls but not live tracking, and I do not rate how well any app detects slouching. Jack Wallner makes Posture Check: Neck & Back, so read its entries with that in mind.
+**How we compared.** I read each App Store listing and pulled its rating, update date and supported devices from Apple's public lookup on November 12, 2026 (US storefront). I also opened Posture Pal, PodPosture, Align and UPRIGHT to see what a new user gets before paying. Those apps run on a Mac, which has no AirPods motion sensor, so I could see sign-up, permissions and paywalls but not live tracking, and I do not rate how well any app detects slouching. Jack Wallner makes Posture Check: Neck & Back, so read its entries with that in mind.
 
 ## How do the posture apps compare?
 
@@ -18,13 +18,13 @@ Posture Check, Posture Pal, PodPosture and Align use headphone motion data, Alig
 
 | App | Best for | Price model | Apple Watch | iPad | Account | Rating (count) | Last updated |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Posture Check: Neck & Back | Short daily AirPods-guided practice with a streak | Free + subscription or one-time purchase | Yes (Watch app, widgets, haptic nudges) | Yes | No account | No ratings yet | Nov 3, 2026 |
-| Posture Pal - Improve & Alert | Timed AirPods sessions with background slouch alerts | Free + subscription | Notifications only (per listing) | Yes | No account seen | 4.42 (294) | Oct 21, 2026 |
+| Posture Check: Neck & Back | Short daily AirPods-guided practice with a streak | Free + subscription or one-time purchase | Yes (Watch app, widgets, haptic nudges) | No (iPhone only) | No account | No ratings yet | Nov 3, 2026 |
+| Posture Pal - Improve & Alert | Timed AirPods sessions with background slouch alerts | Free + subscription | Notifications only (per listing) | No (iPhone only) | No account seen | 4.42 (294) | Oct 21, 2026 |
 | PodPosture - Posture Improver | Simple headphone-based slouch alerts | Free + in-app purchase | No Watch app | Yes | No account seen | 4.18 (17) | Mar 16, 2026 |
 | Align - Fix Your Posture | Photo analysis, stretches and a guided plan | Free + subscription | No Watch app | Yes | Quiz first, account after (not reached) | 4.73 (552) | Jan 6, 2026 |
 | UPRIGHT | Wearable sensor users | Free app that needs the UPRIGHT sensor | No Watch app | Yes | Yes, sign-in required (checked) | 4.60 (3,940) | Jun 4, 2026 |
 
-Ratings, update dates and device support come from Apple's App Store lookup on November 11, 2026. Posture Check is new and has no ratings yet. These apps support posture awareness. None of this is medical advice.
+Ratings, update dates and device support come from Apple's App Store lookup on November 12, 2026. Posture Check is new and has no ratings yet. These apps support posture awareness. None of this is medical advice.
 
 ## Posture Check: Neck & Back
 
@@ -40,7 +40,7 @@ PodPosture alerts you when your posture drops past a threshold you set, using he
 
 ## Align - Fix Your Posture
 
-Align combines photo analysis, AirPods head-tilt tracking, daily stretches and a personalized plan. It opens with a long onboarding quiz about your body, habits and pain areas, and I did not get past it to the paywall, so its pricing is unconfirmed here. It suits people who want an exercise-led plan. Its listing makes pain-related claims that this page does not repeat or endorse.
+Align combines photo analysis, AirPods head-tilt tracking, daily stretches and a personalized plan. It opens with a long onboarding quiz about your body, habits and pain areas, and I did not get past it to the paywall. Its listing sells Align Pro by the week, month or year. It suits people who want an exercise-led plan. Its listing makes pain-related claims that this page does not repeat or endorse.
 
 ## UPRIGHT
 
@@ -48,7 +48,7 @@ UPRIGHT is the companion app for a small wearable sensor worn on the upper back 
 
 ## What other posture apps will you see?
 
-One more app, Posture AI: Correct My Posture, shows up when you search for a posture app. I did not open it; the note below comes from its App Store listing as of November 11, 2026.
+One more app, Posture AI: Correct My Posture, shows up when you search for a posture app. I did not open it; the note below comes from its App Store listing as of November 12, 2026.
 
 ### Posture AI: Correct My Posture
 
