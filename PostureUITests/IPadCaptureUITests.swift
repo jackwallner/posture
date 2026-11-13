@@ -119,8 +119,10 @@ final class IPadCaptureUITests: XCTestCase {
         tab("History", in: app).tap()
         snap(app, "asc-4-history", "portrait")
         tab("Today", in: app).tap()
-        let sitting = button("Sitting", in: app)
-        if sitting.waitForExistence(timeout: 6) { sitting.tap() }
+        let sittingText = app.staticTexts["Sitting"].firstMatch
+        let sitting = sittingText.waitForExistence(timeout: 6) ? sittingText : button("Sitting", in: app)
+        if sitting.exists { sitting.tap() }
+        Thread.sleep(forTimeInterval: 1)
         snap(app, "asc-5-sitting", "portrait")
         tab("Settings", in: app).tap()
         snap(app, "asc-6-settings", "portrait")
