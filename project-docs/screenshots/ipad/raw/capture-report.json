@@ -1,0 +1,97 @@
+{
+ "status": "ok",
+ "app": "posture",
+ "mode": "gh-sim-uitest",
+ "proof_only": false,
+ "lease_checked_in": true,
+ "flows": [
+  {
+   "id": "practice"
+  },
+  {
+   "id": "today"
+  },
+  {
+   "id": "progress"
+  },
+  {
+   "id": "history"
+  },
+  {
+   "id": "sitting"
+  },
+  {
+   "id": "settings"
+  }
+ ],
+ "screenshots": [
+  "practice.png",
+  "today.png",
+  "progress.png",
+  "history.png",
+  "sitting.png",
+  "settings.png"
+ ],
+ "screenshot_records": [
+  {
+   "name": "practice.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/practice.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "1517492918f39fef179f71de982f7744ae7ac3d3062353ae160b2c742cf5284c"
+  },
+  {
+   "name": "today.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/today.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "63e95605298c9b90c100e98204b4ec88689e68c9146f083e75a8c06bf1ad29fc"
+  },
+  {
+   "name": "progress.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/progress.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "ae1149ad6ec0cd633e11f19e49dc9e021c333ba618a680760312786abb52a62d"
+  },
+  {
+   "name": "history.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/history.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "fe2893c419011470b63f595c43eb09685532a92ce932bb6931b14ce1292050a8"
+  },
+  {
+   "name": "sitting.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/sitting.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "b602af5cf708fb0db5cec792de83c00f6493be742edcb3db6da018470ac352f1"
+  },
+  {
+   "name": "settings.png",
+   "path": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/settings.png",
+   "size": [
+    2064,
+    2752
+   ],
+   "mode": "RGB",
+   "sha256": "bea946ad30879b6b114648ad30aa3938a13b4c25db0b464c74fbb914640ba9a2"
+  }
+ ]
+}

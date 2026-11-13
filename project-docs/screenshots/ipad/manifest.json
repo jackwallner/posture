@@ -1,0 +1,261 @@
+{
+ "app": "posture",
+ "display_name": "Posture Coach",
+ "health_app": true,
+ "target": "ipad_13",
+ "copy_contract": "single-header-benefit-story-v3",
+ "capture_report": "raw/capture-report.json",
+ "market": {
+  "category": "Posture awareness and practice",
+  "audience": "Desk workers with compatible AirPods who want a short daily posture practice",
+  "problem": "Remembering to check posture is difficult during a busy day",
+  "advantage": "Short guided AirPods practice, streaks and manual check-ins make the habit concrete",
+  "competitive_context": "Posture tools often focus on all-day correction. This app starts with a short practice and leaves monitoring optional",
+  "search_intent": [
+   "posture coach",
+   "airpods posture",
+   "slouch alerts"
+  ],
+  "proof_points": [
+   {
+    "claim": "The practice start screen shows the session length and the aligned percentage needed to pass",
+    "source": "raw/practice.png"
+   },
+   {
+    "claim": "Today shows the streak, level and the day rhythm",
+    "source": "raw/today.png"
+   }
+  ]
+ },
+ "theme": {
+  "background": "#ece7f3",
+  "background_2": "#fafcfb",
+  "ink": "#2f3e3a",
+  "muted": "#6b7b76",
+  "accent": "#719d85",
+  "accent_2": "#9581ae",
+  "headline_font": "rounded",
+  "body_font": "sans"
+ },
+ "capture": {
+  "mode": "generic",
+  "lease": "posture-ipad",
+  "project_root": "/Users/jackwallner/posture",
+  "flows": []
+ },
+ "sets": [
+  {
+   "id": "ipad-daily-practice",
+   "submission": true,
+   "style": "editorial",
+   "story": {
+    "throughline": "Make daily posture awareness practical, see practice add up, and keep going",
+    "sequence": [
+     "problem",
+     "mechanism",
+     "proof"
+    ]
+   },
+   "frames": [
+    {
+     "filename": "01-practice.png",
+     "header": "Practice posture with Posture+",
+     "story_role": "problem",
+     "story_focus": "Practice posture with Posture+",
+     "pitch": {
+      "benefit": "Practice posture with Posture+",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "Practice posture with Posture+",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The practice screen as captured on iPad"
+     },
+     "source": "raw/practice.png",
+     "source_evidence": "raw/practice.png",
+     "capture_flow": "practice",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    },
+    {
+     "filename": "02-today.png",
+     "header": "Track daily streaks with Pro",
+     "story_role": "mechanism",
+     "story_focus": "Track daily streaks with Pro",
+     "pitch": {
+      "benefit": "Track daily streaks with Pro",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "Track daily streaks with Pro",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The today screen as captured on iPad"
+     },
+     "source": "raw/today.png",
+     "source_evidence": "raw/today.png",
+     "capture_flow": "today",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    },
+    {
+     "filename": "03-progress.png",
+     "header": "See practice add up with Pro",
+     "story_role": "proof",
+     "story_focus": "See practice add up with Pro",
+     "pitch": {
+      "benefit": "See practice add up with Pro",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "See practice add up with Pro",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The progress screen as captured on iPad"
+     },
+     "source": "raw/progress.png",
+     "source_evidence": "raw/progress.png",
+     "capture_flow": "progress",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    },
+    {
+     "filename": "04-history.png",
+     "header": "Review practice days with Pro",
+     "story_role": "support",
+     "story_focus": "Review practice days with Pro",
+     "pitch": {
+      "benefit": "Review practice days with Pro",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "Review practice days with Pro",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The history screen as captured on iPad"
+     },
+     "source": "raw/history.png",
+     "source_evidence": "raw/history.png",
+     "capture_flow": "history",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    },
+    {
+     "filename": "05-sitting.png",
+     "header": "Practice sitting or standing",
+     "story_role": "support",
+     "story_focus": "Practice sitting or standing",
+     "pitch": {
+      "benefit": "Practice sitting or standing",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "Practice sitting or standing",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The sitting screen as captured on iPad"
+     },
+     "source": "raw/sitting.png",
+     "source_evidence": "raw/sitting.png",
+     "capture_flow": "sitting",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    },
+    {
+     "filename": "06-reminder.png",
+     "header": "Get a daily reminder to practice",
+     "story_role": "support",
+     "story_focus": "Get a daily reminder to practice",
+     "pitch": {
+      "benefit": "Get a daily reminder to practice",
+      "problem": "Posture awareness fades without a short daily routine",
+      "advantage": "Guided AirPods practice with streaks, levels and history",
+      "header_problem": "posture awareness fades",
+      "header_advantage": "Get a daily reminder to practice",
+      "search_terms": [
+       "posture coach",
+       "airpods posture"
+      ],
+      "proof": "The settings screen as captured on iPad"
+     },
+     "source": "raw/settings.png",
+     "source_evidence": "raw/settings.png",
+     "capture_flow": "settings",
+     "evidence_status": "canonical",
+     "device": "iphone",
+     "layout": {
+      "header_top": 90,
+      "header_size": 180,
+      "header_min_size": 140,
+      "header_max_lines": 2,
+      "phone_top": 520,
+      "bottom_margin": 48,
+      "phone_width": 1640,
+      "phone_radius": 70
+     }
+    }
+   ]
+  }
+ ]
+}
