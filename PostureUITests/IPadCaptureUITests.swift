@@ -118,8 +118,10 @@ final class IPadCaptureUITests: XCTestCase {
         snap(app, "asc-3-progress", "portrait")
         tab("History", in: app).tap()
         snap(app, "asc-4-history", "portrait")
-        app.swipeUp()
-        snap(app, "asc-5-history-trends", "portrait")
+        tab("Today", in: app).tap()
+        let sitting = button("Sitting", in: app)
+        if sitting.waitForExistence(timeout: 6) { sitting.tap() }
+        snap(app, "asc-5-sitting", "portrait")
         tab("Settings", in: app).tap()
         snap(app, "asc-6-settings", "portrait")
     }
