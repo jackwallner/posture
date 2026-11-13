@@ -241,6 +241,7 @@ struct AcknowledgmentView: View {
         return GeometryReader { proxy in
             ScrollView {
                 content
+                    .readableColumn()
                     .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .topLeading)
             }
             .scrollBounceBehavior(.basedOnSize)

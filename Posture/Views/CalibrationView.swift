@@ -220,7 +220,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 24)
 
-            Text("We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone. iOS will ask permission to read motion.")
+            Text(String(localized: "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this \(DeviceKind.name). iOS will ask permission to read motion."))
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
@@ -414,7 +414,7 @@ struct CalibrationView: View {
                 .foregroundStyle(Theme.ink)
                 .padding(.top, 18)
 
-            Text("Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again.")
+            Text(String(localized: "Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this \(DeviceKind.name) and try again."))
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)

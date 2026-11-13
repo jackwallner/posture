@@ -83,7 +83,7 @@ struct WalkBaselineCaptureView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .dawnBackground()
+        .dawnColumn()
         .interactiveDismissDisabled(stage == .getMoving || stage == .capturing)
         .onDisappear { teardown() }
     }

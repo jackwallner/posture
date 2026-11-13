@@ -16,8 +16,14 @@ struct UnfoldedSplit: Equatable, Sendable {
     ///   - width: the container's width.
     ///   - fold: the vertical fold's leading and trailing edge in the same
     ///     coordinate space, or `nil` when the system reports none.
-    static func make(width: CGFloat, isRegularWidth: Bool, fold: ClosedRange<CGFloat>?) -> UnfoldedSplit? {
-        guard isRegularWidth, width >= minimumPaneWidth * 2 else { return nil }
+    static func make(
+        width: CGFloat,
+        isRegularWidth: Bool,
+        fold: ClosedRange<CGFloat>?,
+        minimumPaneWidth: CGFloat = UnfoldedSplit.minimumPaneWidth,
+        primaryMinimum: CGFloat = 0
+    ) -> UnfoldedSplit? {
+        guard isRegularWidth, width >= max(minimumPaneWidth * 2, primaryMinimum + minimumPaneWidth) else { return nil }
         if let fold,
            fold.lowerBound >= minimumPaneWidth,
            width - fold.upperBound >= minimumPaneWidth {
@@ -27,7 +33,8 @@ struct UnfoldedSplit: Equatable, Sendable {
                 secondaryWidth: width - fold.upperBound
             )
         }
-        let half = (width / 2).rounded(.down)
+        // The leading pane may take more than half when its tab bar needs it.
+        let half = max((width / 2).rounded(.down), primaryMinimum)
         return UnfoldedSplit(primaryWidth: half, secondaryX: half, secondaryWidth: width - half)
     }
 }
@@ -101,7 +108,22 @@ private struct UnfoldedLeadingPane<Trailing: View>: ViewModifier {
         UnfoldedSplit.make(width: geometry.width, isRegularWidth: horizontalSizeClass == .regular, fold: geometry.fold)
     }
 
+    @ViewBuilder
     func body(content: Content) -> some View {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            // An iPad has no fold: the setup screen is one centred column.
+            ZStack {
+                Theme.dawnWash.ignoresSafeArea()
+                content
+                    .environment(\.horizontalSizeClass, .compact)
+                    .readableColumn(maxWidth: 620)
+            }
+        } else {
+            foldedBody(content)
+        }
+    }
+
+    private func foldedBody(_ content: Content) -> some View {
         ZStack(alignment: .topLeading) {
             // Behind the fold, which neither pane covers.
             Theme.dawnWash.ignoresSafeArea()

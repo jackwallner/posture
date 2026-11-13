@@ -21,7 +21,7 @@ struct OnboardingTrialView: View {
             content
             bottomBar
         }
-        .dawnBackground()
+        .dawnColumn(maxWidth: 620)
         .task {
             #if HAS_REVENUECAT
             subscriptions.trackPaywallImpression(id: "posture_onboarding_trial")

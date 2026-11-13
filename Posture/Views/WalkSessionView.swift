@@ -155,7 +155,7 @@ struct WalkSessionView: View {
             .padding(.horizontal, 24)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .dawnBackground()
+        .dawnColumn()
         .sheet(isPresented: $showingCustomTime) {
             customTimeSheet.presentationDetents([.height(300)])
         }
@@ -318,7 +318,7 @@ struct WalkSessionView: View {
             .padding(.bottom, 16)
         }
         .frame(maxWidth: .infinity)
-        .dawnBackground()
+        .dawnColumn()
     }
 
     private var customDistanceSheet: some View {
@@ -348,7 +348,7 @@ struct WalkSessionView: View {
             .padding(.bottom, 16)
         }
         .frame(maxWidth: .infinity)
-        .dawnBackground()
+        .dawnColumn()
     }
 
     // MARK: - Live
@@ -427,7 +427,7 @@ struct WalkSessionView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .dawnBackground()
+        .dawnColumn()
         .confirmationDialog("End this walk?", isPresented: $showingEndConfirm) {
             Button("End walk", role: .destructive) { controller.endEarly() }
             Button("Keep walking", role: .cancel) { }

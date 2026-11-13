@@ -61,17 +61,21 @@ struct SettingsView: View {
                 // MARK: - Pro
 
                 Section {
-                    Toggle(isOn: alwaysOnBinding) {
-                        plusToggleLabel(String(localized: "Always-on Watch monitoring"))
+                    if DeviceKind.pairsWithWatch {
+                        Toggle(isOn: alwaysOnBinding) {
+                            plusToggleLabel(String(localized: "Always-on Watch monitoring"))
+                        }
+                        Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
+                            .font(Theme.font(.caption))
+                            .foregroundStyle(Theme.ink2)
                     }
-                    Text("Your Apple Watch quietly tracks posture in the background and haptic-nudges you when you slouch. Open Posture on your Watch to begin, and your phone keeps it in sync from there.")
-                        .font(Theme.font(.caption))
-                        .foregroundStyle(Theme.ink2)
 
                     Toggle(isOn: airpodsBackgroundBinding) {
                         plusToggleLabel(String(localized: "All-day AirPods monitoring"))
                     }
-                    Text("Buzzes your iPhone when you slouch while AirPods are in, with a notification when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
+                    Text(DeviceKind.isPad
+                         ? String(localized: "Notifies you when you slouch while AirPods are in, even when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery.")
+                         : String(localized: "Buzzes your iPhone when you slouch while AirPods are in, with a notification when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery."))
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
@@ -90,7 +94,9 @@ struct SettingsView: View {
                 if settings.hasAirpods == true {
                     Section("Live readout") {
                         Toggle("Show my posture while the app is open", isOn: $settings.inAppLiveEnabled)
-                        Text("With AirPods in, the top of Today shows your alignment live, and your iPhone buzzes after a long slouch. These minutes don't count toward your day report or trends. Reading stops when you leave the app.")
+                        Text(DeviceKind.isPad
+                             ? String(localized: "With AirPods in, the top of Today shows your alignment live. These minutes don't count toward your day report or trends. Reading stops when you leave the app.")
+                             : String(localized: "With AirPods in, the top of Today shows your alignment live, and your iPhone buzzes after a long slouch. These minutes don't count toward your day report or trends. Reading stops when you leave the app."))
                             .font(Theme.font(.caption))
                             .foregroundStyle(Theme.ink2)
                     }
@@ -202,7 +208,7 @@ struct SettingsView: View {
                         .font(Theme.font(.caption))
                         .foregroundStyle(Theme.ink2)
 
-                    if hasWalkBaseline {
+                    if hasWalkBaseline, DeviceKind.supportsWalks {
                         Button("Reset walking posture") {
                             showingWalkBaselineReset = true
                         }
@@ -390,7 +396,9 @@ struct SettingsView: View {
                                 titleVisibility: .visible) {
                 Button("Standing posture") { recalibratePosture = .standing }
                 Button("Sitting posture") { recalibratePosture = .sitting }
-                Button("Walking posture") { showingWalkRecapture = true }
+                if DeviceKind.supportsWalks {
+                    Button("Walking posture") { showingWalkRecapture = true }
+                }
                 Button("Everything (all four reads)") { showingQuickRecalibrate = true }
                 Button("Cancel", role: .cancel) { }
             }

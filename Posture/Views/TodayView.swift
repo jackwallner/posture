@@ -359,7 +359,9 @@ struct TodayView: View {
 
         achievementsRow
 
-        walkCard
+        if DeviceKind.supportsWalks {
+            walkCard
+        }
 
         // One-time explainer for users who learned the old monitoring-first
         // loop: the streak now comes from the daily practice.

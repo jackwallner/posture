@@ -22788,53 +22788,6 @@
         }
       }
     },
-    "Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture erfasst deine Haltung über den Kopfbewegungssensor in AirPods Pro (alle Generationen), AirPods (3. Generation), AirPods 4 mit ANC oder AirPods Max. Verbinde unterstützte AirPods mit diesem iPhone und versuch es erneut."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this iPhone and try again."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture mide la alineación con el sensor de movimiento de la cabeza de los AirPods Pro (cualquier generación), AirPods (3.ª generación), AirPods 4 con cancelación activa de ruido o AirPods Max. Conecta unos compatibles a este iPhone y vuelve a intentarlo."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture rileva l'allineamento dal sensore di movimento della testa di AirPods Pro (qualsiasi generazione), AirPods (3ª generazione), AirPods 4 con ANC o AirPods Max. Collega un paio compatibile a questo iPhone e riprova."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PostureはAirPods Pro（全世代）、AirPods（第3世代）、アクティブノイズキャンセリング搭載AirPods 4、AirPods Maxの頭の動きを捉えるセンサーから姿勢を読み取ります。対応するAirPodsをこのiPhoneに接続して、もう一度お試しください。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture meet je houding met de hoofdbewegingssensor in AirPods Pro (elke generatie), AirPods (3e generatie), AirPods 4 met ANC of AirPods Max. Verbind een ondersteund paar met deze iPhone en probeer het opnieuw."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Posture определяет осанку по датчику движения головы в AirPods Pro любого поколения, AirPods 3-го поколения, AirPods 4 с активным шумоподавлением или AirPods Max. Подключи поддерживаемые наушники к этому iPhone и попробуй снова."
-          }
-        }
-      }
-    },
     "Posture reads head motion in the background and scores your day." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -33741,53 +33694,6 @@
         }
       }
     },
-    "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone. iOS will ask permission to read motion." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wir nutzen den Kopfbewegungssensor deiner AirPods, um deine Haltung zu erfassen. Stelle sicher, dass sie mit diesem iPhone verbunden sind. iOS fragt nach deiner Erlaubnis, Bewegungsdaten zu erfassen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this iPhone. iOS will ask permission to read motion."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usamos el sensor de movimiento de la cabeza de tus AirPods para leer tu postura. Comprueba que estén conectados a este iPhone. iOS te pedirá permiso para acceder al movimiento."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Usiamo il sensore di movimento della testa degli AirPods per rilevare la postura. Assicurati che siano connessi a questo iPhone. iOS ti chiederà il permesso di accedere ai dati di movimento."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AirPodsの頭の動きを捉えるセンサーで姿勢を読み取ります。AirPodsがこのiPhoneに接続されていることを確認してください。iOSからモーションへのアクセス許可を求められます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "We gebruiken de hoofdbewegingssensor in je AirPods om je houding te meten. Zorg dat ze verbonden zijn met deze iPhone. iOS vraagt toestemming om beweging te meten."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Мы используем датчик движения головы в AirPods, чтобы отслеживать осанку. Убедись, что они подключены к этому iPhone. iOS запросит доступ к данным о движении."
-          }
-        }
-      }
-    },
     "We'll capture both, but coaching leans where you need it." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -40648,6 +40554,241 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "· %lld"
+          }
+        }
+      }
+    },
+    "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this %@. iOS will ask permission to read motion." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wir nutzen den Kopfbewegungssensor deiner AirPods, um deine Haltung zu erfassen. Stelle sicher, dass sie mit diesem %@ verbunden sind. iOS fragt nach deiner Erlaubnis, Bewegungsdaten zu erfassen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this %@. iOS will ask permission to read motion."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usamos el sensor de movimiento de la cabeza de tus AirPods para leer tu postura. Comprueba que estén conectados a este %@. iOS te pedirá permiso para acceder al movimiento."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usiamo il sensore di movimento della testa degli AirPods per rilevare la postura. Assicurati che siano connessi a questo %@. iOS ti chiederà il permesso di accedere ai dati di movimento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirPodsの頭の動きを捉えるセンサーで姿勢を読み取ります。AirPodsがこの%@に接続されていることを確認してください。iOSからモーションへのアクセス許可を求められます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We gebruiken de hoofdbewegingssensor in je AirPods om je houding te meten. Zorg dat ze verbonden zijn met deze %@. iOS vraagt toestemming om beweging te meten."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мы используем датчик движения головы в AirPods, чтобы отслеживать осанку. Убедись, что они подключены к этому %@. iOS запросит доступ к данным о движении."
+          }
+        }
+      }
+    },
+    "Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this %@ and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture erfasst deine Haltung über den Kopfbewegungssensor in AirPods Pro (alle Generationen), AirPods (3. Generation), AirPods 4 mit ANC oder AirPods Max. Verbinde unterstützte AirPods mit diesem %@ und versuch es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture reads alignment from the head-motion sensor in AirPods Pro (any generation), AirPods (3rd gen), AirPods 4 with ANC, or AirPods Max. Connect a supported pair to this %@ and try again."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture mide la alineación con el sensor de movimiento de la cabeza de los AirPods Pro (cualquier generación), AirPods (3.ª generación), AirPods 4 con cancelación activa de ruido o AirPods Max. Conecta unos compatibles a este %@ y vuelve a intentarlo."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture rileva l'allineamento dal sensore di movimento della testa di AirPods Pro (qualsiasi generazione), AirPods (3ª generazione), AirPods 4 con ANC o AirPods Max. Collega un paio compatibile a questo %@ e riprova."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PostureはAirPods Pro（全世代）、AirPods（第3世代）、アクティブノイズキャンセリング搭載AirPods 4、AirPods Maxの頭の動きを捉えるセンサーから姿勢を読み取ります。対応するAirPodsをこの%@に接続して、もう一度お試しください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture meet je houding met de hoofdbewegingssensor in AirPods Pro (elke generatie), AirPods (3e generatie), AirPods 4 met ANC of AirPods Max. Verbind een ondersteund paar met deze %@ en probeer het opnieuw."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture определяет осанку по датчику движения головы в AirPods Pro любого поколения, AirPods 3-го поколения, AirPods 4 с активным шумоподавлением или AirPods Max. Подключи поддерживаемые наушники к этому %@ и попробуй снова."
+          }
+        }
+      }
+    },
+    "Notifies you when you slouch while AirPods are in, even when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifies you when you slouch while AirPods are in, even when Posture is in the background. iOS shows an orange dot: a silent tone keeps the AirPods sensor awake. No audio is recorded. Uses extra battery."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du erhältst eine Mitteilung, wenn du mit eingesetzten AirPods zusammensackst, auch wenn Posture im Hintergrund läuft. iOS zeigt einen orangefarbenen Punkt: Ein lautloser Ton hält den AirPods-Sensor aktiv. Es wird kein Ton aufgenommen. Verbraucht zusätzlich Batterie."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te envía una notificación cuando te encorvas con los AirPods puestos, incluso si Posture está en segundo plano. iOS muestra un punto naranja: un tono silencioso mantiene activo el sensor de los AirPods. No se graba audio. Consume más batería."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ti invia una notifica quando ti incurvi con gli AirPods indossati, anche se Posture è in background. iOS mostra un punto arancione: un tono silenzioso mantiene attivo il sensore degli AirPods. Non viene registrato alcun audio. Consuma più batteria."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirPodsの装着中に猫背になると、Postureがバックグラウンドにあるときも通知でお知らせします。AirPodsのセンサーを動作させるため無音を再生し、iOSにオレンジ色の点が表示されます。音声は録音されません。バッテリーの消費が増えます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je krijgt een melding als je inzakt met je AirPods in, ook als Posture op de achtergrond draait. iOS toont een oranje stip: een stille toon houdt de sensor van je AirPods actief. Er wordt geen audio opgenomen. Dit kost extra batterij."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Придёт уведомление, если ты сутулишься в AirPods, даже когда Posture работает в фоне. iOS показывает оранжевую точку: неслышимый сигнал поддерживает работу датчика AirPods. Звук не записывается. Расход заряда увеличится."
+          }
+        }
+      }
+    },
+    "With AirPods in, the top of Today shows your alignment live. These minutes don't count toward your day report or trends. Reading stops when you leave the app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With AirPods in, the top of Today shows your alignment live. These minutes don't count toward your day report or trends. Reading stops when you leave the app."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du AirPods trägst, siehst du oben unter „Heute“ deine Haltung in Echtzeit. Diese Minuten zählen nicht für deinen Tagesbericht oder deine Trends. Die Erfassung endet, wenn du die App verlässt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con los AirPods puestos, la parte superior de Hoy muestra tu alineación en directo. Estos minutos no cuentan para tu informe diario ni para tus tendencias. La lectura se detiene al salir de la app."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con gli AirPods indossati, in alto nella schermata Oggi vedi il tuo allineamento in tempo reale. Questi minuti non contano nel resoconto giornaliero o nell'andamento. La rilevazione si interrompe quando esci dall'app."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirPodsを装着すると、「今日」の上部に現在の姿勢がリアルタイムで表示されます。この時間は日ごとのレポートや傾向には含まれません。アプリを離れると計測は停止します。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Met je AirPods in zie je bovenaan Vandaag live hoe rechtop je zit of staat. Deze minuten tellen niet mee voor je dagrapport of trends. De meting stopt zodra je de app verlaat."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Когда AirPods в ушах, вверху экрана «Сегодня» видна твоя осанка в реальном времени. Эти минуты не входят в отчёт за день и динамику осанки. Измерения прекращаются при выходе из приложения."
+          }
+        }
+      }
+    },
+    "While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for 25 seconds gets one log entry and a notification, at most once a minute." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "While your AirPods are linked they stream head motion many times a second, and each reading is scored against your calibration. A slouch held for 25 seconds gets one log entry and a notification, at most once a minute."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solange deine AirPods verbunden sind, senden sie mehrmals pro Sekunde Daten zu deinen Kopfbewegungen. Jeder Messwert wird anhand deiner Kalibrierung bewertet. Sackst du 25 Sekunden lang zusammen, wird das einmal protokolliert und du erhältst eine Mitteilung, höchstens einmal pro Minute."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mientras tus AirPods están conectados, transmiten el movimiento de la cabeza varias veces por segundo y cada lectura se puntúa según tu calibración. Si permaneces encorvado 25 segundos, se guarda un registro y recibes una notificación, como máximo una vez por minuto."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quando gli AirPods sono connessi, inviano i dati sul movimento della testa più volte al secondo. Ogni rilevazione è valutata in base alla tua calibrazione. Se resti incurvato per 25 secondi, viene aggiunta una voce al registro e ricevi una notifica, al massimo una volta al minuto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirPodsの接続中は頭の動きが毎秒何度も送信され、各計測値がキャリブレーションを基準に評価されます。猫背が25秒続くと記録され、通知でお知らせします。記録と通知は最大で1分に1回です。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zolang je AirPods verbonden zijn, sturen ze meerdere keren per seconde je hoofdbewegingen door. Elke meting wordt beoordeeld aan de hand van je kalibratie. Als je 25 seconden ingezakt blijft, wordt dat één keer vastgelegd en krijg je een melding, maximaal één keer per minuut."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключённые AirPods передают данные о движении головы много раз в секунду. Каждое измерение оценивается по твоей калибровке. Если ты сутулишься 25 секунд, это записывается в журнал, и приходит уведомление, не чаще раза в минуту."
           }
         }
       }

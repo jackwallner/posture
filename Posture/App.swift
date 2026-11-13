@@ -416,7 +416,10 @@ struct MainTabView: View {
         UnfoldedSplit.make(
             width: paneGeometry.width,
             isRegularWidth: horizontalSizeClass == .regular,
-            fold: paneGeometry.fold
+            fold: paneGeometry.fold,
+            // An iPad's four-tab bar needs about 480 pt before it overflows.
+            minimumPaneWidth: DeviceKind.isPad ? 480 : UnfoldedSplit.minimumPaneWidth,
+            primaryMinimum: DeviceKind.isPad ? 660 : 0
         )
     }
 
@@ -430,11 +433,16 @@ struct MainTabView: View {
     var body: some View {
         // Opening or closing the Duo only moves these frames, so the tab view
         // is never rebuilt and Today keeps its scroll position and sheets.
+        // The measured box is the proposed size, never the panes' size: panes
+        // wider than the window (a rotation in flight) must not hold the
+        // measured width at the old value.
+        Color.clear.overlay(alignment: .topLeading) {
         ZStack(alignment: .topLeading) {
             // Behind the fold, which neither pane covers.
             Theme.dawnWash.ignoresSafeArea()
             tabs
-                .frame(maxWidth: split?.primaryWidth ?? .infinity, maxHeight: .infinity)
+                .frame(width: split?.primaryWidth)
+                .frame(maxWidth: split == nil ? .infinity : nil, maxHeight: .infinity, alignment: .leading)
             if let split {
                 HistoryView(opensSessionsInPane: true)
                     .phonePane(isSplit: true, sizeClass: .compact)
@@ -443,6 +451,7 @@ struct MainTabView: View {
                     .frame(maxHeight: .infinity)
                     .padding(.leading, split.secondaryX)
             }
+        }
         }
         .measuresPaneGeometry($paneGeometry)
         .onChange(of: split != nil) { _, isSplit in
@@ -515,16 +524,19 @@ struct MainTabView: View {
             TodayView()
                 .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
                 .unfoldedBarClearance(isSplit: split != nil)
+                .iPadSingleColumn(split == nil)
                 .tabItem { Label("Today", systemImage: "leaf.fill").accessibilityLabel("Today") }
                 .tag(0)
             if split == nil {
                 HistoryView()
+                    .iPadSingleColumn(true)
                     .tabItem { Label("History", systemImage: "chart.bar.fill").accessibilityLabel("History") }
                     .tag(1)
             }
             ProgressTabView()
                 .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
                 .unfoldedBarClearance(isSplit: split != nil)
+                .iPadSingleColumn(split == nil)
                 .tabItem { Label("Progress", systemImage: "chart.line.uptrend.xyaxis").accessibilityLabel("Progress") }
                 .tag(4)
             // The upgrade pitch gets its own tab until the user subscribes.
@@ -532,12 +544,14 @@ struct MainTabView: View {
                 ProTabView()
                     .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
                     .unfoldedBarClearance(isSplit: split != nil)
+                    .iPadSingleColumn(split == nil)
                     .tabItem { Label("Posture+", systemImage: "lock.fill").accessibilityLabel("Posture+") }
                     .tag(3)
             }
             SettingsView()
                 .phonePane(isSplit: split != nil, sizeClass: paneSizeClass)
                 .unfoldedBarClearance(isSplit: split != nil)
+                .iPadSingleColumn(split == nil)
                 .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }
                 .tag(2)
         }

@@ -80,7 +80,7 @@ targets:
         INFOPLIST_FILE: Posture/Info.plist
         CODE_SIGN_ENTITLEMENTS: Posture/Posture.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         # Set only on targets that actually link RevenueCat. Shared code
         # gates on this instead of canImport(RevenueCat), which is true
         # project-wide and so leaks symbols into the widget extensions.
@@ -146,6 +146,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.jackwallner.posture.widget
         INFOPLIST_FILE: PostureWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: PostureWidget/PostureWidget.entitlements
+        TARGETED_DEVICE_FAMILY: "1,2"
     # RevenueCat intentionally omitted — the widget uses no paywall/purchase code.
     # The #if canImport(RevenueCat) guards in Shared files handle this gracefully.
 

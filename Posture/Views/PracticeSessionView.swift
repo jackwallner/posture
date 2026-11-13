@@ -135,7 +135,7 @@ struct PracticeSessionView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .dawnBackground()
+        .dawnColumn()
     }
 
     /// Custom lengths keep the streak but sit outside the ladder - the level
@@ -283,7 +283,7 @@ struct PracticeSessionView: View {
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .dawnBackground()
+        .dawnColumn()
         .task {
             // If detection isn't landing (odd AirPods pitch response, wrong
             // fit), never dead-end the session behind the warm-up. Offer the
@@ -371,7 +371,7 @@ struct PracticeSessionView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .dawnBackground()
+        .dawnColumn()
         .onAppear {
             // First session: the coach marks teach the hold, after the warm-up.
             if !settings.hasSeenSessionCoachMarks, coachStep == nil {

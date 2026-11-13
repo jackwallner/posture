@@ -56,6 +56,7 @@ struct SessionSummaryView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 32)
+            .readableColumn()
         }
         .onAppear { animatePipsIfNeeded() }
     }

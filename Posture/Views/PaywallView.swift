@@ -153,6 +153,7 @@ struct PaywallView: View {
                 .minimumScaleFactor(0.9)
                 .frame(minHeight: 34, alignment: .topLeading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
