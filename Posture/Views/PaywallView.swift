@@ -214,7 +214,7 @@ struct PaywallView: View {
     }
 
     private var trustStrip: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 10) {
             trustItem(icon: "iphone.gen3.radiowaves.left.and.right", label: String(localized: "On-device"))
             Divider().frame(height: 14).background(Theme.paper3)
             trustItem(icon: "lock.shield", label: String(localized: "Private by default"))
@@ -232,6 +232,8 @@ struct PaywallView: View {
             Text(label)
                 .font(Theme.font(.caption2, weight: .medium))
                 .foregroundStyle(Theme.ink2)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

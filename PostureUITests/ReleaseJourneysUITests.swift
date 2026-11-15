@@ -63,7 +63,9 @@ final class ReleaseJourneysUITests: XCTestCase {
     }
 
     private func tab(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
-        app.tabBars.buttons.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
+        // The iPad's floating tab pill is not in `tabBars`; its tabs are plain buttons.
+        let tabs = UIDevice.current.userInterfaceIdiom == .pad ? app.buttons : app.tabBars.buttons
+        return tabs.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
     }
 
     private func text(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
