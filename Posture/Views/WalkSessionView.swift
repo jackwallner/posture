@@ -197,7 +197,7 @@ struct WalkSessionView: View {
     private func goalTab(title: String, isDistance: Bool) -> some View {
         let selected = goalIsDistance == isDistance
         return Button {
-            withAnimation(.easeInOut(duration: 0.15)) { goalIsDistance = isDistance }
+            withMotion(.easeInOut(duration: 0.15)) { goalIsDistance = isDistance }
         } label: {
             Text(title)
                 .font(Theme.font(.subheadline, weight: .semibold))
@@ -270,7 +270,7 @@ struct WalkSessionView: View {
 
     private var gpsToggle: some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.15)) { useGPS.toggle() }
+            withMotion(.easeInOut(duration: 0.15)) { useGPS.toggle() }
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: useGPS ? "location.fill" : "location")
@@ -388,7 +388,7 @@ struct WalkSessionView: View {
                     .stroke(paused ? Theme.ink3 : qualityColor(quality),
                             style: .init(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeOut(duration: 0.5), value: controller.walkProgressFraction)
+                    .motion(.easeOut(duration: 0.5), value: controller.walkProgressFraction)
                 VStack(spacing: 6) {
                     Text(centerValue(controller))
                         .font(Theme.font(size: 52, weight: .regular))

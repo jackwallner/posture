@@ -46,7 +46,7 @@ struct LevelPipsView: View {
         .onAppear {
             guard let animateIndex, animateIndex >= 0, animateIndex < total else { return }
             animateScale = 0.4
-            withAnimation(.spring(response: 0.42, dampingFraction: 0.62)) {
+            withMotion(.spring(response: 0.42, dampingFraction: 0.62)) {
                 animateScale = 1
             }
         }

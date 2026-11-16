@@ -156,7 +156,7 @@ struct TrialOfferSheet: View {
                             .transition(.opacity)
                     }
                 }
-                .animation(.easeInOut(duration: 0.18), value: errorMessage)
+                .motion(.easeInOut(duration: 0.18), value: errorMessage)
 
                 Spacer(minLength: 0)
             }

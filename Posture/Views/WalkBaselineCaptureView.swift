@@ -145,7 +145,7 @@ struct WalkBaselineCaptureView: View {
                     .stroke(isWalkingNow ? Theme.sage : Theme.ink3,
                             style: .init(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeOut(duration: 0.3), value: progress)
+                    .motion(.easeOut(duration: 0.3), value: progress)
                 VStack(spacing: 4) {
                     Text("\(Int(max(0, targetSeconds - walkingSeconds)))")
                         .font(Theme.font(size: 52, weight: .regular))

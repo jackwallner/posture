@@ -228,13 +228,13 @@ struct PracticeSessionView: View {
                     .trim(from: 0, to: Double(done) / Double(target))
                     .stroke(Theme.lavender, style: .init(lineWidth: 10, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeOut(duration: 0.4), value: done)
+                    .motion(.easeOut(duration: 0.4), value: done)
                 VStack(spacing: 6) {
                     Text("\(done)")
                         .font(Theme.font(size: 64, weight: .regular))
                         .foregroundStyle(Theme.ink)
                         .contentTransition(.numericText())
-                        .animation(.easeOut(duration: 0.2), value: done)
+                        .motion(.easeOut(duration: 0.2), value: done)
                     Text("of \(target) reps")
                         .font(Theme.display(19))
                         .foregroundStyle(Theme.lavender)
@@ -289,7 +289,7 @@ struct PracticeSessionView: View {
             // fit), never dead-end the session behind the warm-up. Offer the
             // skip quickly so no one is stranded staring at "0 of 5".
             try? await Task.sleep(nanoseconds: 10_000_000_000)
-            if controller.phase == .reps { withAnimation { showRepsSkip = true } }
+            if controller.phase == .reps { withMotion { showRepsSkip = true } }
         }
     }
 
@@ -344,7 +344,7 @@ struct PracticeSessionView: View {
                     .foregroundStyle(Theme.ink2)
                     .multilineTextAlignment(.center)
                     .padding(.top, 24)
-                    .animation(.easeInOut(duration: 0.25), value: controller.phase)
+                    .motion(.easeInOut(duration: 0.25), value: controller.phase)
 
                 Spacer()
 
@@ -380,7 +380,7 @@ struct PracticeSessionView: View {
         }
         .onChange(of: quality) { _, newQuality in
             if coachStep == .slouch, newQuality == .bad {
-                withAnimation { coachSlouchFelt = true }
+                withMotion { coachSlouchFelt = true }
             }
         }
         .confirmationDialog("End this session?", isPresented: $showingEndConfirm) {
@@ -403,13 +403,13 @@ struct PracticeSessionView: View {
                 .trim(from: 0, to: progress)
                 .stroke(color, style: .init(lineWidth: 10, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.easeOut(duration: 0.5), value: progress)
+                .motion(.easeOut(duration: 0.5), value: progress)
             VStack(spacing: 6) {
                 Text(timeLabel(controller.remainingSeconds))
                     .font(Theme.font(size: 54, weight: .regular))
                     .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText(countsDown: true))
-                    .animation(.easeOut(duration: 0.2), value: controller.remainingSeconds)
+                    .motion(.easeOut(duration: 0.2), value: controller.remainingSeconds)
                 Text(paused ? String(localized: "paused") : qualityWord(quality))
                     .font(Theme.display(19))
                     .foregroundStyle(paused ? Theme.ink3 : Theme.qualityTextColor(quality))
@@ -464,7 +464,7 @@ struct PracticeSessionView: View {
             .padding(.bottom, 100)
         }
         .transition(.move(edge: .bottom).combined(with: .opacity))
-        .animation(.easeInOut(duration: 0.3), value: coachStep)
+        .motion(.easeInOut(duration: 0.3), value: coachStep)
     }
 
     private func coachTitle(_ step: CoachStep) -> String {
@@ -497,7 +497,7 @@ struct PracticeSessionView: View {
     }
 
     private func advanceCoach(from step: CoachStep) {
-        withAnimation {
+        withMotion {
             switch step {
             case .ring: coachStep = .slouch
             case .slouch: coachStep = .hold

@@ -122,7 +122,7 @@ struct AirpodsScanView: View {
                     .font(Theme.font(size: 84, weight: .regular))
                     .foregroundStyle(Theme.ink)
                     .contentTransition(.numericText(countsDown: true))
-                    .animation(.easeOut(duration: 0.2), value: elapsedSeconds)
+                    .motion(.easeOut(duration: 0.2), value: elapsedSeconds)
             } else {
                 Image(systemName: "airpodspro")
                     .font(.system(size: 60, weight: .regular))
