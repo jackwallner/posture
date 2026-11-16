@@ -134,7 +134,7 @@ struct ProgressTabView: View {
             ForEach(PostureMode.allCases, id: \.self) { m in
                 let selected = activeMode == m
                 Button {
-                    withAnimation(.snappy(duration: 0.22)) { selectedMode = m }
+                    withMotion(.snappy(duration: 0.22)) { selectedMode = m }
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: m.icon)

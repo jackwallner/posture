@@ -43,10 +43,10 @@ struct HorizonMeter: View {
         .rotationEffect(.degrees(tilt))
         .frame(maxWidth: .infinity)
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.6)) { tilt = targetTilt }
+            withMotion(.easeInOut(duration: 0.6)) { tilt = targetTilt }
         }
         .onChange(of: quality) { _, _ in
-            withAnimation(.easeInOut(duration: 0.6)) { tilt = targetTilt }
+            withMotion(.easeInOut(duration: 0.6)) { tilt = targetTilt }
         }
         .accessibilityHidden(true)
     }

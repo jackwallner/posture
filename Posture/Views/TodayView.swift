@@ -168,7 +168,7 @@ struct TodayView: View {
 
                     tipCard(tip: currentTip)
                         .onTapGesture {
-                            withAnimation { currentTip = PostureTipService.randomTip() }
+                            withMotion { currentTip = PostureTipService.randomTip() }
                         }
                 }
                 .padding(.horizontal, 20)
@@ -390,10 +390,11 @@ struct TodayView: View {
             Text("Log a manual check-in")
                 .font(Theme.font(.footnote, weight: .medium))
                 .foregroundStyle(Theme.ink3)
-                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .padding(.top, 2)
     }
 
     // MARK: - Practice hero (the core loop)
@@ -414,7 +415,7 @@ struct TodayView: View {
             ForEach(PostureMode.allCases, id: \.self) { m in
                 let selected = activeMode == m
                 Button {
-                    withAnimation(.snappy(duration: 0.22)) { selectedMode = m }
+                    withMotion(.snappy(duration: 0.22)) { selectedMode = m }
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: m.icon)
@@ -448,12 +449,14 @@ struct TodayView: View {
                     .font(Theme.font(.caption, weight: .semibold))
                     .tracking(0.8)
                     .foregroundStyle(Theme.goodText)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 levelBadge
             }
             Text(practiceMinutesLine)
                 .font(Theme.display(24))
                 .foregroundStyle(Theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
             Text("Pop your AirPods in and hold your best posture with live coaching. Finish it and today's streak day is yours.")
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)
@@ -762,7 +765,7 @@ struct TodayView: View {
                             .trim(from: 0, to: liveRingFraction(quality))
                             .stroke(liveColor(quality), style: .init(lineWidth: 8, lineCap: .round))
                             .rotationEffect(.degrees(-90))
-                            .animation(.easeOut(duration: 0.5), value: quality)
+                            .motion(.easeOut(duration: 0.5), value: quality)
                         Image(systemName: liveIcon(quality))
                             .font(.system(size: 30, weight: .regular))
                             .foregroundStyle(liveColor(quality))
@@ -892,7 +895,7 @@ struct TodayView: View {
                         .trim(from: 0, to: Double(alignmentScore ?? 0) / 100.0)
                         .stroke(Theme.ringSweep, style: .init(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
-                        .animation(.easeOut(duration: 0.6), value: alignmentScore)
+                        .motion(.easeOut(duration: 0.6), value: alignmentScore)
                     Text(alignmentScore.map { "\($0)" } ?? "0")
                         .font(Theme.font(size: 34, weight: .regular))
                         .foregroundStyle(Theme.ink)
@@ -903,6 +906,7 @@ struct TodayView: View {
                     Text(readoutLabel)
                         .font(Theme.display(20))
                         .foregroundStyle(alignmentTextColor)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text(readoutSubtitle)
                         .font(Theme.font(.footnote))
                         .foregroundStyle(Theme.ink2)
@@ -1078,6 +1082,7 @@ struct TodayView: View {
             Text(title)
                 .font(Theme.font(.subheadline, weight: .semibold))
                 .foregroundStyle(Theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
             Text(body)
                 .font(Theme.font(.footnote))
                 .foregroundStyle(Theme.ink2)

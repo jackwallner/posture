@@ -305,7 +305,7 @@ struct CalibrationView: View {
                     .font(Theme.display(96))
                     .foregroundStyle(accent)
                     .contentTransition(.numericText())
-                    .animation(.default, value: countdown)
+                    .motion(.default, value: countdown)
             }
             .frame(maxWidth: .infinity)
 
@@ -581,7 +581,7 @@ struct CalibrationView: View {
         waitDeadlineTask = Task {
             try? await Task.sleep(nanoseconds: UInt64(skipHintSeconds * 1_000_000_000))
             guard !Task.isCancelled else { return }
-            if phase == .waiting { withAnimation { showSkipHint = true } }
+            if phase == .waiting { withMotion { showSkipHint = true } }
 
             try? await Task.sleep(nanoseconds: UInt64((connectDeadlineSeconds - skipHintSeconds) * 1_000_000_000))
             guard !Task.isCancelled else { return }

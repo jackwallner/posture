@@ -154,7 +154,7 @@ struct AcknowledgmentView: View {
     private func recordManual(quality: PostureQuality?) {
         recordedQuality = quality
         recordAcknowledgment(method: .manual, quality: quality)
-        withAnimation { phase = .done }
+        withMotion { phase = .done }
     }
 
     // MARK: - Scanning
@@ -165,12 +165,12 @@ struct AcknowledgmentView: View {
             onComplete: { quality in
                 recordedQuality = quality
                 recordAcknowledgment(method: .airpods, quality: quality)
-                withAnimation { phase = .done }
+                withMotion { phase = .done }
             },
             onFallback: {
                 recordedQuality = nil
                 recordAcknowledgment(method: .manual, quality: nil)
-                withAnimation { phase = .done }
+                withMotion { phase = .done }
             },
             onClose: { dismiss() }
         )

@@ -50,6 +50,8 @@ struct LevelPipsView: View {
                 animateScale = 1
             }
         }
+        .frame(minHeight: size == .compact ? nil : 44)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(min(filled, total)) of \(total) passed sessions toward the next level")
     }

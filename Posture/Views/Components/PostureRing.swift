@@ -17,7 +17,7 @@ struct PostureRing: View {
                 .trim(from: 0, to: progress)
                 .stroke(Theme.ringSweep, style: .init(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.easeOut(duration: 0.6), value: progress)
+                .motion(.easeOut(duration: 0.6), value: progress)
             VStack(spacing: 0) {
                 Text("\(score)")
                     .font(Theme.bigNumber(size * 0.32))

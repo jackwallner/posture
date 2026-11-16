@@ -42,7 +42,7 @@ struct ProgressPathView: View {
             }
             .onAppear { proxy.scrollTo(scrollTarget, anchor: .center) }
             .onChange(of: currentLevel) { _, _ in
-                withAnimation(.easeInOut(duration: 0.25)) {
+                withMotion(.easeInOut(duration: 0.25)) {
                     proxy.scrollTo(scrollTarget, anchor: .center)
                 }
             }

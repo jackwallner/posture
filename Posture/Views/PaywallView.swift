@@ -13,6 +13,7 @@ enum PaywallLinks {
 /// → `Purchases.shared.purchase` so RevenueCat records transactions as before.
 struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var subscriptions = SubscriptionService.shared
 
     var displayCloseButton: Bool = true
@@ -214,11 +215,14 @@ struct PaywallView: View {
     }
 
     private var trustStrip: some View {
-        HStack(spacing: 10) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 10))
+        return layout {
             trustItem(icon: "iphone.gen3.radiowaves.left.and.right", label: String(localized: "On-device"))
-            Divider().frame(height: 14).background(Theme.paper3)
+            if !dynamicTypeSize.isAccessibilitySize { Divider().frame(height: 14).background(Theme.paper3) }
             trustItem(icon: "lock.shield", label: String(localized: "Private by default"))
-            Divider().frame(height: 14).background(Theme.paper3)
+            if !dynamicTypeSize.isAccessibilitySize { Divider().frame(height: 14).background(Theme.paper3) }
             trustItem(icon: "moon.stars", label: String(localized: "No ads, ever"))
         }
         .frame(maxWidth: .infinity)
@@ -573,6 +577,7 @@ private struct PosturePlanCard: View {
                         Text(package.postureDisplayName)
                             .font(Theme.font(.subheadline, weight: .semibold))
                             .foregroundStyle(Theme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
                         if let savings = savingsPercent {
                             Text("SAVE \(savings)%")
                                 .font(Theme.font(size: 9, weight: .bold))
@@ -592,7 +597,7 @@ private struct PosturePlanCard: View {
                     Text(secondaryLine ?? " ")
                         .font(Theme.font(.caption2, weight: .medium))
                         .foregroundStyle(Theme.ink3)
-                        .lineLimit(1)
+                        .fixedSize(horizontal: false, vertical: true)
                         .frame(minHeight: 14, alignment: .leading)
                         .opacity(secondaryLine == nil ? 0 : 1)
                 }
@@ -603,10 +608,12 @@ private struct PosturePlanCard: View {
                     Text(package.posturePriceLabel)
                         .font(Theme.font(.subheadline, weight: .semibold).monospacedDigit())
                         .foregroundStyle(Theme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
                     if let perWeek = perWeekLabel {
                         Text(perWeek)
                             .font(Theme.font(.caption2, weight: .medium).monospacedDigit())
                             .foregroundStyle(Theme.ink3)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }

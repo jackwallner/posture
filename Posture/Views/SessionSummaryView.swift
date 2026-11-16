@@ -112,7 +112,7 @@ struct SessionSummaryView: View {
         let before = result.passed ? max(0, result.levelProgressDone - 1) : result.levelProgressDone
         displayedPipFill = before
         guard result.passed else { return }
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.72).delay(0.15)) {
+        withMotion(.spring(response: 0.45, dampingFraction: 0.72).delay(0.15)) {
             displayedPipFill = result.levelProgressDone
         }
     }

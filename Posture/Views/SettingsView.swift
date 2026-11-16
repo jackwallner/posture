@@ -226,6 +226,7 @@ struct SettingsView: View {
                     Link(destination: URL(string: "shortcuts://")!) {
                         Label("Automate in Shortcuts", systemImage: "square.2.layers.3d")
                     }
+                    .foregroundStyle(Theme.ink)
 
                     Button {
                         // Reset the one-shot, then let Today open a session -

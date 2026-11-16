@@ -23,7 +23,7 @@ struct OnboardingView: View {
                 sittingPage.tag(4)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.easeInOut, value: page)
+            .motion(.easeInOut, value: page)
 
             // Shared bottom bar: primary CTA bottom-pinned above a fixed-height
             // legal-footer slot (invisible placeholder here) so its geometry is
@@ -32,7 +32,7 @@ struct OnboardingView: View {
                 primaryTitle: page < lastPage ? String(localized: "Continue") : String(localized: "Set up my baseline"),
                 primaryAction: {
                     if page < lastPage {
-                        withAnimation { page += 1 }
+                        withMotion { page += 1 }
                     } else {
                         settings.postureFocus = focus
                         settings.hasAirpods = true
@@ -93,7 +93,7 @@ struct OnboardingView: View {
     private func focusCard(_ value: PostureFocus, icon: String, title: String, body: String) -> some View {
         let selected = focus == value
         return Button {
-            withAnimation(.easeInOut(duration: 0.15)) { focus = value }
+            withMotion(.easeInOut(duration: 0.15)) { focus = value }
         } label: {
             HStack(alignment: .top, spacing: 14) {
                 ZStack {

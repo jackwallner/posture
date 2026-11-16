@@ -122,6 +122,7 @@ final class ReleaseJourneysUITests: XCTestCase {
         for _ in 1...4 {
             guard let next = onScreenButton(["Continue", "Weiter"], in: app) else { break }
             next.tap()
+            Thread.sleep(forTimeInterval: 1.0)
         }
         let baseline = button("Set up my baseline", "Ausgangswert einrichten", in: app)
         XCTAssertTrue(baseline.waitForExistence(timeout: 6), "never reached the last teaching page")
