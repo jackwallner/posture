@@ -96,9 +96,9 @@ struct AcknowledgmentView: View {
             // No AirPods, so self-report is the check-in. AirPods owners never
             // see this screen; their check-in is an objective scan.
             HStack(spacing: 10) {
-                selfReportChip(label: String(localized: "Aligned"), quality: .good, tint: Theme.sageTint, accent: Theme.sage)
-                selfReportChip(label: String(localized: "Drifting"), quality: .borderline, tint: Theme.sandTint, accent: Theme.sand)
-                selfReportChip(label: String(localized: "Slouching"), quality: .bad, tint: Theme.clayTint, accent: Theme.clay)
+                selfReportChip(label: String(localized: "Aligned"), quality: .good, tint: Theme.sageTint, accent: Theme.goodText)
+                selfReportChip(label: String(localized: "Drifting"), quality: .borderline, tint: Theme.sandTint, accent: Theme.borderlineText)
+                selfReportChip(label: String(localized: "Slouching"), quality: .bad, tint: Theme.clayTint, accent: Theme.badText)
             }
             .padding(.bottom, 24)
         }

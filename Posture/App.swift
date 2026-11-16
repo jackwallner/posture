@@ -555,6 +555,7 @@ struct MainTabView: View {
                 .tabItem { Label("Settings", systemImage: "gearshape.fill").accessibilityLabel("Settings") }
                 .tag(2)
         }
+        .tint(Theme.goodText)
     }
 
     #if DEBUG
