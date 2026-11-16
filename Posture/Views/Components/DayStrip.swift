@@ -61,9 +61,14 @@ struct DayStrip: View {
                     Text(hour % 2 == 0 ? hourLabel(hour) : " ")
                         .font(Theme.font(.caption2))
                         .foregroundStyle(Theme.ink3)
+                        .lineLimit(1)
+                        .fixedSize()
                         .frame(maxWidth: .infinity)
                 }
             }
+            // Axis ticks keep a fixed width per hour, so cap their growth;
+            // the strip itself is read as one VoiceOver element.
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Today's check-ins by hour")
