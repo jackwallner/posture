@@ -234,7 +234,7 @@ struct OnboardingView: View {
                     .frame(width: 36, height: 36)
                 Text(index)
                     .font(Theme.font(.subheadline, weight: .semibold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(Theme.ink)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
