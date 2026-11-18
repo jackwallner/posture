@@ -63,9 +63,7 @@ final class ReleaseJourneysUITests: XCTestCase {
     }
 
     private func tab(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
-        // The iPad's floating tab pill is not in `tabBars`; its tabs are plain buttons.
-        let tabs = UIDevice.current.userInterfaceIdiom == .pad ? app.buttons : app.tabBars.buttons
-        return tabs.matching(NSPredicate(format: "label IN %@", [en, de])).firstMatch
+        QA.tab(app, en, de)
     }
 
     private func text(_ en: String, _ de: String, in app: XCUIApplication) -> XCUIElement {
@@ -80,7 +78,7 @@ final class ReleaseJourneysUITests: XCTestCase {
             let button = tab(name, german, in: app)
             // Unfolded on the iPhone Duo, History is the pane beside Today, not a tab.
             if name == "History", !button.exists { continue }
-            button.tap()
+            QA.openTab(app, name, german)
             QA.checkpoint(app, name.lowercased())
         }
     }
@@ -90,17 +88,17 @@ final class ReleaseJourneysUITests: XCTestCase {
         let app = launch(["-SCREENSHOT_SEED", "-rcfunnelprobe"], environment: Self.probe)
         let plus = tab("Posture+", "Posture+", in: app)
         XCTAssertTrue(plus.waitForExistence(timeout: 15), "Posture+ tab missing for a free user")
-        plus.tap()
+        QA.openTab(app, "Posture+")
         QA.checkpoint(app, "posture-plus-paywall", paywall: true)
 
-        tab("Today", "Heute", in: app).tap()
+        QA.openTab(app, "Today", "Heute")
         QA.checkpoint(app, "today-after-paywall", paywall: false)
     }
 
     func test04ReturnVisitWithInterruption() {
         continueAfterFailure = false
         let app = launch(["-SCREENSHOT_SEED", "-PostureProOverride"])
-        tab("Progress", "Fortschritt", in: app).tap()
+        QA.openTab(app, "Progress", "Fortschritt")
         QA.checkpoint(app, "progress-before-interruption")
 
         QA.interrupt(app)
