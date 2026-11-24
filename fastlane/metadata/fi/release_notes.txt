@@ -1,1 +1,1 @@
-Ryhtimuistutukset tavoittavat sinut nyt myös puhelimen ollessa lukittuna tai sovelluksen taustalla, ja ne näkyvät Apple Watchissa. Lisäksi korjauksia Pro-kelloseurantaan.
+A fresh new app icon, plus small fixes.

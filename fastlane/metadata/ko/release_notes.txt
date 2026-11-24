@@ -1,1 +1,1 @@
-이제 휴대폰이 잠겨 있거나 앱이 백그라운드에 있어도 구부정한 자세 알림이 도착하고, Apple Watch에도 표시됩니다. Pro 워치 모니터링 수정도 포함되어 있습니다.
+A fresh new app icon, plus small fixes.

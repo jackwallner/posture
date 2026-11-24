@@ -1,1 +1,1 @@
-iPhoneがロック中でもアプリがバックグラウンドでも猫背の通知が届き、Apple Watchにも表示されるようになりました。Proのウォッチ計測の修正も含まれます。
+A fresh new app icon, plus small fixes.
