@@ -585,6 +585,7 @@ private struct PosturePlanCard: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Theme.sage, in: Capsule())
+                                .fixedSize()
                         } else if isBestValue {
                             Text("BEST VALUE")
                                 .font(Theme.font(size: 9, weight: .bold))
@@ -592,6 +593,7 @@ private struct PosturePlanCard: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Theme.sage, in: Capsule())
+                                .fixedSize()
                         }
                     }
                     Text(secondaryLine ?? " ")

@@ -218,6 +218,7 @@ struct CalibrationView: View {
             Text("Pop in your AirPods.")
                 .font(Theme.font(size: 32, weight: .semibold))
                 .foregroundStyle(Theme.ink)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 24)
 
             Text(String(localized: "We use the head-motion sensor in your AirPods to read posture. Make sure they're connected to this \(DeviceKind.name). iOS will ask permission to read motion."))
