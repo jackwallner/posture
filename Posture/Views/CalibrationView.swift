@@ -225,6 +225,7 @@ struct CalibrationView: View {
                 .font(Theme.font(.body))
                 .foregroundStyle(Theme.ink)
                 .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 10) {
                 ProgressView()
