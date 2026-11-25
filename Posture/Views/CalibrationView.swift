@@ -252,7 +252,7 @@ struct CalibrationView: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .modifier(ScrollWhenTall())
     }
 
     private func prepView(_ step: PoseStep) -> some View {
@@ -439,7 +439,7 @@ struct CalibrationView: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .modifier(ScrollWhenTall())
     }
 
     private var permissionDeniedStep: some View {
@@ -480,7 +480,7 @@ struct CalibrationView: View {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .modifier(ScrollWhenTall())
     }
 
     private var doneStep: some View {
@@ -889,6 +889,19 @@ private struct ConfidenceBar: View {
                 }
             }
             .frame(height: 8)
+        }
+    }
+}
+
+/// Fills the screen like a plain frame, but scrolls when the content (large
+/// accessibility text) is taller, so the bottom buttons stay reachable.
+private struct ScrollWhenTall: ViewModifier {
+    func body(content: Content) -> some View {
+        GeometryReader { geo in
+            ScrollView {
+                content.frame(maxWidth: .infinity, minHeight: geo.size.height)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
     }
 }
