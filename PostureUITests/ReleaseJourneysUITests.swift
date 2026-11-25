@@ -75,8 +75,12 @@ final class ReleaseJourneysUITests: XCTestCase {
         let app = launch(["-SCREENSHOT_SEED", "-PostureProOverride"])
         QA.checkpoint(app, "today")
         for (name, german) in [("History", "Verlauf"), ("Progress", "Fortschritt"), ("Settings", "Einstellungen")] {
+            // Wide windows (iPad landscape, the unfolded Duo) draw History as the pane beside
+            // Today, already in the Today checkpoint. Looking for its tab there snapshots the
+            // whole two-pane tree and timed out the gate.
+            if name == "History", app.windows.firstMatch.frame.width >= 1140 { continue }
             let button = tab(name, german, in: app)
-            // Unfolded on the iPhone Duo, History is the pane beside Today, not a tab.
+            // A narrower unfolded Duo also has no History tab.
             if name == "History", !button.exists { continue }
             QA.openTab(app, name, german)
             QA.checkpoint(app, name.lowercased())
