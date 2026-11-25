@@ -1,0 +1,70 @@
+{
+  "filename": "02-today.png",
+  "path": "ipad-daily-practice/02-today.png",
+  "output_sha256": "a21d24df922f932defd42fbf51163d4e53197631e7a9e969071a6d102ee37077",
+  "output_size": [
+    2064,
+    2752
+  ],
+  "device": "iphone",
+  "header": "Track daily streaks with Pro",
+  "pitch": {
+    "benefit": "Track daily streaks with Pro",
+    "problem": "Posture awareness fades without a short daily routine",
+    "advantage": "Guided AirPods practice with streaks, levels and history",
+    "header_problem": "posture awareness fades",
+    "header_advantage": "Track daily streaks with Pro",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The today screen as captured on iPad"
+  },
+  "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/today.png",
+  "source_sha256": "63e95605298c9b90c100e98204b4ec88689e68c9146f083e75a8c06bf1ad29fc",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/ipad-daily-practice/02-today.foreground.png",
+  "foreground_sha256": "008961da6a206b8a5181d1e364da21c8254b4da70034a3bd7e8c4b2947d86edf",
+  "ui_mask": "manifests/ipad-daily-practice/02-today.ui-mask.png",
+  "ui_coverage": 0.588,
+  "imagegen_received_ui_source": false,
+  "target": "ipad_13",
+  "size": [
+    2064,
+    2752
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 212,
+    "y": 520,
+    "width": 1640,
+    "height": 2167,
+    "screen_x": 241,
+    "screen_y": 549,
+    "screen_width": 1582,
+    "screen_height": 2109,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 180,
+  "header_lines": 2,
+  "header_text": "Track daily streaks with Pro",
+  "header_bounds": [
+    434,
+    137,
+    1629,
+    456
+  ],
+  "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/today.png",
+  "source_evidence_sha256": "63e95605298c9b90c100e98204b4ec88689e68c9146f083e75a8c06bf1ad29fc"
+}

@@ -120,6 +120,17 @@
             "name": "walk.png"
           }
         ]
+      },
+      {
+        "id": "settings",
+        "ready_labels": ["Today", "History", "Progress"],
+        "tap_labels": ["Settings"],
+        "dwell": 1,
+        "screenshots": [
+          {
+            "name": "settings.png"
+          }
+        ]
       }
     ]
   },

@@ -1,0 +1,70 @@
+{
+  "filename": "06-reminder.png",
+  "path": "ipad-daily-practice/06-reminder.png",
+  "output_sha256": "f8eabb21464f9f599e05a1d890ecd4787ab4d1ec7412a11e258e3778ac51d565",
+  "output_size": [
+    2064,
+    2752
+  ],
+  "device": "iphone",
+  "header": "Get a daily reminder to practice",
+  "pitch": {
+    "benefit": "Get a daily reminder to practice",
+    "problem": "Posture awareness fades without a short daily routine",
+    "advantage": "Guided AirPods practice with streaks, levels and history",
+    "header_problem": "posture awareness fades",
+    "header_advantage": "Get a daily reminder to practice",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The settings screen as captured on iPad"
+  },
+  "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/settings.png",
+  "source_sha256": "bea946ad30879b6b114648ad30aa3938a13b4c25db0b464c74fbb914640ba9a2",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/ipad-daily-practice/06-reminder.foreground.png",
+  "foreground_sha256": "ced77926276985c13b38c5b8d47938428f60da16535221a58afa4ec92852e8f9",
+  "ui_mask": "manifests/ipad-daily-practice/06-reminder.ui-mask.png",
+  "ui_coverage": 0.588,
+  "imagegen_received_ui_source": false,
+  "target": "ipad_13",
+  "size": [
+    2064,
+    2752
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 212,
+    "y": 520,
+    "width": 1640,
+    "height": 2167,
+    "screen_x": 241,
+    "screen_y": 549,
+    "screen_width": 1582,
+    "screen_height": 2109,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 180,
+  "header_lines": 2,
+  "header_text": "Get a daily reminder to practice",
+  "header_bounds": [
+    285,
+    136,
+    1778,
+    486
+  ],
+  "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/settings.png",
+  "source_evidence_sha256": "bea946ad30879b6b114648ad30aa3938a13b4c25db0b464c74fbb914640ba9a2"
+}

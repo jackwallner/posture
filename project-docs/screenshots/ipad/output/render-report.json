@@ -1,0 +1,441 @@
+{
+  "app": "posture",
+  "manifest": "/Users/jackwallner/posture/project-docs/screenshots/ipad/manifest.json",
+  "target": "ipad_13",
+  "copy_contract": "single-header-benefit-story-v3",
+  "background_override": null,
+  "sets": [
+    {
+      "id": "ipad-daily-practice",
+      "style": "editorial",
+      "frames": [
+        {
+          "filename": "01-practice.png",
+          "path": "ipad-daily-practice/01-practice.png",
+          "output_sha256": "708ad72d07d1373a345166bee52db66dc73d0c8b3ef50cf061336fea6553de8c",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "Practice posture with Posture+",
+          "pitch": {
+            "benefit": "Practice posture with Posture+",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Practice posture with Posture+",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The practice screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/practice.png",
+          "source_sha256": "1517492918f39fef179f71de982f7744ae7ac3d3062353ae160b2c742cf5284c",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/01-practice.foreground.png",
+          "foreground_sha256": "23e838384fdfdc12f077fdac4d04a3465ed97af61c3cd635ce68676158ce0e26",
+          "ui_mask": "manifests/ipad-daily-practice/01-practice.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "Practice posture with Posture+",
+          "header_bounds": [
+            420,
+            138,
+            1643,
+            456
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/practice.png",
+          "source_evidence_sha256": "1517492918f39fef179f71de982f7744ae7ac3d3062353ae160b2c742cf5284c",
+          "manifest": "manifests/ipad-daily-practice/01-practice.json"
+        },
+        {
+          "filename": "02-today.png",
+          "path": "ipad-daily-practice/02-today.png",
+          "output_sha256": "a21d24df922f932defd42fbf51163d4e53197631e7a9e969071a6d102ee37077",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "Track daily streaks with Pro",
+          "pitch": {
+            "benefit": "Track daily streaks with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Track daily streaks with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The today screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/today.png",
+          "source_sha256": "63e95605298c9b90c100e98204b4ec88689e68c9146f083e75a8c06bf1ad29fc",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/02-today.foreground.png",
+          "foreground_sha256": "008961da6a206b8a5181d1e364da21c8254b4da70034a3bd7e8c4b2947d86edf",
+          "ui_mask": "manifests/ipad-daily-practice/02-today.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "Track daily streaks with Pro",
+          "header_bounds": [
+            434,
+            137,
+            1629,
+            456
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/today.png",
+          "source_evidence_sha256": "63e95605298c9b90c100e98204b4ec88689e68c9146f083e75a8c06bf1ad29fc",
+          "manifest": "manifests/ipad-daily-practice/02-today.json"
+        },
+        {
+          "filename": "03-progress.png",
+          "path": "ipad-daily-practice/03-progress.png",
+          "output_sha256": "20ac2d5cf5ca4f0802c12972babc95259c379ee083d4d4e9dbc662854d54050d",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "See practice add up with Pro",
+          "pitch": {
+            "benefit": "See practice add up with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "See practice add up with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The progress screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/progress.png",
+          "source_sha256": "ae1149ad6ec0cd633e11f19e49dc9e021c333ba618a680760312786abb52a62d",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/03-progress.foreground.png",
+          "foreground_sha256": "42636b9ce249ab0c4ab8bee7ba088eb2d9fa56a7314534643d6fc711ec5248fb",
+          "ui_mask": "manifests/ipad-daily-practice/03-progress.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "See practice add up with Pro",
+          "header_bounds": [
+            449,
+            136,
+            1615,
+            486
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/progress.png",
+          "source_evidence_sha256": "ae1149ad6ec0cd633e11f19e49dc9e021c333ba618a680760312786abb52a62d",
+          "manifest": "manifests/ipad-daily-practice/03-progress.json"
+        },
+        {
+          "filename": "04-history.png",
+          "path": "ipad-daily-practice/04-history.png",
+          "output_sha256": "1ff52068b23bba034e8d02615368ce2eb103730c5a829d8d17a004f79e6d6176",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "Review practice days with Pro",
+          "pitch": {
+            "benefit": "Review practice days with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Review practice days with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The history screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/history.png",
+          "source_sha256": "fe2893c419011470b63f595c43eb09685532a92ce932bb6931b14ce1292050a8",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/04-history.foreground.png",
+          "foreground_sha256": "6efa6675e5342de13677c70562a0f124fe6a71465fa4a656933f78df30ea7546",
+          "ui_mask": "manifests/ipad-daily-practice/04-history.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "Review practice days with Pro",
+          "header_bounds": [
+            437,
+            138,
+            1627,
+            488
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/history.png",
+          "source_evidence_sha256": "fe2893c419011470b63f595c43eb09685532a92ce932bb6931b14ce1292050a8",
+          "manifest": "manifests/ipad-daily-practice/04-history.json"
+        },
+        {
+          "filename": "05-sitting.png",
+          "path": "ipad-daily-practice/05-sitting.png",
+          "output_sha256": "486c9fa22c8cd6d9bcef490229a7308b8556daf0fa056d0590e5b7dfef3d85d7",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "Practice sitting or standing",
+          "pitch": {
+            "benefit": "Practice sitting or standing",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Practice sitting or standing",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The sitting screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/sitting.png",
+          "source_sha256": "b602af5cf708fb0db5cec792de83c00f6493be742edcb3db6da018470ac352f1",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/05-sitting.foreground.png",
+          "foreground_sha256": "cf629f41da68adf8bd1b610c9eb5759809d89186a29d8bd3c39bbcaafc9d7cc3",
+          "ui_mask": "manifests/ipad-daily-practice/05-sitting.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "Practice sitting or standing",
+          "header_bounds": [
+            476,
+            138,
+            1587,
+            488
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/sitting.png",
+          "source_evidence_sha256": "b602af5cf708fb0db5cec792de83c00f6493be742edcb3db6da018470ac352f1",
+          "manifest": "manifests/ipad-daily-practice/05-sitting.json"
+        },
+        {
+          "filename": "06-reminder.png",
+          "path": "ipad-daily-practice/06-reminder.png",
+          "output_sha256": "f8eabb21464f9f599e05a1d890ecd4787ab4d1ec7412a11e258e3778ac51d565",
+          "output_size": [
+            2064,
+            2752
+          ],
+          "device": "iphone",
+          "header": "Get a daily reminder to practice",
+          "pitch": {
+            "benefit": "Get a daily reminder to practice",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Get a daily reminder to practice",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The settings screen as captured on iPad"
+          },
+          "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/settings.png",
+          "source_sha256": "bea946ad30879b6b114648ad30aa3938a13b4c25db0b464c74fbb914640ba9a2",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/ipad-daily-practice/06-reminder.foreground.png",
+          "foreground_sha256": "ced77926276985c13b38c5b8d47938428f60da16535221a58afa4ec92852e8f9",
+          "ui_mask": "manifests/ipad-daily-practice/06-reminder.ui-mask.png",
+          "ui_coverage": 0.588,
+          "imagegen_received_ui_source": false,
+          "target": "ipad_13",
+          "size": [
+            2064,
+            2752
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#ece7f3",
+          "background_bottom": "#fafcfb",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 212,
+            "y": 520,
+            "width": 1640,
+            "height": 2167,
+            "screen_x": 241,
+            "screen_y": 549,
+            "screen_width": 1582,
+            "screen_height": 2109,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_text": "Get a daily reminder to practice",
+          "header_bounds": [
+            285,
+            136,
+            1778,
+            486
+          ],
+          "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/settings.png",
+          "source_evidence_sha256": "bea946ad30879b6b114648ad30aa3938a13b4c25db0b464c74fbb914640ba9a2",
+          "manifest": "manifests/ipad-daily-practice/06-reminder.json"
+        }
+      ]
+    }
+  ]
+}

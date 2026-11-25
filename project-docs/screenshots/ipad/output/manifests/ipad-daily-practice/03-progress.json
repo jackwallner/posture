@@ -1,0 +1,70 @@
+{
+  "filename": "03-progress.png",
+  "path": "ipad-daily-practice/03-progress.png",
+  "output_sha256": "20ac2d5cf5ca4f0802c12972babc95259c379ee083d4d4e9dbc662854d54050d",
+  "output_size": [
+    2064,
+    2752
+  ],
+  "device": "iphone",
+  "header": "See practice add up with Pro",
+  "pitch": {
+    "benefit": "See practice add up with Pro",
+    "problem": "Posture awareness fades without a short daily routine",
+    "advantage": "Guided AirPods practice with streaks, levels and history",
+    "header_problem": "posture awareness fades",
+    "header_advantage": "See practice add up with Pro",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The progress screen as captured on iPad"
+  },
+  "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/progress.png",
+  "source_sha256": "ae1149ad6ec0cd633e11f19e49dc9e021c333ba618a680760312786abb52a62d",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/ipad-daily-practice/03-progress.foreground.png",
+  "foreground_sha256": "42636b9ce249ab0c4ab8bee7ba088eb2d9fa56a7314534643d6fc711ec5248fb",
+  "ui_mask": "manifests/ipad-daily-practice/03-progress.ui-mask.png",
+  "ui_coverage": 0.588,
+  "imagegen_received_ui_source": false,
+  "target": "ipad_13",
+  "size": [
+    2064,
+    2752
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 212,
+    "y": 520,
+    "width": 1640,
+    "height": 2167,
+    "screen_x": 241,
+    "screen_y": 549,
+    "screen_width": 1582,
+    "screen_height": 2109,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 180,
+  "header_lines": 2,
+  "header_text": "See practice add up with Pro",
+  "header_bounds": [
+    449,
+    136,
+    1615,
+    486
+  ],
+  "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/progress.png",
+  "source_evidence_sha256": "ae1149ad6ec0cd633e11f19e49dc9e021c333ba618a680760312786abb52a62d"
+}

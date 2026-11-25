@@ -1,0 +1,346 @@
+{
+  "app": "posture",
+  "target": "ipad_13",
+  "expected_size": [
+    2064,
+    2752
+  ],
+  "copy_contract": "single-header-benefit-story-v3",
+  "market": {
+    "category": "Posture awareness and practice",
+    "audience": "Desk workers with compatible AirPods who want a short daily posture practice",
+    "problem": "Remembering to check posture is difficult during a busy day",
+    "advantage": "Short guided AirPods practice, streaks and manual check-ins make the habit concrete",
+    "competitive_context": "Posture tools often focus on all-day correction. This app starts with a short practice and leaves monitoring optional",
+    "search_intent": [
+      "posture coach",
+      "airpods posture",
+      "slouch alerts"
+    ],
+    "proof_points": [
+      {
+        "claim": "The practice start screen shows the session length and the aligned percentage needed to pass",
+        "source": "raw/practice.png"
+      },
+      {
+        "claim": "Today shows the streak, level and the day rhythm",
+        "source": "raw/today.png"
+      }
+    ]
+  },
+  "sets": [
+    {
+      "id": "ipad-daily-practice",
+      "submission": true,
+      "story": {
+        "throughline": "Make daily posture awareness practical, see practice add up, and keep going",
+        "sequence": [
+          "problem",
+          "mechanism",
+          "proof"
+        ]
+      },
+      "frames": [
+        {
+          "filename": "01-practice.png",
+          "path": "ipad-daily-practice/01-practice.png",
+          "header": "Practice posture with Posture+",
+          "pitch": {
+            "benefit": "Practice posture with Posture+",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Practice posture with Posture+",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The practice screen as captured on iPad"
+          },
+          "capture_flow": "practice",
+          "evidence_status": "canonical",
+          "benefit": "Practice posture with Posture+",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            420,
+            138,
+            1643,
+            456
+          ],
+          "story_role": "problem",
+          "story_focus": "Practice posture with Posture+",
+          "background_id": "theme",
+          "foreground_sha256": "23e838384fdfdc12f077fdac4d04a3465ed97af61c3cd635ce68676158ce0e26",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "Practice posture with Posture+",
+          "corner_contrast_vs_ink": 10.08
+        },
+        {
+          "filename": "02-today.png",
+          "path": "ipad-daily-practice/02-today.png",
+          "header": "Track daily streaks with Pro",
+          "pitch": {
+            "benefit": "Track daily streaks with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Track daily streaks with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The today screen as captured on iPad"
+          },
+          "capture_flow": "today",
+          "evidence_status": "canonical",
+          "benefit": "Track daily streaks with Pro",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            434,
+            137,
+            1629,
+            456
+          ],
+          "story_role": "mechanism",
+          "story_focus": "Track daily streaks with Pro",
+          "background_id": "theme",
+          "foreground_sha256": "008961da6a206b8a5181d1e364da21c8254b4da70034a3bd7e8c4b2947d86edf",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "Track daily streaks with Pro",
+          "corner_contrast_vs_ink": 10.08
+        },
+        {
+          "filename": "03-progress.png",
+          "path": "ipad-daily-practice/03-progress.png",
+          "header": "See practice add up with Pro",
+          "pitch": {
+            "benefit": "See practice add up with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "See practice add up with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The progress screen as captured on iPad"
+          },
+          "capture_flow": "progress",
+          "evidence_status": "canonical",
+          "benefit": "See practice add up with Pro",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            449,
+            136,
+            1615,
+            486
+          ],
+          "story_role": "proof",
+          "story_focus": "See practice add up with Pro",
+          "background_id": "theme",
+          "foreground_sha256": "42636b9ce249ab0c4ab8bee7ba088eb2d9fa56a7314534643d6fc711ec5248fb",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "See practice add up with Pro",
+          "corner_contrast_vs_ink": 10.08
+        },
+        {
+          "filename": "04-history.png",
+          "path": "ipad-daily-practice/04-history.png",
+          "header": "Review practice days with Pro",
+          "pitch": {
+            "benefit": "Review practice days with Pro",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Review practice days with Pro",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The history screen as captured on iPad"
+          },
+          "capture_flow": "history",
+          "evidence_status": "canonical",
+          "benefit": "Review practice days with Pro",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            437,
+            138,
+            1627,
+            488
+          ],
+          "story_role": "support",
+          "story_focus": "Review practice days with Pro",
+          "background_id": "theme",
+          "foreground_sha256": "6efa6675e5342de13677c70562a0f124fe6a71465fa4a656933f78df30ea7546",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "Review practice days with Pro",
+          "corner_contrast_vs_ink": 10.08
+        },
+        {
+          "filename": "05-sitting.png",
+          "path": "ipad-daily-practice/05-sitting.png",
+          "header": "Practice sitting or standing",
+          "pitch": {
+            "benefit": "Practice sitting or standing",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Practice sitting or standing",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The sitting screen as captured on iPad"
+          },
+          "capture_flow": "sitting",
+          "evidence_status": "canonical",
+          "benefit": "Practice sitting or standing",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            476,
+            138,
+            1587,
+            488
+          ],
+          "story_role": "support",
+          "story_focus": "Practice sitting or standing",
+          "background_id": "theme",
+          "foreground_sha256": "cf629f41da68adf8bd1b610c9eb5759809d89186a29d8bd3c39bbcaafc9d7cc3",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "Practice sitting or standing",
+          "corner_contrast_vs_ink": 10.08
+        },
+        {
+          "filename": "06-reminder.png",
+          "path": "ipad-daily-practice/06-reminder.png",
+          "header": "Get a daily reminder to practice",
+          "pitch": {
+            "benefit": "Get a daily reminder to practice",
+            "problem": "Posture awareness fades without a short daily routine",
+            "advantage": "Guided AirPods practice with streaks, levels and history",
+            "header_problem": "posture awareness fades",
+            "header_advantage": "Get a daily reminder to practice",
+            "search_terms": [
+              "posture coach",
+              "airpods posture"
+            ],
+            "proof": "The settings screen as captured on iPad"
+          },
+          "capture_flow": "settings",
+          "evidence_status": "canonical",
+          "benefit": "Get a daily reminder to practice",
+          "generic_header_terms": [],
+          "size": [
+            2064,
+            2752
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 180,
+          "header_lines": 2,
+          "header_bounds": [
+            285,
+            136,
+            1778,
+            486
+          ],
+          "story_role": "support",
+          "story_focus": "Get a daily reminder to practice",
+          "background_id": "theme",
+          "foreground_sha256": "ced77926276985c13b38c5b8d47938428f60da16535221a58afa4ec92852e8f9",
+          "background_contrast": {
+            "top": 9.24,
+            "bottom": 10.89
+          },
+          "thumbnail_ocr": "Get a daily reminder to practice",
+          "corner_contrast_vs_ink": 10.08
+        }
+      ],
+      "errors": [],
+      "warnings": [],
+      "status": "pass"
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "release_requested": false,
+  "release_ready": true,
+  "disposition": "release-ready",
+  "capture_status": "ok",
+  "canonical_submission_evidence": true,
+  "status": "pass"
+}

@@ -1,0 +1,70 @@
+{
+  "filename": "01-practice.png",
+  "path": "ipad-daily-practice/01-practice.png",
+  "output_sha256": "708ad72d07d1373a345166bee52db66dc73d0c8b3ef50cf061336fea6553de8c",
+  "output_size": [
+    2064,
+    2752
+  ],
+  "device": "iphone",
+  "header": "Practice posture with Posture+",
+  "pitch": {
+    "benefit": "Practice posture with Posture+",
+    "problem": "Posture awareness fades without a short daily routine",
+    "advantage": "Guided AirPods practice with streaks, levels and history",
+    "header_problem": "posture awareness fades",
+    "header_advantage": "Practice posture with Posture+",
+    "search_terms": [
+      "posture coach",
+      "airpods posture"
+    ],
+    "proof": "The practice screen as captured on iPad"
+  },
+  "source": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/practice.png",
+  "source_sha256": "1517492918f39fef179f71de982f7744ae7ac3d3062353ae160b2c742cf5284c",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/ipad-daily-practice/01-practice.foreground.png",
+  "foreground_sha256": "23e838384fdfdc12f077fdac4d04a3465ed97af61c3cd635ce68676158ce0e26",
+  "ui_mask": "manifests/ipad-daily-practice/01-practice.ui-mask.png",
+  "ui_coverage": 0.588,
+  "imagegen_received_ui_source": false,
+  "target": "ipad_13",
+  "size": [
+    2064,
+    2752
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#ece7f3",
+  "background_bottom": "#fafcfb",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 212,
+    "y": 520,
+    "width": 1640,
+    "height": 2167,
+    "screen_x": 241,
+    "screen_y": 549,
+    "screen_width": 1582,
+    "screen_height": 2109,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 180,
+  "header_lines": 2,
+  "header_text": "Practice posture with Posture+",
+  "header_bounds": [
+    420,
+    138,
+    1643,
+    456
+  ],
+  "source_evidence": "/Users/jackwallner/posture/project-docs/screenshots/ipad/raw/practice.png",
+  "source_evidence_sha256": "1517492918f39fef179f71de982f7744ae7ac3d3062353ae160b2c742cf5284c"
+}
