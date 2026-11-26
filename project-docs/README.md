@@ -10,6 +10,7 @@ Developer notes and historical audits for this repository. The published site re
 - [state-machines-2026-11-06-review.md](audits/state-machines-2026-11-06-review.md): independent review of that audit, 2 confirmed, 7 confirmed-minor, 0 not a bug, 1 unverified
 - [state-machines-2026-11-06-fixes.md](audits/state-machines-2026-11-06-fixes.md): fixes for that review, 9 fixed, 3 held for Jack, 0 skipped
 - [state-machines-2026-11-06-verify.md](audits/state-machines-2026-11-06-verify.md): independent check of those fixes, PASS, 9 of 9 work, 0 regressions, 6 proved failing without the fix
+- [rollout-2026-11-24.md](audits/rollout-2026-11-24.md): Ask to Buy waiting state, remote config `trial_cta`, star prompt after a passed practice session
 
 ## Marketing
 
