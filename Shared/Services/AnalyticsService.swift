@@ -76,4 +76,13 @@ enum AnalyticsService {
     static func purchaseCompleted(plan: String) {
         track("purchase_completed", properties: ["plan": plan])
     }
+
+    /// Ask to Buy: waiting on approval, logged apart from `purchase_failed`.
+    static func purchasePending(plan: String) {
+        track("purchase_pending", properties: ["plan": plan])
+    }
+
+    static func purchaseFailed(plan: String) {
+        track("purchase_failed", properties: ["plan": plan])
+    }
 }

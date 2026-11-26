@@ -330,7 +330,19 @@ final class SubscriptionService: NSObject {
         let plan = package.posturePackageKind == .monthly ? "monthly" : (package.posturePackageKind == .yearly ? "yearly" : "lifetime")
         AnalyticsService.purchaseAttempted(plan: plan)
         let startedTrial = isEligibleForIntroOffer(package)
-        let result = try await Purchases.shared.purchase(package: package)
+        let result: PurchaseResultData
+        do {
+            result = try await Purchases.shared.purchase(package: package)
+        } catch {
+            // Ask to Buy surfaces as an error code, not a result. It is a
+            // wait, so it returns `.pending` instead of reaching an error line.
+            if PurchaseFailure(error) == .pending {
+                AnalyticsService.purchasePending(plan: plan)
+                return .pending
+            }
+            AnalyticsService.purchaseFailed(plan: plan)
+            throw error
+        }
         applyProStatus(from: result.customerInfo)
         if result.userCancelled {
             return .cancelled
@@ -345,6 +357,7 @@ final class SubscriptionService: NSObject {
             syncConversionAttributes()
             return .purchased
         }
+        AnalyticsService.purchasePending(plan: plan)
         return .pending
     }
 

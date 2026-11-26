@@ -14,6 +14,8 @@ struct OnboardingTrialView: View {
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
+    /// The Ask to Buy wait. Cleared at the next tap, so it never outlives the decision.
+    @State private var noticeMessage: String?
     @State private var showFallbackPaywall = false
 
     var body: some View {
@@ -112,6 +114,15 @@ struct OnboardingTrialView: View {
                         .frame(maxWidth: .infinity)
                 }
 
+                if let noticeMessage {
+                    Text(noticeMessage)
+                        .font(Theme.font(.caption2))
+                        .foregroundStyle(Theme.ink2)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
+
                 if let errorMessage {
                     Text(errorMessage)
                         .font(Theme.font(.caption2))
@@ -142,10 +153,7 @@ struct OnboardingTrialView: View {
     /// Leads with the yearly free-trial offer when eligible so the primary reads
     /// as "start trial", matching the direct-purchase CTAs elsewhere.
     private var ctaTitle: String {
-        if let label = trialStartLabel {
-            return label
-        }
-        return String(localized: "Start 7-day free trial")
+        trialStartLabel ?? String(localized: "Start 7-day free trial")
     }
 
     /// Full Apple-3.1.2 auto-renew disclosure for the trial-led yearly plan,
@@ -190,13 +198,16 @@ struct OnboardingTrialView: View {
             return
         }
         errorMessage = nil
+        noticeMessage = nil
         isPurchasing = true
         Task { @MainActor in
             defer { isPurchasing = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     break
+                case .pending:
+                    noticeMessage = PurchaseCopy.waitingForApproval
                 case .cancelled:
                     errorMessage = nil
                 }
@@ -212,6 +223,7 @@ struct OnboardingTrialView: View {
     private func startRestore() {
         #if HAS_REVENUECAT
         errorMessage = nil
+        noticeMessage = nil
         isRestoring = true
         Task { @MainActor in
             defer { isRestoring = false }

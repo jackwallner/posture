@@ -9,6 +9,8 @@ struct TrialOfferSheet: View {
     let directPurchase: Bool
     let isPurchasing: Bool
     let errorMessage: String?
+    /// The Ask to Buy wait, shown calmly beside any error.
+    var noticeMessage: String? = nil
     let onStartTrial: () -> Void
     let onSeeAllPlans: () -> Void
     let onDismiss: () -> Void
@@ -148,6 +150,13 @@ struct TrialOfferSheet: View {
                 }
 
                 Group {
+                    if let noticeMessage {
+                        Text(noticeMessage)
+                            .font(Theme.font(.footnote))
+                            .foregroundStyle(Theme.ink2)
+                            .multilineTextAlignment(.center)
+                            .transition(.opacity)
+                    }
                     if let errorMessage {
                         Text(errorMessage)
                             .font(Theme.font(.footnote))
@@ -157,6 +166,7 @@ struct TrialOfferSheet: View {
                     }
                 }
                 .motion(.easeInOut(duration: 0.18), value: errorMessage)
+                .motion(.easeInOut(duration: 0.18), value: noticeMessage)
 
                 Spacer(minLength: 0)
             }

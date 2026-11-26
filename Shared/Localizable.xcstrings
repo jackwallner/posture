@@ -23775,53 +23775,6 @@
         }
       }
     },
-    "Purchase is pending approval. Posture+ unlocks as soon as it's approved." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Kauf wartet auf Genehmigung. Posture+ wird danach freigeschaltet."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Purchase is pending approval. Posture+ unlocks as soon as it's approved."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La compra está pendiente de aprobación. Posture+ se desbloqueará en cuanto se apruebe."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto in attesa di approvazione. Posture+ si sbloccherà appena approvato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "購入は承認待ちです。承認されるとPosture+を利用できます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De aankoop wacht op goedkeuring. Posture+ wordt ontgrendeld zodra die is goedgekeurd."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Покупка ожидает одобрения. Posture+ откроется после подтверждения."
-          }
-        }
-      }
-    },
     "Put your AirPods in and Posture starts watching your posture automatically." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -40789,6 +40742,53 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Подключённые AirPods передают данные о движении головы много раз в секунду. Каждое измерение оценивается по твоей калибровке. Если ты сутулишься 25 секунд, это записывается в журнал, и приходит уведомление, не чаще раза в минуту."
+          }
+        }
+      }
+    },
+    "Waiting for approval. Your purchase unlocks once it is approved." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warte auf Genehmigung. Dein Kauf wird freigeschaltet, sobald er genehmigt ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for approval. Your purchase unlocks once it is approved."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esperando aprobación. Tu compra se desbloqueará cuando se apruebe."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In attesa di approvazione. Il tuo acquisto si sblocca non appena viene approvato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "承認待ちです。承認されると、購入した内容が利用できるようになります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wachten op goedkeuring. Je aankoop wordt ontgrendeld zodra die is goedgekeurd."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидается одобрение. Покупка разблокируется, как только её одобрят."
           }
         }
       }

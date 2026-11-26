@@ -33,6 +33,7 @@ struct SettingsView: View {
     @State private var pendingPaywallAfterTrialDismiss = false
     @State private var trialPurchaseInFlight = false
     @State private var trialPurchaseError: String?
+    @State private var trialPurchaseNotice: String?
     @State private var trialOfferDetent: PresentationDetent = .fraction(0.68)
     #if HAS_REVENUECAT
     @State private var trialOfferPackage: Package?
@@ -320,7 +321,10 @@ struct SettingsView: View {
                 Task { await refreshNotificationStatus() }
             }
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
-                if isPro { applyPendingFeatureEnable() }
+                guard isPro else { return }
+                applyPendingFeatureEnable()
+                // An Ask to Buy approved while the offer waits on screen.
+                showTrialOffer = false
             }
             .task(id: isSelectedTab ? IntentRouter.shared.settingsPrompt : nil) {
                 guard isSelectedTab, let prompt = IntentRouter.shared.settingsPrompt else { return }
@@ -337,6 +341,7 @@ struct SettingsView: View {
             .sheet(isPresented: $showTrialOffer, onDismiss: {
                 trialPurchaseInFlight = false
                 trialPurchaseError = nil
+                trialPurchaseNotice = nil
                 #if HAS_REVENUECAT
                 trialOfferPackage = nil
                 #endif
@@ -354,6 +359,7 @@ struct SettingsView: View {
                     directPurchase: trialOfferIsDirect,
                     isPurchasing: trialPurchaseInFlight,
                     errorMessage: trialPurchaseError,
+                    noticeMessage: trialPurchaseNotice,
                     onStartTrial: {
                         if trialOfferIsDirect {
                             startDirectTrialPurchase()
@@ -535,13 +541,16 @@ struct SettingsView: View {
             return
         }
         trialPurchaseError = nil
+        trialPurchaseNotice = nil
         trialPurchaseInFlight = true
         Task { @MainActor in
             defer { trialPurchaseInFlight = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     showTrialOffer = false
+                case .pending:
+                    trialPurchaseNotice = PurchaseCopy.waitingForApproval
                 case .cancelled:
                     trialPurchaseError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }

@@ -519,9 +519,10 @@ struct PaywallView: View {
                 case .purchased:
                     break
                 case .pending:
-                    // Ask to Buy / deferred - without this the sheet just
-                    // sits there as if the tap did nothing.
-                    restoreMessage = String(localized: "Purchase is pending approval. Posture+ unlocks as soon as it's approved.")
+                    // Ask to Buy / deferred: a calm wait, never an error.
+                    // Approval unlocks through the customer-info update, and
+                    // `onChange(of: isProSubscriber)` closes this screen.
+                    restoreMessage = PurchaseCopy.waitingForApproval
                 case .cancelled:
                     errorMessage = nil
                 }
