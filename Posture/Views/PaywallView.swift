@@ -417,7 +417,7 @@ struct PaywallView: View {
         if package.posturePackageKind == .lifetime { return String(localized: "Unlock Lifetime") }
         // Name the trial length in the button - answers "what am I agreeing to?"
         if subscriptions.isEligibleForIntroOffer(package), let title = package.postureStartMyTrialTitle {
-            return title
+            return subscriptions.trialCTA.title(.paywall, control: title)
         }
         return String(localized: "Start Posture+")
         #else

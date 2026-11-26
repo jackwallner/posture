@@ -50,6 +50,10 @@ look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 - The iOS app declares only `UIBackgroundModes = ["audio"]`. Audio supports AirPods background motion sampling (Pro + bounded sessions). App Review rejected the `location` background mode (2.5.4, build 77), so don't re-add it. Walk GPS is foreground-only (when-in-use); pocketed/locked walks fall back to pedometer distance. Usage strings: `NSMotionUsageDescription` (head motion + walk steps/distance) and `NSLocationWhenInUseUsageDescription` (walk GPS). Settings shows a disclosure when the AirPods-background toggle is on (audit P0-3).
 - Notification triggers are `UNCalendarNotificationTrigger(... repeats: true)` so reminders survive app kill (audit P1-2). Check-in slot cap is 57, plus 7 weekday practice triggers, inside iOS's 64 pending (P1-4).
 
+## Remote config
+
+`Shared/Services/RemoteConfig.swift` reads the current RevenueCat offering's metadata (a running Experiment's variant). Wording tests go through offering metadata `trial_cta` (`seven_day` control, `my`, `your`); `rating_prompt: off` pauses the automatic star prompt. Keys a switch reads must be set the same on every offering. DEBUG launch override: `-posture.rc.<key> <value>`.
+
 ## App-specific review
 
 No in-app rating question (App Review 5.6.1). After a **good check-in** or

@@ -181,6 +181,9 @@ final class SubscriptionService: NSObject {
 
     private(set) var isProSubscriber: Bool = false
     private(set) var isConfigured: Bool = false
+    /// The current offering's metadata (a running Experiment's variant), read by
+    /// `RemoteConfig`. Nil until offerings load, which reads as the control.
+    private(set) var offeringMetadata: [String: Any]?
 
     #if HAS_REVENUECAT
     private(set) var products: [Package] = []
@@ -259,6 +262,7 @@ final class SubscriptionService: NSObject {
         do {
             let offerings = try await Purchases.shared.offerings()
             products = offerings.posturePaywallOffering?.postureSortedPackages ?? []
+            offeringMetadata = offerings.current?.metadata
             lastError = nil
             await refreshIntroEligibility()
         } catch {
@@ -302,8 +306,10 @@ final class SubscriptionService: NSObject {
     /// has to background the app before reading anything back.
     func syncConversionAttributes() {
         guard isConfigured else { return }
-        let attributes = ConversionDiagnostics.subscriberAttributes
+        var attributes = ConversionDiagnostics.subscriberAttributes
         guard !attributes.isEmpty else { return }
+        // The wording arm the customer was shown, so a test reads by attribute.
+        attributes[TrialCTA.metadataKey] = trialCTA.rawValue
         Purchases.shared.attribution.setAttributes(attributes)
     }
 

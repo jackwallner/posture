@@ -25,6 +25,10 @@ struct TrialOfferSheet: View {
         return String(localized: "Try Posture+ free.")
     }
 
+    private var ctaTitle: String {
+        SubscriptionService.shared.trialCTA.title(.sheet, control: TrialCTA.sheetControl)
+    }
+
     private var subheadline: String {
         if let focus {
             if offerHeadline != nil {
@@ -187,7 +191,7 @@ struct TrialOfferSheet: View {
                     Button(action: onStartTrial) {
                         ZStack {
                             HStack(spacing: 8) {
-                                Text("Start My Free Trial")
+                                Text(ctaTitle)
                                     .font(Theme.font(.headline, weight: .bold))
                                 Image(systemName: "arrow.right")
                                     .font(.system(size: 15, weight: .bold))

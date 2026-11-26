@@ -153,7 +153,7 @@ struct OnboardingTrialView: View {
     /// Leads with the yearly free-trial offer when eligible so the primary reads
     /// as "start trial", matching the direct-purchase CTAs elsewhere.
     private var ctaTitle: String {
-        trialStartLabel ?? String(localized: "Start 7-day free trial")
+        subscriptions.trialCTA.onboardingTitle(controlLabel: trialStartLabel)
     }
 
     /// Full Apple-3.1.2 auto-renew disclosure for the trial-led yearly plan,
