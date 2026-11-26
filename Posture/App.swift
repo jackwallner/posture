@@ -503,19 +503,24 @@ struct MainTabView: View {
     /// then asks only if Today is still clear. A blocked ask keeps the moment
     /// pending in the tracker; it never retries off a paywall or pitch.
     private func scheduleReviewPromptAfterPositiveMoment() {
-        guard ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
-              !reviewPromptShownThisSession,
-              isTodayClear
+        // RevenueCat's `rating_prompt: off` pauses the asks without a release.
+        guard subscriptions.isOn(.ratingPrompt),
+              ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
+              !reviewPromptShownThisSession
         else { return }
 
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            // Let the result land, then ask only if Today is still clear. The
+            // cover that held the moment is gone by now.
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
             guard isTodayClear,
                   !reviewPromptShownThisSession,
+                  subscriptions.isOn(.ratingPrompt),
                   ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup)
             else { return }
             reviewPromptShownThisSession = true
             ReviewPromptTracker.markShown()
+            AnalyticsService.track("rating_asked")
             requestReview()
         }
     }

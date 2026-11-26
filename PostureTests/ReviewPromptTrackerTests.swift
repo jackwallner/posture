@@ -93,4 +93,65 @@ final class ReviewPromptTrackerTests: XCTestCase {
         ReviewPromptTracker.markShown()
         XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
     }
+    func testStaleMomentNoLongerAsks() {
+        let recorded = Date(timeIntervalSince1970: 1_800_000_000)
+        ReviewPromptTracker.recordPositiveMoment(now: recorded)
+        let fresh = recorded.addingTimeInterval(ReviewPromptTracker.pendingMomentLifetime - 1)
+        let stale = recorded.addingTimeInterval(ReviewPromptTracker.pendingMomentLifetime + 1)
+        XCTAssertTrue(ReviewPromptTracker.isPositiveMomentPending(now: fresh))
+        XCTAssertFalse(ReviewPromptTracker.isPositiveMomentPending(now: stale))
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true, now: stale))
+    }
+
+    func testMomentFlagWithNoDateFromAnOlderBuildIsStale() {
+        ReviewPromptTracker.consumePendingPositiveMoment()
+        ReviewPromptTracker.hasPendingPositiveMoment = true
+        XCTAssertFalse(ReviewPromptTracker.isPositiveMomentPending())
+    }
+
+    func testFirstLaunchNeverAsksEvenAfterAGoodMoment() {
+        ReviewPromptTracker.appLaunchCount = 1
+        ReviewPromptTracker.recordPositiveMoment()
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
+        ReviewPromptTracker.appLaunchCount = 2
+        XCTAssertTrue(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
+    }
+
+    func testNoAskDuringOnboarding() {
+        ReviewPromptTracker.recordPositiveMoment()
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: false))
+    }
+}
+
+/// Which results may ask for a rating. A good result asks; a slip or a
+/// partial never does.
+final class ReviewMomentTests: XCTestCase {
+    func testPassedPracticeSessionAsks() {
+        XCTAssertTrue(ReviewMoment.practiceSession(completed: true, passed: true))
+    }
+
+    func testPracticeSessionUnderTargetOrCutShortDoesNotAsk() {
+        XCTAssertFalse(ReviewMoment.practiceSession(completed: true, passed: false))
+        XCTAssertFalse(ReviewMoment.practiceSession(completed: false, passed: false))
+        XCTAssertFalse(ReviewMoment.practiceSession(completed: false, passed: true))
+    }
+
+    func testGoodCheckInAsks() {
+        XCTAssertTrue(ReviewMoment.checkIn(quality: .good, streakBefore: 3, streakAfter: 3))
+    }
+
+    func testBorderlineAndBadCheckInsDoNotAsk() {
+        XCTAssertFalse(ReviewMoment.checkIn(quality: .borderline, streakBefore: 3, streakAfter: 4))
+        XCTAssertFalse(ReviewMoment.checkIn(quality: .bad, streakBefore: 3, streakAfter: 4))
+        XCTAssertFalse(ReviewMoment.checkIn(quality: nil, streakBefore: 0, streakAfter: 1))
+    }
+
+    func testStreakMilestoneAsksEvenOnAnOrdinaryCheckIn() {
+        XCTAssertTrue(ReviewMoment.checkIn(quality: .borderline, streakBefore: 6, streakAfter: 7))
+        XCTAssertTrue(ReviewMoment.checkIn(quality: .bad, streakBefore: 29, streakAfter: 30))
+    }
+
+    func testSittingOnAMilestoneDayDoesNotAskAgain() {
+        XCTAssertFalse(ReviewMoment.checkIn(quality: .borderline, streakBefore: 7, streakAfter: 7))
+    }
 }

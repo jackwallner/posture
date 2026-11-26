@@ -15,6 +15,29 @@ enum ReviewPromptOutcome: String, Sendable {
     case submittedFeedback
 }
 
+/// The good moments that may ask for a rating, as pure predicates. Each is a
+/// result the user just achieved, never a launch, a tab or a count of opens.
+///
+/// - Finished practice session that met its aligned-% target: the core daily
+///   action, reached by a typical user in their 2nd or 3rd session (level 1
+///   asks for only 50% aligned).
+/// - Good check-in: an AirPods scan or self-report that reads good. Several a
+///   day for a reminder user.
+/// - Streak milestone (7/14/30/60/100 days): rare, never the only moment.
+enum ReviewMoment {
+    /// A practice session ran to its end and met its target. A partial session
+    /// or one under target (a slip) never asks.
+    nonisolated static func practiceSession(completed: Bool, passed: Bool) -> Bool {
+        completed && passed
+    }
+
+    /// A good check-in, or one that took the streak to a milestone day.
+    nonisolated static func checkIn(quality: PostureQuality?, streakBefore: Int, streakAfter: Int) -> Bool {
+        if quality == .good { return true }
+        return streakAfter > streakBefore && StreakService.streakMilestoneDays.contains(streakAfter)
+    }
+}
+
 /// Persists launch counts, positive moments, and review-prompt eligibility in the app group.
 @MainActor
 enum ReviewPromptTracker {
@@ -26,6 +49,12 @@ enum ReviewPromptTracker {
     private static let outcomeKey = "reviewPrompt.outcome"
     private static let positiveMomentCountKey = "reviewPrompt.positiveMomentCount"
     private static let pendingPositiveMomentKey = "reviewPrompt.pendingPositiveMoment"
+    private static let pendingPositiveMomentDateKey = "reviewPrompt.pendingPositiveMomentDate"
+
+    /// A moment blocked by a sheet or another tab waits this long for Today to
+    /// clear. After that it is stale: a tab switch an hour later is not a
+    /// good moment.
+    static let pendingMomentLifetime: TimeInterval = 600
 
     /// Ask early. Most installs are gone within a week, so the only tenure
     /// gate is "not the first session": a second cold start.
@@ -100,13 +129,24 @@ enum ReviewPromptTracker {
         appLaunchCount += 1
     }
 
-    static func recordPositiveMoment() {
+    static func recordPositiveMoment(now: Date = .now) {
         positiveMomentCount += 1
         hasPendingPositiveMoment = true
+        defaults.set(now, forKey: pendingPositiveMomentDateKey)
     }
 
     static func consumePendingPositiveMoment() {
         hasPendingPositiveMoment = false
+        defaults.removeObject(forKey: pendingPositiveMomentDateKey)
+    }
+
+    /// A recorded moment that has not been asked on and is still fresh. A flag
+    /// with no date (older builds) counts as stale.
+    static func isPositiveMomentPending(now: Date = .now) -> Bool {
+        guard hasPendingPositiveMoment,
+              let recorded = defaults.object(forKey: pendingPositiveMomentDateKey) as? Date
+        else { return false }
+        return now.timeIntervalSince(recorded) <= pendingMomentLifetime
     }
 
     static func passivePromptAllowed(now: Date = .now) -> Bool {
@@ -129,7 +169,7 @@ enum ReviewPromptTracker {
         hasCompletedSetup: Bool,
         now: Date = .now
     ) -> Bool {
-        guard hasPendingPositiveMoment else { return false }
+        guard isPositiveMomentPending(now: now) else { return false }
         return canRequestReview(hasCompletedSetup: hasCompletedSetup, now: now)
     }
 

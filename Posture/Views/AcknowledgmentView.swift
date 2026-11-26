@@ -344,10 +344,7 @@ struct AcknowledgmentView: View {
         )
         todayCheckInCount = (try? context.fetchCount(todayDescriptor)) ?? 0
 
-        if quality == .good {
-            earnedReviewPositiveMoment = true
-        } else if state.currentStreak > streakBefore,
-                  StreakService.streakMilestoneDays.contains(state.currentStreak) {
+        if ReviewMoment.checkIn(quality: quality, streakBefore: streakBefore, streakAfter: state.currentStreak) {
             earnedReviewPositiveMoment = true
         }
 

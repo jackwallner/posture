@@ -17,6 +17,8 @@ struct PracticeSessionView: View {
     @State private var controller: PracticeSessionController?
     @State private var subscriptions = SubscriptionService.shared
     @State private var showingPaywall = false
+    /// The trial pitch followed this session, so it never asks for a rating.
+    @State private var sawTrialPitch = false
     @State private var showingEndConfirm = false
     @State private var coachStep: CoachStep? = nil
     @State private var coachSlouchFelt = false
@@ -46,12 +48,24 @@ struct PracticeSessionView: View {
         .onDisappear {
             // Covers swipe-dismiss and parent teardown: hand the motion
             // stream back and record an honest partial if one exists.
+            let earned = earnedReviewMoment
             controller?.cancel()
+            // A passed session is a good moment: Today asks about 3 seconds
+            // after this cover is gone, if nothing else is up.
+            guard earned else { return }
+            ReviewPromptTracker.recordPositiveMoment()
+            NotificationCenter.default.post(name: .posturePositiveMomentForReview, object: nil)
         }
         .fullScreenCover(isPresented: $showingPaywall, onDismiss: { dismiss() }) {
             OnboardingTrialView()
         }
         .interactiveDismissDisabled(isLive)
+    }
+
+    /// The session ran to its end, met its target, and no trial pitch followed.
+    private var earnedReviewMoment: Bool {
+        guard !sawTrialPitch, controller?.phase == .finished, let result = controller?.result else { return false }
+        return ReviewMoment.practiceSession(completed: result.completed, passed: result.passed)
     }
 
     private var isLive: Bool {
@@ -513,6 +527,7 @@ struct PracticeSessionView: View {
     private func finishAndMaybePaywall(_ result: PracticeSessionController.Result) {
         if result.completed, !subscriptions.isProSubscriber, !settings.hasSeenOnboardingTrial {
             settings.hasSeenIntroPaywall = true
+            sawTrialPitch = true
             showingPaywall = true
         } else {
             dismiss()
