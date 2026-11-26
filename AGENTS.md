@@ -56,10 +56,16 @@ look-and-feel brief is in `docs/archive/design/2026-05/design-response/`.
 
 ## App-specific review
 
-No in-app rating question (App Review 5.6.1). After a **good check-in** or
-**streak milestone** (7/14/30/60/100 days), `MainTabView` calls the system
-`requestReview()` about 3s later if Today is clear (from the 2nd launch,
-30-day cooldown). Settings has separate "Rate Posture"
+No in-app rating question (App Review 5.6.1). The only automatic triggers are
+good results (`ReviewMoment`): a **passed practice session** (aligned-% target
+met, asked once its summary closes), a **good check-in**, or a **streak
+milestone** (7/14/30/60/100 days). `MainTabView` calls the system
+`requestReview()` about 3.5s later if Today is still clear (no sheet, cover,
+paywall or trial pitch), from the 2nd launch, 30-day cooldown stamped at the
+call, logged as `rating_asked`. A moment left from an earlier launch is dropped
+at launch; launches and open counts never ask, and a tab back to Today only retries a moment from the same launch. Never after the trial
+pitch that follows a first session. `rating_prompt: off` in offering metadata
+pauses it. Settings has separate "Rate Posture"
 (`AppStoreReviewLinks.writeReviewURL`) and "Send Feedback" rows. App Store ID
 `6768514450`. (Shared rules in the `ios-dev` skill.)
 

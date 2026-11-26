@@ -77,6 +77,11 @@ enum AnalyticsService {
         track("purchase_completed", properties: ["plan": plan])
     }
 
+    /// The system rating prompt was called, with the moment that asked.
+    static func ratingAsked(moment: ReviewMomentKind?) {
+        track("rating_asked", properties: ["moment": moment?.rawValue ?? "unknown"])
+    }
+
     /// Ask to Buy: waiting on approval, logged apart from `purchase_failed`.
     static func purchasePending(plan: String) {
         track("purchase_pending", properties: ["plan": plan])

@@ -21,6 +21,9 @@ struct PracticeSessionView: View {
     @State private var coachStep: CoachStep? = nil
     @State private var coachSlouchFelt = false
     @State private var showRepsSkip = false
+    /// A passed session, seen on the summary: the rating moment, posted when
+    /// this cover has closed. Never set when the trial pitch follows.
+    @State private var earnedReviewMoment: ReviewMomentKind?
     /// Custom session length (minutes). nil = the level's own duration.
     @State private var customMinutes: Int? = nil
 
@@ -47,6 +50,10 @@ struct PracticeSessionView: View {
             // Covers swipe-dismiss and parent teardown: hand the motion
             // stream back and record an honest partial if one exists.
             controller?.cancel()
+            guard let moment = earnedReviewMoment else { return }
+            earnedReviewMoment = nil
+            ReviewPromptTracker.recordPositiveMoment(moment)
+            NotificationCenter.default.post(name: .posturePositiveMomentForReview, object: nil)
         }
         .fullScreenCover(isPresented: $showingPaywall, onDismiss: { dismiss() }) {
             OnboardingTrialView()
@@ -515,6 +522,9 @@ struct PracticeSessionView: View {
             settings.hasSeenIntroPaywall = true
             showingPaywall = true
         } else {
+            earnedReviewMoment = ReviewMoment.practice(
+                kind: result.kind, completed: result.completed, passed: result.passed
+            )
             dismiss()
         }
     }

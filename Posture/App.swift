@@ -498,24 +498,28 @@ struct MainTabView: View {
         }
     }
 
-    /// The rating ask after a good check-in or streak milestone: Apple's own
+    /// The rating ask after a good result (a good check-in, a passed practice
+    /// session, a streak milestone): Apple's own
     /// prompt, no question in front of it. Waits for the check-in to close,
     /// then asks only if Today is still clear. A blocked ask keeps the moment
     /// pending in the tracker; it never retries off a paywall or pitch.
     private func scheduleReviewPromptAfterPositiveMoment() {
-        guard ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
-              !reviewPromptShownThisSession,
-              isTodayClear
+        guard subscriptions.isOn(.ratingPrompt),
+              ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup),
+              !reviewPromptShownThisSession
         else { return }
 
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 3_500_000_000)
-            guard isTodayClear,
+            guard subscriptions.isOn(.ratingPrompt),
+                  isTodayClear,
                   !reviewPromptShownThisSession,
                   ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: hasCompletedSetup)
             else { return }
             reviewPromptShownThisSession = true
+            let moment = ReviewPromptTracker.pendingMomentKind
             ReviewPromptTracker.markShown()
+            AnalyticsService.ratingAsked(moment: moment)
             requestReview()
         }
     }

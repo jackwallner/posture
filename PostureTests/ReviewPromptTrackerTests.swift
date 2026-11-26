@@ -93,4 +93,57 @@ final class ReviewPromptTrackerTests: XCTestCase {
         ReviewPromptTracker.markShown()
         XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
     }
+
+    // MARK: Good moments
+
+    func testGoodCheckInIsAMoment() {
+        XCTAssertEqual(ReviewMoment.checkIn(quality: .good, streakBefore: 3, streakAfter: 3), .goodCheckIn)
+    }
+
+    func testBadAndBorderlineCheckInsNeverAsk() {
+        XCTAssertNil(ReviewMoment.checkIn(quality: .bad, streakBefore: 3, streakAfter: 4))
+        XCTAssertNil(ReviewMoment.checkIn(quality: .borderline, streakBefore: 3, streakAfter: 4))
+        XCTAssertNil(ReviewMoment.checkIn(quality: nil, streakBefore: 0, streakAfter: 1))
+    }
+
+    func testMilestoneStreakDayIsAMomentEvenOnAnOffDay() {
+        XCTAssertEqual(ReviewMoment.checkIn(quality: .borderline, streakBefore: 6, streakAfter: 7), .streakMilestone)
+        XCTAssertNil(ReviewMoment.checkIn(quality: .borderline, streakBefore: 7, streakAfter: 7))
+        XCTAssertNil(ReviewMoment.checkIn(quality: .borderline, streakBefore: 7, streakAfter: 8))
+    }
+
+    func testPassedPracticeSessionIsAMoment() {
+        XCTAssertEqual(ReviewMoment.practice(kind: .practice, completed: true, passed: true), .practicePassed)
+    }
+
+    func testMissedOrPartialPracticeNeverAsks() {
+        XCTAssertNil(ReviewMoment.practice(kind: .practice, completed: true, passed: false))
+        XCTAssertNil(ReviewMoment.practice(kind: .practice, completed: false, passed: false))
+        XCTAssertNil(ReviewMoment.practice(kind: .walk, completed: true, passed: true))
+        XCTAssertNil(ReviewMoment.practice(kind: .legacy, completed: true, passed: true))
+    }
+
+    func testPracticeMomentAsksOnTheSecondLaunchButNotTheFirst() {
+        ReviewPromptTracker.appLaunchCount = 1
+        ReviewPromptTracker.recordPositiveMoment(.practicePassed)
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
+        ReviewPromptTracker.appLaunchCount = 2
+        XCTAssertTrue(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
+        XCTAssertEqual(ReviewPromptTracker.pendingMomentKind, .practicePassed)
+    }
+
+    func testMomentLeftFromAnEarlierLaunchIsDroppedAtLaunch() {
+        ReviewPromptTracker.recordPositiveMoment(.goodCheckIn)
+        ReviewPromptTracker.recordAppLaunch()
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true))
+        XCTAssertNil(ReviewPromptTracker.pendingMomentKind)
+    }
+
+    func testCooldownIsStampedWhenTheCallIsMade() {
+        ReviewPromptTracker.recordPositiveMoment(.practicePassed)
+        ReviewPromptTracker.markShown()
+        XCTAssertNotNil(ReviewPromptTracker.lastShownDate)
+        ReviewPromptTracker.recordPositiveMoment(.practicePassed)
+        XCTAssertFalse(ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: true, now: days(10)))
+    }
 }

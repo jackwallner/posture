@@ -20,7 +20,7 @@ struct AcknowledgmentView: View {
     @State private var recordedQuality: PostureQuality?
     @State private var recordedMethod: AcknowledgmentMethod?
     @State private var currentTip: PostureTip?
-    @State private var earnedReviewPositiveMoment = false
+    @State private var earnedReviewMoment: ReviewMomentKind?
     @State private var todayCheckInCount = 0
     @State private var streakAfterRecord = 0
 
@@ -48,8 +48,8 @@ struct AcknowledgmentView: View {
             }
         }
         .onDisappear {
-            guard earnedReviewPositiveMoment else { return }
-            ReviewPromptTracker.recordPositiveMoment()
+            guard let moment = earnedReviewMoment else { return }
+            ReviewPromptTracker.recordPositiveMoment(moment)
             NotificationCenter.default.post(name: .posturePositiveMomentForReview, object: nil)
         }
     }
@@ -344,12 +344,11 @@ struct AcknowledgmentView: View {
         )
         todayCheckInCount = (try? context.fetchCount(todayDescriptor)) ?? 0
 
-        if quality == .good {
-            earnedReviewPositiveMoment = true
-        } else if state.currentStreak > streakBefore,
-                  StreakService.streakMilestoneDays.contains(state.currentStreak) {
-            earnedReviewPositiveMoment = true
-        }
+        earnedReviewMoment = ReviewMoment.checkIn(
+            quality: quality,
+            streakBefore: streakBefore,
+            streakAfter: state.currentStreak
+        )
 
         AnalyticsService.acknowledgmentRecorded(method: method, quality: quality)
     }

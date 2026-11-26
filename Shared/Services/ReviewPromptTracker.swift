@@ -15,6 +15,46 @@ enum ReviewPromptOutcome: String, Sendable {
     case submittedFeedback
 }
 
+/// The good results that may ask for a rating. Nothing else asks: not a
+/// launch, a tab, a count of opens or a screen appearing.
+enum ReviewMomentKind: String, Sendable {
+    /// A check-in scored aligned, right after the user sees it. Reached from
+    /// the first check-in of a typical user's day.
+    case goodCheckIn = "good_check_in"
+    /// A 7, 14, 30, 60 or 100 day streak day reached by a check-in.
+    case streakMilestone = "streak_milestone"
+    /// A bounded practice session finished at or above its aligned-% target:
+    /// the core action done well.
+    case practicePassed = "practice_passed"
+}
+
+/// Which results count as a good moment. Pure, so a bad result is proved not
+/// to ask.
+enum ReviewMoment {
+    nonisolated static func checkIn(
+        quality: PostureQuality?,
+        streakBefore: Int,
+        streakAfter: Int
+    ) -> ReviewMomentKind? {
+        if quality == .good { return .goodCheckIn }
+        if streakAfter > streakBefore, StreakService.streakMilestoneDays.contains(streakAfter) {
+            return .streakMilestone
+        }
+        return nil
+    }
+
+    /// `passed` is the session's own verdict: completed at the ladder's length
+    /// with the aligned-% target met. A walk, a partial, a custom length or a
+    /// miss never asks.
+    nonisolated static func practice(
+        kind: PostureSessionKind,
+        completed: Bool,
+        passed: Bool
+    ) -> ReviewMomentKind? {
+        kind == .practice && completed && passed ? .practicePassed : nil
+    }
+}
+
 /// Persists launch counts, positive moments, and review-prompt eligibility in the app group.
 @MainActor
 enum ReviewPromptTracker {
@@ -26,6 +66,7 @@ enum ReviewPromptTracker {
     private static let outcomeKey = "reviewPrompt.outcome"
     private static let positiveMomentCountKey = "reviewPrompt.positiveMomentCount"
     private static let pendingPositiveMomentKey = "reviewPrompt.pendingPositiveMoment"
+    private static let pendingMomentKindKey = "reviewPrompt.pendingMomentKind"
 
     /// Ask early. Most installs are gone within a week, so the only tenure
     /// gate is "not the first session": a second cold start.
@@ -85,6 +126,11 @@ enum ReviewPromptTracker {
         set { defaults.set(newValue, forKey: pendingPositiveMomentKey) }
     }
 
+    /// The kind of the pending moment, for the `rating_asked` log.
+    static var pendingMomentKind: ReviewMomentKind? {
+        defaults.string(forKey: pendingMomentKindKey).flatMap(ReviewMomentKind.init(rawValue:))
+    }
+
     private static var isUITest: Bool {
         #if DEBUG
         return LaunchArguments.contains("UITEST_FRESH")
@@ -98,15 +144,20 @@ enum ReviewPromptTracker {
             firstAppOpenDate = now
         }
         appLaunchCount += 1
+        // A moment is only good right after the result. One left from an
+        // earlier launch must not ask at an unrelated time.
+        consumePendingPositiveMoment()
     }
 
-    static func recordPositiveMoment() {
+    static func recordPositiveMoment(_ kind: ReviewMomentKind = .goodCheckIn) {
         positiveMomentCount += 1
         hasPendingPositiveMoment = true
+        defaults.set(kind.rawValue, forKey: pendingMomentKindKey)
     }
 
     static func consumePendingPositiveMoment() {
         hasPendingPositiveMoment = false
+        defaults.removeObject(forKey: pendingMomentKindKey)
     }
 
     static func passivePromptAllowed(now: Date = .now) -> Bool {
@@ -133,6 +184,8 @@ enum ReviewPromptTracker {
         return canRequestReview(hasCompletedSetup: hasCompletedSetup, now: now)
     }
 
+    /// Stamps the cooldown when the system prompt is called (Apple decides
+    /// whether it shows), and consumes the moment.
     static func markShown(now: Date = .now) {
         lastShownDate = now
         consumePendingPositiveMoment()
