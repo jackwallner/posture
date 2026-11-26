@@ -33,6 +33,7 @@ struct SettingsView: View {
     @State private var pendingPaywallAfterTrialDismiss = false
     @State private var trialPurchaseInFlight = false
     @State private var trialPurchaseError: String?
+    @State private var trialPurchasePending: String?
     @State private var trialOfferDetent: PresentationDetent = .fraction(0.68)
     #if HAS_REVENUECAT
     @State private var trialOfferPackage: Package?
@@ -320,6 +321,8 @@ struct SettingsView: View {
                 Task { await refreshNotificationStatus() }
             }
             .onChange(of: subscriptions.isProSubscriber) { _, isPro in
+                // An Ask to Buy approved while the sheet waits unlocks here.
+                if isPro, showTrialOffer { showTrialOffer = false }
                 if isPro { applyPendingFeatureEnable() }
             }
             .task(id: isSelectedTab ? IntentRouter.shared.settingsPrompt : nil) {
@@ -337,6 +340,7 @@ struct SettingsView: View {
             .sheet(isPresented: $showTrialOffer, onDismiss: {
                 trialPurchaseInFlight = false
                 trialPurchaseError = nil
+                trialPurchasePending = nil
                 #if HAS_REVENUECAT
                 trialOfferPackage = nil
                 #endif
@@ -354,6 +358,7 @@ struct SettingsView: View {
                     directPurchase: trialOfferIsDirect,
                     isPurchasing: trialPurchaseInFlight,
                     errorMessage: trialPurchaseError,
+                    pendingMessage: trialPurchasePending,
                     onStartTrial: {
                         if trialOfferIsDirect {
                             startDirectTrialPurchase()
@@ -535,13 +540,18 @@ struct SettingsView: View {
             return
         }
         trialPurchaseError = nil
+        trialPurchasePending = nil
         trialPurchaseInFlight = true
         Task { @MainActor in
             defer { trialPurchaseInFlight = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     showTrialOffer = false
+                case .pending:
+                    // The sheet stays up with the waiting line. Closing it
+                    // without a purchase clears the armed unlock action.
+                    trialPurchasePending = PurchaseFailure.waitingMessage
                 case .cancelled:
                     trialPurchaseError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }

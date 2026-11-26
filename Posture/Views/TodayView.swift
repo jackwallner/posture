@@ -24,6 +24,7 @@ struct TodayView: View {
     @State private var showingWalkTrialOffer = false
     @State private var walkTrialInFlight = false
     @State private var walkTrialError: String?
+    @State private var walkTrialPending: String?
     @State private var walkTrialDetent: PresentationDetent = .fraction(0.68)
     @State private var pendingWalkPaywall = false
     #if HAS_REVENUECAT
@@ -192,6 +193,7 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showingWalkTrialOffer, onDismiss: {
                 walkTrialError = nil
+                walkTrialPending = nil
                 if pendingWalkPaywall {
                     pendingWalkPaywall = false
                     showingWalkPaywall = true
@@ -204,6 +206,7 @@ struct TodayView: View {
                     directPurchase: walkTrialIsDirect,
                     isPurchasing: walkTrialInFlight,
                     errorMessage: walkTrialError,
+                    pendingMessage: walkTrialPending,
                     onStartTrial: {
                         if walkTrialIsDirect {
                             startWalkTrialPurchase()
@@ -242,6 +245,10 @@ struct TodayView: View {
             }
             .onChange(of: isCovered, initial: true) { _, covered in
                 ReviewPromptCoordinator.shared.todayIsCovered = covered
+            }
+            .onChange(of: subscriptions.isProSubscriber) { _, isPro in
+                // An Ask to Buy approved while the trial sheet waits unlocks here.
+                if isPro, showingWalkTrialOffer { showingWalkTrialOffer = false }
             }
             .task { await refreshReminderStatus() }
             // The cold-launch reschedule rewrites the pending-notification
@@ -597,13 +604,16 @@ struct TodayView: View {
             return
         }
         walkTrialError = nil
+        walkTrialPending = nil
         walkTrialInFlight = true
         Task { @MainActor in
             defer { walkTrialInFlight = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     showingWalkTrialOffer = false
+                case .pending:
+                    walkTrialPending = PurchaseFailure.waitingMessage
                 case .cancelled:
                     walkTrialError = String(localized: "Trial wasn't started. Tap again, or pick a different plan.")
                 }

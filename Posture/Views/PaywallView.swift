@@ -417,7 +417,7 @@ struct PaywallView: View {
         if package.posturePackageKind == .lifetime { return String(localized: "Unlock Lifetime") }
         // Name the trial length in the button - answers "what am I agreeing to?"
         if subscriptions.isEligibleForIntroOffer(package), let title = package.postureStartMyTrialTitle {
-            return title
+            return subscriptions.trialCTA(.paywall, control: title)
         }
         return String(localized: "Start Posture+")
         #else
@@ -521,7 +521,7 @@ struct PaywallView: View {
                 case .pending:
                     // Ask to Buy / deferred - without this the sheet just
                     // sits there as if the tap did nothing.
-                    restoreMessage = String(localized: "Purchase is pending approval. Posture+ unlocks as soon as it's approved.")
+                    restoreMessage = PurchaseFailure.waitingMessage
                 case .cancelled:
                     errorMessage = nil
                 }

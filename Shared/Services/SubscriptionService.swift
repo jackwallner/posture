@@ -182,6 +182,22 @@ final class SubscriptionService: NSObject {
     private(set) var isProSubscriber: Bool = false
     private(set) var isConfigured: Bool = false
 
+    /// The current offering's metadata (a running Experiment's variant
+    /// included), the source of every `RemoteConfig` value. Nil until the
+    /// offerings load, which reads as the control everywhere.
+    private(set) var remoteMetadata: [String: Any]?
+
+    var trialCTAArm: TrialCTA { TrialCTA.from(metadata: remoteMetadata) }
+
+    /// The trial button's title for `surface`; `control` is today's copy.
+    func trialCTA(_ surface: TrialCTA.Surface, control: String) -> String {
+        trialCTAArm.title(surface, control: control)
+    }
+
+    func isOn(_ remoteSwitch: RemoteSwitch) -> Bool {
+        RemoteConfig.isOn(remoteSwitch, in: remoteMetadata)
+    }
+
     #if HAS_REVENUECAT
     private(set) var products: [Package] = []
     private(set) var isLoadingProducts: Bool = false
@@ -259,6 +275,7 @@ final class SubscriptionService: NSObject {
         do {
             let offerings = try await Purchases.shared.offerings()
             products = offerings.posturePaywallOffering?.postureSortedPackages ?? []
+            remoteMetadata = offerings.current?.metadata
             lastError = nil
             await refreshIntroEligibility()
         } catch {
@@ -302,8 +319,10 @@ final class SubscriptionService: NSObject {
     /// has to background the app before reading anything back.
     func syncConversionAttributes() {
         guard isConfigured else { return }
-        let attributes = ConversionDiagnostics.subscriberAttributes
+        var attributes = ConversionDiagnostics.subscriberAttributes
         guard !attributes.isEmpty else { return }
+        // The wording arm this customer saw, so a test reads by attribute too.
+        attributes[TrialCTA.metadataKey] = trialCTAArm.rawValue
         Purchases.shared.attribution.setAttributes(attributes)
     }
 
@@ -330,7 +349,18 @@ final class SubscriptionService: NSObject {
         let plan = package.posturePackageKind == .monthly ? "monthly" : (package.posturePackageKind == .yearly ? "yearly" : "lifetime")
         AnalyticsService.purchaseAttempted(plan: plan)
         let startedTrial = isEligibleForIntroOffer(package)
-        let result = try await Purchases.shared.purchase(package: package)
+        let result: (transaction: StoreTransaction?, customerInfo: CustomerInfo, userCancelled: Bool)
+        do {
+            result = try await Purchases.shared.purchase(package: package)
+        } catch {
+            // Ask to Buy is a wait, not a failure: the customer sees "waiting
+            // for approval" and the delegate unlocks Posture+ once approved.
+            guard PurchaseFailure.isAskToBuy(error) || (error as? ErrorCode) == .paymentPendingError else {
+                throw error
+            }
+            AnalyticsService.purchasePending(plan: plan)
+            return .pending
+        }
         applyProStatus(from: result.customerInfo)
         if result.userCancelled {
             return .cancelled
@@ -345,6 +375,7 @@ final class SubscriptionService: NSObject {
             syncConversionAttributes()
             return .purchased
         }
+        AnalyticsService.purchasePending(plan: plan)
         return .pending
     }
 

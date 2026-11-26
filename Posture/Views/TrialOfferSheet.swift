@@ -9,6 +9,8 @@ struct TrialOfferSheet: View {
     let directPurchase: Bool
     let isPurchasing: Bool
     let errorMessage: String?
+    /// Ask to Buy: the purchase waits on a parent. Calm, not an error.
+    var pendingMessage: String? = nil
     let onStartTrial: () -> Void
     let onSeeAllPlans: () -> Void
     let onDismiss: () -> Void
@@ -16,6 +18,10 @@ struct TrialOfferSheet: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var animateGlow = false
     @State private var shimmerPhase: CGFloat = -1
+
+    private var ctaTitle: String {
+        SubscriptionService.shared.trialCTA(.sheet, control: String(localized: "Start My Free Trial"))
+    }
 
     private var headline: String {
         if let focus { return focus.intentHeadline }
@@ -158,6 +164,17 @@ struct TrialOfferSheet: View {
                 }
                 .motion(.easeInOut(duration: 0.18), value: errorMessage)
 
+                Group {
+                    if let pendingMessage {
+                        Text(pendingMessage)
+                            .font(Theme.font(.footnote))
+                            .foregroundStyle(Theme.ink2)
+                            .multilineTextAlignment(.center)
+                            .transition(.opacity)
+                    }
+                }
+                .motion(.easeInOut(duration: 0.18), value: pendingMessage)
+
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -177,7 +194,7 @@ struct TrialOfferSheet: View {
                     Button(action: onStartTrial) {
                         ZStack {
                             HStack(spacing: 8) {
-                                Text("Start My Free Trial")
+                                Text(ctaTitle)
                                     .font(Theme.font(.headline, weight: .bold))
                                 Image(systemName: "arrow.right")
                                     .font(.system(size: 15, weight: .bold))

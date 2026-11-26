@@ -14,6 +14,8 @@ struct OnboardingTrialView: View {
     @State private var isPurchasing = false
     @State private var isRestoring = false
     @State private var errorMessage: String?
+    /// Ask to Buy: the purchase waits on a parent. Calm, not an error.
+    @State private var pendingMessage: String?
     @State private var showFallbackPaywall = false
 
     var body: some View {
@@ -119,6 +121,13 @@ struct OnboardingTrialView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                 }
+                if let pendingMessage {
+                    Text(pendingMessage)
+                        .font(Theme.font(.caption))
+                        .foregroundStyle(Theme.ink2)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
     }
@@ -143,7 +152,7 @@ struct OnboardingTrialView: View {
     /// as "start trial", matching the direct-purchase CTAs elsewhere.
     private var ctaTitle: String {
         if let label = trialStartLabel {
-            return label
+            return subscriptions.trialCTA(.onboarding, control: label)
         }
         return String(localized: "Start 7-day free trial")
     }
@@ -190,13 +199,16 @@ struct OnboardingTrialView: View {
             return
         }
         errorMessage = nil
+        pendingMessage = nil
         isPurchasing = true
         Task { @MainActor in
             defer { isPurchasing = false }
             do {
                 switch try await subscriptions.purchase(package) {
-                case .purchased, .pending:
+                case .purchased:
                     break
+                case .pending:
+                    pendingMessage = PurchaseFailure.waitingMessage
                 case .cancelled:
                     errorMessage = nil
                 }

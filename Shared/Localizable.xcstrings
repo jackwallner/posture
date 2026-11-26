@@ -23775,53 +23775,6 @@
         }
       }
     },
-    "Purchase is pending approval. Posture+ unlocks as soon as it's approved." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Kauf wartet auf Genehmigung. Posture+ wird danach freigeschaltet."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Purchase is pending approval. Posture+ unlocks as soon as it's approved."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La compra está pendiente de aprobación. Posture+ se desbloqueará en cuanto se apruebe."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acquisto in attesa di approvazione. Posture+ si sbloccherà appena approvato."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "購入は承認待ちです。承認されるとPosture+を利用できます。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De aankoop wacht op goedkeuring. Posture+ wordt ontgrendeld zodra die is goedgekeurd."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Покупка ожидает одобрения. Posture+ откроется после подтверждения."
-          }
-        }
-      }
-    },
     "Put your AirPods in and Posture starts watching your posture automatically." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -28336,6 +28289,53 @@
         }
       }
     },
+    "Start my free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meine Testphase starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start my free trial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar mi prueba gratis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inizia la mia prova gratuita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料トライアルを開始"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start mijn gratis proefperiode"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать мой бесплатный период"
+          }
+        }
+      }
+    },
     "Start Posture Monitoring" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -28896,6 +28896,100 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Попробовать бесплатно: %lld г."
+          }
+        }
+      }
+    },
+    "Start Your Free Trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Testphase starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Your Free Trial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia tu prueba gratis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inizia la tua prova gratuita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料トライアルを始める"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start je gratis proefperiode"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните бесплатный период"
+          }
+        }
+      }
+    },
+    "Start your free trial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Testphase starten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start your free trial"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia tu prueba gratis"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inizia la tua prova gratuita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料トライアルを始める"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start je gratis proefperiode"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начните бесплатный период"
           }
         }
       }
@@ -32656,6 +32750,53 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Версия"
+          }
+        }
+      }
+    },
+    "Waiting for approval. Your purchase unlocks once it is approved." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warte auf Genehmigung. Dein Kauf wird freigeschaltet, sobald er genehmigt ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for approval. Your purchase unlocks once it is approved."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esperando aprobación. Tu compra se desbloqueará cuando se apruebe."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In attesa di approvazione. Il tuo acquisto si sblocca non appena viene approvato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "承認待ちです。承認されると購入が有効になります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wachten op goedkeuring. Je aankoop wordt ontgrendeld zodra die is goedgekeurd."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидание одобрения. Покупка откроется, как только её одобрят."
           }
         }
       }
