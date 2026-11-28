@@ -235,27 +235,36 @@ struct PracticeSessionView: View {
 
             Spacer()
 
-            ZStack {
-                Circle()
-                    .stroke(Theme.ringTrack, lineWidth: 10)
-                Circle()
-                    .trim(from: 0, to: Double(done) / Double(target))
-                    .stroke(Theme.lavender, style: .init(lineWidth: 10, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .motion(.easeOut(duration: 0.4), value: done)
-                VStack(spacing: 6) {
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .stroke(Theme.ringTrack, lineWidth: 10)
+                    Circle()
+                        .trim(from: 0, to: Double(done) / Double(target))
+                        .stroke(Theme.lavender, style: .init(lineWidth: 10, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .motion(.easeOut(duration: 0.4), value: done)
                     Text("\(done)")
-                        .font(Theme.font(size: 64, weight: .regular))
+                        .font(Theme.font(size: 56, weight: .regular))
                         .foregroundStyle(Theme.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                         .contentTransition(.numericText())
                         .motion(.easeOut(duration: 0.2), value: done)
-                    Text("of \(target) reps")
-                        .font(Theme.display(19))
-                        .foregroundStyle(Theme.lavender)
+                        .padding(20)
                 }
+                .frame(width: 200, height: 200)
+                Text("of \(target) reps")
+                    .font(Theme.display(19))
+                    .foregroundStyle(Theme.lavender)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .frame(width: 240, height: 240)
+            .accessibilityElement(children: .ignore)
             .accessibilityLabel("\(done) of \(target) chin tucks done")
+            .accessibilityIdentifier("chin-tuck-reps")
+
+            ChinTuckDemo()
+                .padding(.top, 24)
 
             VStack(spacing: 10) {
                 Text("Warm up your neck.")
@@ -269,7 +278,7 @@ struct PracticeSessionView: View {
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
             }
-            .padding(.top, 26)
+            .padding(.top, 20)
 
             Spacer()
 
@@ -296,7 +305,7 @@ struct PracticeSessionView: View {
             #endif
         }
         .padding(.horizontal, 24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .modifier(ScrollWhenTall())
         .dawnColumn()
         .task {
             // If detection isn't landing (odd AirPods pitch response, wrong

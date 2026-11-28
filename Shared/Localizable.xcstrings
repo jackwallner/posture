@@ -10882,6 +10882,53 @@
         }
       }
     },
+    "Chin tuck demonstration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorführung: Kinn zurückziehen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chin tuck demonstration"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demostración de la retracción del mentón"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dimostrazione della retrazione del mento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あご引きのお手本"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorbeeld van kin intrekken"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пример втягивания подбородка"
+          }
+        }
+      }
+    },
     "Chin tucks: pull your head back like you're making a double chin, hold 5 seconds." : {
       "extractionState" : "manual",
       "localizations" : {

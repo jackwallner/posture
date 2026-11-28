@@ -892,16 +892,3 @@ private struct ConfidenceBar: View {
         }
     }
 }
-
-/// Fills the screen like a plain frame, but scrolls when the content (large
-/// accessibility text) is taller, so the bottom buttons stay reachable.
-private struct ScrollWhenTall: ViewModifier {
-    func body(content: Content) -> some View {
-        GeometryReader { geo in
-            ScrollView {
-                content.frame(maxWidth: .infinity, minHeight: geo.size.height)
-            }
-            .scrollBounceBehavior(.basedOnSize)
-        }
-    }
-}
